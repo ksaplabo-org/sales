@@ -1,0 +1,27 @@
+{
+  // IntelliSense を使用して利用可能な属性を学べます。
+  // 既存の属性の説明をホバーして表示します。
+  // 詳細情報は次を確認してください: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "launch front",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:8080/public/pages/sign-in.html",
+      "webRoot": "${workspaceFolder}/front",
+      "sourceMapPathOverrides": {
+        "webpack:///src/*": "${webRoot}/src/*"
+      },
+      "sourceMaps": true,
+      "resolveSourceMapLocations": ["!**/node_modules/**"]
+    },
+    {
+      "name": "attach backend",
+      "type": "node",
+      "request": "attach",
+      "address": "localhost",
+      "port": 9229
+    }
+  ]
+}
