@@ -25,7 +25,7 @@ export default new Router({
     {
       path: "/pages/top.html",
       name: "top",
-      component: Top,
+      component: main,
     },
   ],
 });
