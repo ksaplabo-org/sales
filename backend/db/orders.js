@@ -4,6 +4,7 @@ module.exports.getOrdersModel = (db) => {
   var orders = db.define(
     "orders",
     {
+      
       order_no: {
         field: "order_no",
         type: sequelize.INTEGER,

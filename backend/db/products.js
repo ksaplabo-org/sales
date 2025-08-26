@@ -4,6 +4,7 @@ module.exports.getProductsModel = (db) => {
    db.define(
     "products",
     {
+      
       product_code: {
         field: "product_code",
         type: sequelize.INTEGER,
