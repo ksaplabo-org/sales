@@ -122,7 +122,7 @@ export default new Router({
     {
       path: "/pages/users/delete.html",
       name: "usersDelete",
-      component: UsresDelete,
+      component: UsersDelete,
     },
      {
       path: "*",
