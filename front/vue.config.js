@@ -12,29 +12,23 @@ module.exports = {
   },
   lintOnSave: true,
   pages: {
-    logIn: {
+    signIn: {
       entry: "src/main.js",
       template: "public/pages/index.html",
-      filename: "pages/log-in.html",
-      title: "ログイン",
+      filename: "pages/sign-in.html",
+      title: "サインイン",
     },
-    logOut: {
+    signOut: {
       entry: "src/main.js",
       template: "public/pages/index.html",
-      filename: "pages/log-out.html",
-      title: "ログアウト",
+      filename: "pages/sign-out.html",
+      title: "サインアウト",
     },
-    menu: {
+    top: {
       entry: "src/main.js",
       template: "public/pages/index.html",
-      filename: "pages/menu.html",
-      title: "メニュー",
-    },
-    header: {
-      entry: "src/main.js",
-      template: "public/pages/index.html",
-      filename: "pages/header.html",
-      title: "ヘッダー",
+      filename: "pages/top.html",
+      title: "トップページ",
     },
   },
   devServer: {
