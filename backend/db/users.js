@@ -4,7 +4,6 @@ module.exports.getUsersModel = (db) => {
   return db.define(
     "users",
     {
-      
       id: {
         field: "id",
         type: sequelize.INTEGER,

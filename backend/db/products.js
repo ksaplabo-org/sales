@@ -1,10 +1,9 @@
 const sequelize = require("sequelize");
 
 module.exports.getProductsModel = (db) => {
-   db.define(
+  db.define(
     "products",
     {
-      
       product_code: {
         field: "product_code",
         type: sequelize.INTEGER,

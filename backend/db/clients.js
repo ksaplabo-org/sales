@@ -4,7 +4,6 @@ module.exports.getClientsModel = (db) => {
   return db.define(
     "clients",
     {
-      
       client_no: {
         field: "client_no",
         type: sequelize.INTEGER,
