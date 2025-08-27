@@ -44,11 +44,11 @@ export function currentUserInfo() {
 }
 
 /**
- * サインイン判定
+ * ログイン判定
  *
- * @returns サインイン有無
+ * @returns ログイン有無
  */
-export function isSignIn() {
+export function isLogIn() {
   return currentUserInfo() !== null;
 }
 
