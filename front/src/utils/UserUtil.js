@@ -53,10 +53,16 @@ export function isLogIn() {
 }
 
 /**
- * 管理者判定
- * @returns 管理者かどうか (true:管理者 false:一般)
+ * 権限判定
+ * @returns 権限 (0:一般 1:管理者 2:役職 )
  */
-export function isAdmin() {
+export function roleCheck() {
   const userInfo = currentUserInfo();
-  return userInfo !== null && userInfo.auth === UserConst.Auth.admin;
+  if (userInfo !== null && userInfo.auth === UserConst.Auth.general) {
+    return UserConst.Auth.general;
+  } else if (userInfo !== null && userInfo.auth === UserConst.Auth.admin) {
+    return UserConst.Auth.admin;
+  } else if (userInfo !== null) {
+    return UserConst.Auth.post;
+  }
 }
