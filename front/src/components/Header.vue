@@ -1,36 +1,36 @@
 <template>
   <div>
     <nav class="navbar navbar-expand navbar-dark bg-dark static-top">
-      <button class="btn btn-link btn-sm text-white order-1 order-sm-0" id="sidebarToggle" href="#">
-        <i class="fas fa-bars"></i>
-      </button>
+      <a href="/public/pages/menu.html" style="text-decoration: none; color: white"><h1>販売管理システム</h1></a>
 
       <!-- Navbar Search(なし) -->
       <form class="d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0"></form>
-
       <!-- Navbar -->
       <ul class="navbar-nav ml-auto ml-md-0">
-        <li class="nav-item dropdown no-arrow">
-          <a
-            class="nav-link dropdown-toggle"
-            href="#"
-            id="userDropdown"
-            role="button"
-            data-toggle="dropdown"
-            aria-haspopup="true"
-            aria-expanded="false"
-          >
-            <i class="fas fa-user-circle fa-fw"></i>
-          </a>
-          <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
-            <div class="dropdown-divider"></div>
-            <router-link tag="a" class="dropdown-item" :to="{ name: 'signOut' }">
-              <span>サインアウト</span>
-            </router-link>
-            <div class="dropdown-divider"></div>
+        <div class="container text-center">
+          <div v-if="isLogIn" class="row">
+            <p class="text-white h5">ログイン中のユーザー名：</p>
+            <p v-html="userName" class="mr-3 text-white h5"></p>
+            <a class="btn-light btn-sm" href="/public/pages/log-out.html" role="button">ログアウト</a>
           </div>
-        </li>
+        </div>
       </ul>
     </nav>
   </div>
 </template>
+<script>
+import * as UserUtil from "@/utils/UserUtil";
+export default {
+  data() {
+    return {
+      isLogIn: false,
+      userName: "",
+    };
+  },
+  async mounted() {
+    const query = this.$route.query;
+    this.isLogIn = UserUtil.isLogIn();
+    this.userName = query.userName ? query.userName : UserUtil.currentUserInfo().userName;
+  },
+};
+</script>
