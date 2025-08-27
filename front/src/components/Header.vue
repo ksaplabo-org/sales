@@ -28,8 +28,8 @@ export default {
     };
   },
   async mounted() {
-    const query = this.$route.query;
     this.isLogIn = UserUtil.isLogIn();
+    const query = this.$route.query;
     this.userName = query.userName ? query.userName : UserUtil.currentUserInfo().userName;
   },
 };
