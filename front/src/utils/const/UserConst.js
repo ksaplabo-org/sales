@@ -10,7 +10,8 @@ export default {
   },
   // 権限
   Auth: {
-    general: "1",
-    admin: "2",
+    general: "0",
+    admin: "1",
+    post: "2",
   },
 };
