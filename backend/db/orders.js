@@ -18,17 +18,17 @@ module.exports.getOrdersModel = (db) => {
       order_date: {
         field: "order_date",
         type: sequelize.DATEONLY,
-        allowNull: false,
+        allowNull: true,
       },
       ship_date: {
         field: "ship_date",
         type: sequelize.DATEONLY,
-        allowNull: false,
+        allowNull: true,
       },
       deliver_date: {
         field: "deliver_date",
         type: sequelize.DATEONLY,
-        allowNull: false,
+        allowNull: true,
       },
       product_code: {
         field: "product_code",
@@ -64,7 +64,7 @@ module.exports.getOrdersModel = (db) => {
     {
       createdAt: false, //デフォルト項目を生成しないように
       updatedAt: false, //デフォルト項目を生成しないように
-      tableName: "users", //明示的にテーブル名を指定
+      tableName: "orders", //明示的にテーブル名を指定
     }
   );
 

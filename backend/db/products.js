@@ -44,7 +44,7 @@ module.exports.getProductsModel = (db) => {
     {
       createdAt: false, //デフォルト項目を生成しないように
       updatedAt: false, //デフォルト項目を生成しないように
-      tableName: "users", //明示的にテーブル名を指定
+      tableName: "products", //明示的にテーブル名を指定
     }
   );
 };

@@ -18,22 +18,22 @@ module.exports.getClientsModel = (db) => {
       post_code: {
         field: "post_code",
         type: sequelize.CHAR(8),
-        allowNull: false,
+        allowNull: true,
       },
       address1: {
         field: "address1",
         type: sequelize.CHAR(20),
-        allowNull: false,
+        allowNull: true,
       },
       address2: {
         field: "address2",
         type: sequelize.CHAR(20),
-        allowNull: false,
+        allowNull: true,
       },
       tel_no: {
-        field: "address2",
+        field: "tel_no",
         type: sequelize.CHAR(20),
-        allowNull: false,
+        allowNull: true,
       },
       update_id: {
         field: "update_id",
@@ -59,7 +59,7 @@ module.exports.getClientsModel = (db) => {
     {
       createdAt: false, //デフォルト項目を生成しないように
       updatedAt: false, //デフォルト項目を生成しないように
-      tableName: "users", //明示的にテーブル名を指定
+      tableName: "clients", //明示的にテーブル名を指定
     }
   );
 };
