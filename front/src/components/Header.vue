@@ -2,6 +2,7 @@
   <div>
     <nav class="navbar navbar-expand navbar-dark bg-dark static-top">
       <a href="/public/pages/menu.html" style="text-decoration: none; color: white"><h1>販売管理システム</h1></a>
+      <a href="/public/pages/menu.html" style="text-decoration: none; color: white"><h1>販売管理システム</h1></a>
 
       <!-- Navbar Search(なし) -->
       <form class="d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0"></form>
@@ -12,7 +13,13 @@
             <p class="text-white h5">ログイン中のユーザー名：</p>
             <p v-html="userName" class="mr-3 text-white h5"></p>
             <button class="btn-light btn-sm" v-on:click="logOut()">ログアウト</button>
+        <div class="container text-center">
+          <div v-if="isLogIn" class="row">
+            <p class="text-white h5">ログイン中のユーザー名：</p>
+            <p v-html="userName" class="mr-3 text-white h5"></p>
+            <button class="btn-light btn-sm" v-on:click="logOut()">ログアウト</button>
           </div>
+        </div>
         </div>
       </ul>
     </nav>
@@ -30,7 +37,7 @@ export default {
   async mounted() {
     this.isLogIn = UserUtil.isLogIn();
     const query = this.$route.query;
-    this.userName =  UserUtil.currentUserInfo().userName;
+    this.userName = query.userName ? query.userName : UserUtil.currentUserInfo().userName;
   },
   methods: {
     /*
