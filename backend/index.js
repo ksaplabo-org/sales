@@ -44,3 +44,20 @@ app.post("/api/sign-in", async function (req, res) {
   }
   res.status(status).send(resBody);
 });
+
+
+/**
+ * 顧客情報修正API
+ */
+app.put("api/clients",async function(req,res){
+  const reqBody = req.body;
+  try{
+    await clientsLogic.edit(db,reqBody.clientNo,reqBody.name,reqBody.postCode,reqBody.address1,reqBody.address2,reqBody.telNo);
+    //正常レスポンス
+    res.send(); 
+  }catch(e){
+    //異常レスポンス
+    console.log("failed to edit client",e);
+    res.status(500).send("server error occur");
+  }
+});

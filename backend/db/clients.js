@@ -18,22 +18,22 @@ module.exports.getClientsModel = (db) => {
       post_code: {
         field: "post_code",
         type: sequelize.CHAR(8),
-        allowNull: true,
+        allowNull: false,
       },
       address1: {
         field: "address1",
         type: sequelize.CHAR(20),
-        allowNull: true,
+        allowNull: false,
       },
       address2: {
         field: "address2",
         type: sequelize.CHAR(20),
-        allowNull: true,
+        allowNull: false,
       },
       tel_no: {
-        field: "tel_no",
+        field: "address2",
         type: sequelize.CHAR(20),
-        allowNull: true,
+        allowNull: false,
       },
       update_id: {
         field: "update_id",
