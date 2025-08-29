@@ -25,11 +25,11 @@ export async function signIn(userId, password) {
 }
 
 /**
- * サインアウト
+ * ログアウト
  */
-export function signOut() {
-  // SessionStorageから、サインインユーザー情報を削除する
-  sessionStorage.removeItem(SIGN_IN_KEY);
+export function deleteCurrentUserInfo() {
+  // SessionStorageから、ログインユーザー情報を削除する
+  sessionStorage.removeItem(LOGIN_KEY);
 }
 
 /**
