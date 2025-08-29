@@ -234,12 +234,11 @@ export default {
           postCode: this.postCode,
           address1: this.address1,
           address2: this.address2,
-          telNo: this.telno,
+          telNo: this.telNo,
         };
 
         await AjaxUtil.putClients(model);
         this.msg = "ユーザー更新に成功しました";
-        document.getElementById("reInputPassword").disabled = true;
         isPassChange = false;
       } catch (e) {
         this.msg = "";

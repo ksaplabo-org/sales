@@ -19,4 +19,21 @@ const UserRepository = require("../db/clients");
  */
 module.exports.edit = async function (db,clientNo,name,postCode,address1,address2,telNo,updateId,updateDate) {
     const clientsModel = clientsRepository.getclientsModel(db);
-}
+    
+    try{
+        await clientsModel.edit(
+            {
+                clientNo:clientNo,
+                name:name,
+                postCode:postCode,
+                address1:address1,
+                address2:address2,
+                telNo:telNo,
+                updateId:updateId,
+                updateDate:updateDate,
+            }
+        );
+    } catch{
+        
+    }
+};
