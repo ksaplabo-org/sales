@@ -7,6 +7,14 @@ import UserConst from "./const/UserConst";
 const LOGIN_KEY = "logInUser";
 
 /**
+ * ログアウト
+ */
+export function deleteCurrentUserInfo() {
+  // SessionStorageから、ログインユーザー情報を削除する
+  sessionStorage.removeItem(LOGIN_KEY);
+}
+
+/**
  * ユーザー情報取得
  *
  * @returns ログインユーザー情報
