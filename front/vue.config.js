@@ -18,23 +18,11 @@ module.exports = {
       filename: "pages/log-in.html",
       title: "ログイン",
     },
-    logOut: {
-      entry: "src/main.js",
-      template: "public/pages/index.html",
-      filename: "pages/log-out.html",
-      title: "ログアウト",
-    },
     menu: {
       entry: "src/main.js",
       template: "public/pages/index.html",
       filename: "pages/menu.html",
       title: "メニュー",
-    },
-    header: {
-      entry: "src/main.js",
-      template: "public/pages/index.html",
-      filename: "pages/header.html",
-      title: "ヘッダー",
     },
     clientsList: {
       entry: "src/main.js",

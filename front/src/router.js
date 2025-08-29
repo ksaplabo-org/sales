@@ -2,7 +2,6 @@ import Vue from "vue";
 import Router from "vue-router";
 
 import LogIn from "./views/LogIn.vue";
-import LogOut from "./views/LogOut.vue";
 import Menu from "./views/Menu.vue";
 import ClientsList from "./views/Clients/ClientsList.vue";
 import ClientsCreate from "./views/Clients/ClientsCreate.vue";
@@ -33,11 +32,6 @@ export default new Router({
       name: "logIn",
       props: true,
       component: LogIn,
-    },
-    {
-      path: "/pages/log-out.html",
-      name: "signOut",
-      component: LogOut,
     },
     {
       path: "/pages/menu.html",
