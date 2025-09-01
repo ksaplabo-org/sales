@@ -31,7 +31,7 @@ module.exports.getClientsModel = (db) => {
         allowNull: false,
       },
       tel_no: {
-        field: "address2",
+        field: "tel_no",
         type: sequelize.CHAR(20),
         allowNull: false,
       },

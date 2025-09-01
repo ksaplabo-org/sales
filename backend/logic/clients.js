@@ -1,11 +1,11 @@
 const sequelize = require("sequelize");
 const Op = sequelize.Op;
 
-const UserRepository = require("../db/clients");
+const ClientsRepository = require("../db/clients");
 
 /**
  * 顧客情報を編集
- * 
+ *
  * @param {*} db
  * @param {*} clientNo
  * @param {*} name
@@ -17,23 +17,48 @@ const UserRepository = require("../db/clients");
  * @param {*} updateDate
  * @returns {promise<void}
  */
-module.exports.edit = async function (db,clientNo,name,postCode,address1,address2,telNo,updateId,updateDate) {
-    const clientsModel = clientsRepository.getclientsModel(db);
-    
-    try{
-        await clientsModel.edit(
-            {
-                clientNo:clientNo,
-                name:name,
-                postCode:postCode,
-                address1:address1,
-                address2:address2,
-                telNo:telNo,
-                updateId:updateId,
-                updateDate:updateDate,
-            }
-        );
-    } catch{
-        
-    }
+module.exports.edit = async function (db, clientNo, name, postCode, address1, address2, telNo, updateId) {
+  const clientsModel = ClientsRepository.getClientsModel(db);
+
+  try {
+    await clientsModel.update(
+      {
+        name: name,
+        post_code: postCode,
+        address1: address1,
+        address2: address2,
+        tel_no: telNo,
+        update_id: updateId,
+        update_date: sequelize.fn("now"),
+      },
+      {
+        where: {
+          client_no: clientNo,
+        },
+      }
+    );
+  } catch (e) {
+    throw e;
+  }
+};
+
+/**
+ * 顧客情報を取得
+ *
+ * [検索条件]
+ * ユーザーIDの完全一致
+ *
+ * @param {*} db
+ * @param {*} clientNo
+ * @returns {Promise<Object>}
+ */
+module.exports.findByClientNo = async function (db, clientNo) {
+  //顧客情報の定義を取得
+  const clientsModel = ClientsRepository.getClientsModel(db);
+
+  try {
+    return await clientsModel.findByPk(clientNo);
+  } catch (e) {
+    throw e;
+  }
 };

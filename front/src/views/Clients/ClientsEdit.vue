@@ -16,16 +16,16 @@
             <div class="col-5 mx-auto center-block">
               <div class="" />
 
-              <div class="form-group">
+              <div class="form-group d-flex flex-row">
                 <label class="col">顧客番号</label>
-                <p class="col"></p>
+                <p v-show="clientNo" class="col-5 h5 pl-0">{{ clientNo }}</p>
               </div>
               <!-- 顧客名 -->
               <div class="form-group d-flex flex-row">
                 <label class="col">顧客名</label>
                 <input
                   type="text"
-                  id="clientsName"
+                  id="clientName"
                   class="form-control col-5"
                   placeholder="20字以内で入力してください"
                   v-model="name"
@@ -34,30 +34,33 @@
                   minlength="1"
                 />
               </div>
+              <div class="text-danger col text-right pr-0 mb-3" v-show="clientNameMsg">{{ clientNameMsg }}</div>
               <!-- 郵便番号 -->
               <div class="form-group d-flex flex-row">
                 <label class="col">郵便番号</label>
                 <input
                   type="tel"
                   id="postCode1"
-                  class="form-control mr-2 col-1"
+                  class="form-control mr-2 col-2"
                   placeholder="000"
                   v-model="postCode1"
                   autocomplete
                   maxlength="3"
+                  inputmode="numeric"
                 />
                 <label class="pt-2">ー</label>
                 <input
                   type="tel"
                   id="postCode2"
-                  class="form-control w-auto ml-2 col-1"
+                  class="form-control ml-2 col-2"
                   placeholder="0000"
                   v-model="postCode2"
                   autocomplete
                   maxlength="4"
+                  inputmode="numeric"
                 />
               </div>
-
+              <div class="text-danger col text-right pr-0 mb-3" v-show="postCodeMsg">{{ postCodeMsg }}</div>
               <!-- 住所１ -->
               <div class="form-group d-flex flex-row">
                 <label class="col">住所１</label>
@@ -71,6 +74,7 @@
                   maxlength="20"
                 />
               </div>
+              <div class="text-danger col text-right pr-0 mb-3" v-show="address1Msg">{{ address1Msg }}</div>
 
               <!-- 住所２ -->
               <div class="form-group d-flex flex-row">
@@ -85,6 +89,7 @@
                   maxlength="20"
                 />
               </div>
+              <div class="text-danger col text-right pr-0 mb-3" v-show="address2Msg">{{ address2Msg }}</div>
 
               <!-- 電話番号 -->
               <div class="form-group d-flex flex-row">
@@ -99,16 +104,15 @@
                   maxlength="20"
                 />
               </div>
+              <div class="text-danger col text-right pr-0 mb-3" v-show="telNoMsg">{{ telNoMsg }}</div>
             </div>
-            <!-- 更新・削除ボタン -->
+            <!-- 修正・削除ボタン -->
             <div class="form-group d-flex justify-content-center">
               <div class="p-2 w-25">
                 <input class="btn btn-primary btn-block" type="submit" value="修正" />
               </div>
               <div class="p-2 w-25">
-                <b-button class="btn-secondary btn-block" data-toggle="modal" data-target="#deleteConfirmModal"
-                  >取消</b-button
-                >
+                <b-button class="btn-secondary btn-block" onclick="window.confirm('入力内容を取り消しますか？')">取消</b-button>
               </div>
             </div>
           </form>
@@ -143,24 +147,40 @@ export default {
       errMsg: "",
       isLoading: false,
       //各項目初期値
-      name:"",
-      postCode:"",
-      postCode1:"",
-      postCode2:"",
-      address1:"",
-      address2:"",
-      telNo:"",
-      updateId:"",
-      updateDate:"",
+      clientNo: "",
+      name: "",
+      postCode: "",
+      postCode1: "",
+      postCode2: "",
+      address1: "",
+      address2: "",
+      telNo: "",
+      updateId: "",
+      updateDate: "",
+      clientNameMsg: "",
+      postCodeMsg: "",
+      address1Msg: "",
+      address2Msg: "",
+      telNoMsg: "",
+      id: "",
+      isErr: false,
     };
   },
-  async moutnted() {
+  async mounted() {
     try {
       //ログイン確認
-
-      //画面更新
-      await this.updateView();
-    } catch (e) {}
+      //if (UserUtil.isSignIn()) {
+        //画面更新
+        await this.updateView();
+        // メッセージ設定
+        this.msg = this.flashMsg;
+        this.errMsg = this.flashErrMsg;
+     // } else {
+       // this.$router.push({ name: "signIn", params: { flashMsg: "サインインしてください" } });
+    //  }
+    } catch (e) {
+      this.errMsg = e.message;
+    }
   },
   methods: {
     /**
@@ -169,20 +189,30 @@ export default {
     updateView: async function () {
       this.isLoading = true;
 
+      //クエリストリングを取得
+      const query = this.$route.query;
+      //編集対象の顧客番号を設定する
+      this.clientNo = query.clientNo;
+      //ログイン中のユーザーを取得
+      //this.id = UserUtil.currentUserInfo().id;
+      this.id=1
+      
       try {
         // 顧客番号から顧客情報を取得
-        const response = await AjaxUtil.getUserById(this.clientNo);
-        const userInfo = JSON.parse(response.data.Items);
+        const response = await AjaxUtil.getClientsByClientNo(this.clientNo);
+        const clientData = JSON.parse(response.data.Items);
 
-        // ユーザー情報を各項目にセット
-        this.name = userInfo.user_name;
-        this.password = userInfo.password;
-        this.gender = userInfo.gender;
-        this.auth = userInfo.auth;
-        this.address = userInfo.address;
+        // 顧客情報を各項目にセット
+        this.clientNo = clientData.client_no.toString().padStart(8,'0');
+        this.name = clientData.name;
+        this.postCode1 = clientData.post_code.substr(0,3);
+        this.postCode2=clientData.post_code.substr(4);
+        this.address1 = clientData.address1;
+        this.address2 = clientData.address2;
+        this.telNo = clientData.tel_no;
       } catch (e) {
         this.msg = "";
-        this.errMsg = "ユーザー取得に失敗しました";
+        this.errMsg = "顧客情報取得に失敗しました";
         console.log(e);
       }
       this.isLoading = false;
@@ -191,43 +221,59 @@ export default {
     /**
      * ユーザー更新
      */
-    userUpdate: async function () {
+    clientsEdit: async function () {
       // メッセージ初期化
       this.msg = "";
       this.errMsg = "";
-
+      this.clientNameMsg = "";
+      this.postCodeMsg = "";
+      this.address1Msg = "";
+      this.address2Msg = "";
+      this.telNoMsg = "";
+      this.id;
       this.isLoading = true;
+      this.isErr = false;
 
       try {
         // 入力チェック
         if (this.name == null || this.name === "") {
-          this.errMsg = "顧客名が未入力です。";
+          this.clientNameMsg = "顧客名が未入力です。";
+          this.isErr = true;
         }
         if (this.name.length > 20) {
-          this.errMsg = "顧客名は20字以内で入力してください。";
+          this.clientNameMsg = "顧客名は20字以内で入力してください。";
+          this.isErr = true;
         }
-        if (this.postCode1.length != 3 || this.postCode2 !=4) {
-          this.errMsg = "正しい郵便番号を入力してください。";
+        if ((this.postCode1 || this.postCode2) && (this.postCode1.length != 3 || this.postCode2.length != 4)) {
+          this.postCodeMsg = "正しい郵便番号を入力してください。";
+          this.isErr = true;
         }
         if (this.address1.length > 20) {
-          this.errMsg = "住所１は20字以内で入力してください。";
+          this.address1Msg = "住所１は20字以内で入力してください。";
+          this.isErr = true;
         }
         if (this.address2.length > 20) {
-          this.errMsg = "住所２は20字以内で入力してください。";
+          this.address2Msg = "住所２は20字以内で入力してください。";
+          this.isErr = true;
         }
         if (this.telNo.length > 20) {
-          this.errMsg = "電話番号は20字以内で入力してください。";
+          this.telNoMsg = "電話番号は20字以内で入力してください。";
+          this.isErr = true;
         }
-        if (!this.postCode1.match("^[0-9]*$")||!this.postCode2.match("^[0-9]*$")) {
-          this.errMsg = "郵便番号は半角数字で入力してください。";
+        if (!this.postCode1.match("^[0-9]*$") || !this.postCode2.match("^[0-9]*$")) {
+          this.postCodeMsg = "郵便番号は半角数字で入力してください。";
+          this.isErr = true;
         }
-        if (!this.telNo.match("^[0-9][0-9-]*$")) {
-          this.errMsg = "電話番号は半角数字と-(半角ハイフン)のみで入力してください。";
+        if (this.telNo && !this.telNo.match("^[0-9][0-9-]*$")) {
+          this.telNoMsg = "電話番号は半角数字と-(半角ハイフン)のみで入力してください。";
+          this.isErr = true;
+        }
+        if (this.isErr) {
           return;
         }
-       
-
+        this.postCode = this.postCode1 + "-" + this.postCode2;
         // 引数格納
+
         const model = {
           clientNo: this.clientNo,
           name: this.name,
@@ -235,11 +281,13 @@ export default {
           address1: this.address1,
           address2: this.address2,
           telNo: this.telNo,
+          updateId:this.id,
         };
 
+        console.log(model);
         await AjaxUtil.putClients(model);
-        this.msg = "ユーザー更新に成功しました";
-        isPassChange = false;
+        window.alert("顧客情報修正処理に成功しました");
+        window.location.href='/public/pages/clients/list.html'
       } catch (e) {
         this.msg = "";
         this.errMsg = "ユーザー更新に失敗しました";

@@ -1,5 +1,6 @@
 // Business Logic define
 const UserLogic = require("./logic/user");
+const ClientsLogic = require("./logic/clients");
 
 // DB Connection define
 const DbUtil = require("./db/utility");
@@ -45,19 +46,45 @@ app.post("/api/sign-in", async function (req, res) {
   res.status(status).send(resBody);
 });
 
-
 /**
  * 顧客情報修正API
  */
-app.put("api/clients",async function(req,res){
+app.put("/api/clients", async function (req, res) {
   const reqBody = req.body;
-  try{
-    await clientsLogic.edit(db,reqBody.clientNo,reqBody.name,reqBody.postCode,reqBody.address1,reqBody.address2,reqBody.telNo);
+  try {
+    await ClientsLogic.edit(
+      db,
+      reqBody.clientNo,
+      reqBody.name,
+      reqBody.postCode,
+      reqBody.address1,
+      reqBody.address2,
+      reqBody.telNo,
+      reqBody.updateId
+    );
     //正常レスポンス
-    res.send(); 
-  }catch(e){
+    res.send();
+  } catch (e) {
     //異常レスポンス
-    console.log("failed to edit client",e);
+    console.log("failed to edit client", e);
+    res.status(500).send("server error occur");
+  }
+});
+
+/**
+ * 顧客情報取得API
+ */
+app.get("/api/clients/:clientNo", async function (req, res) {
+  try {
+    const clients = await ClientsLogic.findByClientNo(db, req.params.clientNo);
+
+    //正常レスポンス
+    res.send({
+      Items: JSON.stringify(clients),
+    });
+  } catch (e) {
+    //異常レスポンス
+    console.log("failed to get client.", e);
     res.status(500).send("server error occur");
   }
 });
