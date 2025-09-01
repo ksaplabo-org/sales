@@ -37,7 +37,7 @@ app.post("/api/log-in", async function (req, res) {
     } else {
       // 認証成功としてレスポンスボディを設定
       resBody = {
-        userId: user.user_id,
+        id: user.id,
         userName: user.user_name,
         userRole: user.user_role,
       };
