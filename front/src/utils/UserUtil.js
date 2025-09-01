@@ -35,17 +35,3 @@ export function isLogIn() {
   return currentUserInfo() !== null;
 }
 
-/**
- * 権限判定
- * @returns 権限 (0:一般 1:管理者 2:役職 )
- */
-export function roleCheck() {
-  const userInfo = currentUserInfo();
-  if (userInfo !== null && userInfo.userRole == UserConst.Role.general) {
-    return UserConst.Role.general;
-  } else if (userInfo !== null && userInfo.userRole == UserConst.Role.admin) {
-    return UserConst.Role.admin;
-  } else if (userInfo !== null) {
-    return UserConst.Role.post;
-  }
-}
