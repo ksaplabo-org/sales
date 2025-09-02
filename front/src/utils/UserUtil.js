@@ -6,9 +6,6 @@ import UserConst from "./const/UserConst";
  */
 const LOGIN_KEY = "logInUser";
 
-
-
-
 /**
  * ユーザー情報取得
  *
