@@ -1,5 +1,6 @@
 // Business Logic define
 const UsersLogic = require("./logic/users");
+const UsersLogic = require("./logic/users");
 
 // DB Connection define
 const DbUtil = require("./db/utility");
@@ -17,7 +18,9 @@ app.listen(process.env.PORT || 3000);
 
 /**
  * ログインAPI
+ * ログインAPI
  */
+app.post("/api/log-in", async function (req, res) {
 app.post("/api/log-in", async function (req, res) {
   // リクエストボディ取得
   const reqBody = req.body;
@@ -26,13 +29,9 @@ app.post("/api/log-in", async function (req, res) {
   let status = 200;
 
   try {
-    const user = await UsersLogic.findByUserId(db, reqBody.userId);
-
-    if (user == null) {
-      // 認証失敗として401エラーを設定(ユーザーが存在しない)
-      status = 401;
-    } else if (user.user_pass != reqBody.userPass) {
-      // 認証失敗として401エラーを設定(パスワードが不一致)
+    const user = await UsersLogic.findById(db, reqBody.userId);
+    if (user == null || user.password !== reqBody.password) {
+      // 認証失敗として401エラーを設定
       status = 401;
     } else {
       // 認証成功としてレスポンスボディを設定
@@ -51,17 +50,44 @@ app.post("/api/log-in", async function (req, res) {
 });
 
 /**
- * 顧客情報全件取得API
+ * 顧客情報修正API
  */
-app.get("/api/clients", async function (req, res) {
+app.put("/api/clients", async function (req, res) {
+  const reqBody = req.body;
   try {
-    const clients = await ClientsLogic.getAll(db);
+    await ClientsLogic.edit(
+      db,
+      reqBody.clientNo,
+      reqBody.name,
+      reqBody.postCode,
+      reqBody.address1,
+      reqBody.address2,
+      reqBody.telNo,
+      reqBody.updateId
+    );
+    //正常レスポンス
+    res.send();
+  } catch (e) {
+    //異常レスポンス
+    console.log("failed to edit client", e);
+    res.status(500).send("server error occur");
+  }
+});
+
+/**
+ * 顧客情報取得API
+ */
+app.get("/api/clients/:clientNo", async function (req, res) {
+  try {
+    const clients = await ClientsLogic.findByClientNo(db, req.params.clientNo);
+
+    //正常レスポンス
     res.send({
       Items: JSON.stringify(clients),
     });
   } catch (e) {
-    // 異常レスポンス
-    console.log("failed to verify user.", e);
-    res.status(500).send("顧客情報取得処理に失敗しました");
+    //異常レスポンス
+    console.log("failed to get client.", e);
+    res.status(500).send("server error occur");
   }
 });
