@@ -9,3 +9,8 @@ export async function signIn(userId, password) {
     password: password,
   });
 }
+
+export async function getClients() {
+  const url = "/api/clients";
+  return await axios.post(url);
+}
