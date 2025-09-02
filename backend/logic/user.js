@@ -1,4 +1,4 @@
-const UserRepository = require("../db/user");
+const UserRepository = require("../db/users");
 
 /**
  * ユーザー情報を取得
@@ -12,7 +12,7 @@ const UserRepository = require("../db/user");
  */
 module.exports.findById = async function (db, userId) {
   // ユーザー情報の定義を取得
-  const userModel = UserRepository.getUserModel(db);
+  const userModel = UserRepository.getUsersModel(db);
 
   try {
     return await userModel.findByPk(userId);
