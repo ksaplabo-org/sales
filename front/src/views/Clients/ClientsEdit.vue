@@ -106,16 +106,13 @@
               </div>
               <div class="text-danger col text-right pr-0 mb-3" v-show="telNoMsg">{{ telNoMsg }}</div>
             </div>
-            <!-- 修正・削除ボタン -->
-            <div class="form-group d-flex justify-content-center">
-              <div class="p-2 w-25">
-                <input class="btn btn-primary btn-block" type="submit" value="修正" />
+            <!-- 修正・キャンセルボタン -->
+            <div class="form-group d-flex justify-content-center col">
+              <div class="col-2">
+                <input class="btn btn-primary btn-lg btn-block" type="submit" value="修正" />
               </div>
-              <div class="p-2 w-25">
-                <b-button class="btn-secondary btn-block" onclick="window.confirm('入力内容を取り消しますか？')"
-                  >取消</b-button
-                >
-              </div>
+
+              <CancelButton />
             </div>
           </form>
         </div>
@@ -140,9 +137,10 @@ import UserConst from "@/utils/const/UserConst";
 import Header from "../../components/Header.vue";
 import "../../utils/sb-admin";
 import Loading from "../../components/Loading.vue";
+import CancelButton from "../../components/CancelButton.vue";
 export default {
   props: ["flashMsg", "flashErrMsg"],
-  components: { Header, Loading },
+  components: { Header, Loading, CancelButton },
   data() {
     return {
       errMsg: "",
