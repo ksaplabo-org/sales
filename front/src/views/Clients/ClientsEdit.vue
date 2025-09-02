@@ -7,7 +7,7 @@
         <div class="container-fluid">
           <h1>顧客情報修正</h1>
           <a class="btn-dark btn-lg" href="/public/pages/clients/list.html" role="button">顧客情報一覧へ</a>
-          <br>
+          <br />
           <p class="text-danger" v-show="errMsg">{{ errMsg }}</p>
 
           <br />
@@ -41,14 +41,14 @@
                 <input
                   type="tel"
                   id="postCode1"
-                  class="form-control  col-3"
+                  class="form-control col-3"
                   placeholder="000"
                   v-model="postCode1"
                   autocomplete
                   maxlength="3"
                   inputmode="numeric"
                 />
-                <label class="pt-2 col-1 text-center" >ー</label>
+                <label class="pt-2 col-1 text-center">ー</label>
                 <input
                   type="tel"
                   id="postCode2"
@@ -112,7 +112,9 @@
                 <input class="btn btn-primary btn-block" type="submit" value="修正" />
               </div>
               <div class="p-2 w-25">
-                <b-button class="btn-secondary btn-block" onclick="window.confirm('入力内容を取り消しますか？')">取消</b-button>
+                <b-button class="btn-secondary btn-block" onclick="window.confirm('入力内容を取り消しますか？')"
+                  >取消</b-button
+                >
               </div>
             </div>
           </form>
@@ -168,15 +170,15 @@ export default {
   async mounted() {
     try {
       //ログイン確認
-      //if (UserUtil.isSignIn()) {
+      if (UserUtil.isLogIn()) {
         //画面更新
         await this.updateView();
         // メッセージ設定
         this.msg = this.flashMsg;
         this.errMsg = this.flashErrMsg;
-     // } else {
-       // this.$router.push({ name: "signIn", params: { flashMsg: "サインインしてください" } });
-    //  }
+      } else {
+        this.$router.push({ name: "logIn", params: { flashMsg: "ログインしてください。" } });
+      }
     } catch (e) {
       this.errMsg = e.message;
     }
@@ -193,19 +195,18 @@ export default {
       //編集対象の顧客番号を設定する
       this.clientNo = query.clientNo;
       //ログイン中のユーザーを取得
-      //this.id = UserUtil.currentUserInfo().id;
-      this.id=1
-      
+      this.id = UserUtil.currentUserInfo().id;
+
       try {
         // 顧客番号から顧客情報を取得
         const response = await AjaxUtil.getClientsByClientNo(this.clientNo);
         const clientData = JSON.parse(response.data.Items);
 
         // 顧客情報を各項目にセット
-        this.clientNo = clientData.client_no.toString().padStart(8,'0');
+        this.clientNo = clientData.client_no.toString().padStart(8, "0");
         this.name = clientData.name;
-        this.postCode1 = clientData.post_code.substr(0,3);
-        this.postCode2=clientData.post_code.substr(4);
+        this.postCode1 = clientData.post_code.substr(0, 3);
+        this.postCode2 = clientData.post_code.substr(4);
         this.address1 = clientData.address1;
         this.address2 = clientData.address2;
         this.telNo = clientData.tel_no;
@@ -278,13 +279,13 @@ export default {
           address1: this.address1,
           address2: this.address2,
           telNo: this.telNo,
-          updateId:this.id,
+          updateId: this.id,
         };
 
         console.log(model);
         await AjaxUtil.putClients(model);
         window.alert("顧客情報修正処理が完了しました。");
-        window.location.href='/public/pages/clients/list.html'
+        window.location.href = "/public/pages/clients/list.html";
       } catch (e) {
         window.alert("顧客情報修正処理に失敗しました。");
         console.log(e);
