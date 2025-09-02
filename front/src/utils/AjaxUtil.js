@@ -12,5 +12,5 @@ export async function logIn(userId, userPass) {
 
 export async function getClients() {
   const url = "/api/clients";
-  return await axios.post(url);
+  return await axios.get(url);
 }
