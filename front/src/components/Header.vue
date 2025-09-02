@@ -11,7 +11,7 @@
           <div v-if="isLogIn" class="row">
             <p class="text-white h5">ログイン中のユーザー名：</p>
             <p v-html="userName" class="mr-3 text-white h5"></p>
-            <a class="btn-light btn-sm" href="/public/pages/log-out.html" role="button">ログアウト</a>
+            <button class="btn-light btn-sm" v-on:click="logOut()">ログアウト</button>
           </div>
         </div>
       </ul>
@@ -29,8 +29,22 @@ export default {
   },
   async mounted() {
     this.isLogIn = UserUtil.isLogIn();
-
-    this.userName = UserUtil.currentUserInfo().userName;
+    const query = this.$route.query;
+    this.userName =  UserUtil.currentUserInfo().userName;
+  },
+  methods: {
+    /*
+     *ログアウト処理
+     */
+    logOut: async function () {
+      try {
+        await UserUtil.deleteCurrentUserInfo();
+        this.$router.push({ name: "logIn", params: { flashMsg: "ログアウトしました" } });
+      } catch (e) {
+        this.msg = e.message;
+        this.$router.push({ name: "logIn", params: { flashErrMsg: "ログアウト中にエラーが発生しました" } });
+      }
+    },
   },
 };
 </script>
