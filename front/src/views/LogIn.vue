@@ -35,7 +35,7 @@
                   autocomplete="off"
                   pattern="^[0-9A-Za-z]+$"
                 />
-                <label for="inputPassword">パスワード</label>
+                <label for="inputUserPass">パスワード</label>
               </div>
             </div>
 
@@ -52,7 +52,12 @@
             </div>
 
             <!-- ログインボタン -->
-            <input class="btn btn-primary btn-block" type="submit" value="ログイン" />
+            <input
+              class="btn btn-primary btn-block"
+              type="submit"
+              value="ログイン"
+              :disabled="userId == '' || userPass == ''"
+            />
           </form>
 
           <div class="text-center"></div>
@@ -66,9 +71,7 @@
 </template>
 
 <script>
-import * as UserUtil from "@/utils/UserUtil";
 import Loading from "../components/Loading.vue";
-import { logIn } from "../utils/UserUtil";
 import * as AjaxUtil from "@/utils/AjaxUtil";
 import Header from "../components/Header.vue";
 
@@ -104,7 +107,7 @@ export default {
         if (e.response.status === 401) {
           this.errMsg = "ユーザーIDまたはパスワードが誤っています。";
         } else {
-          this.errMsg = "ユーザー情報検索処理に失敗しました。";
+          this.errMsg = "ログインに失敗しました。";
         }
       } finally {
         this.isLoading = false;
