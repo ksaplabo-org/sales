@@ -154,7 +154,7 @@
             <div class="col-2">
               <button
                 type="button"
-                class="btn btn-dark btn-lg btn-block"
+                class="btn btn-primary btn-lg btn-block"
                 v-on:click="clientsCreate()"
                 style="padding: auto"
               >

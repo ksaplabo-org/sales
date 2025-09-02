@@ -51,9 +51,9 @@
 
           <!-- テーブル下部Start -->
           <div class="row mb-3">
-            <!-- ページ数表示 -->
+            <!-- 件数表示 -->
             <div class="col-md-4">
-              <p>1 ～ {{ Math.round(rows / perPage) }} ページ</p>
+              <p>計{{rows}}件</p>
             </div>
 
             <!-- ページング機能 -->
@@ -146,7 +146,7 @@ export default {
       if (!UserUtil.isLogIn()) {
         this.$router.push({ name: "logIn", params: { flashMsg: "ログインしてください" } });
 
-      //権限チェック(管理者以外拒否)
+        //権限チェック(管理者以外拒否)
       } else if (UserUtil.currentUserInfo().userRole != UserConst.UserRole.admin) {
         this.$router.push({ name: "logIn", params: { flashMsg: "権限がありません" } });
       }
