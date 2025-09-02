@@ -1,13 +1,13 @@
 <template>
   <div>
-    <>
+    <Header />
 
     <div id="wrapper">
-      <div id="content-wrapper" class="bg-light">
+      <div id="content-wrapper" class="bg-light vh-100">
         <div class="container-fluid">
           <h1>顧客情報修正</h1>
           <a class="btn-dark btn-lg" href="/public/pages/clients/list.html" role="button">顧客情報一覧へ</a>
-          <p class="text-primary" v-show="msg">{{ msg }}</p>
+          <br>
           <p class="text-danger" v-show="errMsg">{{ errMsg }}</p>
 
           <br />
@@ -18,15 +18,15 @@
 
               <div class="form-group d-flex flex-row">
                 <label class="col">顧客番号</label>
-                <p v-show="clientNo" class="col-5 h5 pl-0">{{ clientNo }}</p>
+                <p v-show="clientNo" class="col-7 h5 pl-0">{{ clientNo }}</p>
               </div>
               <!-- 顧客名 -->
               <div class="form-group d-flex flex-row">
-                <label class="col">顧客名</label>
+                <label class="col">顧客名<label class="text-danger">*</label></label>
                 <input
                   type="text"
                   id="clientName"
-                  class="form-control col-5"
+                  class="form-control col-7"
                   placeholder="20字以内で入力してください"
                   v-model="name"
                   autocomplete="off"
@@ -41,18 +41,18 @@
                 <input
                   type="tel"
                   id="postCode1"
-                  class="form-control mr-2 col-2"
+                  class="form-control  col-3"
                   placeholder="000"
                   v-model="postCode1"
                   autocomplete
                   maxlength="3"
                   inputmode="numeric"
                 />
-                <label class="pt-2">ー</label>
+                <label class="pt-2 col-1 text-center" >ー</label>
                 <input
                   type="tel"
                   id="postCode2"
-                  class="form-control ml-2 col-2"
+                  class="form-control col-3"
                   placeholder="0000"
                   v-model="postCode2"
                   autocomplete
@@ -67,7 +67,7 @@
                 <input
                   type="text"
                   id="clientsName"
-                  class="form-control col-5"
+                  class="form-control col-7"
                   placeholder="20字以内で入力してください"
                   v-model="address1"
                   autocomplete="off"
@@ -82,7 +82,7 @@
                 <input
                   type="text"
                   id="clientsName"
-                  class="form-control col-5"
+                  class="form-control col-7"
                   placeholder="20字以内で入力してください"
                   v-model="address2"
                   autocomplete="off"
@@ -97,7 +97,7 @@
                 <input
                   type="tel"
                   id="telNo"
-                  class="form-control col-5"
+                  class="form-control col-7"
                   placeholder="20字以内で入力してください"
                   v-model="telNo"
                   autocomplete
@@ -143,7 +143,6 @@ export default {
   components: { Header, Loading },
   data() {
     return {
-      msg: "",
       errMsg: "",
       isLoading: false,
       //各項目初期値
@@ -211,7 +210,6 @@ export default {
         this.address2 = clientData.address2;
         this.telNo = clientData.tel_no;
       } catch (e) {
-        this.msg = "";
         this.errMsg = "顧客情報取得に失敗しました";
         console.log(e);
       }
@@ -223,7 +221,6 @@ export default {
      */
     clientsEdit: async function () {
       // メッセージ初期化
-      this.msg = "";
       this.errMsg = "";
       this.clientNameMsg = "";
       this.postCodeMsg = "";
@@ -290,8 +287,6 @@ export default {
         window.location.href='/public/pages/clients/list.html'
       } catch (e) {
         window.alert("顧客情報修正処理に失敗しました。");
-        this.msg = "";
-        this.errMsg = "ユーザー更新に失敗しました";
         console.log(e);
       } finally {
         this.isLoading = false;
