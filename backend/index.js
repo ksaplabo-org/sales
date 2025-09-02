@@ -1,5 +1,5 @@
 // Business Logic define
-const UserLogic = require("./logic/user");
+const UsersLogic = require("./logic/users");
 const ClientsLogic = require("./logic/clients");
 
 // DB Connection define
