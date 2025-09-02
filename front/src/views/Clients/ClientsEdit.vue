@@ -286,9 +286,10 @@ export default {
 
         console.log(model);
         await AjaxUtil.putClients(model);
-        window.alert("顧客情報修正処理に成功しました");
+        window.alert("顧客情報修正処理が完了しました。");
         window.location.href='/public/pages/clients/list.html'
       } catch (e) {
+        window.alert("顧客情報修正処理に失敗しました。");
         this.msg = "";
         this.errMsg = "ユーザー更新に失敗しました";
         console.log(e);
