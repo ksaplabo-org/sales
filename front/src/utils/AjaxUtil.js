@@ -6,11 +6,20 @@ export async function logIn(userId, userPass) {
 
   return await axios.post(url, {
     userId: userId,
-    userPass: userPass,
+    password: password,
   });
 }
 
-export async function getClients() {
+export async function postClients(clientsModel) {
   const url = "/api/clients";
-  return await axios.get(url);
+
+  return await axios.post(url, {
+    name: clientsModel.name,
+    postCode: clientsModel.postCode,
+    address1: clientsModel.address1,
+    address2: clientsModel.address2,
+    telNo: clientsModel.telNo,
+    updateId: UserUtil.currentUserInfo().id,
+    entryId: UserUtil.currentUserInfo().id,
+  });
 }
