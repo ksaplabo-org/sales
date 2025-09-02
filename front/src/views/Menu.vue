@@ -24,7 +24,7 @@
             </div>
           </div>
           <div class="col-3">
-            <div v-if="this.role == 2">
+            <div v-if="this.role == post">
               <div class="card shadow mb-4">
                 <div class="card-header py-3">
                   <div class="m-0 font-weight-bold text-primary text-secondary">売上一覧</div>
@@ -39,7 +39,7 @@
                 </div>
               </div>
             </div>
-            <div v-if="this.role == 1">
+            <div v-if="this.role == admin">
               <div class="card shadow mb-4">
                 <div class="card-header py-3">
                   <div class="m-0 font-weight-bold text-primary text-secondary">顧客情報</div>
@@ -54,10 +54,10 @@
             </div>
           </div>
         </div>
-        <div class="d-flex flex-row">
-          <div class="col-1"></div>
-          <div class="col-3">
-            <div v-if="this.role == 1">
+        <div v-if="this.role == admin">
+          <div class="d-flex flex-row">
+            <div class="col-1"></div>
+            <div class="col-3">
               <div class="card shadow mb-4">
                 <div class="card-header py-3">
                   <div class="m-0 font-weight-bold text-primary text-secondary">商品情報</div>
@@ -70,9 +70,7 @@
                 </div>
               </div>
             </div>
-          </div>
-          <div class="col-3">
-            <div v-if="this.role == 1">
+            <div class="col-3">
               <div class="card shadow mb-4">
                 <div class="card-header py-3">
                   <div class="m-0 font-weight-bold text-primary text-secondary">ユーザー情報</div>
@@ -101,6 +99,7 @@
 
 <script>
 import * as UserUtil from "@/utils/UserUtil";
+import UserConst from "@/utils/const/UserConst";
 
 // 共通
 import Header from "../components/Header.vue";
@@ -115,6 +114,8 @@ export default {
       errMsg: "",
       isLoading: false,
       role: "",
+      admin: UserConst.UserRole.admin,
+      post: UserConst.UserRole.post,
     };
   },
   async mounted() {
@@ -122,12 +123,12 @@ export default {
       if (UserUtil.isLogIn()) {
         this.msg = "";
         this.errMsg = "";
-        this.role = UserUtil.roleCheck();
+        this.role = UserUtil.currentUserInfo().userRole;
       } else {
-        this.$router.push({ name: "logIn", params: { flashMsg: "ログインしてください" } });
+        this.$router.push({ name: "logIn", params: { flashMsg: "ログインしてください。" } });
       }
     } catch (e) {
-      this.$router.push({ name: "logIn", params: { flashMsg: "ログインしてください" } });
+      this.$router.push({ name: "logIn", params: { flashMsg: "ログインしてください。" } });
     }
   },
   methods: {
