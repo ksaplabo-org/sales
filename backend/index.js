@@ -136,3 +136,18 @@ app.put("/api/clients", async function (req, res) {
     res.status(500).send("server error occur");
   }
 });
+
+/**
+ * 顧客情報削除API
+ */
+app.delete("/api/clients/:clientNo", async function (req, res) {
+  try {
+    await ClientsLogic.delete(db, req.params.clientNo);
+    //正常レスポンス
+    res.send();
+  } catch (e) {
+    //異常レスポンス
+    console.log("failed to edit client", e);
+    res.status(500).send("server error occur");
+  }
+});

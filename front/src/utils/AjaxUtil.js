@@ -11,6 +11,13 @@ export async function logIn(userId, userPass) {
   });
 }
 
+// 顧客情報全件取得処理
+export async function getClients() {
+  const url = "/api/clients";
+  return await axios.get(url);
+}
+
+// 顧客情報登録
 export async function postClients(clientsModel) {
   const url = "/api/clients";
 
@@ -25,12 +32,13 @@ export async function postClients(clientsModel) {
   });
 }
 
-export async function getClients() {
-  const url = "/api/clients";
+//顧客情報を顧客番号で検索
+export async function getClientsByClientNo(clientNo) {
+  const url = "/api/clients/" + clientNo;
   return await axios.get(url);
 }
 
-//顧客更新
+//顧客情報更新
 export async function putClients(clientsModel) {
   const url = "/api/clients";
   return await axios.put(url, {
@@ -44,9 +52,8 @@ export async function putClients(clientsModel) {
   });
 }
 
-
-//顧客情報を顧客番号で検索
-export async function getClientsByClientNo(clientNo) {
+//顧客情報削除
+export async function deleteClients(clientNo) {
   const url = "/api/clients/" + clientNo;
-  return await axios.get(url);
+  return await axios.delete(url);
 }

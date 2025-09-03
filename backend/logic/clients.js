@@ -10,7 +10,6 @@ const ClientsRepository = require("../db/clients");
  */
 module.exports.getAll = async function (db) {
   try {
-
     // 顧客情報の定義を取得
     const clientsModel = ClientsRepository.getClientsModel(db);
 
@@ -36,12 +35,10 @@ module.exports.getAll = async function (db) {
   }
 };
 
-
 module.exports.create = async function (db, name, postCode, address1, address2, telNo, updateId, entryId) {
   const clientsModel = ClientsRepository.getClientsModel(db);
 
   try {
-
     const clientNo = (await clientsModel.max("client_no")) + 1;
 
     return await clientsModel.create({
@@ -56,9 +53,29 @@ module.exports.create = async function (db, name, postCode, address1, address2, 
       entry_id: entryId,
       entry_date: sequelize.fn("now"),
     });
-
   } catch (e) {
     console.log("errtest");
+    throw e;
+  }
+};
+
+/**
+ * 顧客情報を取得
+ *
+ * [検索条件]
+ * ユーザーIDの完全一致
+ *
+ * @param {*} db
+ * @param {*} clientNo
+ * @returns {Promise<Object>}
+ */
+module.exports.findByClientNo = async function (db, clientNo) {
+  //顧客情報の定義を取得
+  const clientsModel = ClientsRepository.getClientsModel(db);
+
+  try {
+    return await clientsModel.findByPk(clientNo);
+  } catch (e) {
     throw e;
   }
 };
@@ -89,21 +106,17 @@ module.exports.edit = async function (db, clientNo, name, postCode, address1, ad
 };
 
 /**
- * 顧客情報を取得
- *
- * [検索条件]
- * ユーザーIDの完全一致
- *
- * @param {*} db
- * @param {*} clientNo
- * @returns {Promise<Object>}
+ * 顧客情報削除
  */
-module.exports.findByClientNo = async function (db, clientNo) {
-  //顧客情報の定義を取得
+module.exports.delete = async function (db, clientNo) {
   const clientsModel = ClientsRepository.getClientsModel(db);
-
+  console.log(clientNo);
   try {
-    return await clientsModel.findByPk(clientNo);
+    await clientsModel.destroy({
+      where: {
+        client_no: clientNo,
+      },
+    });
   } catch (e) {
     throw e;
   }
