@@ -9,3 +9,16 @@ export async function signIn(userId, password) {
     password: password,
   });
 }
+
+//顧客情報を顧客番号で検索
+export async function getClientsByClientNo(clientNo) {
+  const url = "/api/clients/" + clientNo;
+  return await axios.get(url);
+}
+
+//顧客情報削除
+export async function deleteClients(clientNo) {
+  const url = "/api/clients/" + clientNo;
+  return await axios.delete(url);
+}
+
