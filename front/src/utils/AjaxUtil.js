@@ -57,3 +57,23 @@ export async function deleteClients(clientNo) {
   const url = "/api/clients/" + clientNo;
   return await axios.delete(url);
 }
+
+//受注情報を伝票番号で検索
+export async function getOrdersByOrderNo(orderNo) {
+  const url = "/api/orders/" + orderNo;
+  return await axios.get(url);
+}
+
+//受注情報更新
+export async function putOrders(ordersModel) {
+  const url = "/api/orders";
+  return await axios.put(url, {
+    orderNo: ordersModel.orderNo,
+    orderDate: ordersModel.orderDate,
+    shipDate: ordersModel.shipDate,
+    deliverDate: ordersModel.deliverDate,
+    productCode: ordersModel.productCode,
+    amount: ordersModel.amount,
+    updateId: ordersModel.updateId,
+  });
+}
