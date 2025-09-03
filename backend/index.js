@@ -50,6 +50,7 @@ app.post("/api/log-in", async function (req, res) {
   }
   res.status(status).send(resBody);
 });
+
 /**
  * 顧客情報全件取得API
  */
@@ -92,7 +93,6 @@ app.post("/api/clients", async function (req, res) {
     res.status(500).send("server error occur");
   }
 });
-
 
 /**
  * 顧客情報取得API

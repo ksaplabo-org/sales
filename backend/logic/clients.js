@@ -80,6 +80,10 @@ module.exports.findByClientNo = async function (db, clientNo) {
   }
 };
 
+
+/**
+ * 顧客情報修正
+ */
 module.exports.edit = async function (db, clientNo, name, postCode, address1, address2, telNo, updateId) {
   const clientsModel = ClientsRepository.getClientsModel(db);
 
@@ -110,7 +114,6 @@ module.exports.edit = async function (db, clientNo, name, postCode, address1, ad
  */
 module.exports.delete = async function (db, clientNo) {
   const clientsModel = ClientsRepository.getClientsModel(db);
-  console.log(clientNo);
   try {
     await clientsModel.destroy({
       where: {

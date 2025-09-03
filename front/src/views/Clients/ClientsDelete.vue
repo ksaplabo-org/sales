@@ -77,6 +77,7 @@
 <script>
 import * as UserUtil from "@/utils/UserUtil";
 import * as AjaxUtil from "@/utils/AjaxUtil";
+import UserConst from "@/utils/const/UserConst";
 // 共通
 import Header from "../../components/Header.vue";
 import "../../utils/sb-admin";
