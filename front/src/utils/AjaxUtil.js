@@ -77,3 +77,15 @@ export async function putOrders(ordersModel) {
     updateId: ordersModel.updateId,
   });
 }
+
+// 商品情報全件取得処理
+export async function getProducts() {
+  const url = "/api/products";
+  return await axios.get(url);
+}
+
+// 商品情報を商品コードで検索
+export async function getProductsByProductCode(productCode) {
+  const url = "/api/products/" + productCode;
+  return await axios.get(url);
+}

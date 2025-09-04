@@ -19,7 +19,7 @@ import "../public/css/sb-admin.min.css";
 
 // import b-table
 import BootstrapVue from "bootstrap-vue";
-
+import "bootstrap-vue/dist/bootstrap-vue.css";
 // import Loading Image Style
 import "../public/css/common.css";
 
