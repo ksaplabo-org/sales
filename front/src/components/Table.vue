@@ -85,8 +85,6 @@
 import Header from "@/components/Header.vue";
 import Loading from "@/components/Loading.vue";
 import * as UserUtil from "@/utils/UserUtil";
-import * as AjaxUtil from "@/utils/AjaxUtil";
-import UserConst from "@/utils/const/UserConst";
 
 export default {
   props: ["flashMsg", "items", "fields", "rows"],
@@ -126,12 +124,20 @@ export default {
         this.$emit("sendPk", this.variousPk);
       } else {
         //selectedRowがオブジェクト配列になっているため、indexを0として取得している
+        // undifindが代入されない用のif文
         if (selectedRow[0].client_noForDisplay != null) {
           this.variousPk = selectedRow[0].client_noForDisplay;
-        } else if (selectedRow[0].product_code != null) {
+        }
+        if (selectedRow[0].product_code != null) {
           this.variousPk = selectedRow[0].product_code;
         }
-        console.log(this.variousPk);
+        if (selectedRow[0].order_no != null) {
+          this.variousPk = selectedRow[0].order_no;
+        }
+        if (selectedRow[0].id != null) {
+          this.variousPk = selectedRow[0].id;
+        }
+
         // 親コンポーネントへ値(メソッドsendPk)を渡す
         this.$emit("sendPk", this.variousPk);
       }

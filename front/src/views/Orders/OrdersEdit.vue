@@ -24,17 +24,7 @@
             <!-- 顧客番号 -->
             <div class="form-group d-flex flex-row">
               <label class="col">顧客番号</label>
-              <!-- <p v-show="clientNo" class="col-7 pl-0">{{ clientNo }}</p> -->
-              <input type="text" id="clientCode" class="form-control col-4" v-model="clientNo" />
-              <!-- 商品情報一覧表示ボタン -->
-              <b-button
-                variant="form-control col-3 btn btn-secondary ml-2"
-                data-toggle="modal"
-                data-target="#ListModal"
-                v-on:click="onClickClientsList()"
-              >
-                顧客情報一覧
-              </b-button>
+              <p v-show="clientNo" class="col-7 pl-0">{{ clientNo }}</p>
             </div>
 
             <!-- 顧客名 -->
@@ -93,7 +83,7 @@
                 id="productCode"
                 class="form-control col-4"
                 v-model="productCode"
-                v-on:input="inputProductCode()"
+                v-on:change="inputProductInfo()"
               />
               <!-- 商品情報一覧表示ボタン -->
               <b-button
@@ -117,7 +107,13 @@
             <!-- 数量 -->
             <div class="form-group d-flex flex-row">
               <label for="amount" class="col">数量</label>
-              <input type="number" id="amount" class="form-control col-7" v-model="amount" />
+              <input
+                type="number"
+                id="amount"
+                class="form-control col-7"
+                v-model="amount"
+                v-on:change="inputProductInfo()"
+              />
             </div>
             <!-- 数量エラーメッセージ -->
             <div class="text-danger col text-right pr-0 mb-3" v-show="amountErrMsg">{{ amountErrMsg }}</div>
@@ -151,7 +147,6 @@
             <div class="col-2">
               <btn class="btn btn-primary btn-lg btn-block" v-on:click="ordersEdit()">修正</btn>
             </div>
-
             <CancelButton />
           </div>
         </div>
@@ -170,32 +165,21 @@
       <div class="modal-dialog modal-xl">
         <div class="modal-content">
           <div class="modal-header">
-            <p class="modal-title font-weight-bold text-secondary" id="myModalLabel">情報一覧</p>
+            <p class="modal-title font-weight-bold text-secondary" id="myModalLabel">商品情報一覧</p>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
           <div class="modal-body">
+            <!-- インポートしたテーブル -->
             <Table :items="items" :fields="fields" :rows="rows" @sendPk="receivePk" />
           </div>
           <div class="modal-footer">
-            <!-- 顧客用ボタン -->
+            <!-- 選択ボタン -->
             <button
-              v-if="listFlg == 1"
               type="button"
               class="btn btn-primary"
-              v-on:click="((clientNo = tmpPk), inputProductCode())"
-              data-dismiss="modal"
-              :disabled="tmpPk == null"
-            >
-              選択
-            </button>
-            <!-- 商品用ボタン -->
-            <button
-              v-if="listFlg == 0"
-              type="button"
-              class="btn btn-primary"
-              v-on:click="((productCode = tmpPk), inputProductCode())"
+              v-on:click="((productCode = tmpPk), inputProductInfo())"
               data-dismiss="modal"
               :disabled="tmpPk == null"
             >
@@ -237,9 +221,6 @@ export default {
     return {
       isLoading: false,
       isErr: false,
-      
-      // リスト切り替え用
-      listFlg: "",
 
       //テーブル用
       items: [],
@@ -338,6 +319,99 @@ export default {
       }
 
       this.isLoading = false;
+    },
+
+    /**
+     * 商品コード入力時
+     */
+    inputProductInfo: async function () {
+      this.isLoading = true;
+      this.productCodeErrMsg = "";
+      this.amountErrMsg = "";
+
+      try {
+        // 入力チェック
+        if (isNaN(this.productCode)) {
+          this.productCodeErrMsg = "商品コードは半角数字で入力してください。";
+          return;
+        }
+        if (String(this.productCode).length != 7) {
+          this.productCodeErrMsg = "商品コードは7桁で入力してください。";
+          return;
+        }
+        if (this.amount == null || this.amount === "") {
+          this.amountErrMsg = "数量が未入力です。";
+          return;
+        }
+        if (this.amount <= 0 || 100 <= this.amount) {
+          this.amountErrMsg = "数量が誤っています。1以上かつ2桁以内で入力してください。";
+          return;
+        }
+        if (isNaN(this.amount)) {
+          this.amountErrMsg = "数量は半角数字で入力してください";
+          return;
+        }
+
+        // 商品コードから商品情報を取得
+        const response = await AjaxUtil.getProductsByProductCode(this.productCode);
+        const productData = JSON.parse(response.data.Items);
+
+        // 顧客情報を各項目にセット
+        if (productData) {
+          this.productCode = productData.product_code;
+          this.productName = productData.product_name;
+          this.price = productData.price;
+          //計算処理(戻り値は連想配列)を呼び出し、計算結果の項目にセット
+          this.calcResults = OrdersUtil.calcValue(this.amount, this.price);
+        } else {
+          this.productCodeErrMsg = "入力された商品コードは存在しません。";
+        }
+      } catch (e) {
+        errMsg = "商品情報取得処理に失敗しました";
+        console.log(e);
+      } finally {
+        this.isLoading = false;
+      }
+    },
+
+    /**
+     * 商品一覧押下時
+     */
+    onClickProductsList: async function () {
+      this.isLoading = true;
+
+      // 主キーを一時的に保存する変数を初期化
+      this.tmpPk = null;
+      // テーブル定義初期化
+      this.items = null;
+      this.fields = null;
+
+      try {
+        // 商品情報を全件取得
+        const response = await AjaxUtil.getProducts();
+        this.items = JSON.parse(response.data.Items);
+        this.rows = this.items.length;
+
+        // テーブル定義
+        this.fields = [
+          { key: "product_code", label: "商品コード", sortable: true },
+          { key: "product_name", label: "商品名", sortable: false },
+          { key: "price", label: "単価", sortable: false },
+        ];
+      } catch (e) {
+        this.errMsg = "商品情報取得に失敗しました";
+        console.log(e);
+      }
+
+      this.isLoading = false;
+    },
+
+    /*
+     *一覧のデータ選択時、一時的な値を格納する処理
+     */
+    receivePk(variousPk) {
+      this.tmpPk = variousPk;
+      console.log(this.tmpPk);
     },
 
     /**
@@ -442,120 +516,6 @@ export default {
       } finally {
         this.isLoading = false;
       }
-    },
-
-    /**
-     * 商品コード入力時
-     */
-    inputProductCode: async function () {
-      this.isLoading = true;
-      this.productCodeErrMsg = "";
-      try {
-        if (isNaN(this.productCode)) {
-          this.productCodeErrMsg = "商品コードは半角数字で入力してください。";
-          return;
-        }
-        console.log(this.productCode);
-        if (String(this.productCode).length != 7) {
-          this.productCodeErrMsg = "商品コードは7桁で入力してください。";
-          return;
-        }
-
-        // 商品コードから商品情報を取得
-        const response = await AjaxUtil.getProductsByProductCode(this.productCode);
-        const productData = JSON.parse(response.data.Items);
-        console.log(productData);
-        // 顧客情報を各項目にセット
-        if (productData) {
-          this.productCode = productData.product_code;
-          this.productName = productData.product_name;
-          this.price = productData.price;
-          //計算処理(戻り値は連想配列)を呼び出し、計算結果の項目にセット
-          this.calcResults = OrdersUtil.calcValue(this.amount, productData.price);
-        } else {
-          this.productCodeErrMsg = "入力された商品コードは存在しません。";
-        }
-      } catch (e) {
-        errMsg = "商品情報取得処理に失敗しました";
-        console.log(e);
-      } finally {
-        this.isLoading = false;
-      }
-    },
-
-    /**
-     * 商品一覧押下時
-     */
-    onClickProductsList: async function () {
-      this.isLoading = true;
-      this.listFlg = 0;
-      // 主キーを一時的に保存する変数を初期化
-      this.tmpPk = null;
-      // テーブル定義初期化
-      this.items = null;
-      this.fields = null;
-
-      // 商品情報を全件取得
-      const response = await AjaxUtil.getProducts();
-      this.items = JSON.parse(response.data.Items);
-      this.rows = this.items.length;
-
-      // テーブル定義
-      this.fields = [
-        { key: "product_code", label: "商品コード", sortable: true },
-        { key: "product_name", label: "商品名", sortable: false },
-        { key: "price", label: "単価", sortable: false },
-      ];
-
-      try {
-      } catch (e) {
-        this.errMsg = "商品情報取得に失敗しました";
-        console.log(e);
-      }
-
-      this.isLoading = false;
-    },
-
-    /**
-     * 顧客一覧押下時
-     */
-    onClickClientsList: async function () {
-      this.isLoading = true;
-      this.listFlg = 1;
-      // 主キーを一時的に保存する変数を初期化
-      this.tmpPk = null;
-      // テーブル定義初期化
-      this.items = null;
-      this.fields = null;
-
-      try {
-        // 顧客情報(テスト)
-        const response = await AjaxUtil.getClients();
-        this.items = JSON.parse(response.data.Items);
-        this.rows = this.items.length;
-        // テーブル定義
-        this.fields = [
-          { key: "client_noForDisplay", label: "顧客番号", sortable: true },
-          { key: "name", label: "顧客名", sortable: false },
-          { key: "post_code", label: "郵便番号", sortable: false },
-          { key: "address1", label: "住所1", sortable: false },
-          { key: "address2", label: "住所2", sortable: false },
-          { key: "tel_no", label: "電話番号", sortable: false },
-        ];
-      } catch (e) {
-        this.errMsg = "商品情報取得に失敗しました";
-        console.log(e);
-      }
-
-      this.isLoading = false;
-    },
-
-    /*
-     *一覧のデータ選択時、一時的な値を格納する処理
-     */
-    receivePk(variousPk) {
-      this.tmpPk = variousPk;
-      console.log(this.tmpPk);
     },
   },
 };
