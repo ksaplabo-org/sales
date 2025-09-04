@@ -1,11 +1,11 @@
 // Ajax通信ライブラリ
 import axios from "axios";
 
-export async function signIn(userId, password) {
-  const url = "/api/sign-in";
+export async function logIn(userId, userPass) {
+  const url = "/api/log-in";
 
   return await axios.post(url, {
     userId: userId,
-    password: password,
+    userPass: userPass,
   });
 }
