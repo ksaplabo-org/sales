@@ -254,6 +254,7 @@ export default {
     };
   },
   async mounted() {
+    this.isLoading = true;
     try {
       //ログインチェック
       if (!UserUtil.isLogIn()) {
@@ -263,8 +264,6 @@ export default {
       } else if (UserUtil.currentUserInfo().userRole != UserConst.UserRole.admin) {
         this.$router.push({ name: "logIn", params: { flashMsg: "権限がありません" } });
       }
-
-      this.isLoading = true;
 
       // メッセージ設定
       this.msg = this.flashMsg;
