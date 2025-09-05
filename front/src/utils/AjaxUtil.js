@@ -9,3 +9,8 @@ export async function logIn(userId, userPass) {
     userPass: userPass,
   });
 }
+
+export async function getOrders() {
+  const url = "/api/orders";
+  return await axios.get(url);
+}
