@@ -290,7 +290,7 @@ export default {
 
       try {
         // 伝票番号から顧客・商品情報を結合した受注情報を取得
-        const response = await AjaxUtil.getOrdersByOrderNo("2025082601");
+        const response = await AjaxUtil.getOrdersByOrderNo(this.orderNo);
         const orderData = JSON.parse(response.data.Items);
 
         // 受注情報を各項目にセット

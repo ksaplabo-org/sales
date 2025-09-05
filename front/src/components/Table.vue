@@ -75,7 +75,7 @@
 <script>
 export default {
   // 親コンポーネント(呼び出し元)から渡される値
-  props: ["flashMsg", "items", "fields", "empDataMsg"],
+  props: ["items", "fields", "empDataMsg"],
 
   data() {
     return {
@@ -95,13 +95,13 @@ export default {
      */
     onRowSelected: function (selectedRow) {
       let variousRow = null;
-      //選択解除時(selectedRow配列に値が入っていない場合)はnullに設定
-      if (selectedRow.length == 0) {
-        variousRow = null;
-      } else {
+
+      // 行選択時のみ、値を代入
+      if (selectedRow.length > 0) {
         // selectedRowがオブジェクト配列になっているため、indexを0として取得している
         variousRow = selectedRow[0];
       }
+
       // 親コンポーネントへ値(メソッドsendPk)を渡す
       this.$emit("sendRow", variousRow);
     },
