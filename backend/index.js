@@ -1,6 +1,8 @@
 // Business Logic define
 const UsersLogic = require("./logic/users");
 const ClientsLogic = require("./logic/clients");
+const OrdersLogic = require("./logic/orders");
+const ProductsLogic = require("./logic/products");
 
 // DB Connection define
 const DbUtil = require("./db/utility");
@@ -148,6 +150,85 @@ app.delete("/api/clients/:clientNo", async function (req, res) {
   } catch (e) {
     //異常レスポンス
     console.log("failed to edit client", e);
+    res.status(500).send("server error occur");
+  }
+});
+
+
+/**
+ * 受注情報取得API
+ */
+app.get("/api/orders/:orderNo", async function (req, res) {
+  try {
+    const order = await OrdersLogic.findByOrderNo(db, req.params.orderNo);
+
+    //正常レスポンス
+    res.send({
+      Items: JSON.stringify(order),
+    });
+  } catch (e) {
+    //異常レスポンス
+    console.log("failed to get client.", e);
+    res.status(500).send("server error occur");
+  }
+});
+
+/**
+ * 受注情報修正API
+ */
+app.put("/api/orders", async function (req, res) {
+  const reqBody = req.body;
+  try {
+    await OrdersLogic.edit(
+      db,
+      reqBody.orderNo,
+      reqBody.orderDate,
+      reqBody.shipDate,
+      reqBody.deliverDate,
+      reqBody.productCode,
+      reqBody.amount,
+      reqBody.updateId,
+    );
+    //正常レスポンス
+    res.send();
+  } catch (e) {
+    //異常レスポンス
+    console.log("failed to edit client", e);
+    res.status(500).send("server error occur");
+  }
+});
+
+
+/**
+ * 商品情報全件取得API
+ */
+app.get("/api/products", async function (req, res) {
+  try {
+    const products = await ProductsLogic.getAll(db);
+    res.send({
+      Items: JSON.stringify(products),
+    });
+  } catch (e) {
+    // 異常レスポンス
+    console.log("failed to verify user.", e);
+    res.status(500).send("商品情報取得処理に失敗しました");
+  }
+});
+
+/**
+ * 商品情報取得API
+ */
+app.get("/api/products/:productCode", async function (req, res) {
+  try {
+    const product = await ProductsLogic.findByProductCode(db, req.params.productCode);
+
+    //正常レスポンスProductsLogic
+    res.send({
+      Items: JSON.stringify(product),
+    });
+  } catch (e) {
+    //異常レスポンス
+    console.log("failed to get client.", e);
     res.status(500).send("server error occur");
   }
 });
