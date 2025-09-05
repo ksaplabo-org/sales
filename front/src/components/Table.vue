@@ -37,7 +37,7 @@
             hover
             selectable
             show-empty
-            empty-text="データがありません"
+            :empty-text="empDataMsg"
             empty-filtered-text="検索結果がありません"
             @row-selected="onRowSelected"
           >
@@ -47,7 +47,7 @@
           <div class="row mb-3">
             <!-- 件数表示 -->
             <div class="col-md-4">
-              <p>計{{ rows }}件</p>
+              <p>計 {{ items.length }} 件</p>
             </div>
 
             <!-- ページング機能 -->
@@ -55,7 +55,7 @@
               <div class="form-inline">
                 <b-pagination
                   v-model="currentPage"
-                  :total-rows="rows"
+                  :total-rows="items.length"
                   :per-page="perPage"
                   prev-text="前へ"
                   next-text="次へ"
@@ -69,32 +69,22 @@
       </div>
       <!-- コンテンツEnd -->
     </div>
-
-    <!-- スクロールトップボタン -->
-    <a class="scroll-to-top rounded" href="#page-top">
-      <i class="fas fa-angle-up"></i>
-    </a>
   </div>
 </template>
 
 <script>
 export default {
-  // 親テーブル(呼び出し元)から渡される値
-  props: ["flashMsg", "items", "fields"],
+  // 親コンポーネント(呼び出し元)から渡される値
+  props: ["flashMsg", "items", "fields", "empDataMsg"],
 
   data() {
     return {
-      msg: this.flashMsg,
-      errMsg: "",
-      rows: this.items.length,
-
-      // 選択された行を代入する用
-      variousRow: null,
-
       // ページング定義
       currentPage: 1,
       perPage: 5,
       pageOptions: [5, 10, 15],
+
+      // 検索用フィルター
       filter: null,
     };
   },
@@ -104,15 +94,16 @@ export default {
      *行選択時処理
      */
     onRowSelected: function (selectedRow) {
+      let variousRow = null;
       //選択解除時(selectedRow配列に値が入っていない場合)はnullに設定
       if (selectedRow.length == 0) {
-        this.variousRow = null;
+        variousRow = null;
       } else {
         // selectedRowがオブジェクト配列になっているため、indexを0として取得している
-        this.variousRow = selectedRow[0];
+        variousRow = selectedRow[0];
       }
       // 親コンポーネントへ値(メソッドsendPk)を渡す
-      this.$emit("sendRow", this.variousRow);
+      this.$emit("sendRow", variousRow);
     },
   },
 };

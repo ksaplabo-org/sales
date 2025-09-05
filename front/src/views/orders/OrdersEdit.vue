@@ -172,7 +172,7 @@
           </div>
           <div class="modal-body">
             <!-- インポートしたテーブル -->
-            <Table :items="items" :fields="fields"  @sendRow="receiveRow" />
+            <Table :items="items" :fields="fields" :empDataMsg="'受注情報がありません'" @sendRow="receiveRow" />
           </div>
           <div class="modal-footer">
             <!-- 選択ボタン -->
@@ -243,7 +243,7 @@ export default {
       price: null,
       calcResults: "",
       updateId: "",
-      
+
       //エラーメッセージ
       errMsg: "",
       orderDateErrMsg: "",
@@ -377,7 +377,7 @@ export default {
       this.isLoading = true;
 
       // 主キーを一時的に保存する変数を初期化
-      this.tmpPk = null;
+      this.tmpRow = null;
       // テーブル定義初期化
       this.items = null;
       this.fields = null;

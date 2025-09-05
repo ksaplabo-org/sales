@@ -11,7 +11,7 @@
         <!-- コンテンツStart -->
         <div style="width: 90%; margin: auto">
           <!-- インポートしたテーブル -->
-          <Table :items="items" :fields="fields" :rows="rows" @sendRow="receiveRow" />
+          <Table :items="items" :fields="fields" @sendRow="receiveRow" />
 
           <!-- 登録・修正・削除ボタンStart -->
           <div class="form-group d-flex justify-content-center">
@@ -19,12 +19,12 @@
               <button class="btn btn-primary btn-block" v-on:click="onClickCreateButton()">登録</button>
             </div>
             <div class="p-2 w-25">
-              <button class="btn btn-info btn-block" v-on:click="onClickEditButton()" :disabled="clientNo == null">
+              <button class="btn btn-info btn-block" v-on:click="onClickEditButton()" :disabled="clientRow == null">
                 修正
               </button>
             </div>
             <div class="p-2 w-25">
-              <button class="btn btn-danger btn-block" v-on:click="onClickDeleteButton()" :disabled="clientNo == null">
+              <button class="btn btn-danger btn-block" v-on:click="onClickDeleteButton()" :disabled="clientRow == null">
                 削除
               </button>
             </div>
@@ -62,7 +62,7 @@ export default {
       msg: this.flashMsg,
       errMsg: "",
       isLoading: false,
-      clientNo: null,
+      clientRow: null,
 
       //テーブル定義
       items: [],
@@ -91,8 +91,6 @@ export default {
 
       // 顧客情報取得
       await this.getClients();
-      // テーブルに表示するページ数を設定
-      this.rows = this.items.length;
     } catch (e) {
       this.$router.push({ name: "logIn", params: { flashMsg: "ログインしてください" } });
     } finally {
@@ -121,7 +119,7 @@ export default {
      *一覧のデータ選択時、一時的な値を格納する処理
      */
     receiveRow(clientRow) {
-      this.clientNo = clientRow.client_no;
+      this.clientRow = clientRow;
     },
 
     /*
@@ -142,14 +140,14 @@ export default {
      *修正画面遷移
      */
     onClickEditButton: async function () {
-      this.$router.push({ name: "clientsEdit", query: { clientNo: this.clientNo } });
+      this.$router.push({ name: "clientsEdit", query: { clientNo: this.clientRow.client_no } });
     },
 
     /*
      *削除画面遷移
      */
     onClickDeleteButton: async function () {
-      this.$router.push({ name: "clientsDelete", query: { clientNo: this.clientNo } });
+      this.$router.push({ name: "clientsDelete", query: { clientNo: this.clientRow.client_no } });
     },
   },
 };
