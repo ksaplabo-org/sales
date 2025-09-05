@@ -80,12 +80,13 @@
 <script>
 export default {
   // 親テーブル(呼び出し元)から渡される値
-  props: ["flashMsg", "items", "fields", "rows"],
+  props: ["flashMsg", "items", "fields"],
 
   data() {
     return {
       msg: this.flashMsg,
       errMsg: "",
+      rows: this.items.length,
 
       // 選択された行を代入する用
       variousRow: null,
