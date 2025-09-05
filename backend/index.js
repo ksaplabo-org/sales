@@ -1,5 +1,6 @@
 // Business Logic define
 const UsersLogic = require("./logic/users");
+const ClientsLogic = require("./logic/clients");
 
 // DB Connection define
 const DbUtil = require("./db/utility");
@@ -48,4 +49,20 @@ app.post("/api/log-in", async function (req, res) {
     status = 500;
   }
   res.status(status).send(resBody);
+});
+
+/**
+ * 顧客情報全件取得API
+ */
+app.get("/api/clients", async function (req, res) {
+  try {
+    const clients = await ClientsLogic.getAll(db);
+    res.send({
+      Items: JSON.stringify(clients),
+    });
+  } catch (e) {
+    // 異常レスポンス
+    console.log("failed to verify user.", e);
+    res.status(500).send("顧客情報取得処理に失敗しました");
+  }
 });
