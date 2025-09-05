@@ -1,8 +1,8 @@
 // Business Logic define
 const UsersLogic = require("./logic/users");
 const ClientsLogic = require("./logic/clients");
-const OrdersLogic = require("./logic/orders");
 const ProductsLogic = require("./logic/products");
+const OrdersLogic = require("./logic/orders");
 
 // DB Connection define
 const DbUtil = require("./db/utility");
@@ -29,13 +29,9 @@ app.post("/api/log-in", async function (req, res) {
   let status = 200;
 
   try {
-    const user = await UsersLogic.findByUserId(db, reqBody.userId);
-
-    if (user == null) {
-      // 認証失敗として401エラーを設定(ユーザーが存在しない)
-      status = 401;
-    } else if (user.user_pass != reqBody.userPass) {
-      // 認証失敗として401エラーを設定(パスワードが不一致)
+    const user = await UsersLogic.findById(db, reqBody.userId);
+    if (user == null || user.password !== reqBody.password) {
+      // 認証失敗として401エラーを設定
       status = 401;
     } else {
       // 認証成功としてレスポンスボディを設定
@@ -138,6 +134,24 @@ app.put("/api/clients", async function (req, res) {
     res.status(500).send("server error occur");
   }
 });
+
+/**
+ * 受注情報全件取得API
+ */
+app.get("/api/orders", async function (req, res) {
+  try {
+    const orders = await OrdersLogic.getAll(db);
+    res.send({
+      Items: JSON.stringify(orders),
+    });
+  } catch (e) {
+    // 異常レスポンス
+    console.log("failed to verify user.", e);
+    res.status(500).send("受注情報取得処理に失敗しました");
+  }
+});
+
+
 
 /**
  * 顧客情報削除API

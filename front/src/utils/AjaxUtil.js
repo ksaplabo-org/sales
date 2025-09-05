@@ -7,7 +7,7 @@ export async function logIn(userId, userPass) {
 
   return await axios.post(url, {
     userId: userId,
-    userPass: userPass,
+    password: password,
   });
 }
 
@@ -51,7 +51,6 @@ export async function putClients(clientsModel) {
     updateId: clientsModel.updateId,
   });
 }
-
 //顧客情報削除
 export async function deleteClients(clientNo) {
   const url = "/api/clients/" + clientNo;
@@ -87,5 +86,10 @@ export async function getProducts() {
 // 商品情報を商品コードで検索
 export async function getProductsByProductCode(productCode) {
   const url = "/api/products/" + productCode;
+  return await axios.get(url);
+}
+
+export async function getOrders() {
+  const url = "/api/orders";
   return await axios.get(url);
 }
