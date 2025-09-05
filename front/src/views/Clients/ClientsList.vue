@@ -11,7 +11,7 @@
         <!-- コンテンツStart -->
         <div style="width: 90%; margin: auto">
           <!-- インポートしたテーブル -->
-          <Table :items="items" :fields="fields" :rows="rows" @sendPk="receivePk" />
+          <Table :items="items" :fields="fields" :rows="rows" @sendRow="receiveRow" />
 
           <!-- 登録・修正・削除ボタンStart -->
           <div class="form-group d-flex justify-content-center">
@@ -74,16 +74,12 @@ export default {
         { key: "address2", label: "住所2", sortable: false },
         { key: "tel_no", label: "電話番号", sortable: false },
       ],
-      // ページング定義
-      currentPage: 1,
-      perPage: 5,
-      rows: null,
-      pageOptions: [5, 10, 15],
-      filter: null,
     };
   },
   async mounted() {
     try {
+      this.isLoading = true;
+
       //ログインチェック
       if (!UserUtil.isLogIn()) {
         this.$router.push({ name: "logIn", params: { flashMsg: "ログインしてください" } });
@@ -99,6 +95,8 @@ export default {
       this.rows = this.items.length;
     } catch (e) {
       this.$router.push({ name: "logIn", params: { flashMsg: "ログインしてください" } });
+    } finally {
+      this.isLoading = false;
     }
   },
   methods: {
@@ -106,30 +104,24 @@ export default {
      *顧客情報取得処理
      */
     getClients: async function () {
-      this.isLoading = true;
-
       this.msg = "";
       this.errMsg = "";
 
       try {
         const response = await AjaxUtil.getClients();
-
         this.items = JSON.parse(response.data.Items);
-        console.log(this.items);
       } catch (e) {
         this.msg = "";
         this.errMsg = "顧客情報取得処理に失敗しました";
         console.log(e);
-      } finally {
-        this.isLoading = false;
       }
     },
 
     /*
      *一覧のデータ選択時、一時的な値を格納する処理
      */
-    receivePk(variousPk) {
-      this.clientNo = variousPk;
+    receiveRow(clientRow) {
+      this.clientNo = clientRow.client_no;
     },
 
     /*

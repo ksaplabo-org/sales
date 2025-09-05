@@ -172,21 +172,21 @@
           </div>
           <div class="modal-body">
             <!-- インポートしたテーブル -->
-            <Table :items="items" :fields="fields" :rows="rows" @sendPk="receivePk" />
+            <Table :items="items" :fields="fields" :rows="rows" @sendRow="receiveRow" />
           </div>
           <div class="modal-footer">
             <!-- 選択ボタン -->
             <button
               type="button"
               class="btn btn-primary"
-              v-on:click="((productCode = tmpPk), inputProductInfo())"
+              v-on:click="((productCode = tmpRow.product_code), inputProductInfo())"
               data-dismiss="modal"
-              :disabled="tmpPk == null"
+              :disabled="tmpRow == null"
             >
               選択
             </button>
-            <!-- キャンセルボタン -->
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">キャンセル</button>
+            <!-- 閉じるボタン -->
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">閉じる</button>
           </div>
         </div>
       </div>
@@ -226,7 +226,7 @@ export default {
       items: [],
       fields: [],
       rows: null,
-      tmpPk: "",
+      tmpRow: "",
 
       //各項目初期値
       orderNo: "",
@@ -244,8 +244,7 @@ export default {
       price: null,
       calcResults: "",
       updateId: "",
-      updateDate: "",
-
+      
       //エラーメッセージ
       errMsg: "",
       orderDateErrMsg: "",
@@ -405,10 +404,10 @@ export default {
     },
 
     /*
-     *一覧のデータ選択時、主キーを一時的な変数に格納する処理
+     *一覧のデータ選択時、行を一時的に格納する処理
      */
-    receivePk(variousPk) {
-      this.tmpPk = variousPk;
+    receiveRow(variousRow) {
+      this.tmpRow = variousRow;
     },
 
     /**

@@ -74,27 +74,22 @@
     <a class="scroll-to-top rounded" href="#page-top">
       <i class="fas fa-angle-up"></i>
     </a>
-
-    <!-- ローディングマスク -->
-    <loading v-if="isLoading === true" />
   </div>
 </template>
 
 <script>
-// 共通
-import Header from "@/components/Header.vue";
-import Loading from "@/components/Loading.vue";
-import * as UserUtil from "@/utils/UserUtil";
-
 export default {
+  // 親テーブル(呼び出し元)から渡される値
   props: ["flashMsg", "items", "fields", "rows"],
-  components: { Header, Loading },
+
   data() {
     return {
       msg: this.flashMsg,
       errMsg: "",
-      isLoading: false,
-      variousPk: null,
+
+      // 選択された行を代入する用
+      variousRow: null,
+      
       // ページング定義
       currentPage: 1,
       perPage: 5,
@@ -102,16 +97,7 @@ export default {
       filter: null,
     };
   },
-  async mounted() {
-    try {
-      //ログインチェック
-      if (!UserUtil.isLogIn()) {
-        this.$router.push({ name: "logIn", params: { flashMsg: "ログインしてください" } });
-      }
-    } catch (e) {
-      this.$router.push({ name: "logIn", params: { flashMsg: "ログインしてください" } });
-    }
-  },
+
   methods: {
     /*
      *行選択時処理
@@ -119,26 +105,13 @@ export default {
     onRowSelected: function (selectedRow) {
       //選択解除時(selectedRow配列に値が入っていない場合)はnullに設定
       if (selectedRow.length == 0) {
-        this.variousPk = null;
+        this.variousRow = null;
       } else {
         // selectedRowがオブジェクト配列になっているため、indexを0として取得している
-        // undifindが代入されない用のif文
-        if (selectedRow[0].client_noForDisplay != null) {
-          this.variousPk = selectedRow[0].client_noForDisplay;
-        }
-        if (selectedRow[0].product_code != null) {
-          this.variousPk = selectedRow[0].product_code;
-        }
-        if (selectedRow[0].order_no != null) {
-          this.variousPk = selectedRow[0].order_no;
-        }
-        if (selectedRow[0].id != null) {
-          this.variousPk = selectedRow[0].id;
-        }
-
+        this.variousRow = selectedRow[0];
       }
       // 親コンポーネントへ値(メソッドsendPk)を渡す
-      this.$emit("sendPk", this.variousPk);
+      this.$emit("sendRow", this.variousRow);
     },
   },
 };
