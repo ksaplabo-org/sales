@@ -172,7 +172,7 @@
           </div>
           <div class="modal-body">
             <!-- インポートしたテーブル -->
-            <Table :items="items" :fields="fields" :rows="rows" @sendRow="receiveRow" />
+            <Table :items="items" :fields="fields" :empDataMsg="'受注情報がありません'" @sendRow="receiveRow" />
           </div>
           <div class="modal-footer">
             <!-- 選択ボタン -->
@@ -225,7 +225,6 @@ export default {
       //テーブル用
       items: [],
       fields: [],
-      rows: null,
       tmpRow: "",
 
       //各項目初期値
@@ -244,7 +243,7 @@ export default {
       price: null,
       calcResults: "",
       updateId: "",
-      
+
       //エラーメッセージ
       errMsg: "",
       orderDateErrMsg: "",
@@ -378,7 +377,7 @@ export default {
       this.isLoading = true;
 
       // 主キーを一時的に保存する変数を初期化
-      this.tmpPk = null;
+      this.tmpRow = null;
       // テーブル定義初期化
       this.items = null;
       this.fields = null;
@@ -387,7 +386,6 @@ export default {
         // 商品情報を全件取得し、テーブルで使用する項目へ代入
         const response = await AjaxUtil.getProducts();
         this.items = JSON.parse(response.data.Items);
-        this.rows = this.items.length;
 
         // テーブル定義
         this.fields = [
