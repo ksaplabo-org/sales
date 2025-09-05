@@ -241,30 +241,6 @@ export default {
 
       try {
         // 入力チェック
-        if (this.clientNo == null || this.clientNo === "") {
-          this.clientNoMsg = "顧客番号が未入力です。";
-          this.isErr = true;
-        }
-        if (this.orderDate == null || this.orderDateo === "") {
-          this.clientNoMsg = "発注日が未入力です。";
-          this.isErr = true;
-        }
-        if (this.shipDate == null || this.shipDate === "") {
-          this.shipDateMsg = "出荷日が未入力です。";
-          this.isErr = true;
-        }
-        if (this.deliverDate == null || this.deliverDate === "") {
-          this.deliverDateMsg = "納品日が未入力です。";
-          this.isErr = true;
-        }
-        if (this.productCode == null || this.productCode === "") {
-          this.productCodeMsg = "商品コードが未入力です。";
-          this.isErr = true;
-        }
-        if (this.amount == null || this.amount === "") {
-          this.amountMsg = "数量が未入力です。";
-          this.isErr = true;
-        }
         if (this.clientNo.length > 8) {
           this.clientNoMsg = "顧客番号は8桁以内で入力してください。";
           this.isErr = true;
@@ -299,7 +275,7 @@ export default {
         }
 
         if ("2016-01-01" > this.deliverDate || this.deliverDate > "9999-12-31") {
-          this.deliverDateoMsg = "納品日が不正です。2016/01/01～9999/12/31の間で指定してください。";
+          this.deliverDateMsg = "納品日が不正です。2016/01/01～9999/12/31の間で指定してください。";
           this.isErr = true;
         }
 
@@ -317,6 +293,38 @@ export default {
         }
         if (!isNaN(new Date(this.deliverDate).getDate)) {
           this.deliverDateMsg = "納品日が不正です。yyyy/mm/dd形式で入力してください。";
+          this.isErr = true;
+        }
+        if (!this.clientData) {
+          this.clientNoMsg = "入力された顧客番号は存在しません。";
+          this.isErr = true;
+        }
+        if (!this.productData) {
+          this.productCodeMsg = "入力された商品コードは存在しません。";
+          this.isErr = true;
+        }
+        if (this.clientNo == null || this.clientNo === "") {
+          this.clientNoMsg = "顧客番号が未入力です。";
+          this.isErr = true;
+        }
+        if (this.orderDate == null || this.orderDate === "") {
+          this.orderDateMsg = "発注日が未入力です。";
+          this.isErr = true;
+        }
+        if (this.shipDate == null || this.shipDate === "") {
+          this.shipDateMsg = "出荷日が未入力です。";
+          this.isErr = true;
+        }
+        if (this.deliverDate == null || this.deliverDate === "") {
+          this.deliverDateMsg = "納品日が未入力です。";
+          this.isErr = true;
+        }
+        if (this.productCode == null || this.productCode === "") {
+          this.productCodeMsg = "商品コードが未入力です。";
+          this.isErr = true;
+        }
+        if (this.amount == null || this.amount === "") {
+          this.amountMsg = "数量が未入力です。";
           this.isErr = true;
         }
         if (this.isErr) {
@@ -377,6 +385,11 @@ export default {
         const response = await AjaxUtil.getClientsByClientNo(this.clientNo);
         const clientData = JSON.parse(response.data.Items);
 
+        if (!clientData) {
+          this.clientNoMsg = "入力された顧客番号は存在しません。";
+          return;
+        }
+
         // 顧客情報を各項目にセット
         this.clientNo = clientData.client_no.toString().padStart(8, "0");
         this.name = clientData.name;
@@ -414,6 +427,11 @@ export default {
         // 商品コードから商品情報を取得
         const response = await AjaxUtil.getProductsByProductCode(this.productCode);
         const productData = JSON.parse(response.data.Items);
+
+        if (!productData) {
+          this.productCodeMsg = "入力された商品コードは存在しません。";
+          return;
+        }
 
         // 顧客情報を各項目にセット
         this.productName = productData.product_name;
