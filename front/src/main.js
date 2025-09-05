@@ -11,6 +11,7 @@ import "jquery.easing";
 // import Bootstrap(for design)
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap/dist/js/bootstrap.bundle";
+import "bootstrap-vue/dist/bootstrap-vue.css";
 
 // import fortawesome(for https://startbootstrap.com/ template this is licenced by MIT)
 import "@fortawesome/fontawesome-free/css/all.min.css";
@@ -19,7 +20,6 @@ import "../public/css/sb-admin.min.css";
 
 // import b-table
 import BootstrapVue from "bootstrap-vue";
-import "bootstrap-vue/dist/bootstrap-vue.css";
 // import Loading Image Style
 import "../public/css/common.css";
 
