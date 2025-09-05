@@ -66,6 +66,24 @@ app.get("/api/clients", async function (req, res) {
 });
 
 /**
+ * 顧客情報取得API
+ */
+app.get("/api/clients/:clientNo", async function (req, res) {
+  try {
+    const clients = await ClientsLogic.findByClientNo(db, req.params.clientNo);
+
+    //正常レスポンス
+    res.send({
+      Items: JSON.stringify(clients),
+    });
+  } catch (e) {
+    //異常レスポンス
+    console.log("failed to get client.", e);
+    res.status(500).send("server error occur");
+  }
+});
+
+/**
  * 顧客情報登録API
  */
 app.post("/api/clients", async function (req, res) {
@@ -91,25 +109,6 @@ app.post("/api/clients", async function (req, res) {
     res.status(500).send("server error occur");
   }
 });
-
-/**
- * 顧客情報取得API
- */
-app.get("/api/clients/:clientNo", async function (req, res) {
-  try {
-    const clients = await ClientsLogic.findByClientNo(db, req.params.clientNo);
-
-    //正常レスポンス
-    res.send({
-      Items: JSON.stringify(clients),
-    });
-  } catch (e) {
-    //異常レスポンス
-    console.log("failed to get client.", e);
-    res.status(500).send("server error occur");
-  }
-});
-
 /**
  * 顧客情報修正API
  */
@@ -136,6 +135,21 @@ app.put("/api/clients", async function (req, res) {
 });
 
 /**
+ * 顧客情報削除API
+ */
+app.delete("/api/clients/:clientNo", async function (req, res) {
+  try {
+    await ClientsLogic.delete(db, req.params.clientNo);
+    //正常レスポンス
+    res.send();
+  } catch (e) {
+    //異常レスポンス
+    console.log("failed to edit client", e);
+    res.status(500).send("server error occur");
+  }
+});
+
+/**
  * 受注情報全件取得API
  */
 app.get("/api/orders", async function (req, res) {
@@ -151,24 +165,6 @@ app.get("/api/orders", async function (req, res) {
   }
 });
 
-
-
-/**
- * 顧客情報削除API
- */
-app.delete("/api/clients/:clientNo", async function (req, res) {
-  try {
-    await ClientsLogic.delete(db, req.params.clientNo);
-    //正常レスポンス
-    res.send();
-  } catch (e) {
-    //異常レスポンス
-    console.log("failed to edit client", e);
-    res.status(500).send("server error occur");
-  }
-});
-
-
 /**
  * 受注情報取得API
  */
@@ -183,6 +179,33 @@ app.get("/api/orders/:orderNo", async function (req, res) {
   } catch (e) {
     //異常レスポンス
     console.log("failed to get client.", e);
+    res.status(500).send("server error occur");
+  }
+});
+
+/**
+ * 受注情報登録API
+ */
+app.post("/api/orders", async function (req, res) {
+  const reqBody = req.body;
+
+  try {
+    await OrdersLogic.create(
+      db,
+      reqBody.clientNo,
+      reqBody.orderDate,
+      reqBody.shipDate,
+      reqBody.deliverDate,
+      reqBody.productCode,
+      reqBody.amount,
+      reqBody.updateId,
+      reqBody.entryId
+    );
+    console.log("errtest");
+    res.send();
+  } catch (e) {
+    // 異常レスポンス
+    console.log("failed to add orders.", e);
     res.status(500).send("server error occur");
   }
 });
@@ -211,7 +234,6 @@ app.put("/api/orders", async function (req, res) {
     res.status(500).send("server error occur");
   }
 });
-
 
 /**
  * 商品情報全件取得API
@@ -246,3 +268,4 @@ app.get("/api/products/:productCode", async function (req, res) {
     res.status(500).send("server error occur");
   }
 });
+

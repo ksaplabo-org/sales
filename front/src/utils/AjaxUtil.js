@@ -17,6 +17,12 @@ export async function getClients() {
   return await axios.get(url);
 }
 
+//顧客情報を顧客番号で検索
+export async function getClientsByClientNo(clientNo) {
+  const url = "/api/clients/" + clientNo;
+  return await axios.get(url);
+}
+
 // 顧客情報登録
 export async function postClients(clientsModel) {
   const url = "/api/clients";
@@ -32,13 +38,7 @@ export async function postClients(clientsModel) {
   });
 }
 
-//顧客情報を顧客番号で検索
-export async function getClientsByClientNo(clientNo) {
-  const url = "/api/clients/" + clientNo;
-  return await axios.get(url);
-}
-
-//顧客情報更新
+//顧客情報修正
 export async function putClients(clientsModel) {
   const url = "/api/clients";
   return await axios.put(url, {
@@ -57,10 +57,31 @@ export async function deleteClients(clientNo) {
   return await axios.delete(url);
 }
 
+// 受注情報全件取得処理
+export async function getOrders() {
+  const url = "/api/orders";
+  return await axios.get(url);
+}
+
 //受注情報を伝票番号で検索
 export async function getOrdersByOrderNo(orderNo) {
   const url = "/api/orders/" + orderNo;
   return await axios.get(url);
+}
+
+//受注登録
+export async function postOrders(ordersModel) {
+  const url = "/api/orders/";
+  return await axios.post(url, {
+    clientNo: ordersModel.clientNo,
+    orderDate: ordersModel.orderDate,
+    shipDate: ordersModel.shipDate,
+    deliverDate: ordersModel.deliverDate,
+    productCode: ordersModel.productCode,
+    amount: ordersModel.amount,
+    updateId: ordersModel.updateId,
+    entryId: ordersModel.entryId,
+  });
 }
 
 //受注情報更新
@@ -79,17 +100,12 @@ export async function putOrders(ordersModel) {
 
 // 商品情報全件取得処理
 export async function getProducts() {
-  const url = "/api/products";
+  const url = "/api/products/";
   return await axios.get(url);
 }
 
 // 商品情報を商品コードで検索
 export async function getProductsByProductCode(productCode) {
   const url = "/api/products/" + productCode;
-  return await axios.get(url);
-}
-
-export async function getOrders() {
-  const url = "/api/orders";
   return await axios.get(url);
 }

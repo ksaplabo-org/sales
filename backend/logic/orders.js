@@ -35,8 +35,6 @@ module.exports.getAll = async function (db) {
   }
 };
 
-
-
 /**
  * 受注情報を取得
  *
@@ -78,6 +76,66 @@ module.exports.findByOrderNo = async function (db, orderNo) {
   }
 };
 
+//受注情報登録
+module.exports.create = async function (
+  db,
+  clientNo,
+  orderDate,
+  shipDate,
+  deliverDate,
+  productCode,
+  amount,
+  updateId,
+  entryId
+) {
+  const ordersModel = OrdersRepository.getOrdersModel(db);
+
+  try {
+    let orderNo = "";
+    const latestOrderNo = await ordersModel.max("order_no");
+    const date = new Date();
+    const month = date.getMonth() + 1;
+    const nowDate = date.getFullYear() + month.toString().padStart(2, "0") + date.getDate().toString().padStart(2, "0");
+
+    if (String(latestOrderNo).substring(0, 8) == nowDate) {
+      console.log("風の谷のNow" + String(latestOrderNo).substring(8));
+      if (String(latestOrderNo).substring(8) == "99") {
+        const errorMessage = "一日の登録上限を超えています。";
+        res.status(507).json({ error: errorMessage });
+        console.log("test" + String(latestOrderNo).substring(8) == "99");
+        console.log("鹿");
+        return;
+      } else {
+        orderNo = parseInt(latestOrderNo) + 1;
+        console.log("となりの");
+      }
+    } else {
+      orderNo = nowDate + "01";
+      console.log("toto");
+    }
+    console.log("テスト" + String(latestOrderNo).substring(0, 7));
+    console.log("test" + String(latestOrderNo).substring(8));
+    if (String(latestOrderNo).substring(8) != "99") {
+      console.log("Row");
+      return await ordersModel.create({
+        order_no: orderNo,
+        client_no: clientNo,
+        order_date: orderDate,
+        ship_date: shipDate,
+        deliver_date: deliverDate,
+        product_code: productCode,
+        amount: amount,
+        update_id: updateId,
+        update_date: sequelize.fn("now"),
+        entry_id: entryId,
+        entry_date: sequelize.fn("now"),
+      });
+    }
+  } catch (e) {
+    throw e;
+  }
+};
+
 /**
  * 受注情報修正
  */
@@ -106,5 +164,3 @@ module.exports.edit = async function (db, orderNo, orderDate, shipDate, deliverD
     throw e;
   }
 };
-
-
