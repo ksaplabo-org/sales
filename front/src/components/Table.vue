@@ -90,7 +90,7 @@ export default {
 
       // 選択された行を代入する用
       variousRow: null,
-      
+
       // ページング定義
       currentPage: 1,
       perPage: 5,
