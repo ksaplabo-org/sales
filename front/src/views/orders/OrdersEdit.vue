@@ -6,7 +6,7 @@
       <div id="content-wrapper" class="bg-light vh-100">
         <div class="container-fluid">
           <h1>受注情報修正</h1>
-          <a class="btn-dark btn-lg" href="/public/pages/clients/list.html" role="button">受注情報一覧へ</a>
+          <a class="btn-dark btn-lg" href="/public/pages/orders/list.html" role="button">受注情報一覧へ</a>
           <br />
           <p class="text-danger" v-show="errMsg">{{ errMsg }}</p>
 
@@ -514,7 +514,7 @@ export default {
         await AjaxUtil.putOrders(model);
 
         window.alert("受注情報修正処理が完了しました。");
-        window.location.href = "/public/pages/orders/edit.html";
+        window.location.href = "/public/pages/orders/list.html";
       } catch (e) {
         window.alert("受注情報修正処理に失敗しました。");
         console.log(e);
