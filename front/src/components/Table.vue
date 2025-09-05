@@ -116,14 +116,12 @@ export default {
     /*
      *行選択時処理
      */
-    onRowSelected: async function (selectedRow) {
+    onRowSelected: function (selectedRow) {
       //選択解除時(selectedRow配列に値が入っていない場合)はnullに設定
       if (selectedRow.length == 0) {
         this.variousPk = null;
-        // 親コンポーネントへ値(メソッドsendPk)を渡す
-        this.$emit("sendPk", this.variousPk);
       } else {
-        //selectedRowがオブジェクト配列になっているため、indexを0として取得している
+        // selectedRowがオブジェクト配列になっているため、indexを0として取得している
         // undifindが代入されない用のif文
         if (selectedRow[0].client_noForDisplay != null) {
           this.variousPk = selectedRow[0].client_noForDisplay;
@@ -138,9 +136,9 @@ export default {
           this.variousPk = selectedRow[0].id;
         }
 
-        // 親コンポーネントへ値(メソッドsendPk)を渡す
-        this.$emit("sendPk", this.variousPk);
       }
+      // 親コンポーネントへ値(メソッドsendPk)を渡す
+      this.$emit("sendPk", this.variousPk);
     },
   },
 };

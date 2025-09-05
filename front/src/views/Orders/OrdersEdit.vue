@@ -185,7 +185,7 @@
             >
               選択
             </button>
-
+            <!-- キャンセルボタン -->
             <button type="button" class="btn btn-secondary" data-dismiss="modal">キャンセル</button>
           </div>
         </div>
@@ -274,10 +274,10 @@ export default {
 
       // 画面更新処理を呼び出す
       await this.updateView();
-
-      this.isLoading = false;
     } catch (e) {
       this.errMsg = e.message;
+    } finally {
+      this.isLoading = false;
     }
   },
   methods: {
@@ -317,8 +317,6 @@ export default {
         this.errMsg = "受注情報取得に失敗しました";
         console.log(e);
       }
-
-      this.isLoading = false;
     },
 
     /**
@@ -387,7 +385,7 @@ export default {
       this.fields = null;
 
       try {
-        // 商品情報を全件取得
+        // 商品情報を全件取得し、テーブルで使用する項目へ代入
         const response = await AjaxUtil.getProducts();
         this.items = JSON.parse(response.data.Items);
         this.rows = this.items.length;
@@ -401,17 +399,16 @@ export default {
       } catch (e) {
         this.errMsg = "商品情報取得に失敗しました";
         console.log(e);
+      } finally {
+        this.isLoading = false;
       }
-
-      this.isLoading = false;
     },
 
     /*
-     *一覧のデータ選択時、一時的な値を格納する処理
+     *一覧のデータ選択時、主キーを一時的な変数に格納する処理
      */
     receivePk(variousPk) {
       this.tmpPk = variousPk;
-      console.log(this.tmpPk);
     },
 
     /**
@@ -476,18 +473,28 @@ export default {
           this.deliverDateErrMsg = "納品日が不正です。2016/01/01～9999/12/31の間で指定してください。";
           this.isErr = true;
         }
-        // if (isNaN(new Date(this.orderDate))) {
-        //   this.orderDateErrMsg = "発注日が不正です。yyyy/mm/dd形式で入力してください。";
-        //   this.isErr = true;
-        // }
-        // if (isNaN(new Date(this.shipDate))) {
-        //   this.shipDateErrMsg = "出荷日が不正です。yyyy/mm/dd形式で入力してください。";
-        //   this.isErr = true;
-        // }
-        // if (isNaN(new Date(this.deliverDate))) {
-        //   this.deliverDateErrMsg = "納品日が不正です。yyyy/mm/dd形式で入力してください。";
-        //   this.isErr = true;
-        // }
+        if (isNaN(new Date(this.orderDate))) {
+          this.orderDateErrMsg = "発注日が不正です。yyyy/mm/dd形式で入力してください。";
+          this.isErr = true;
+        }
+        if (isNaN(new Date(this.shipDate))) {
+          this.shipDateErrMsg = "出荷日が不正です。yyyy/mm/dd形式で入力してください。";
+          this.isErr = true;
+        }
+        if (isNaN(new Date(this.deliverDate))) {
+          this.deliverDateErrMsg = "納品日が不正です。yyyy/mm/dd形式で入力してください。";
+          this.isErr = true;
+        }
+
+        // 商品コードから商品情報を取得
+        const response = await AjaxUtil.getProductsByProductCode(this.productCode);
+        const productData = JSON.parse(response.data.Items);
+
+        // 存在チェック
+        if (!productData) {
+          this.productCodeErrMsg = "入力された商品コードは存在しません";
+          this.isErr = true;
+        }
 
         // エラーが1つでもあった(trueの)場合、処理を終了
         if (this.isErr) {
@@ -505,9 +512,10 @@ export default {
           //ログイン中ユーザーのidを取得
           updateId: UserUtil.currentUserInfo().id,
         };
-        console.log(model);
 
+        // 受注情報修正処理
         await AjaxUtil.putOrders(model);
+
         window.alert("受注情報修正処理が完了しました。");
         window.location.href = "/public/pages/orders/edit.html";
       } catch (e) {
