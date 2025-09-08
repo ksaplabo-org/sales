@@ -51,6 +51,7 @@ export async function putClients(clientsModel) {
     updateId: clientsModel.updateId,
   });
 }
+
 //顧客情報削除
 export async function deleteClients(clientNo) {
   const url = "/api/clients/" + clientNo;
@@ -69,7 +70,7 @@ export async function getOrdersByOrderNo(orderNo) {
   return await axios.get(url);
 }
 
-//受注登録
+//受注情報登録
 export async function postOrders(ordersModel) {
   const url = "/api/orders/";
   return await axios.post(url, {

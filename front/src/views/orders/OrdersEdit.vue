@@ -317,7 +317,7 @@ export default {
     },
 
     /**
-     * 商品コード入力時
+     * 商品情報入力時
      */
     inputProductInfo: async function () {
       this.isLoading = true;
@@ -378,8 +378,8 @@ export default {
       // 主キーを一時的に保存する変数を初期化
       this.tmpRow = null;
       // テーブル定義初期化
-      this.items = null;
-      this.fields = null;
+      this.items = [];
+      this.fields = [];
 
       try {
         // 商品情報を全件取得し、テーブルで使用する項目へ代入
