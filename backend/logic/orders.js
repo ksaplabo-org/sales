@@ -47,7 +47,7 @@ module.exports.create = async function (
     if (String(latestOrderNo).substring(0, 8) == nowDate) {
       if (String(latestOrderNo).substring(8) == "99") {
         const errorMessage = "一日の登録上限を超えています。";
-        res.status(507).json({ error: errorMessage });
+         throw new Error(`一日の登録上限を超えています。`);
         return;
       } else {
         orderNo = parseInt(latestOrderNo) + 1;
