@@ -62,7 +62,7 @@ app.get("/api/clients", async function (req, res) {
     });
   } catch (e) {
     // 異常レスポンス
-    console.log("failed to verify user.", e);
+    console.log("failed to get clients.", e);
     res.status(500).send("顧客情報取得処理に失敗しました");
   }
 });
