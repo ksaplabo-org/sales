@@ -28,8 +28,8 @@
                   placeholder="8桁以内で入力してください"
                   v-model="clientNo"
                   autocomplete="off"
-                  maxlength="8"
-                  minlength="1"
+                  max="99999999"
+                  min="1"
                   @change="inputClientNo()"
                 />
                 <!-- 顧客情報一覧表示ボタン -->
@@ -92,7 +92,7 @@
                 <input
                   type="number"
                   id="productCode"
-                  class="form-control col-5 "
+                  class="form-control col-5"
                   placeholder="7桁で入力してください"
                   v-model="productCode"
                   max="9999999"
@@ -359,7 +359,7 @@ export default {
           this.isErr = true;
         }
 
-        if (!this.productCode.match("^[0-9]*$")) {
+        if (String(!this.productCode).match("^[0-9]*$")) {
           this.productCodeMsg = "商品コードは半角数字で入力してください。";
           this.isErr = true;
         }
@@ -448,10 +448,18 @@ export default {
         };
 
         console.log(model);
-        await AjaxUtil.postOrders(model);
-        window.alert("受注情報登録処理が完了しました。");
-        window.location.href = "/public/pages/orders/list.html";
+        const result = await AjaxUtil.postOrders(model);
+        console.log(result.data);
+        console.log(result.e);
+        if (result.data) {
+          window.alert("一日の登録上限を超えています。");
+          window.location.href = "/public/pages/orders/list.html";
+        } else {
+          window.alert("受注情報登録処理が完了しました。");
+          window.location.href = "/public/pages/orders/list.html";
+        }
       } catch (e) {
+        this.errorMessage = e.message;
         window.alert("受注情報登録処理に失敗しました。");
         console.log(e);
       } finally {
@@ -639,7 +647,6 @@ export default {
           { key: "tel_no", label: "電話番号", sortable: false },
         ];
       } catch (e) {
-        
         this.errMsg = "顧客情報取得に失敗しました";
         console.log(e);
       } finally {
