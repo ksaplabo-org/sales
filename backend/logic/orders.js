@@ -39,18 +39,15 @@ module.exports.create = async function (
 
   try {
     let orderNo = "";
+    const limitMs=false;
     const latestOrderNo = await ordersModel.max("order_no");
     const date = new Date();
     const month = date.getMonth() + 1;
     const nowDate = date.getFullYear() + month.toString().padStart(2, "0") + date.getDate().toString().padStart(2, "0");
 
     if (String(latestOrderNo).substring(0, 8) == nowDate) {
-      if (String(latestOrderNo).substring(8) == "99") {
-        const errorMessage = "一日の登録上限を超えています。";
-         throw new Error(`一日の登録上限を超えています。`);
-        return;
-      } else {
-        orderNo = parseInt(latestOrderNo) + 1;
+      if (String(latestOrderNo).substring(8) != "99") {
+       orderNo = parseInt(latestOrderNo) + 1;    
       }
     } else {
       orderNo = nowDate + "01";
@@ -70,6 +67,7 @@ module.exports.create = async function (
         entry_date: sequelize.fn("now"),
       });
     }
+    return false;
   } catch (e) {
     throw e;
   }

@@ -145,7 +145,7 @@ app.post("/api/orders", async function (req, res) {
   const reqBody = req.body;
 
   try {
-    await OrdersLogic.create(
+    const result = await OrdersLogic.create(
       db,
       reqBody.clientNo,
       reqBody.orderDate,
@@ -156,12 +156,14 @@ app.post("/api/orders", async function (req, res) {
       reqBody.updateId,
       reqBody.entryId
     );
-    console.log("errtest");
-    res.send();
+    if (result) {
+      res.send();
+    } else {
+      res.send("一日の登録上限を超えています");
+    }
   } catch (e) {
     // 異常レスポンス
     console.log("failed to add orders.", e);
-    console.log("いんでっくすでえらー")
     res.status(500).send("server error occur");
   }
 });
