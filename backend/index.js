@@ -29,8 +29,8 @@ app.post("/api/log-in", async function (req, res) {
   let status = 200;
 
   try {
-    const user = await UsersLogic.findById(db, reqBody.userId);
-    if (user == null || user.password !== reqBody.password) {
+    const user = await UsersLogic.findByUserId(db, reqBody.userId);
+    if (user == null || user.user_pass !== reqBody.userPass) {
       // 認証失敗として401エラーを設定
       status = 401;
     } else {

@@ -7,7 +7,7 @@ export async function logIn(userId, userPass) {
 
   return await axios.post(url, {
     userId: userId,
-    password: password,
+    userPass: userPass,
   });
 }
 
