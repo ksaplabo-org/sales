@@ -26,7 +26,7 @@
 
           <!-- テーブル本体 -->
           <b-table
-            id="listtable"
+            id="listTable"
             :items="items"
             :fields="fields"
             :select-mode="'single'"
@@ -59,7 +59,7 @@
                   :per-page="perPage"
                   prev-text="前へ"
                   next-text="次へ"
-                  aria-controls="clientsTable"
+                  aria-controls="listTable"
                 ></b-pagination>
               </div>
             </div>

@@ -172,7 +172,7 @@
           </div>
           <div class="modal-body">
             <!-- インポートしたテーブル -->
-            <Table :items="items" :fields="fields" :empDataMsg="'受注情報がありません'" @sendRow="receiveRow" />
+            <Table :items="items" :fields="fields" :empDataMsg="'受注情報がありません'" @sendRow="setReceiveRow" />
           </div>
           <div class="modal-footer">
             <!-- 選択ボタン -->
@@ -403,7 +403,7 @@ export default {
     /*
      *一覧のデータ選択時、行を一時的に格納する処理
      */
-    receiveRow(variousRow) {
+    setReceiveRow(variousRow) {
       this.tmpRow = variousRow;
     },
 

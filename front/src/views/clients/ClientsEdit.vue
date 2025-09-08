@@ -245,11 +245,11 @@ export default {
           this.isErr = true;
         }
         if (this.address1.length > 20) {
-          this.address1Msg = "住所１は20字以内で入力してください。";
+          this.address1Msg = "住所1は20字以内で入力してください。";
           this.isErr = true;
         }
         if (this.address2.length > 20) {
-          this.address2Msg = "住所２は20字以内で入力してください。";
+          this.address2Msg = "住所2は20字以内で入力してください。";
           this.isErr = true;
         }
         if (this.telNo.length > 20) {

@@ -11,7 +11,7 @@
         <!-- コンテンツStart -->
         <div style="width: 90%; margin: auto">
           <!-- インポートしたテーブル -->
-          <Table :items="items" :fields="fields" @sendRow="receiveRow" />
+          <Table :items="items" :fields="fields" @sendRow="setReceiveRow" />
 
           <!-- 登録・修正・削除ボタンStart -->
           <div class="form-group d-flex justify-content-center">
@@ -107,10 +107,25 @@ export default {
 
       try {
         const response = await AjaxUtil.getClients();
-        this.items = JSON.parse(response.data.Items);
+        const tmpResponse = JSON.parse(response.data.Items);
+
+        // 配列に入っている値を一つずつ取り出し、新しい変数を追加していく処理
+        this.items = tmpResponse.map((client) => {
+          return {
+            client_no: client.client_no,
+            // 0埋めされた表示用の顧客番号
+            client_noForDisplay: String(client.client_no).padStart(8, "0"),
+            name: client.name,
+            post_code: client.post_code,
+            address1: client.address1,
+            address2: client.address2,
+            tel_no: client.tel_no,
+          };
+        });
+
       } catch (e) {
         this.msg = "";
-        this.errMsg = "顧客情報取得処理に失敗しました";
+        this.errMsg = "顧客情報取得処理に失敗しました。";
         console.log(e);
       }
     },
@@ -118,7 +133,7 @@ export default {
     /*
      *一覧のデータ選択時、一時的な値を格納する処理
      */
-    receiveRow(clientRow) {
+    setReceiveRow(clientRow) {
       this.clientRow = clientRow;
     },
 

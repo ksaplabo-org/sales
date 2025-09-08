@@ -10,7 +10,7 @@
 
         <!-- コンテンツStart -->
         <div style="width: 90%; margin: auto">
-          <Table :items="items" :fields="fields" :empDataMsg="'受注情報がありません'" @sendRow="receiveRow" />
+          <Table :items="items" :fields="fields" :empDataMsg="'受注情報がありません'" @sendRow="setReceiveRow" />
           <!-- 登録・修正・削除ボタンStart -->
           <div class="form-group d-flex justify-content-center">
             <div class="p-2 w-25">
@@ -51,7 +51,6 @@ import * as UserUtil from "@/utils/UserUtil";
 import * as AjaxUtil from "@/utils/AjaxUtil";
 import UserConst from "@/utils/const/UserConst";
 import Table from "../../components/Table.vue";
-
 
 export default {
   props: ["flashMsg"],
@@ -105,12 +104,10 @@ export default {
 
       try {
         const response = await AjaxUtil.getOrders();
-
         this.items = JSON.parse(response.data.Items);
-        console.log(this.items);
       } catch (e) {
         this.msg = "";
-        this.errMsg = "受注情報取得処理に失敗しました";
+        this.errMsg = "受注情報取得処理に失敗しました。";
         console.log(e);
       } finally {
         this.isLoading = false;
@@ -120,7 +117,7 @@ export default {
     /*
      *一覧のデータ選択時、一時的な値を格納する処理
      */
-    receiveRow(orderRow) {
+    setReceiveRow(orderRow) {
       this.orderRow = orderRow;
     },
 
