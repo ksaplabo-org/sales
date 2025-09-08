@@ -45,25 +45,17 @@ module.exports.create = async function (
     const nowDate = date.getFullYear() + month.toString().padStart(2, "0") + date.getDate().toString().padStart(2, "0");
 
     if (String(latestOrderNo).substring(0, 8) == nowDate) {
-      console.log("風の谷のNow"+String(latestOrderNo).substring(8))
       if (String(latestOrderNo).substring(8) == "99") {
-        const errorMessage="一日の登録上限を超えています。"
-        res.status(507).json({ error: errorMessage }); 
-        console.log("test" + String(latestOrderNo).substring(8) == "99");
-        console.log("鹿")
+        const errorMessage = "一日の登録上限を超えています。";
+         throw new Error(`一日の登録上限を超えています。`);
         return;
       } else {
         orderNo = parseInt(latestOrderNo) + 1;
-        console.log("となりの")
       }
     } else {
       orderNo = nowDate + "01";
-      console.log("toto")
     }
-    console.log("テスト" + String(latestOrderNo).substring(0, 7));
-    console.log("test" + String(latestOrderNo).substring(8));
     if (String(latestOrderNo).substring(8) != "99") {
-      console.log("Row");
       return await ordersModel.create({
         order_no: orderNo,
         client_no: clientNo,

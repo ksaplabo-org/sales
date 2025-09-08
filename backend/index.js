@@ -161,6 +161,7 @@ app.post("/api/orders", async function (req, res) {
   } catch (e) {
     // 異常レスポンス
     console.log("failed to add orders.", e);
+    console.log("いんでっくすでえらー")
     res.status(500).send("server error occur");
   }
 });
