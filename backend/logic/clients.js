@@ -20,6 +20,30 @@ module.exports.getAll = async function (db) {
   }
 };
 
+/**
+ * 顧客情報を取得
+ *
+ * [検索条件]
+ * ユーザーIDの完全一致
+ *
+ * @param {*} db
+ * @param {*} clientNo
+ * @returns {Promise<Object>}
+ */
+module.exports.findByClientNo = async function (db, clientNo) {
+  //顧客情報の定義を取得
+  const clientsModel = ClientsRepository.getClientsModel(db);
+
+  try {
+    return await clientsModel.findByPk(clientNo);
+  } catch (e) {
+    throw e;
+  }
+};
+
+/*
+ *顧客情報登録
+ */
 module.exports.create = async function (db, name, postCode, address1, address2, telNo, updateId, entryId) {
   const clientsModel = ClientsRepository.getClientsModel(db);
 
@@ -43,28 +67,6 @@ module.exports.create = async function (db, name, postCode, address1, address2, 
     throw e;
   }
 };
-
-/**
- * 顧客情報を取得
- *
- * [検索条件]
- * ユーザーIDの完全一致
- *
- * @param {*} db
- * @param {*} clientNo
- * @returns {Promise<Object>}
- */
-module.exports.findByClientNo = async function (db, clientNo) {
-  //顧客情報の定義を取得
-  const clientsModel = ClientsRepository.getClientsModel(db);
-
-  try {
-    return await clientsModel.findByPk(clientNo);
-  } catch (e) {
-    throw e;
-  }
-};
-
 
 /**
  * 顧客情報修正

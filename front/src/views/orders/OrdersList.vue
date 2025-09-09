@@ -104,7 +104,19 @@ export default {
 
       try {
         const response = await AjaxUtil.getOrders();
-        this.items = JSON.parse(response.data.Items);
+        const tmpResponse = JSON.parse(response.data.Items);
+        // 配列に入っている値を一つずつ取り出し、新しい変数を追加していく処理
+        this.items = tmpResponse.map((order) => {
+          return {
+            order_no: order.order_no,
+            client_no: order.client_no,
+            // 0埋めされた表示用の顧客番号
+            client_noForDisplay: String(order.client_no).padStart(8, "0"),
+            order_date: order.order_date,
+            ship_date: order.ship_date,
+            deliver_date: order.deliver_date,
+          };
+        });
       } catch (e) {
         this.msg = "";
         this.errMsg = "受注情報取得処理に失敗しました。";
