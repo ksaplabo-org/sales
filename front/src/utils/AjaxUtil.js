@@ -2,6 +2,7 @@
 import axios from "axios";
 import * as UserUtil from "@/utils/UserUtil";
 
+// ログイン処理
 export async function logIn(userId, userPass) {
   const url = "/api/log-in";
 

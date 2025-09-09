@@ -63,7 +63,9 @@ module.exports.findByOrderNo = async function (db, orderNo) {
   }
 };
 
-//受注情報登録
+/*
+ *受注情報登録
+ */
 module.exports.create = async function (
   db,
   clientNo,
