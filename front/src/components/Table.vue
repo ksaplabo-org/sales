@@ -16,7 +16,7 @@
 
             <!-- 検索機能 -->
             <div class="col-md-4 ml-auto">
-              <div class="form-inline">
+              <div class="form-inline justify-content-end">
                 <label for="filter-input">検索：</label>
                 <b-form-input id="filter-input" v-model="filter" type="search"></b-form-input>
               </div>
@@ -26,7 +26,7 @@
 
           <!-- テーブル本体 -->
           <b-table
-            id="listtable"
+            id="listTable"
             :items="items"
             :fields="fields"
             :select-mode="'single'"
@@ -52,14 +52,14 @@
 
             <!-- ページング機能 -->
             <div class="col-md-4 ml-auto">
-              <div class="form-inline">
+              <div class="form-inline justify-content-end">
                 <b-pagination
                   v-model="currentPage"
                   :total-rows="items.length"
                   :per-page="perPage"
                   prev-text="前へ"
                   next-text="次へ"
-                  aria-controls="clientsTable"
+                  aria-controls="listTable"
                 ></b-pagination>
               </div>
             </div>
@@ -93,7 +93,7 @@ export default {
     /*
      *行選択時処理
      */
-    onRowSelected: function (selectedRow) {
+    onRowSelected(selectedRow) {
       let variousRow = null;
 
       // 行選択時のみ、値を代入

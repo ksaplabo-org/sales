@@ -2,7 +2,7 @@
   <div>
     <Header />
 
-    <div id="content-wrapper" class="bg-light">
+    <div id="content-wrapper" class="bg-light min-vh-100">
       <div class="container-fluid">
         <!-- タイトルとメニュー遷移ボタン -->
         <h1 class="border-bottom">顧客情報一覧</h1>
@@ -63,11 +63,11 @@ export default {
       errMsg: "",
       isLoading: false,
       clientRow: null,
-
       //テーブル定義
       items: [],
       fields: [
-        { key: "client_noForDisplay", label: "顧客番号", sortable: true },
+        // フォーマッターで0埋め処理
+        { key: "client_no", label: "顧客番号", sortable: true, formatter: (value) => String(value).padStart(8, "0") },
         { key: "name", label: "顧客名", sortable: false },
         { key: "post_code", label: "郵便番号", sortable: false },
         { key: "address1", label: "住所1", sortable: false },
@@ -80,11 +80,11 @@ export default {
     try {
       this.isLoading = true;
 
-      //ログインチェック
+      // ログインチェック
       if (!UserUtil.isLogIn()) {
         this.$router.push({ name: "logIn", params: { flashMsg: "ログインしてください" } });
 
-        //権限チェック(管理者以外拒否)
+        // 権限チェック(管理者以外拒否)
       } else if (UserUtil.currentUserInfo().userRole != UserConst.UserRole.admin) {
         this.$router.push({ name: "logIn", params: { flashMsg: "権限がありません" } });
       }
@@ -101,28 +101,13 @@ export default {
     /*
      *顧客情報取得処理
      */
-    getClients: async function () {
+    async getClients() {
       this.msg = "";
       this.errMsg = "";
 
       try {
         const response = await AjaxUtil.getClients();
-        const tmpResponse = JSON.parse(response.data.Items);
-
-        // 配列に入っている値を一つずつ取り出し、新しい変数を追加していく処理
-        this.items = tmpResponse.map((client) => {
-          return {
-            client_no: client.client_no,
-            // 0埋めされた表示用の顧客番号
-            client_noForDisplay: String(client.client_no).padStart(8, "0"),
-            name: client.name,
-            post_code: client.post_code,
-            address1: client.address1,
-            address2: client.address2,
-            tel_no: client.tel_no,
-          };
-        });
-
+        this.items = JSON.parse(response.data.Items);
       } catch (e) {
         this.msg = "";
         this.errMsg = "顧客情報取得処理に失敗しました。";
@@ -131,7 +116,7 @@ export default {
     },
 
     /*
-     *一覧のデータ選択時、一時的な値を格納する処理
+     *一覧選択行の情報を保持する
      */
     setReceiveRow(clientRow) {
       this.clientRow = clientRow;
@@ -140,28 +125,28 @@ export default {
     /*
      *メニュー画面遷移
      */
-    onClickMenuButton: async function () {
+    onClickMenuButton() {
       this.$router.push({ name: "menu" });
     },
 
     /*
      *登録画面遷移
      */
-    onClickCreateButton: async function () {
+    onClickCreateButton() {
       this.$router.push({ name: "clientsCreate" });
     },
 
     /*
      *修正画面遷移
      */
-    onClickEditButton: async function () {
+    onClickEditButton() {
       this.$router.push({ name: "clientsEdit", query: { clientNo: this.clientRow.client_no } });
     },
 
     /*
      *削除画面遷移
      */
-    onClickDeleteButton: async function () {
+    onClickDeleteButton() {
       this.$router.push({ name: "clientsDelete", query: { clientNo: this.clientRow.client_no } });
     },
   },
