@@ -67,6 +67,29 @@ app.get("/api/clients", async function (req, res) {
   }
 });
 
+app.post("/api/clients", async function (req, res) {
+  // リクエストボディ取得
+  const reqBody = req.body;
+
+  try {
+    await ClientsLogic.create(
+      db,
+      reqBody.name,
+      reqBody.postCode,
+      reqBody.address1,
+      reqBody.address2,
+      reqBody.telNo,
+      reqBody.updateId,
+      reqBody.entryId
+    );
+    res.send();
+  } catch (e) {
+    // 異常レスポンス
+    console.log("failed to add clients.", e);
+    res.status(500).send("server error occur");
+  }
+});
+
 /**
  * 顧客情報修正API
  */
