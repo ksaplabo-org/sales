@@ -67,7 +67,7 @@ export default {
       //テーブル定義
       items: [],
       fields: [
-        { key: "client_noForDisplay", label: "顧客番号", sortable: true },
+        { key: "display_client_no", label: "顧客番号", sortable: true },
         { key: "name", label: "顧客名", sortable: false },
         { key: "post_code", label: "郵便番号", sortable: false },
         { key: "address1", label: "住所1", sortable: false },
@@ -114,7 +114,7 @@ export default {
           return {
             client_no: client.client_no,
             // 0埋めされた表示用の顧客番号
-            client_noForDisplay: String(client.client_no).padStart(8, "0"),
+            display_client_no: String(client.client_no).padStart(8, "0"),
             name: client.name,
             post_code: client.post_code,
             address1: client.address1,
