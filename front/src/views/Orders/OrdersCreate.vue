@@ -234,7 +234,7 @@
                 class="btn btn-primary"
                 v-on:click="((clientNo = tmpRow.client_no), inputClientNo())"
                 data-dismiss="modal"
-                :disabled="tmpRow == ''"
+                :disabled="tmpRow == null"
               >
                 選択
               </button>
@@ -309,7 +309,7 @@ export default {
       //テーブル用
       items: [],
       fields: [],
-      tmpRow: "",
+      tmpRow: null,
     };
   },
   async mounted() {
