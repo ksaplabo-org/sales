@@ -2,7 +2,7 @@
   <div>
     <Header />
 
-    <div id="content-wrapper" class="bg-light">
+    <div id="content-wrapper" class="bg-light min-vh-100">
       <div class="container-fluid">
         <!-- タイトルとメニュー遷移ボタン -->
         <h1 class="border-bottom">顧客情報一覧</h1>
