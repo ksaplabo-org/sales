@@ -1,6 +1,7 @@
 // Ajax通信ライブラリ
 import axios from "axios";
 import * as UserUtil from "@/utils/UserUtil";
+import * as UserUtil from "@/utils/UserUtil";
 
 export async function logIn(userId, userPass) {
   const url = "/api/log-in";
@@ -97,6 +98,12 @@ export async function putOrders(ordersModel) {
     amount: ordersModel.amount,
     updateId: ordersModel.updateId,
   });
+}
+
+//受注情報削除
+export async function deleteOrders(orderNo) {
+  const url = "/api/orders/" + orderNo;
+  return await axios.delete(url);
 }
 
 // 商品情報全件取得処理

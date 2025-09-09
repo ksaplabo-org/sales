@@ -228,13 +228,28 @@ app.put("/api/orders", async function (req, res) {
       reqBody.deliverDate,
       reqBody.productCode,
       reqBody.amount,
-      reqBody.updateId,
+      reqBody.updateId
     );
     //正常レスポンス
     res.send();
   } catch (e) {
     //異常レスポンス
     console.log("failed to edit order", e);
+    res.status(500).send("server error occur");
+  }
+});
+
+/*
+ * 受注情報削除
+ */
+app.delete("/api/orders/:orderNo", async function (req, res) {
+  try {
+    await OrdersLogic.delete(db, req.params.orderNo);
+    //正常レスポンス
+    res.send();
+  } catch (e) {
+    //異常レスポンス
+    console.log("failed to delete order", e);
     res.status(500).send("server error occur");
   }
 });
@@ -272,4 +287,3 @@ app.get("/api/products/:productCode", async function (req, res) {
     res.status(500).send("server error occur");
   }
 });
-

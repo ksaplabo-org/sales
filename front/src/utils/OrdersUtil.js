@@ -1,6 +1,3 @@
-import * as AjaxUtil from "@/utils/AjaxUtil";
-import UserConst from "./const/UserConst";
-
 
 /**
  * 金額計算
