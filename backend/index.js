@@ -1,5 +1,6 @@
 // Business Logic define
 const UsersLogic = require("./logic/users");
+const OrdersLogic = require("./logic/orders");
 
 // DB Connection define
 const DbUtil = require("./db/utility");
@@ -48,4 +49,37 @@ app.post("/api/log-in", async function (req, res) {
     status = 500;
   }
   res.status(status).send(resBody);
+});
+
+/**
+ * 受注情報取得API
+ */
+app.get("/api/orders/:orderNo", async function (req, res) {
+  try {
+    const order = await OrdersLogic.findByOrderNo(db, req.params.orderNo);
+
+    //正常レスポンス
+    res.send({
+      Items: JSON.stringify(order),
+    });
+  } catch (e) {
+    //異常レスポンス
+    console.log("failed to get order.", e);
+    res.status(500).send("server error occur");
+  }
+});
+
+/**
+ * 受注情報削除API
+ */
+app.delete("/api/orders/:orderNo", async function (req, res) {
+  try {
+    await OrdersLogic.delete(db, req.params.orderNo);
+    //正常レスポンス
+    res.send();
+  } catch (e) {
+    //異常レスポンス
+    console.log("failed to delete order", e);
+    res.status(500).send("server error occur");
+  }
 });

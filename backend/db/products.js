@@ -1,7 +1,7 @@
 const sequelize = require("sequelize");
 
 module.exports.getProductsModel = (db) => {
-  db.define(
+  return db.define(
     "products",
     {
       product_code: {
