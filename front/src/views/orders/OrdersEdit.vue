@@ -6,8 +6,9 @@
       <div id="content-wrapper" class="bg-light vh-100">
         <div class="container-fluid">
           <h1>受注情報修正</h1>
-          <a class="btn-dark btn-lg" href="/public/pages/orders/list.html" role="button">受注情報一覧へ</a>
-          <br />
+          <button type="button" class="btn btn-dark" v-on:click="() => $router.push({ name: 'ordersList' })">
+            受注情報一覧画面へ
+          </button>
           <p class="text-danger" v-show="errMsg">{{ errMsg }}</p>
 
           <br />
@@ -283,7 +284,7 @@ export default {
     /**
      * 画面更新
      */
-    updateView: async function () {
+    async updateView() {
       //クエリストリングを取得
       const query = this.$route.query;
       //編集対象の伝票番号を設定する
@@ -321,7 +322,7 @@ export default {
     /**
      * 商品情報入力時
      */
-    inputProductInfo: async function () {
+    async inputProductInfo() {
       this.isLoading = true;
       this.productCodeErrMsg = "";
       this.amountErrMsg = "";
@@ -374,7 +375,7 @@ export default {
     /**
      * 商品一覧押下時
      */
-    onClickProductsList: async function () {
+    async onClickProductsList() {
       this.isLoading = true;
 
       // 主キーを一時的に保存する変数を初期化
@@ -412,7 +413,7 @@ export default {
     /**
      * 受注情報更新
      */
-    ordersEdit: async function () {
+    async ordersEdit() {
       this.isLoading = true;
 
       const maxDate = new Date(9999, 12 - 1, 31); // 日付範囲の上限
@@ -515,7 +516,7 @@ export default {
         await AjaxUtil.putOrders(model);
 
         window.alert("受注情報修正処理が完了しました。");
-        window.location.href = "/public/pages/orders/list.html";
+        this.$router.push({ name: "ordersList" });
       } catch (e) {
         window.alert("受注情報修正処理に失敗しました。");
         console.log(e);

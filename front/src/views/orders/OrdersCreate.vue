@@ -6,7 +6,9 @@
       <div id="content-wrapper" class="bg-light vh-100">
         <div class="container-fluid">
           <h1>受注情報登録</h1>
-          <a class="btn-dark btn-lg" href="/public/pages/orders/list.html" role="button">受注情報一覧画面へ</a>
+          <button type="button" class="btn btn-dark" v-on:click="() => $router.push({ name: 'ordersList' })">
+            受注情報一覧画面へ
+          </button>
           <br />
           <p class="text-danger" v-show="errMsg">{{ errMsg }}</p>
 
@@ -330,9 +332,213 @@ export default {
   },
   methods: {
     /**
+     * 顧客情報入力時
+     */
+    async inputClientNo() {
+      // メッセージ初期化
+      this.errMsg = "";
+      this.clientNoMsg = "";
+      this.cientNo = "";
+      this.name = "";
+      this.postCode = "";
+      this.address1 = "";
+      this.address2 = "";
+      this.isLoading = true;
+      try {
+        if (this.clientNo == null || this.clientNo === "") {
+          return;
+        }
+        if (!String(this.clientNo).match("^[0-9]*$")) {
+          this.clientNoMsg = "商品コードは半角数字で入力してください。";
+          return;
+        }
+        if (String(this.clientNo).length > 8) {
+          this.clientNoMsg = "顧客番号は8桁以内で入力してください。";
+          return;
+        }
+
+        // 顧客番号から顧客情報を取得
+        const response = await AjaxUtil.getClientsByClientNo(this.clientNo);
+        const clientData = JSON.parse(response.data.Items);
+
+        if (!clientData) {
+          this.clientNoMsg = "入力された顧客番号は存在しません。";
+          return;
+        }
+
+        // 顧客情報を各項目にセット
+        this.clientNo = clientData.client_no.toString().padStart(8, "0");
+        this.name = clientData.name;
+        this.postCode = clientData.post_code;
+        this.address1 = clientData.address1;
+        this.address2 = clientData.address2;
+      } catch (e) {
+        this.errMsg = "顧客情報取得処理に失敗しました";
+        console.log(e);
+      } finally {
+        this.isLoading = false;
+      }
+    },
+
+    /**
+     * 商品情報入力時
+     */
+    async inputProductCode() {
+      this.errMsg = "";
+      this.productCodeMsg = "";
+      this.isLoading = true;
+      this.productName = "";
+      this.productCode;
+      this.price = "";
+      try {
+        if (this.productCode == null || this.productCode === "") {
+          return;
+        }
+        if (isNaN(this.productCode)) {
+          this.productCodeMsg = "商品コードは半角数字で入力してください。";
+          return;
+        }
+        if (String(this.productCode).length != 7) {
+          this.productCodeMsg = "商品コードは7桁で入力してください。";
+          return;
+        }
+
+        // 商品コードから商品情報を取得
+        const response = await AjaxUtil.getProductsByProductCode(this.productCode);
+        const productData = JSON.parse(response.data.Items);
+
+        if (!productData) {
+          this.productCodeMsg = "入力された商品コードは存在しません。";
+          return;
+        }
+
+        // 顧客情報を各項目にセット
+        this.productName = productData.product_name;
+        this.price = productData.price;
+
+        this.displayValue();
+      } catch (e) {
+        this.errMsg = "商品情報取得処理に失敗しました。";
+        console.log(e);
+      } finally {
+        this.isLoading = false;
+      }
+    },
+
+    /*
+     *金額表示
+     */
+    displayValue() {
+      this.errMsg = "";
+      this.productCodeMsg = "";
+      this.isLoading = true;
+      this.amountMsg = "";
+      this.value = "";
+      this.taxValue = "";
+      this.totalValue = "";
+      try {
+        if (this.amount == null || this.amount === "") {
+          return;
+        }
+        if (!this.amount.match("^[0-9]*$")) {
+          this.amountMsg = "数量は半角数字で入力してください。";
+          return;
+        }
+        if (0 >= this.amount || this.amount >= 100) {
+          this.amountMsg = "数量が誤っています。1以上かつ2桁以内で入力してください。";
+          return;
+        }
+        if (this.price == null || this.price === "") {
+          return;
+        }
+
+        const resultValue = OrdersUtill.calcValue(this.amount, this.price);
+
+        this.value = resultValue.value;
+        this.taxValue = resultValue.taxValue;
+        this.totalValue = resultValue.totalValue;
+      } catch (e) {
+      } finally {
+        this.isLoading = false;
+      }
+    },
+
+    /**
+     * 顧客一覧押下時
+     */
+    async onClickClientsList() {
+      this.isLoading = true;
+
+      // 主キーを一時的に保存する変数を初期化
+      this.tmpRow = null;
+      // テーブル定義初期化
+      this.items = null;
+      this.fields = null;
+
+      try {
+        // 顧客情報を全件取得し、テーブルで使用する項目へ代入
+        const response = await AjaxUtil.getClients();
+        this.items = JSON.parse(response.data.Items);
+
+        // テーブル定義
+        this.fields = [
+          { key: "client_no", label: "顧客番号", sortable: true },
+          { key: "name", label: "顧客名", sortable: false },
+          { key: "post_code", label: "郵便番号", sortable: false },
+          { key: "address1", label: "住所1", sortable: false },
+          { key: "address2", label: "住所2", sortable: false },
+          { key: "tel_no", label: "電話番号", sortable: false },
+        ];
+      } catch (e) {
+        this.errMsg = "顧客情報取得に失敗しました";
+        console.log(e);
+      } finally {
+        this.isLoading = false;
+      }
+    },
+
+    /**
+     * 商品一覧押下時
+     */
+    async onClickProductsList() {
+      this.isLoading = true;
+
+      // 主キーを一時的に保存する変数を初期化
+      this.tmpRow = null;
+      // テーブル定義初期化
+      this.items = null;
+      this.fields = null;
+
+      try {
+        // 商品情報を全件取得し、テーブルで使用する項目へ代入
+        const response = await AjaxUtil.getProducts();
+        this.items = JSON.parse(response.data.Items);
+
+        // テーブル定義
+        this.fields = [
+          { key: "product_code", label: "商品コード", sortable: true },
+          { key: "product_name", label: "商品名", sortable: false },
+          { key: "price", label: "単価", sortable: false },
+        ];
+      } catch (e) {
+        this.errMsg = "商品情報取得に失敗しました";
+        console.log(e);
+      } finally {
+        this.isLoading = false;
+      }
+    },
+
+    /*
+     *一覧のデータ選択時、行を一時的に格納する処理
+     */
+    setReceiveRow(variousRow) {
+      this.tmpRow = variousRow;
+    },
+
+    /**
      * ユーザー登録
      */
-    ordersCreate: async function () {
+    async ordersCreate() {
       // メッセージ初期化
       this.errMsg = "";
       this.clientNoMsg = "";
@@ -455,10 +661,10 @@ export default {
         console.log(result.e);
         if (result.data) {
           window.alert("一日の登録上限を超えています。");
-          window.location.href = "/public/pages/orders/list.html";
+          this.$router.push({ name: "ordersList" });
         } else {
           window.alert("受注情報登録処理が完了しました。");
-          window.location.href = "/public/pages/orders/list.html";
+          this.$router.push({ name: "ordersList" });
         }
       } catch (e) {
         this.errorMessage = e.message;
@@ -467,200 +673,6 @@ export default {
       } finally {
         this.isLoading = false;
       }
-    },
-
-    /**
-     * 顧客情報入力時
-     */
-    inputClientNo: async function () {
-      // メッセージ初期化
-      this.errMsg = "";
-      this.clientNoMsg = "";
-      this.cientNo = "";
-      this.name = "";
-      this.postCode = "";
-      this.address1 = "";
-      this.address2 = "";
-      this.isLoading = true;
-      try {
-        if (this.clientNo == null || this.clientNo === "") {
-          return;
-        }
-        if (!String(this.clientNo).match("^[0-9]*$")) {
-          this.clientNoMsg = "商品コードは半角数字で入力してください。";
-          return;
-        }
-        if (String(this.clientNo).length > 8) {
-          this.clientNoMsg = "顧客番号は8桁以内で入力してください。";
-          return;
-        }
-
-        // 顧客番号から顧客情報を取得
-        const response = await AjaxUtil.getClientsByClientNo(this.clientNo);
-        const clientData = JSON.parse(response.data.Items);
-
-        if (!clientData) {
-          this.clientNoMsg = "入力された顧客番号は存在しません。";
-          return;
-        }
-
-        // 顧客情報を各項目にセット
-        this.clientNo = clientData.client_no.toString().padStart(8, "0");
-        this.name = clientData.name;
-        this.postCode = clientData.post_code;
-        this.address1 = clientData.address1;
-        this.address2 = clientData.address2;
-      } catch (e) {
-        this.errMsg = "顧客情報取得処理に失敗しました";
-        console.log(e);
-      } finally {
-        this.isLoading = false;
-      }
-    },
-
-    inputProductCode: async function () {
-      this.errMsg = "";
-      this.productCodeMsg = "";
-      this.isLoading = true;
-      this.productName = "";
-      this.productCode;
-      this.price = "";
-      try {
-        if (this.productCode == null || this.productCode === "") {
-          return;
-        }
-        if (isNaN(this.productCode)) {
-          this.productCodeMsg = "商品コードは半角数字で入力してください。";
-          return;
-        }
-        if (String(this.productCode).length != 7) {
-          this.productCodeMsg = "商品コードは7桁で入力してください。";
-          return;
-        }
-
-        // 商品コードから商品情報を取得
-        const response = await AjaxUtil.getProductsByProductCode(this.productCode);
-        const productData = JSON.parse(response.data.Items);
-
-        if (!productData) {
-          this.productCodeMsg = "入力された商品コードは存在しません。";
-          return;
-        }
-
-        // 顧客情報を各項目にセット
-        this.productName = productData.product_name;
-        this.price = productData.price;
-
-        this.displayValue();
-      } catch (e) {
-        this.errMsg = "商品情報取得処理に失敗しました。";
-        console.log(e);
-      } finally {
-        this.isLoading = false;
-      }
-    },
-
-    displayValue: function () {
-      this.errMsg = "";
-      this.productCodeMsg = "";
-      this.isLoading = true;
-      this.amountMsg = "";
-      this.value = "";
-      this.taxValue = "";
-      this.totalValue = "";
-      try {
-        if (this.amount == null || this.amount === "") {
-          return;
-        }
-        if (!this.amount.match("^[0-9]*$")) {
-          this.amountMsg = "数量は半角数字で入力してください。";
-          return;
-        }
-        if (0 >= this.amount || this.amount >= 100) {
-          this.amountMsg = "数量が誤っています。1以上かつ2桁以内で入力してください。";
-          return;
-        }
-        if (this.price == null || this.price === "") {
-          return;
-        }
-
-        const resultValue = OrdersUtill.calcValue(this.amount, this.price);
-
-        this.value = resultValue.value;
-        this.taxValue = resultValue.taxValue;
-        this.totalValue = resultValue.totalValue;
-      } catch (e) {
-      } finally {
-        this.isLoading = false;
-      }
-    },
-    /**
-     * 商品一覧押下時
-     */
-    onClickProductsList: async function () {
-      this.isLoading = true;
-
-      // 主キーを一時的に保存する変数を初期化
-      this.tmpRow = null;
-      // テーブル定義初期化
-      this.items = null;
-      this.fields = null;
-
-      try {
-        // 商品情報を全件取得し、テーブルで使用する項目へ代入
-        const response = await AjaxUtil.getProducts();
-        this.items = JSON.parse(response.data.Items);
-
-        // テーブル定義
-        this.fields = [
-          { key: "product_code", label: "商品コード", sortable: true },
-          { key: "product_name", label: "商品名", sortable: false },
-          { key: "price", label: "単価", sortable: false },
-        ];
-      } catch (e) {
-        this.errMsg = "商品情報取得に失敗しました";
-        console.log(e);
-      } finally {
-        this.isLoading = false;
-      }
-    },
-
-    onClickClientsList: async function () {
-      this.isLoading = true;
-
-      // 主キーを一時的に保存する変数を初期化
-      this.tmpRow = null;
-      // テーブル定義初期化
-      this.items = null;
-      this.fields = null;
-
-      try {
-        // 顧客情報を全件取得し、テーブルで使用する項目へ代入
-        const response = await AjaxUtil.getClients();
-        this.items = JSON.parse(response.data.Items);
-
-        // テーブル定義
-        this.fields = [
-          { key: "client_no", label: "顧客番号", sortable: true },
-          { key: "name", label: "顧客名", sortable: false },
-          { key: "post_code", label: "郵便番号", sortable: false },
-          { key: "address1", label: "住所1", sortable: false },
-          { key: "address2", label: "住所2", sortable: false },
-          { key: "tel_no", label: "電話番号", sortable: false },
-        ];
-      } catch (e) {
-        this.errMsg = "顧客情報取得に失敗しました";
-        console.log(e);
-      } finally {
-        this.isLoading = false;
-      }
-    },
-
-    /*
-     *一覧のデータ選択時、行を一時的に格納する処理
-     */
-    setReceiveRow(variousRow) {
-      this.tmpRow = variousRow;
     },
   },
 };

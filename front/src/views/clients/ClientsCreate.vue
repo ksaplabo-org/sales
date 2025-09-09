@@ -10,7 +10,7 @@
 
         <div class="container-fluid">
           <button type="button" class="btn btn-dark" v-on:click="() => $router.push({ name: 'clientsList' })">
-            受注情報一覧画面へ
+            顧客情報一覧画面へ
           </button>
           <br />
 
@@ -232,9 +232,9 @@ export default {
   },
   methods: {
     /**
-     * ユーザー作成
+     * 顧客情報登録
      */
-    clientsCreate: async function () {
+    async clientsCreate() {
       this.isLoading = true;
       this.nameErrMsg = "";
       this.postCodeErrMsg = "";
@@ -259,11 +259,11 @@ export default {
           this.errFlag = true;
         }
         if (this.address1.length > 20) {
-          this.address1ErrMsg = "住所１は20字以下で入力してください。";
+          this.address1ErrMsg = "住所1は20字以下で入力してください。";
           this.errFlag = true;
         }
         if (this.address2.length > 20) {
-          this.address2ErrMsg = "住所２は20字以下で入力してください。";
+          this.address2ErrMsg = "住所2は20字以下で入力してください。";
           this.errFlag = true;
         }
         if (this.telNo.length > 20) {
@@ -292,8 +292,7 @@ export default {
           address2: this.address2,
           telNo: this.telNo,
         };
-        console.log(clientsModel);
-        // 登録
+        // 登録処理
         await AjaxUtil.postClients(clientsModel);
         alert("顧客情報登録処理が完了しました。");
         // 一覧画面に遷移する

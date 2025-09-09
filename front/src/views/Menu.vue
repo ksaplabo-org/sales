@@ -127,19 +127,19 @@ export default {
   },
   methods: {
     //受注情報一覧画面遷移
-    onClickOrdersButton: function () {
+    onClickOrdersButton() {
       this.$router.push({ name: "ordersList" });
     },
     //顧客情報一覧画面遷移
-    onClickClientsButton: function () {
+    onClickClientsButton() {
       this.$router.push({ name: "clientsList" });
     },
     //商品情報一覧画面遷移
-    onClickProductsButton: function () {
+    onClickProductsButton() {
       this.$router.push({ name: "productsList" });
     },
     //ユーザー情報一覧画面遷移
-    onClickUsersButton: function () {
+    onClickUsersButton() {
       this.$router.push({ name: "usersList" });
     },
   },

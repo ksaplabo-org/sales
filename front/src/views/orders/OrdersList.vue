@@ -96,7 +96,7 @@ export default {
     /*
      *受注情報取得処理
      */
-    getOrders: async function () {
+    async getOrders() {
       this.isLoading = true;
 
       this.msg = "";
@@ -127,7 +127,7 @@ export default {
     },
 
     /*
-     *一覧のデータ選択時、一時的な値を格納する処理
+     *一覧選択行の情報を保持する
      */
     setReceiveRow(orderRow) {
       this.orderRow = orderRow;
@@ -136,28 +136,28 @@ export default {
     /*
      *メニュー画面遷移
      */
-    onClickMenuButton: async function () {
+    onClickMenuButton() {
       this.$router.push({ name: "menu" });
     },
 
     /*
      *登録画面遷移
      */
-    onClickCreateButton: async function () {
+    onClickCreateButton() {
       this.$router.push({ name: "ordersCreate" });
     },
 
     /*
      *修正画面遷移
      */
-    onClickEditButton: async function () {
+    onClickEditButton() {
       this.$router.push({ name: "ordersEdit", query: { orderNo: this.orderRow.order_no } });
     },
 
     /*
      *削除画面遷移
      */
-    onClickDeleteButton: async function () {
+    onClickDeleteButton() {
       this.$router.push({ name: "ordersDelete", query: { orderNo: this.orderRow.order_no } });
     },
   },

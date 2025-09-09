@@ -197,7 +197,7 @@ export default {
     /**
      * 画面更新
      */
-    updateView: async function () {
+    async updateView() {
       //クエリストリングを取得
       const query = this.$route.query;
       //編集対象の伝票番号を設定する
@@ -232,7 +232,7 @@ export default {
       }
     },
 
-    ordersDelete: async function () {
+    async ordersDelete() {
       // メッセージ初期化
       this.errMsg = "";
       this.isLoading = true;
@@ -243,7 +243,7 @@ export default {
         if (comfirmResult) {
           await AjaxUtil.deleteOrders(this.orderNo);
           window.alert("受注情報削除処理が完了しました。");
-          this.$router.push({ name: "clientsList" });
+          this.$router.push({ name: "ordersList" });
         }
       } catch (e) {
         window.alert("受注情報削除処理に失敗しました。");

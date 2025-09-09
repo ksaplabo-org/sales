@@ -6,7 +6,9 @@
       <div id="content-wrapper" class="bg-light vh-100">
         <div class="container-fluid">
           <h1>顧客情報修正</h1>
-          <a class="btn-dark btn-lg" href="/public/pages/clients/list.html" role="button">顧客情報一覧へ</a>
+          <button type="button" class="btn btn-dark" v-on:click="() => $router.push({ name: 'clientsList' })">
+            顧客情報一覧画面へ
+          </button>
           <br />
           <p class="text-danger" v-show="errMsg">{{ errMsg }}</p>
 
@@ -133,7 +135,6 @@
 <script>
 import * as UserUtil from "@/utils/UserUtil";
 import * as AjaxUtil from "@/utils/AjaxUtil";
-import UserConst from "@/utils/const/UserConst";
 // 共通
 import Header from "../../components/Header.vue";
 import "../../utils/sb-admin";
@@ -162,7 +163,6 @@ export default {
       address1Msg: "",
       address2Msg: "",
       telNoMsg: "",
-      id: "",
       isErr: false,
     };
   },
@@ -186,15 +186,13 @@ export default {
     /**
      * 画面更新
      */
-    updateView: async function () {
+    async updateView() {
       this.isLoading = true;
 
       //クエリストリングを取得
       const query = this.$route.query;
       //編集対象の顧客番号を設定する
       this.clientNo = query.clientNo;
-      //ログイン中のユーザーを取得
-      this.id = UserUtil.currentUserInfo().id;
 
       try {
         // 顧客番号から顧客情報を取得
@@ -219,7 +217,7 @@ export default {
     /**
      * ユーザー更新
      */
-    clientsEdit: async function () {
+    async clientsEdit() {
       // メッセージ初期化
       this.errMsg = "";
       this.clientNameMsg = "";
@@ -278,13 +276,12 @@ export default {
           address1: this.address1,
           address2: this.address2,
           telNo: this.telNo,
-          updateId: this.id,
+          updateId: UserUtil.currentUserInfo().id,
         };
 
-        console.log(model);
         await AjaxUtil.putClients(model);
         window.alert("顧客情報修正処理が完了しました。");
-        window.location.href = "/public/pages/clients/list.html";
+        this.$router.push({ name: "clientsList" });
       } catch (e) {
         window.alert("顧客情報修正処理に失敗しました。");
         console.log(e);

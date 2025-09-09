@@ -6,7 +6,9 @@
       <div id="content-wrapper" class="bg-light vh-100">
         <div class="container-fluid">
           <h1>顧客情報削除</h1>
-          <a class="btn-dark btn-lg" href="/public/pages/clients/list.html" role="button">顧客情報一覧へ</a>
+          <button class="btn btn-dark" v-on:click="() => $router.push({ name: 'clientsList' })">
+            顧客情報一覧画面へ
+          </button>
           <br />
           <p class="text-danger" v-show="errMsg">{{ errMsg }}</p>
 
@@ -116,7 +118,6 @@ export default {
 
       //画面更新処理
       await this.updateView();
-
     } catch (e) {
       this.errMsg = e.message;
     }
@@ -125,7 +126,7 @@ export default {
     /**
      * 画面更新
      */
-    updateView: async function () {
+    async updateView() {
       this.isLoading = true;
 
       //クエリストリングを取得
@@ -156,7 +157,7 @@ export default {
     /**
      * 顧客情報削除
      */
-    clientsDelete: async function () {
+    async clientsDelete() {
       // メッセージ初期化
       this.errMsg = "";
       this.isLoading = true;
@@ -167,7 +168,7 @@ export default {
         if (comfirmResult) {
           await AjaxUtil.deleteClients(this.clientNo);
           window.alert("顧客情報削除処理が完了しました。");
-          window.location.href = "/public/pages/clients/list.html";
+          this.$router.push({ name: "clientsList" });
         }
       } catch (e) {
         window.alert("顧客情報削除処理に失敗しました。");

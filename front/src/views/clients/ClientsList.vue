@@ -101,7 +101,7 @@ export default {
     /*
      *顧客情報取得処理
      */
-    getClients: async function () {
+    async getClients() {
       this.msg = "";
       this.errMsg = "";
 
@@ -122,7 +122,6 @@ export default {
             tel_no: client.tel_no,
           };
         });
-
       } catch (e) {
         this.msg = "";
         this.errMsg = "顧客情報取得処理に失敗しました。";
@@ -131,7 +130,7 @@ export default {
     },
 
     /*
-     *一覧のデータ選択時、一時的な値を格納する処理
+     *一覧選択行の情報を保持する
      */
     setReceiveRow(clientRow) {
       this.clientRow = clientRow;
@@ -140,28 +139,28 @@ export default {
     /*
      *メニュー画面遷移
      */
-    onClickMenuButton: async function () {
+    onClickMenuButton() {
       this.$router.push({ name: "menu" });
     },
 
     /*
      *登録画面遷移
      */
-    onClickCreateButton: async function () {
+    onClickCreateButton() {
       this.$router.push({ name: "clientsCreate" });
     },
 
     /*
      *修正画面遷移
      */
-    onClickEditButton: async function () {
+    onClickEditButton() {
       this.$router.push({ name: "clientsEdit", query: { clientNo: this.clientRow.client_no } });
     },
 
     /*
      *削除画面遷移
      */
-    onClickDeleteButton: async function () {
+    onClickDeleteButton() {
       this.$router.push({ name: "clientsDelete", query: { clientNo: this.clientRow.client_no } });
     },
   },
