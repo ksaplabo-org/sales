@@ -33,7 +33,7 @@ module.exports.getAll = async function (db) {
  * @param {*} telNo
  * @param {*} updateId
  * @param {*} updateDate
- * @returns {promise<void}
+ * @returns {promise<void>}
  */
 module.exports.edit = async function (db, clientNo, name, postCode, address1, address2, telNo, updateId) {
   const clientsModel = ClientsRepository.getClientsModel(db);
