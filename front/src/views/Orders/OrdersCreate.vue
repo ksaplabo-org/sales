@@ -3,7 +3,7 @@
     <Header />
 
     <div id="wrapper">
-      <div id="content-wrapper" class="bg-light vh-100">
+      <div id="content-wrapper" class="bg-light min-vh-100">
         <div class="container-fluid">
           <h1>受注情報登録</h1>
           <a class="btn-dark btn-lg" href="/public/pages/orders/list.html" role="button">受注情報一覧画面へ</a>
@@ -399,14 +399,14 @@ export default {
           this.deliverDateMsg = "納品日が不正です。yyyy/mm/dd形式で入力してください。";
           this.isErr = true;
         }
-        // if (!this.clientData) {
-        //   this.clientNoMsg = "入力された顧客番号は存在しません。";
-        //   this.isErr = true;
-        // }
-        // if (!this.productData) {
-        //   this.productCodeMsg = "入力された商品コードは存在しません。";
-        //   this.isErr = true;
-        // }
+        if (!this.clientData) {
+          this.clientNoMsg = "入力された顧客番号は存在しません。";
+          this.isErr = true;
+        }
+        if (!this.productData) {
+          this.productCodeMsg = "入力された商品コードは存在しません。";
+          this.isErr = true;
+        }
         if (this.clientNo == null || this.clientNo === "") {
           this.clientNoMsg = "顧客番号が未入力です。";
           this.isErr = true;
@@ -535,7 +535,7 @@ export default {
           this.productCodeMsg = "商品コードは7桁で入力してください。";
           return;
         }
-
+        
         // 商品コードから商品情報を取得
         const response = await AjaxUtil.getProductsByProductCode(this.productCode);
         const productData = JSON.parse(response.data.Items);
