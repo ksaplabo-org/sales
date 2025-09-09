@@ -20,11 +20,11 @@
               </div>
               <!-- 顧客番号 -->
               <div class="form-group d-flex flex-row">
-                <label class="col">顧客番号<label class="text-danger">*</label></label>
+                <label class="col-5">顧客番号<label class="text-danger">*</label></label>
                 <input
                   type="number"
                   id="clientNo"
-                  class="form-control col-5"
+                  class="form-control col-7"
                   placeholder="8桁以内で入力してください"
                   v-model="clientNo"
                   autocomplete="off"
@@ -88,11 +88,11 @@
 
               <!-- 商品コード -->
               <div class="form-group d-flex flex-row">
-                <label class="col">商品コード<label class="text-danger">*</label></label>
+                <label class="col-5">商品コード<label class="text-danger">*</label></label>
                 <input
                   type="number"
                   id="productCode"
-                  class="form-control col-5"
+                  class="form-control col-7 "
                   placeholder="7桁で入力してください"
                   v-model="productCode"
                   max="9999999"
