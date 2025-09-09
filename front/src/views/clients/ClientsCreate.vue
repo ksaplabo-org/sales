@@ -149,9 +149,8 @@
               </div>
             </div>
           </form>
-          <div class="d-flex flex-row">
-            <div class="col-4"></div>
-            <div class="col-2">
+          <div class="form-group d-flex justify-content-center">
+            <div class="p-2 w-25">
               <button
                 type="button"
                 class="btn btn-primary btn-lg btn-block"
@@ -161,7 +160,9 @@
                 登録
               </button>
             </div>
-            <CancelButton />
+            <div class="p-2 w-25">
+              <CancelButton />
+            </div>
           </div>
         </div>
       </div>

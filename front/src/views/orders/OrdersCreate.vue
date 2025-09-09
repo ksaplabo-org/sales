@@ -157,11 +157,13 @@
             </div>
 
             <!-- 登録・キャンセルボタン -->
-            <div class="form-group d-flex justify-content-center col">
-              <div class="col-2">
+            <div class="form-group d-flex justify-content-center">
+              <div class="p-2 w-25">
                 <input class="btn btn-primary btn-lg btn-block" type="submit" value="登録" />
               </div>
-              <CancelButton />
+              <div class="p-2 w-25">
+                <CancelButton />
+              </div>
             </div>
           </form>
         </div>
@@ -185,7 +187,7 @@
             </div>
             <div class="modal-body">
               <!-- インポートしたテーブル -->
-              <Table :items="items" :fields="fields" :empDataMsg="'受注情報がありません'" @sendRow="receiveRow" />
+              <Table :items="items" :fields="fields" :empDataMsg="'受注情報がありません'" @sendRow="setReceiveRow" />
             </div>
             <div class="modal-footer">
               <!-- 選択ボタン -->
@@ -225,7 +227,7 @@
             </div>
             <div class="modal-body">
               <!-- インポートしたテーブル -->
-              <Table :items="items" :fields="fields" :empDataMsg="'顧客情報がありません'" @sendRow="receiveRow" />
+              <Table :items="items" :fields="fields" :empDataMsg="'顧客情報がありません'" @sendRow="setReceiveRow" />
             </div>
             <div class="modal-footer">
               <!-- 選択ボタン -->
@@ -234,7 +236,7 @@
                 class="btn btn-primary"
                 v-on:click="((clientNo = tmpRow.client_no), inputClientNo())"
                 data-dismiss="modal"
-                :disabled="tmpRow == ''"
+                :disabled="tmpRow == null"
               >
                 選択
               </button>
@@ -657,7 +659,7 @@ export default {
     /*
      *一覧のデータ選択時、行を一時的に格納する処理
      */
-    receiveRow(variousRow) {
+    setReceiveRow(variousRow) {
       this.tmpRow = variousRow;
     },
   },

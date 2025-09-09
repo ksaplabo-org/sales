@@ -107,12 +107,13 @@
               <div class="text-danger col text-right pr-0 mb-3" v-show="telNoMsg">{{ telNoMsg }}</div>
             </div>
             <!-- 修正・キャンセルボタン -->
-            <div class="form-group d-flex justify-content-center col">
-              <div class="col-2">
+            <div class="form-group d-flex justify-content-center">
+              <div class="p-2 w-25">
                 <input class="btn btn-primary btn-lg btn-block" type="submit" value="修正" />
               </div>
-
-              <CancelButton />
+              <div class="p-2 w-25">
+                <CancelButton />
+              </div>
             </div>
           </form>
         </div>

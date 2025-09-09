@@ -143,11 +143,13 @@
             </div>
           </div>
           <!-- 修正・キャンセルボタン -->
-          <div class="form-group d-flex justify-content-center col">
-            <div class="col-2">
+          <div class="form-group d-flex justify-content-center">
+            <div class="p-2 w-25">
               <btn class="btn btn-primary btn-lg btn-block" v-on:click="ordersEdit()">修正</btn>
             </div>
-            <CancelButton />
+            <div class="p-2 w-25">
+              <CancelButton />
+            </div>
           </div>
         </div>
       </div>

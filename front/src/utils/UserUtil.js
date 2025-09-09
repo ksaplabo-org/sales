@@ -1,5 +1,4 @@
-import * as AjaxUtil from "@/utils/AjaxUtil";
-import UserConst from "./const/UserConst";
+
 
 /**
  * SessionStorageに保持すログインユーザー情報のキー
@@ -29,13 +28,6 @@ export function currentUserInfo() {
   } else {
     return JSON.parse(logInUser);
   }
-}
-/**
- * ログアウト
- */
-export function deleteCurrentUserInfo() {
-  // SessionStorageから、ログインユーザー情報を削除する
-  sessionStorage.removeItem(LOGIN_KEY);
 }
 
 /**
