@@ -11,7 +11,7 @@
         <!-- コンテンツStart -->
         <div style="width: 90%; margin: auto">
           <!-- インポートしたテーブル -->
-          <Table :items="items" :fields="fields" @sendRow="setReceiveRow" />
+          <Table :items="items" :fields="fields" :empDataMsg="'顧客情報がありません'" @sendRow="setReceiveRow" />
 
           <!-- 登録・修正・削除ボタンStart -->
           <div class="form-group d-flex justify-content-center">

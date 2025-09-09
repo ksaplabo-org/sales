@@ -22,7 +22,8 @@
     "vue-loader": "^15.4.1",
     "vue-router": "^3.0.1",
     "vue-template-compiler": "^2.6.5",
-    "vuex": "^3.0.1"
+    "vuex": "^3.0.1",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",

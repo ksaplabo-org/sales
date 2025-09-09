@@ -84,7 +84,7 @@
                 id="productCode"
                 class="form-control col-4"
                 v-model="productCode"
-                v-on:change="inputProductInfo()"
+                v-on:change="inputProductCode()"
               />
               <!-- 商品情報一覧表示ボタン -->
               <b-button
@@ -113,7 +113,7 @@
                 id="amount"
                 class="form-control col-7"
                 v-model="amount"
-                v-on:change="inputProductInfo()"
+                v-on:change="displayValue()"
               />
             </div>
             <!-- 数量エラーメッセージ -->
@@ -182,7 +182,7 @@
             <button
               type="button"
               class="btn btn-primary"
-              v-on:click="((productCode = tmpRow.product_code), inputProductInfo())"
+              v-on:click="((productCode = tmpRow.product_code), inputProductCode())"
               data-dismiss="modal"
               :disabled="tmpRow == null"
             >
@@ -322,7 +322,7 @@ export default {
     /**
      * 商品情報入力時
      */
-    async inputProductInfo() {
+    async inputProductCode() {
       this.isLoading = true;
       this.productCodeErrMsg = "";
       this.amountErrMsg = "";
@@ -337,6 +337,40 @@ export default {
           this.productCodeErrMsg = "商品コードは7桁で入力してください。";
           return;
         }
+
+        // 商品コードから商品情報を取得
+        const response = await AjaxUtil.getProductsByProductCode(this.productCode);
+        const productData = JSON.parse(response.data.Items);
+
+        if (productData) {
+          // 存在する場合、顧客情報を各項目にセット
+          this.productCode = productData.product_code;
+          this.productName = productData.product_name;
+          this.price = productData.price;
+
+          // 金額表示処理を呼び出す
+          this.displayValue();
+        } else {
+          // 存在しない場合、エラーメッセージを表示
+          this.productCodeErrMsg = "入力された商品コードは存在しません。";
+        }
+      } catch (e) {
+        errMsg = "商品情報取得処理に失敗しました";
+        console.log(e);
+      } finally {
+        this.isLoading = false;
+      }
+    },
+
+    /**
+     * 金額情報表示処理
+     */
+    displayValue() {
+      this.isLoading = true;
+      this.amountErrMsg = "";
+
+      try {
+        // 入力チェック
         if (this.amount == null || this.amount === "") {
           this.amountErrMsg = "数量が未入力です。";
           return;
@@ -350,23 +384,8 @@ export default {
           return;
         }
 
-        // 商品コードから商品情報を取得
-        const response = await AjaxUtil.getProductsByProductCode(this.productCode);
-        const productData = JSON.parse(response.data.Items);
-
-        // 顧客情報を各項目にセット
-        if (productData) {
-          this.productCode = productData.product_code;
-          this.productName = productData.product_name;
-          this.price = productData.price;
-          //計算処理(戻り値は連想配列)を呼び出し、計算結果の項目にセット
-          this.calcResults = OrdersUtil.calcValue(this.amount, this.price);
-        } else {
-          this.productCodeErrMsg = "入力された商品コードは存在しません。";
-        }
-      } catch (e) {
-        errMsg = "商品情報取得処理に失敗しました";
-        console.log(e);
+        //計算処理(戻り値は連想配列)を呼び出し、計算結果の項目にセット
+        this.calcResults = OrdersUtil.calcValue(this.amount, this.price);
       } finally {
         this.isLoading = false;
       }

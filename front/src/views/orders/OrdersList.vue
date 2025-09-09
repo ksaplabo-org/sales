@@ -7,6 +7,7 @@
         <!-- タイトルとメニュー遷移ボタン -->
         <h1 class="border-bottom">受注情報一覧</h1>
         <button class="btn btn-dark mb-4" v-on:click="onClickMenuButton()">メニュー画面へ</button>
+        <button class="btn btn-secondary ml-3 mb-4" v-on:click="">納品書出力</button>
 
         <!-- コンテンツStart -->
         <div style="width: 90%; margin: auto">
