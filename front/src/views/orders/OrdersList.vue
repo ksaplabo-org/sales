@@ -154,7 +154,7 @@ export default {
         // テンプレートファイルを読み込む
         await workBook.xlsx.load(arrayBufferTemplate);
         // エクセルのシートを取得
-        const sheet = workBook.getWorksheet("Sheet1");
+        const sheet = workBook.getWorksheet("納品書");
 
         // 取得したデータをExcelに書き込む処理
         // 受注情報
@@ -194,7 +194,7 @@ export default {
         // blobをURLへ変換
         link.href = URL.createObjectURL(blob);
         // ダウンロード時のファイル名指定
-        link.download = "納品書.xlsx";
+        link.download = "納品書"+  orderData.order_no + ".xlsx";
         // 自動クリック(無理矢理)
         link.click();
       } catch {
