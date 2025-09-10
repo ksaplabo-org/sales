@@ -20,12 +20,28 @@ module.exports.getAll = async function (db) {
   }
 };
 
+/**
+ * 顧客情報を登録
+ *
+ * @param {*} db
+ * @param {*} name
+ * @param {*} postCode
+ * @param {*} address1
+ * @param {*} address2
+ * @param {*} telNo
+ * @param {*} updateId
+ * @param {*} entryId
+ * @returns {promise<void>}
+ */
 module.exports.create = async function (db, name, postCode, address1, address2, telNo, updateId, entryId) {
   const clientsModel = ClientsRepository.getClientsModel(db);
 
   try {
     const clientNo = (await clientsModel.max("client_no")) + 1;
-
+    if (clientNo.toString().length > 8) {
+      const status = 400;
+      return status;
+    }
     return await clientsModel.create({
       client_no: clientNo,
       name: name,

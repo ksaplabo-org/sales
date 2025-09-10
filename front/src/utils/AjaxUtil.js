@@ -15,18 +15,18 @@ export async function getClients() {
   const url = "/api/clients";
   return await axios.get(url);
 }
-
+//顧客情報登録
 export async function postClients(clientsModel) {
   const url = "/api/clients";
-
+  const id = UserUtil.currentUserInfo().id;
   return await axios.post(url, {
     name: clientsModel.name,
     postCode: clientsModel.postCode,
     address1: clientsModel.address1,
     address2: clientsModel.address2,
     telNo: clientsModel.telNo,
-    updateId: UserUtil.currentUserInfo().id,
-    entryId: UserUtil.currentUserInfo().id,
+    updateId: id,
+    entryId: id,
   });
 }
 
