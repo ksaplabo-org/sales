@@ -93,7 +93,7 @@ export default {
     /*
      *行選択時処理
      */
-    onRowSelected: function (selectedRow) {
+    onRowSelected(selectedRow) {
       let variousRow = null;
 
       // 行選択時のみ、値を代入

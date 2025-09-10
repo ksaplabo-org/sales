@@ -78,7 +78,7 @@ module.exports.create = async function (
   entryId
 ) {
   const ordersModel = OrdersRepository.getOrdersModel(db);
-
+  const statusCode = 400;
   try {
     let orderNo = "";
     const latestOrderNo = await ordersModel.max("order_no");
@@ -108,7 +108,7 @@ module.exports.create = async function (
         entry_date: sequelize.fn("now"),
       });
     }
-    return false;
+    return statusCode;
   } catch (e) {
     throw e;
   }

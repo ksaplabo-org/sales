@@ -82,13 +82,13 @@
               <input
                 type="number"
                 id="productCode"
-                class="form-control col-4"
+                class="form-control col-7"
                 v-model="productCode"
                 v-on:change="inputProductCode()"
               />
               <!-- 商品情報一覧表示ボタン -->
               <b-button
-                variant="form-control col-3 btn btn-secondary ml-2"
+                variant="form-control col-4 btn btn-secondary ml-2"
                 data-toggle="modal"
                 data-target="#ListModal"
                 v-on:click="onClickProductsList()"
