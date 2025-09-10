@@ -62,7 +62,7 @@ app.get("/api/orders", async function (req, res) {
     });
   } catch (e) {
     // 異常レスポンス
-    console.log("failed to verify user.", e);
+    console.log("failed to get orders.", e);
     res.status(500).send("server error occur");
   }
 });

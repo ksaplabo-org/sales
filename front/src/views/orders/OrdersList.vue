@@ -25,7 +25,7 @@
             :items="items"
             :fields="fields"
             empDataMsg="受注情報がありません"
-            @sendRow="receiveRow"
+            @sendRow="setReceiveRow"
             style="margin-top: 15px"
           />
 
@@ -83,7 +83,7 @@ export default {
       items: [],
       fields: [
         { key: "order_no", label: "伝票番号", sortable: true },
-        { key: "client_noForDisplay", label: "顧客番号", sortable: false },
+        { key: "display_client_no", label: "顧客番号", sortable: false },
         { key: "order_date", label: "発注日", sortable: false },
         { key: "ship_date", label: "出荷日", sortable: false },
         { key: "deliver_date", label: "納品日", sortable: false },
@@ -93,29 +93,37 @@ export default {
   async mounted() {
     //ログインチェック
     if (!UserUtil.isLogIn()) {
-      this.$router.push({ name: "logIn", params: { flashMsg: "ログインしてください" } });
+      this.$router.push({ name: "logIn", params: { flashMsg: "ログインしてください。" } });
     }
     this.isLoading = true;
-
     // 受注情報取得
     await this.getOrders();
-
     this.isLoading = false;
   },
   methods: {
     /*
      *受注情報取得処理
      */
-    getOrders: async function () {
+    async getOrders() {
       this.msg = "";
       this.errMsg = "";
 
       try {
         const response = await AjaxUtil.getOrders();
-        this.items = JSON.parse(response.data.Items);
+        const tmpResponse = JSON.parse(response.data.Items);
+        this.items = tmpResponse.map((order) => {
+          return {
+            order_no: order.order_no,
+            // 0埋めされた表示用の顧客番号
+            display_client_no: String(order.client_no).padStart(8, "0"),
+            order_date: order.order_date,
+            ship_date: order.ship_date,
+            deliver_date: order.deliver_date,
+          };
+        });
       } catch (e) {
         this.msg = "";
-        this.errMsg = "受注情報取得処理に失敗しました";
+        this.errMsg = "受注情報取得処理に失敗しました。";
         console.log(e);
       }
     },
@@ -123,32 +131,32 @@ export default {
     /*
      *一覧のデータ選択時、一時的な値を格納する処理
      */
-    receiveRow(orderRow) {
+    setReceiveRow(orderRow) {
       this.orderRow = orderRow;
     },
 
     /*
      *登録画面遷移
      */
-    onClickCreateButton: function () {
+    onClickCreateButton() {
       this.$router.push({ name: "ordersCreate" });
     },
 
     /*
      *修正画面遷移
      */
-    onClickEditButton: function () {
+    onClickEditButton() {
       this.$router.push({ name: "ordersEdit", query: { orderNo: this.orderRow.order_no } });
     },
 
     /*
      *削除画面遷移
      */
-    onClickDeleteButton: function () {
+    onClickDeleteButton() {
       this.$router.push({ name: "ordersDelete", query: { orderNo: this.orderRow.order_no } });
     },
 
-    deliveryNoteOutput: function () {},
+    deliveryNoteOutput() {},
   },
 };
 </script>
