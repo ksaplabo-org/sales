@@ -232,7 +232,6 @@ export default {
       this.address1Msg = "";
       this.address2Msg = "";
       this.telNoMsg = "";
-      this.id;
       this.isLoading = true;
       let isErr = false;
 

@@ -1,5 +1,4 @@
 const sequelize = require("sequelize");
-const Op = sequelize.Op;
 
 const ClientsRepository = require("../db/clients");
 
