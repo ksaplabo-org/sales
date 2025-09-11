@@ -78,10 +78,12 @@ module.exports.findByYearMonth = async function (db, yearMonth) {
   const ordersModel = OrdersRepository.getOrdersModel(db);
   const clientsModel = ClientsRepository.getClientsModel(db);
   const productsModel = ProductsRepository.getProductsModel(db);
+
   // 取得する範囲の両端を変数にセット
   const startDate = new Date(yearMonth);
   const endDate = new Date(yearMonth);
-  // 取得した年月の翌月に設定
+  
+  // 取得した年月の翌月に設定(12+1月は来年の1月に繰り越し)
   endDate.setMonth(endDate.getMonth() + 1);
 
   //受注情報に顧客・商品情報を結合する処理
@@ -91,7 +93,7 @@ module.exports.findByYearMonth = async function (db, yearMonth) {
     const orders = await ordersModel.findAll({
       where: {
         order_date: {
-          // yyyy年mm月01日以上、yyyy年mm+1月01日未満の範囲(12+1月は来年の1月に繰り越し)
+          // yyyy年mm月01日以上、yyyy年mm+1月01日未満の範囲
           [Op.gte]: startDate,
           [Op.lt]: endDate
         }
