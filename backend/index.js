@@ -169,7 +169,7 @@ app.get("/api/orders", async function (req, res) {
 /**
  * 受注情報取得API
  */
-app.get("/api/orders/:orderNo", async function (req, res) {
+app.get("/api/orders/orderNo/:orderNo", async function (req, res) {
   try {
     const order = await OrdersLogic.findByOrderNo(db, req.params.orderNo);
 
@@ -180,6 +180,23 @@ app.get("/api/orders/:orderNo", async function (req, res) {
   } catch (e) {
     //異常レスポンス
     console.log("failed to get order.", e);
+    res.status(500).send("server error occur");
+  }
+});
+
+/**
+ * 月間受注情報取得API
+ */
+app.get("/api/orders/yearMonth/:yearMonth", async function (req, res) {
+  try {
+    const orders = await OrdersLogic.findByYearMonth(db, req.params.yearMonth);
+    //正常レスポンス
+    res.send({
+      Items: JSON.stringify(orders),
+    });
+  } catch (e) {
+    //異常レスポンス
+    console.log("failed to get orders.", e);
     res.status(500).send("server error occur");
   }
 });
@@ -202,7 +219,7 @@ app.post("/api/orders", async function (req, res) {
       reqBody.updateId,
       reqBody.entryId
     );
-    if (result = 400) {
+    if ((result = 400)) {
       res.status(result).send();
     } else {
       res.send();

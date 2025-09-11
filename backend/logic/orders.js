@@ -63,6 +63,56 @@ module.exports.findByOrderNo = async function (db, orderNo) {
   }
 };
 
+/**
+ * 月間の受注情報を取得
+ *
+ * [検索条件]
+ * ユーザーIDの完全一致
+ *
+ * @param {*} db
+ * @param {*} clientNo
+ * @returns {Promise<Object>}
+ */
+module.exports.findByYearMonth = async function (db, yearMonth) {
+  //受注・顧客・商品情報の定義を取得
+  const ordersModel = OrdersRepository.getOrdersModel(db);
+  const clientsModel = ClientsRepository.getClientsModel(db);
+  const productsModel = ProductsRepository.getProductsModel(db);
+  // 取得する範囲の両端を変数にセット
+  const startDate = new Date(yearMonth);
+  const endDate = new Date(yearMonth);
+  // 取得した年月の翌月に設定
+  endDate.setMonth(endDate.getMonth() + 1);
+
+  //受注情報に顧客・商品情報を結合する処理
+  ordersModel.associate(clientsModel, productsModel);
+
+  try {
+    const orders = await ordersModel.findAll({
+      where: {
+        order_date: {
+          // yyyy年mm月01日以上、yyyy年mm+1月01日未満の範囲(12+1月は来年の1月に繰り越し)
+          [Op.gte]: startDate,
+          [Op.lt]: endDate
+        }
+      },
+      // 顧客・商品情報から値を取得
+      include: [
+        {
+          model: clientsModel,
+        },
+        {
+          model: productsModel,
+        },
+      ],
+    });
+
+    return orders;
+  } catch (e) {
+    throw e;
+  }
+};
+
 /*
  *受注情報登録
  */

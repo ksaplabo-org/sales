@@ -7,11 +7,7 @@
         <!-- タイトルとメニュー遷移ボタン -->
         <h1 class="border-bottom">受注情報一覧</h1>
         <button class="btn btn-dark mb-4" v-on:click="onClickMenuButton()">メニュー画面へ</button>
-        <button
-          class="btn btn-secondary ml-3 mb-4"
-          :disabled="orderRow == null"
-          v-on:click="deliveryNoteOutput()"
-        >
+        <button class="btn btn-secondary ml-3 mb-4" :disabled="orderRow == null" v-on:click="deliveryNoteOutput()">
           納品書出力
         </button>
 
@@ -159,9 +155,9 @@ export default {
         // 取得したデータをExcelに書き込む処理
         // 受注情報
         sheet.getCell("E5").value = orderData.order_no;
-        sheet.getCell("B13").value = orderData.order_date;
-        sheet.getCell("C13").value = orderData.ship_date;
-        sheet.getCell("D13").value = orderData.deliver_date;
+        sheet.getCell("B13").value = String(orderData.order_date).replace(/-/g, "/");
+        sheet.getCell("C13").value = String(orderData.ship_date).replace(/-/g, "/");
+        sheet.getCell("D13").value = String(orderData.deliver_date).replace(/-/g, "/");
         // 顧客情報
         sheet.getCell("B9").value = orderData.client.name;
         sheet.getCell("E8").value = "〒" + orderData.client.post_code;
@@ -177,7 +173,7 @@ export default {
         sheet.getCell("E17").value = calcResults.value;
         sheet.getCell("E18").value = calcResults.taxValue;
         sheet.getCell("E19").value = calcResults.totalValue;
-
+        
         // js上でのExcelデータをブラウザ上でのExcelデータに変換する処理
         // 加工したExcelファイルをバイナリデータに変換
         const buffer = await workBook.xlsx.writeBuffer();
@@ -194,7 +190,7 @@ export default {
         // blobをURLへ変換
         link.href = URL.createObjectURL(blob);
         // ダウンロード時のファイル名指定
-        link.download = "納品書"+  orderData.order_no + ".xlsx";
+        link.download = "納品書" + orderData.order_no + ".xlsx";
         // 自動クリック(無理矢理)
         link.click();
       } catch {

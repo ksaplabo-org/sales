@@ -67,7 +67,13 @@ export async function getOrders() {
 
 //受注情報を伝票番号で検索
 export async function getOrdersByOrderNo(orderNo) {
-  const url = "/api/orders/" + orderNo;
+  const url = "/api/orders/orderNo/" + orderNo;
+  return await axios.get(url);
+}
+
+//月間の受注情報を取得する処理
+export async function getOrdersByYearMonth(yearMonth) {
+  const url = "/api/orders/yearMonth/" + yearMonth;
   return await axios.get(url);
 }
 
