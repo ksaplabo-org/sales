@@ -63,57 +63,6 @@ module.exports.findByOrderNo = async function (db, orderNo) {
   }
 };
 
-/*
- *受注情報登録
- */
-module.exports.create = async function (
-  db,
-  clientNo,
-  orderDate,
-  shipDate,
-  deliverDate,
-  productCode,
-  amount,
-  updateId,
-  entryId
-) {
-  const ordersModel = OrdersRepository.getOrdersModel(db);
-
-  try {
-    let orderNo = "";
-    const latestOrderNo = await ordersModel.max("order_no");
-    const date = new Date();
-    const month = date.getMonth() + 1;
-    const nowDate = date.getFullYear() + month.toString().padStart(2, "0") + date.getDate().toString().padStart(2, "0");
-
-    if (String(latestOrderNo).substring(0, 8) == nowDate) {
-      if (String(latestOrderNo).substring(8) != "99") {
-        orderNo = parseInt(latestOrderNo) + 1;
-      }
-    } else {
-      orderNo = nowDate + "01";
-    }
-    if (String(latestOrderNo).substring(8) != "99") {
-      return await ordersModel.create({
-        order_no: orderNo,
-        client_no: clientNo,
-        order_date: orderDate,
-        ship_date: shipDate,
-        deliver_date: deliverDate,
-        product_code: productCode,
-        amount: amount,
-        update_id: updateId,
-        update_date: sequelize.fn("now"),
-        entry_id: entryId,
-        entry_date: sequelize.fn("now"),
-      });
-    }
-    return false;
-  } catch (e) {
-    throw e;
-  }
-};
-
 /**
  * 受注情報修正
  */
@@ -143,18 +92,3 @@ module.exports.edit = async function (db, orderNo, orderDate, shipDate, deliverD
   }
 };
 
-/**
- * 受注情報削除
- */
-module.exports.delete = async function (db, orderNo) {
-  const ordersModel = OrdersRepository.getOrdersModel(db);
-  try {
-    await ordersModel.destroy({
-      where: {
-        order_no: orderNo,
-      },
-    });
-  } catch (e) {
-    throw e;
-  }
-};

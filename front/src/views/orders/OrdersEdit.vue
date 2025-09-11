@@ -213,16 +213,20 @@
 </template>
 
 <script>
+// 共通設定
+import "../../utils/sb-admin";
+
+// util関連
 import * as UserUtil from "@/utils/UserUtil";
 import * as AjaxUtil from "@/utils/AjaxUtil";
 import * as OrdersUtil from "@/utils/OrdersUtil";
 
-// 共通
+// コンポーネント関連
 import Header from "../../components/Header.vue";
-import "../../utils/sb-admin";
 import Loading from "../../components/Loading.vue";
 import CancelButton from "../../components/CancelButton.vue";
 import Table from "../../components/Table.vue";
+
 export default {
   components: { Header, Loading, CancelButton, Table },
   data() {
@@ -281,9 +285,9 @@ export default {
      * 画面更新
      */
     async updateView() {
-      //クエリストリングを取得
+      // クエリストリングを取得
       const query = this.$route.query;
-      //編集対象の伝票番号を設定する
+      // 編集対象の伝票番号を設定する
       this.orderNo = query.orderNo;
 
       try {
@@ -307,7 +311,7 @@ export default {
         this.amount = orderData.amount;
         this.price = orderData.product.price;
 
-        //計算処理(戻り値は連想配列)を呼び出し、計算結果の項目にセット
+        // 計算処理(戻り値は連想配列)を呼び出し、計算結果の項目にセット
         this.calcResults = OrdersUtil.calcValue(this.amount, this.price);
       } catch (e) {
         this.errMsg = "受注情報取得処理に失敗しました。";
@@ -394,6 +398,7 @@ export default {
 
       // 主キーを一時的に保持する変数を初期化
       this.tmpProductRow = null;
+
       // テーブル定義初期化
       this.items = [];
       this.fields = [];

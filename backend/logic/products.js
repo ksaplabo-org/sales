@@ -5,8 +5,6 @@ const ProductsRepository = require("../db/products");
 /**
  * 商品情報の全件検索処理
  *
- * @param {*} db
- * @returns {Promise<Object>}
  */
 module.exports.getAll = async function (db) {
   try {
@@ -24,14 +22,7 @@ module.exports.getAll = async function (db) {
 
 
 /**
- * 商品情報を取得
- *
- * [検索条件]
- * ユーザーIDの完全一致
- *
- * @param {*} db
- * @param {*} productNo
- * @returns {Promise<Object>}
+ * 商品情報を商品コードを元に取得
  */
 module.exports.findByProductCode = async function (db, productCode) {
   //顧客情報の定義を取得
