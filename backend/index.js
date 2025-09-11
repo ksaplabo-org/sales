@@ -185,36 +185,6 @@ app.get("/api/orders/:orderNo", async function (req, res) {
 });
 
 /**
- * 受注情報登録API
- */
-app.post("/api/orders", async function (req, res) {
-  const reqBody = req.body;
-
-  try {
-    const result = await OrdersLogic.create(
-      db,
-      reqBody.clientNo,
-      reqBody.orderDate,
-      reqBody.shipDate,
-      reqBody.deliverDate,
-      reqBody.productCode,
-      reqBody.amount,
-      reqBody.updateId,
-      reqBody.entryId
-    );
-    if (result) {
-      res.send();
-    } else {
-      res.send("一日の登録上限を超えています");
-    }
-  } catch (e) {
-    // 異常レスポンス
-    console.log("failed to add order.", e);
-    res.status(500).send("server error occur");
-  }
-});
-
-/**
  * 受注情報修正API
  */
 app.put("/api/orders", async function (req, res) {
@@ -235,21 +205,6 @@ app.put("/api/orders", async function (req, res) {
   } catch (e) {
     //異常レスポンス
     console.log("failed to edit order", e);
-    res.status(500).send("server error occur");
-  }
-});
-
-/*
- * 受注情報削除
- */
-app.delete("/api/orders/:orderNo", async function (req, res) {
-  try {
-    await OrdersLogic.delete(db, req.params.orderNo);
-    //正常レスポンス
-    res.send();
-  } catch (e) {
-    //異常レスポンス
-    console.log("failed to delete order", e);
     res.status(500).send("server error occur");
   }
 });

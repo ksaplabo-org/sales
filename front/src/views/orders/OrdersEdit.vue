@@ -55,40 +55,52 @@
             <!-- 発注日 -->
             <div class="form-group d-flex flex-row">
               <label for="orderDate" class="col">発注日</label>
-              <input type="date" id="orderDate" class="form-control col-7" v-model="orderDate" />
+              <div class="col-7 p-0">
+                <input type="date" id="orderDate" class="form-control" v-model="orderDate" />
+                <!-- 発注日エラーメッセージ -->
+                <div class="text-danger fs-6" v-show="orderDateErrMsg">{{ orderDateErrMsg }}</div>
+              </div>
             </div>
-            <!-- 発注日エラーメッセージ -->
-            <div class="text-danger col text-right pr-0 mb-3" v-show="orderDateErrMsg">{{ orderDateErrMsg }}</div>
 
             <!-- 出荷日 -->
             <div class="form-group d-flex flex-row">
               <label for="shipDate" class="col">出荷日</label>
-              <input type="date" id="shipDate" class="form-control col-7" v-model="shipDate" />
+              <div class="col-7 p-0">
+                <input type="date" id="shipDate" class="form-control" v-model="shipDate" />
+                <!-- 出荷日エラーメッセージ -->
+                <div class="text-danger" v-show="shipDateErrMsg">{{ shipDateErrMsg }}</div>
+              </div>
             </div>
-            <!-- 出荷日エラーメッセージ -->
-            <div class="text-danger col text-right pr-0 mb-3" v-show="shipDateErrMsg">{{ shipDateErrMsg }}</div>
 
             <!-- 納品日 -->
             <div class="form-group d-flex flex-row">
               <label for="deliverDate" class="col">納品日</label>
-              <input type="date" id="deliverDate" class="form-control col-7" v-model="deliverDate" />
+              <div class="col-7 p-0">
+                <input type="date" id="deliverDate" class="form-control" v-model="deliverDate" />
+                <!-- 納品日エラーメッセージ -->
+                <div class="text-danger" v-show="deliverDateErrMsg">{{ deliverDateErrMsg }}</div>
+              </div>
             </div>
-            <!-- 納品日エラーメッセージ -->
-            <div class="text-danger col text-right pr-0 mb-3" v-show="deliverDateErrMsg">{{ deliverDateErrMsg }}</div>
 
             <!-- 商品コード -->
             <div class="form-group d-flex flex-row">
               <label for="productCode" class="col-5">商品コード</label>
-              <input
-                type="number"
-                id="productCode"
-                class="form-control col-4"
-                v-model="productCode"
-                v-on:change="inputProductCode()"
-              />
+              <div class="col-7 p-0">
+                <input
+                  type="number"
+                  id="productCode"
+                  class="form-control"
+                  v-model="productCode"
+                  v-on:change="inputProductCode()"
+                />
+                <!-- 商品コードエラーメッセージ -->
+                <div class="text-danger" v-show="productCodeErrMsg">
+                  {{ productCodeErrMsg }}
+                </div>
+              </div>
               <!-- 商品情報一覧表示ボタン -->
               <b-button
-                variant="form-control col-3 btn btn-secondary ml-2"
+                variant="form-control col-4 btn btn-secondary ml-2"
                 data-toggle="modal"
                 data-target="#ListModal"
                 v-on:click="onClickProductsList()"
@@ -96,8 +108,6 @@
                 商品情報一覧
               </b-button>
             </div>
-            <!-- 商品コードエラーメッセージ -->
-            <div class="text-danger col text-right pr-0 mb-3" v-show="productCodeErrMsg">{{ productCodeErrMsg }}</div>
 
             <!-- 商品名 -->
             <div class="form-group d-flex flex-row">
@@ -108,16 +118,12 @@
             <!-- 数量 -->
             <div class="form-group d-flex flex-row">
               <label for="amount" class="col">数量</label>
-              <input
-                type="number"
-                id="amount"
-                class="form-control col-7"
-                v-model="amount"
-                v-on:change="displayValue()"
-              />
+              <div class="col-7 p-0">
+                <input type="number" id="amount" class="form-control" v-model="amount" v-on:change="displayValue()" />
+                <!-- 数量エラーメッセージ -->
+                <div class="text-danger" style="white-space: pre-wrap" v-show="amountErrMsg">{{ amountErrMsg }}</div>
+              </div>
             </div>
-            <!-- 数量エラーメッセージ -->
-            <div class="text-danger col text-right pr-0 mb-3" v-show="amountErrMsg">{{ amountErrMsg }}</div>
 
             <!-- 単価 -->
             <div class="form-group d-flex flex-row">
@@ -182,9 +188,9 @@
             <button
               type="button"
               class="btn btn-primary"
-              v-on:click="((productCode = tmpRow.product_code), inputProductCode())"
+              v-on:click="((productCode = tmpProductRow.product_code), inputProductCode())"
               data-dismiss="modal"
-              :disabled="tmpRow == null"
+              :disabled="tmpProductRow == null"
             >
               選択
             </button>
@@ -223,12 +229,11 @@ export default {
   data() {
     return {
       isLoading: false,
-      isErr: false,
 
       //テーブル用
       items: [],
       fields: [],
-      tmpRow: "",
+      tmpProductRow: null,
 
       //各項目初期値
       orderNo: "",
@@ -314,7 +319,7 @@ export default {
         //計算処理(戻り値は連想配列)を呼び出し、計算結果の項目にセット
         this.calcResults = OrdersUtil.calcValue(this.amount, this.price);
       } catch (e) {
-        this.errMsg = "受注情報取得に失敗しました";
+        this.errMsg = "受注情報取得処理に失敗しました。";
         console.log(e);
       }
     },
@@ -355,7 +360,7 @@ export default {
           this.productCodeErrMsg = "入力された商品コードは存在しません。";
         }
       } catch (e) {
-        errMsg = "商品情報取得処理に失敗しました";
+        errMsg = "商品情報取得処理に失敗しました。";
         console.log(e);
       } finally {
         this.isLoading = false;
@@ -380,7 +385,7 @@ export default {
           return;
         }
         if (isNaN(this.amount)) {
-          this.amountErrMsg = "数量は半角数字で入力してください";
+          this.amountErrMsg = "数量は半角数字で入力してください。";
           return;
         }
 
@@ -398,7 +403,7 @@ export default {
       this.isLoading = true;
 
       // 主キーを一時的に保存する変数を初期化
-      this.tmpRow = null;
+      this.tmpProductRow = null;
       // テーブル定義初期化
       this.items = [];
       this.fields = [];
@@ -415,7 +420,7 @@ export default {
           { key: "price", label: "単価", sortable: false },
         ];
       } catch (e) {
-        this.errMsg = "商品情報取得に失敗しました";
+        this.errMsg = "商品情報取得に失敗しました。";
         console.log(e);
       } finally {
         this.isLoading = false;
@@ -425,8 +430,8 @@ export default {
     /*
      *一覧のデータ選択時、行を一時的に格納する処理
      */
-    setReceiveRow(variousRow) {
-      this.tmpRow = variousRow;
+    setReceiveRow(productRow) {
+      this.tmpProductRow = productRow;
     },
 
     /**
@@ -435,8 +440,14 @@ export default {
     async ordersEdit() {
       this.isLoading = true;
 
-      const maxDate = new Date(9999, 12 - 1, 31); // 日付範囲の上限
-      const minDate = new Date(2016, 1 - 1, 1); // 日付範囲の下限
+      // jsの月の仕様が0が1月、11が12月になっているのでこの書き方
+      const maxDate = new Date(9999, 11, 31); // 日付範囲の上限(9999/12/31)
+      const minDate = new Date(2016, 0, 1); // 日付範囲の下限(2016/01/01)
+
+      // Date同士での比較ができるように、string型で入力されたものをDate型へ変換
+      const orderDate = new Date(this.orderDate);
+      const shipDate = new Date(this.shipDate);
+      const deliverDate = new Date(this.deliverDate);
 
       // メッセージ初期化
       this.errMsg = "";
@@ -447,60 +458,61 @@ export default {
       this.amountErrMsg = "";
 
       // エラーが1つでもあるかどうかチェックする用
-      this.isErr = false;
+      let isErr = false;
 
       try {
         // 入力チェック
         if (this.orderDate == null || this.orderDate === "") {
           this.orderDateErrMsg = "発注日が未入力です。";
-          this.isErr = true;
+          isErr = true;
         }
         if (this.shipDate == null || this.shipDate === "") {
           this.shipDateErrMsg = "出荷日が未入力です。";
-          this.isErr = true;
+          isErr = true;
         }
         if (this.deliverDate == null || this.deliverDate === "") {
           this.deliverDateErrMsg = "納品日が未入力です。";
-          this.isErr = true;
+          isErr = true;
         }
         if (this.productCode == null || this.productCode === "") {
           this.productCodeErrMsg = "商品コードが未入力です。";
-          this.isErr = true;
+          isErr = true;
         }
         if (this.amount == null || this.amount === "") {
           this.amountErrMsg = "数量が未入力です。";
-          this.isErr = true;
+          isErr = true;
         }
         if (this.amount <= 0 || 100 <= this.amount) {
           this.amountErrMsg = "数量が誤っています。1以上かつ2桁以内で入力してください。";
-          this.isErr = true;
+          isErr = true;
         }
         if (isNaN(this.amount)) {
-          this.amountErrMsg = "数量は半角数字で入力してください";
-          this.isErr = true;
+          this.amountErrMsg = "数量は半角数字で入力してください。";
+          isErr = true;
         }
-        if (this.orderDate < minDate || maxDate < this.orderDate) {
-          this.orderDateErrMsg = "発注日が不正です。2016/01/01～9999/12/31の間で指定してください。";
-          this.isErr = true;
-        }
-        if (this.shipDate < minDate || maxDate < this.shipDate) {
-          this.shipDateErrMsg = "出荷日が不正です。2016/01/01～9999/12/31の間で指定してください。";
-          this.isErr = true;
-        }
-        if (this.deliverDate < minDate || maxDate < this.deliverDate) {
-          this.deliverDateErrMsg = "納品日が不正です。2016/01/01～9999/12/31の間で指定してください。";
-          this.isErr = true;
-        }
-        if (isNaN(new Date(this.orderDate))) {
+        if (isNaN(orderDate)) {
           this.orderDateErrMsg = "発注日が不正です。yyyy/mm/dd形式で入力してください。";
-          this.isErr = true;
+          isErr = true;
         }
-        if (isNaN(new Date(this.shipDate))) {
+        if (isNaN(shipDate)) {
           this.shipDateErrMsg = "出荷日が不正です。yyyy/mm/dd形式で入力してください。";
-          this.isErr = true;
+          isErr = true;
         }
-        if (isNaN(new Date(this.deliverDate))) {
+        if (isNaN(deliverDate)) {
           this.deliverDateErrMsg = "納品日が不正です。yyyy/mm/dd形式で入力してください。";
+          isErr = true;
+        }
+
+        if (orderDate < minDate || maxDate < orderDate) {
+          this.orderDateErrMsg = "発注日が不正です。2016/01/01～9999/12/31の間で指定してください。";
+          isErr = true;
+        }
+        if (shipDate < minDate || maxDate < shipDate) {
+          this.shipDateErrMsg = "出荷日が不正です。2016/01/01～9999/12/31の間で指定してください。";
+          isErr = true;
+        }
+        if (deliverDate < minDate || maxDate < deliverDate) {
+          this.deliverDateErrMsg = "納品日が不正です。2016/01/01～9999/12/31の間で指定してください。";
           this.isErr = true;
         }
 
@@ -510,21 +522,21 @@ export default {
 
         // 存在チェック
         if (!productData) {
-          this.productCodeErrMsg = "入力された商品コードは存在しません";
-          this.isErr = true;
+          this.productCodeErrMsg = "入力された商品コードは存在しません。";
+          isErr = true;
         }
 
         // エラーが1つでもあった(trueの)場合、処理を終了
-        if (this.isErr) {
+        if (isErr) {
           return;
         }
 
         // 引数格納
         const model = {
           orderNo: this.orderNo,
-          orderDate: this.orderDate,
-          shipDate: this.shipDate,
-          deliverDate: this.deliverDate,
+          orderDate: orderDate,
+          shipDate: shipDate,
+          deliverDate: deliverDate,
           productCode: this.productCode,
           amount: this.amount,
           //ログイン中ユーザーのidを取得
