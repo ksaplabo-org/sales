@@ -1,5 +1,3 @@
-const sequelize = require("sequelize");
-const Op = sequelize.Op;
 const ProductsRepository = require("../db/products");
 
 /**
@@ -22,29 +20,6 @@ module.exports.getAll = async function (db) {
   }
 };
 
-// module.exports.create = async function (db, name, postCode, address1, address2, telNo, updateId, entryId) {
-//   const clientsModel = ClientsRepository.getClientsModel(db);
-
-//   try {
-//     const clientNo = (await clientsModel.max("client_no")) + 1;
-
-//     return await clientsModel.create({
-//       client_no: clientNo,
-//       name: name,
-//       post_code: postCode,
-//       address1: address1,
-//       address2: address2,
-//       tel_no: telNo,
-//       update_id: updateId,
-//       update_date: sequelize.fn("now"),
-//       entry_id: entryId,
-//       entry_date: sequelize.fn("now"),
-//     });
-//   } catch (e) {
-//     console.log("errtest");
-//     throw e;
-//   }
-// };
 
 /**
  * 顧客情報を取得
@@ -67,46 +42,3 @@ module.exports.findByProductCode = async function (db, productCode) {
   }
 };
 
-// /**
-//  * 顧客情報修正
-//  */
-// module.exports.edit = async function (db, clientNo, name, postCode, address1, address2, telNo, updateId) {
-//   const clientsModel = ClientsRepository.getClientsModel(db);
-
-//   try {
-//     await clientsModel.update(
-//       {
-//         name: name,
-//         post_code: postCode,
-//         address1: address1,
-//         address2: address2,
-//         tel_no: telNo,
-//         update_id: updateId,
-//         update_date: sequelize.fn("now"),
-//       },
-//       {
-//         where: {
-//           client_no: clientNo,
-//         },
-//       }
-//     );
-//   } catch (e) {
-//     throw e;
-//   }
-// };
-
-// /**
-//  * 顧客情報削除
-//  */
-// module.exports.delete = async function (db, clientNo) {
-//   const clientsModel = ClientsRepository.getClientsModel(db);
-//   try {
-//     await clientsModel.destroy({
-//       where: {
-//         client_no: clientNo,
-//       },
-//     });
-//   } catch (e) {
-//     throw e;
-//   }
-// };
