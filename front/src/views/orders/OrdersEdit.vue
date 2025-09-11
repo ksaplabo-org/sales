@@ -216,7 +216,7 @@
 import * as UserUtil from "@/utils/UserUtil";
 import * as AjaxUtil from "@/utils/AjaxUtil";
 import * as OrdersUtil from "@/utils/OrdersUtil";
-import UserConst from "@/utils/const/UserConst";
+
 // 共通
 import Header from "../../components/Header.vue";
 import "../../utils/sb-admin";
@@ -224,7 +224,6 @@ import Loading from "../../components/Loading.vue";
 import CancelButton from "../../components/CancelButton.vue";
 import Table from "../../components/Table.vue";
 export default {
-  props: ["flashMsg", "flashErrMsg"],
   components: { Header, Loading, CancelButton, Table },
   data() {
     return {
@@ -266,16 +265,8 @@ export default {
     try {
       //ログインチェック
       if (!UserUtil.isLogIn()) {
-        this.$router.push({ name: "logIn", params: { flashMsg: "ログインしてください" } });
-
-        //権限チェック(管理者以外拒否)
-      } else if (UserUtil.currentUserInfo().userRole != UserConst.UserRole.admin) {
-        this.$router.push({ name: "logIn", params: { flashMsg: "権限がありません" } });
+        this.$router.push({ name: "logIn", params: { flashMsg: "ログインしてください。" } });
       }
-
-      // メッセージ設定
-      this.msg = this.flashMsg;
-      this.errMsg = this.flashErrMsg;
 
       // 画面更新処理を呼び出す
       await this.updateView();
@@ -330,7 +321,6 @@ export default {
     async inputProductCode() {
       this.isLoading = true;
       this.productCodeErrMsg = "";
-      this.amountErrMsg = "";
 
       try {
         // 入力チェック
@@ -402,7 +392,7 @@ export default {
     async onClickProductsList() {
       this.isLoading = true;
 
-      // 主キーを一時的に保存する変数を初期化
+      // 主キーを一時的に保持する変数を初期化
       this.tmpProductRow = null;
       // テーブル定義初期化
       this.items = [];
@@ -490,15 +480,15 @@ export default {
           this.amountErrMsg = "数量は半角数字で入力してください。";
           isErr = true;
         }
-        if (isNaN(orderDate)) {
+        if (isNaN(orderDate.getDate())) {
           this.orderDateErrMsg = "発注日が不正です。yyyy/mm/dd形式で入力してください。";
           isErr = true;
         }
-        if (isNaN(shipDate)) {
+        if (isNaN(shipDate.getDate())) {
           this.shipDateErrMsg = "出荷日が不正です。yyyy/mm/dd形式で入力してください。";
           isErr = true;
         }
-        if (isNaN(deliverDate)) {
+        if (isNaN(deliverDate.getDate())) {
           this.deliverDateErrMsg = "納品日が不正です。yyyy/mm/dd形式で入力してください。";
           isErr = true;
         }
