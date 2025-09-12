@@ -3,7 +3,7 @@
     <Header />
 
     <div id="wrapper">
-      <div id="content-wrapper" class="bg-light vh-100">
+      <div id="content-wrapper" class="bg-light min-vh-100">
         <div class="container-fluid">
           <h1  class="border-bottom">受注情報修正</h1>
           <button type="button" class="btn btn-dark mb-4" v-on:click="() => $router.push({ name: 'ordersList' })">
@@ -164,7 +164,6 @@
           </div>
         </div>
       </div>
-    </div>
 
     <!-- 一覧モーダルStart -->
     <div
