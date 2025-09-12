@@ -5,7 +5,7 @@
     <div id="wrapper">
       <div id="content-wrapper" class="bg-light min-vh-100">
         <div class="container-fluid">
-          <h1>受注情報修正</h1>
+          <h1 class="border-bottom">受注情報削除</h1>
           <button type="button" class="btn btn-dark" v-on:click="() => $router.push({ name: 'ordersList' })">
             受注情報一覧画面へ
           </button>
@@ -18,97 +18,97 @@
 
             <!-- 伝票番号 -->
             <div class="form-group d-flex flex-row">
-              <label class="col h5">伝票番号</label>
+              <label class="col">伝票番号</label>
               <p v-show="orderNo" class="col h5">{{ orderNo }}</p>
             </div>
 
             <!-- 顧客番号 -->
             <div class="form-group d-flex flex-row">
-              <label class="col h5">顧客番号</label>
+              <label class="col">顧客番号</label>
               <p v-show="clientNo" class="col h5">{{ clientNo }}</p>
             </div>
 
             <!-- 顧客名 -->
             <div class="form-group d-flex flex-row">
-              <label class="col h5">顧客名</label>
+              <label class="col">顧客名</label>
               <p v-show="name" class="col h5">{{ name }}</p>
             </div>
 
             <!-- 郵便番号 -->
             <div class="form-group d-flex flex-row">
-              <label class="col h5">郵便番号</label>
+              <label class="col">郵便番号</label>
               <p v-show="postCode" class="col h5">{{ postCode }}</p>
             </div>
 
             <!-- 住所1 -->
             <div class="form-group d-flex flex-row">
-              <label class="col h5">住所1</label>
+              <label class="col">住所1</label>
               <p v-show="address1" class="col h5">{{ address1 }}</p>
             </div>
 
             <!-- 住所2 -->
             <div class="form-group d-flex flex-row">
-              <label class="col h5">住所2</label>
+              <label class="col">住所2</label>
               <p v-show="address2" class="col h5">{{ address2 }}</p>
             </div>
 
             <!-- 発注日 -->
             <div class="form-group d-flex flex-row">
-              <label for="orderDate" class="col h5">発注日</label>
+              <label for="orderDate" class="col">発注日</label>
               <p v-show="orderDate" class="col h5">{{ orderDate }}</p>
             </div>
 
             <!-- 出荷日 -->
             <div class="form-group d-flex flex-row">
-              <label for="shipDate" class="col h5">出荷日</label>
+              <label for="shipDate" class="col">出荷日</label>
               <p v-show="shipDate" class="col h5">{{ shipDate }}</p>
             </div>
 
             <!-- 納品日 -->
             <div class="form-group d-flex flex-row">
-              <label for="deliverDate" class="col h5">納品日</label>
+              <label for="deliverDate" class="col">納品日</label>
               <p v-show="deliverDate" class="col h5">{{ deliverDate }}</p>
             </div>
 
             <!-- 商品コード -->
             <div class="form-group d-flex flex-row">
-              <label for="productCode" class="col h5">商品コード</label>
+              <label for="productCode" class="col">商品コード</label>
               <p v-show="productCode" class="col h5">{{ productCode }}</p>
             </div>
 
             <!-- 商品名 -->
             <div class="form-group d-flex flex-row">
-              <label class="col h5">商品名</label>
+              <label class="col">商品名</label>
               <p v-show="productName" class="col h5">{{ productName }}</p>
             </div>
 
             <!-- 数量 -->
             <div class="form-group d-flex flex-row">
-              <label for="amount" class="col h5">数量</label>
+              <label for="amount" class="col">数量</label>
               <p v-show="amount" class="col h5">{{ amount }}</p>
             </div>
 
             <!-- 単価 -->
             <div class="form-group d-flex flex-row">
-              <label class="col h5">単価</label>
+              <label class="col">単価</label>
               <p v-show="price" class="col h5">{{ price }}</p>
             </div>
 
             <!-- 金額 -->
             <div class="form-group d-flex flex-row">
-              <label class="col h5">金額</label>
+              <label class="col">金額</label>
               <p v-show="calcResults" class="col h5">{{ calcResults.value }}</p>
             </div>
 
             <!-- 消費税額 -->
             <div class="form-group d-flex flex-row">
-              <label class="col h5">消費税額</label>
+              <label class="col">消費税額</label>
               <p v-show="calcResults" class="col h5">{{ calcResults.taxValue }}</p>
             </div>
 
             <!-- 合計金額 -->
             <div class="form-group d-flex flex-row">
-              <label class="col h5">合計金額</label>
+              <label class="col">合計金額</label>
               <p v-show="calcResults" class="col h5">{{ calcResults.totalValue }}</p>
             </div>
           </div>
@@ -152,7 +152,7 @@ export default {
       items: [],
       fields: [],
       tmpRow: "",
-      
+
       //各項目初期値
       orderNo: "",
       clientNo: "",

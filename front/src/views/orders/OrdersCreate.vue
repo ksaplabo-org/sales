@@ -5,7 +5,7 @@
     <div id="wrapper">
       <div id="content-wrapper" class="bg-light vh-100">
         <div class="container-fluid">
-          <h1>受注情報登録</h1>
+          <h1 class="border-bottom">受注情報登録</h1>
           <button type="button" class="btn btn-dark" v-on:click="() => $router.push({ name: 'ordersList' })">
             受注情報一覧画面へ
           </button>
@@ -249,7 +249,6 @@
         </div>
       </div>
       <!-- 顧客情報一覧モーダルEnd -->
-      <
     </div>
 
     <!-- スクロールトップボタン -->
