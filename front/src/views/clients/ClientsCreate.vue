@@ -4,7 +4,7 @@
 
     <div id="content-wrapper" class="bg-light min-vh-100">
       <div class="container-fluid">
-        <h1 class="border-bottom">顧客情報一覧</h1>
+        <h1 class="border-bottom">顧客情報登録</h1>
 
         <button type="button" class="btn btn-dark" v-on:click="() => $router.push({ name: 'clientsList' })">
           顧客情報一覧画面へ
@@ -49,7 +49,7 @@
                 autocomplete="off"
               />
             </div>
-            <div class="text" style="display: inline-block; vertical-align: middle">ー</div>
+            <div class="text col-lg-1" style="display: inline-block; vertical-align: middle">ー</div>
             <div class="col-lg-6" style="margin-bottom: 0px">
               <input
                 type="number"
@@ -114,7 +114,7 @@
           <div class="col-lg-2 h5">電話番号</div>
           <div class="col-lg-3" style="margin-bottom: 0px">
             <input
-              type="text"
+              type="tel"
               id="telNo"
               class="form-control"
               placeholder="20字以内で入力してください"
@@ -200,6 +200,7 @@ export default {
   },
   methods: {
     async clientsCreate() {
+      this.msg = "";
       this.isLoading = true;
       this.nameErrMsg = "";
       this.postCodeErrMsg = "";
@@ -262,15 +263,12 @@ export default {
         this.$router.push({ name: "clientsList" });
       } catch (e) {
         if (e.response.status === 400) {
-          this.msg = "";
           alert("顧客情報の登録上限を超えています。");
-          console.log(e);
           this.$router.push({ name: "clientsList" });
         } else {
-          this.msg = "";
           alert("顧客情報登録に失敗しました。");
-          console.log(e);
         }
+        console.log(e);
       } finally {
         this.isLoading = false;
       }

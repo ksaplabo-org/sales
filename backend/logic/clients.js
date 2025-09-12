@@ -21,6 +21,24 @@ module.exports.getAll = async function (db) {
 };
 
 /**
+ * 顧客番号の最大値検索
+ *
+ * @param {*} db
+ * @returns {Promise<Object>}
+ */
+module.exports.getMaxClientNo = async function (db) {
+  const clientsModel = ClientsRepository.getClientsModel(db);
+
+  try {
+    // 顧客番号の最大値を取得
+    const maxClientNo = await clientsModel.max("client_no");
+    return maxClientNo;
+  } catch (e) {
+    throw e;
+  }
+};
+
+/**
  * 顧客情報を登録
  *
  * @param {*} db
@@ -33,15 +51,10 @@ module.exports.getAll = async function (db) {
  * @param {*} entryId
  * @returns {promise<void>}
  */
-module.exports.create = async function (db, name, postCode, address1, address2, telNo, updateId, entryId) {
+module.exports.create = async function (db, clientNo, name, postCode, address1, address2, telNo, updateId, entryId) {
   const clientsModel = ClientsRepository.getClientsModel(db);
 
   try {
-    const clientNo = (await clientsModel.max("client_no")) + 1;
-    if (clientNo.toString().length > 8) {
-      const status = 400;
-      return status;
-    }
     return await clientsModel.create({
       client_no: clientNo,
       name: name,

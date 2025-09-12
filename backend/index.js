@@ -75,20 +75,25 @@ app.post("/api/clients", async function (req, res) {
   const reqBody = req.body;
 
   try {
-    const createResult = await ClientsLogic.create(
-      db,
-      reqBody.name,
-      reqBody.postCode,
-      reqBody.address1,
-      reqBody.address2,
-      reqBody.telNo,
-      reqBody.updateId,
-      reqBody.entryId
-    );
+    const maxClientNo = await ClientsLogic.getMaxClientNo(db);
+
     //顧客番号が上限を超えているか判定
-    if (createResult === 400) {
-      res.status(400).send();
+    if (maxClientNo >= 99999999) {
+      const status = 400;
+      res.status(status).send();
     } else {
+      const clientNo = maxClientNo + 1;
+      await ClientsLogic.create(
+        db,
+        clientNo,
+        reqBody.name,
+        reqBody.postCode,
+        reqBody.address1,
+        reqBody.address2,
+        reqBody.telNo,
+        reqBody.updateId,
+        reqBody.entryId
+      );
       res.send();
     }
   } catch (e) {
