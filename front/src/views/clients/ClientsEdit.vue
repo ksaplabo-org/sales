@@ -2,7 +2,7 @@
   <div>
     <Header />
 
-
+    <div id="wrapper">
       <div id="content-wrapper" class="bg-light min-vh-100">
         <div class="container-fluid">
           <h1 class="border-bottom">顧客情報修正</h1>
@@ -126,6 +126,7 @@
             </div>
           </form>
         </div>
+      </div>
     </div>
 
     <!-- スクロールトップボタン -->

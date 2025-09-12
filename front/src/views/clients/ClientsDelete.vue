@@ -5,7 +5,7 @@
     <div id="wrapper">
       <div id="content-wrapper" class="bg-light vh-100">
         <div class="container-fluid">
-          <h1>顧客情報削除</h1>
+          <h1 class="border-bottom">顧客情報削除</h1>
           <button class="btn btn-dark" v-on:click="() => $router.push({ name: 'clientsList' })">
             顧客情報一覧画面へ
           </button>

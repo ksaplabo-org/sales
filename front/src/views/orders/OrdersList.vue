@@ -1,38 +1,42 @@
 <template>
   <div>
     <Header />
+    <div id="wrapper">
+      <div id="content-wrapper" class="bg-light min-vh-100">
+        <div class="container-fluid">
+          <!-- タイトルとメニュー遷移ボタン -->
+          <h1 class="border-bottom">受注情報一覧</h1>
+          <button class="btn btn-dark mb-4" v-on:click="onClickMenuButton()">メニュー画面へ</button>
 
-    <div id="content-wrapper" class="bg-light min-vh-100">
-      <div class="container-fluid">
-        <!-- タイトルとメニュー遷移ボタン -->
-        <h1 class="border-bottom">受注情報一覧</h1>
-        <button class="btn btn-dark mb-4" v-on:click="onClickMenuButton()">メニュー画面へ</button>
-
-        <!-- コンテンツStart -->
-        <div style="width: 90%; margin: auto">
-          <Table :items="items" :fields="fields" :empDataMsg="'受注情報がありません'" @sendRow="setReceiveRow" />
-          <!-- 登録・修正・削除ボタンStart -->
-          <div class="form-group d-flex justify-content-center">
-            <div class="p-2 w-25">
-              <button class="btn btn-primary btn-block" v-on:click="onClickCreateButton()">登録</button>
+          <!-- コンテンツStart -->
+          <div style="width: 90%; margin: auto">
+            <Table :items="items" :fields="fields" :empDataMsg="'受注情報がありません'" @sendRow="setReceiveRow" />
+            <!-- 登録・修正・削除ボタンStart -->
+            <div class="form-group d-flex justify-content-center">
+              <div class="p-2 w-25">
+                <button class="btn btn-primary btn-block" v-on:click="onClickCreateButton()">登録</button>
+              </div>
+              <div class="p-2 w-25">
+                <button class="btn btn-info btn-block" v-on:click="onClickEditButton()" :disabled="orderRow == null">
+                  修正
+                </button>
+              </div>
+              <div class="p-2 w-25">
+                <button
+                  class="btn btn-danger btn-block"
+                  v-on:click="onClickDeleteButton()"
+                  :disabled="orderRow == null"
+                >
+                  削除
+                </button>
+              </div>
             </div>
-            <div class="p-2 w-25">
-              <button class="btn btn-info btn-block" v-on:click="onClickEditButton()" :disabled="orderRow == null">
-                修正
-              </button>
-            </div>
-            <div class="p-2 w-25">
-              <button class="btn btn-danger btn-block" v-on:click="onClickDeleteButton()" :disabled="orderRow == null">
-                削除
-              </button>
-            </div>
+            <!-- 登録・修正・削除ボタンEnd -->
           </div>
-          <!-- 登録・修正・削除ボタンEnd -->
         </div>
+        <!-- コンテンツEnd -->
       </div>
-      <!-- コンテンツEnd -->
     </div>
-
     <!-- スクロールトップボタン -->
     <a class="scroll-to-top rounded" href="#page-top">
       <i class="fas fa-angle-up"></i>

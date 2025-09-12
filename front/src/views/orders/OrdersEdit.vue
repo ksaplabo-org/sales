@@ -3,9 +3,9 @@
     <Header />
 
     <div id="wrapper">
-      <div id="content-wrapper" class="bg-light vh-100">
+      <div id="content-wrapper" class="bg-light min-vh-100">
         <div class="container-fluid">
-          <h1>受注情報修正</h1>
+          <h1 class="border-bottom">受注情報修正</h1>
           <button type="button" class="btn btn-dark" v-on:click="() => $router.push({ name: 'ordersList' })">
             受注情報一覧画面へ
           </button>
@@ -19,42 +19,42 @@
             <!-- 伝票番号 -->
             <div class="form-group d-flex flex-row">
               <label class="col">伝票番号</label>
-              <p v-show="orderNo" class="col-7 pl-0">{{ orderNo }}</p>
+              <p v-show="orderNo" class="col-7 pl-0 h5">{{ orderNo }}</p>
             </div>
 
             <!-- 顧客番号 -->
             <div class="form-group d-flex flex-row">
               <label class="col">顧客番号</label>
-              <p v-show="clientNo" class="col-7 pl-0">{{ clientNo }}</p>
+              <p v-show="clientNo" class="col-7 pl-0 h5">{{ clientNo }}</p>
             </div>
 
             <!-- 顧客名 -->
             <div class="form-group d-flex flex-row">
               <label class="col">顧客名</label>
-              <p v-show="name" class="col-7 pl-0">{{ name }}</p>
+              <p v-show="name" class="col-7 pl-0 h5">{{ name }}</p>
             </div>
 
             <!-- 郵便番号 -->
             <div class="form-group d-flex flex-row">
               <label class="col">郵便番号</label>
-              <p v-show="postCode" class="col-7 pl-0">{{ postCode }}</p>
+              <p v-show="postCode" class="col-7 pl-0 h5">{{ postCode }}</p>
             </div>
 
             <!-- 住所1 -->
             <div class="form-group d-flex flex-row">
               <label class="col">住所1</label>
-              <p v-show="address1" class="col-7 pl-0">{{ address1 }}</p>
+              <p v-show="address1" class="col-7 pl-0 h5">{{ address1 }}</p>
             </div>
 
             <!-- 住所2 -->
             <div class="form-group d-flex flex-row">
               <label class="col">住所2</label>
-              <p v-show="address2" class="col-7 pl-0">{{ address2 }}</p>
+              <p v-show="address2" class="col-7 pl-0 h5">{{ address2 }}</p>
             </div>
 
             <!-- 発注日 -->
             <div class="form-group d-flex flex-row">
-              <label for="orderDate" class="col">発注日</label>
+              <label for="orderDate" class="col">発注日<label class="text-danger">*</label></label>
               <input type="date" id="orderDate" class="form-control col-7" v-model="orderDate" />
             </div>
             <!-- 発注日エラーメッセージ -->
@@ -62,7 +62,7 @@
 
             <!-- 出荷日 -->
             <div class="form-group d-flex flex-row">
-              <label for="shipDate" class="col">出荷日</label>
+              <label for="shipDate" class="col">出荷日<label class="text-danger">*</label></label>
               <input type="date" id="shipDate" class="form-control col-7" v-model="shipDate" />
             </div>
             <!-- 出荷日エラーメッセージ -->
@@ -70,7 +70,7 @@
 
             <!-- 納品日 -->
             <div class="form-group d-flex flex-row">
-              <label for="deliverDate" class="col">納品日</label>
+              <label for="deliverDate" class="col">納品日<label class="text-danger">*</label></label>
               <input type="date" id="deliverDate" class="form-control col-7" v-model="deliverDate" />
             </div>
             <!-- 納品日エラーメッセージ -->
@@ -78,7 +78,7 @@
 
             <!-- 商品コード -->
             <div class="form-group d-flex flex-row">
-              <label for="productCode" class="col-5">商品コード</label>
+              <label for="productCode" class="col-5">商品コード<label class="text-danger">*</label></label>
               <input
                 type="number"
                 id="productCode"
@@ -102,12 +102,12 @@
             <!-- 商品名 -->
             <div class="form-group d-flex flex-row">
               <label class="col">商品名</label>
-              <p v-show="productName" class="col-7 pl-0">{{ productName }}</p>
+              <p v-show="productName" class="col-7 pl-0 h5">{{ productName }}</p>
             </div>
 
             <!-- 数量 -->
             <div class="form-group d-flex flex-row">
-              <label for="amount" class="col">数量</label>
+              <label for="amount" class="col">数量<label class="text-danger">*</label></label>
               <input
                 type="number"
                 id="amount"
@@ -122,31 +122,31 @@
             <!-- 単価 -->
             <div class="form-group d-flex flex-row">
               <label class="col">単価</label>
-              <p v-show="price" class="col-7 pl-0">{{ price }}</p>
+              <p v-show="price" class="col-7 pl-0 h5">{{ price }}</p>
             </div>
 
             <!-- 金額 -->
             <div class="form-group d-flex flex-row">
               <label class="col">金額</label>
-              <p v-show="calcResults" class="col-7 pl-0">{{ calcResults.value }}</p>
+              <p v-show="calcResults" class="col-7 pl-0 h5">{{ calcResults.value }}</p>
             </div>
 
             <!-- 消費税額 -->
             <div class="form-group d-flex flex-row">
               <label class="col">消費税額</label>
-              <p v-show="calcResults" class="col-7 pl-0">{{ calcResults.taxValue }}</p>
+              <p v-show="calcResults" class="col-7 pl-0 h5">{{ calcResults.taxValue }}</p>
             </div>
 
             <!-- 合計金額 -->
             <div class="form-group d-flex flex-row">
               <label class="col">合計金額</label>
-              <p v-show="calcResults" class="col-7 pl-0">{{ calcResults.totalValue }}</p>
+              <p v-show="calcResults" class="col-7 pl-0 h5">{{ calcResults.totalValue }}</p>
             </div>
           </div>
           <!-- 修正・キャンセルボタン -->
           <div class="form-group d-flex justify-content-center">
             <div class="p-2 w-25">
-              <btn class="btn btn-primary btn-lg btn-block" v-on:click="ordersEdit()">修正</btn>
+              <btn class="btn btn-info btn-lg btn-block" v-on:click="ordersEdit()">修正</btn>
             </div>
             <div class="p-2 w-25">
               <CancelButton />
@@ -154,46 +154,46 @@
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- 一覧モーダルStart -->
-    <div
-      class="modal fade"
-      id="ListModal"
-      tabindex="-1"
-      role="dialog"
-      aria-labelledby="myModalLabel"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog modal-xl">
-        <div class="modal-content">
-          <div class="modal-header">
-            <p class="modal-title font-weight-bold text-secondary" id="myModalLabel">商品情報一覧</p>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <!-- インポートしたテーブル -->
-            <Table :items="items" :fields="fields" :empDataMsg="'受注情報がありません'" @sendRow="setReceiveRow" />
-          </div>
-          <div class="modal-footer">
-            <!-- 選択ボタン -->
-            <button
-              type="button"
-              class="btn btn-primary"
-              v-on:click="((productCode = tmpRow.product_code), inputProductCode())"
-              data-dismiss="modal"
-              :disabled="tmpRow == null"
-            >
-              選択
-            </button>
-            <!-- 閉じるボタン -->
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">閉じる</button>
+      <!-- 一覧モーダルStart -->
+      <div
+        class="modal fade"
+        id="ListModal"
+        tabindex="-1"
+        role="dialog"
+        aria-labelledby="myModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog modal-xl">
+          <div class="modal-content">
+            <div class="modal-header">
+              <p class="modal-title font-weight-bold text-secondary" id="myModalLabel">商品情報一覧</p>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <!-- インポートしたテーブル -->
+              <Table :items="items" :fields="fields" :empDataMsg="'受注情報がありません'" @sendRow="setReceiveRow" />
+            </div>
+            <div class="modal-footer">
+              <!-- 選択ボタン -->
+              <button
+                type="button"
+                class="btn btn-primary"
+                v-on:click="((productCode = tmpRow.product_code), inputProductCode())"
+                data-dismiss="modal"
+                :disabled="tmpRow == null"
+              >
+                選択
+              </button>
+              <!-- 閉じるボタン -->
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">閉じる</button>
+            </div>
           </div>
         </div>
+        <!-- 一覧モーダルEnd -->
       </div>
-      <!-- 一覧モーダルEnd -->
     </div>
 
     <!-- スクロールトップボタン -->
