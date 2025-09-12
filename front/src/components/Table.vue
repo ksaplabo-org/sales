@@ -20,23 +20,26 @@
       <!-- テーブル上部End -->
 
       <!-- テーブル本体 -->
-      <b-table
-        id="listTable"
-        :items="items"
-        :fields="fields"
-        :select-mode="'single'"
-        :per-page="perPage"
-        :current-page="currentPage"
-        :filter="filter"
-        striped
-        hover
-        selectable
-        show-empty
-        :empty-text="empDataMsg"
-        empty-filtered-text="検索結果がありません"
-        @row-selected="onRowSelected"
-      >
-      </b-table>
+ 
+        <div class="table-responsive">
+          <b-table
+            id="listTable"
+            :items="items"
+            :fields="fields"
+            :select-mode="'single'"
+            :per-page="perPage"
+            :current-page="currentPage"
+            :filter="filter"
+            striped
+            hover
+            selectable
+            show-empty
+            :empty-text="empDataMsg"
+            empty-filtered-text="検索結果がありません"
+            @row-selected="onRowSelected"
+          >
+          </b-table>
+        </div>
 
       <!-- テーブル下部Start -->
       <div class="d-flex justify-content-between">
