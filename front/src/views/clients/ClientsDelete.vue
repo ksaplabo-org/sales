@@ -6,7 +6,16 @@
       <div id="content-wrapper" class="bg-light vh-100">
         <div class="container-fluid">
           <h1>顧客情報削除</h1>
-          <a class="btn-dark btn-lg" href="/public/pages/clients/list.html" role="button">顧客情報一覧へ</a>
+          <button
+            class="btn btn-dark mb-4"
+            v-on:click="
+              () => {
+                this.$router.push({ name: 'clientsList' });
+              }
+            "
+          >
+            顧客情報一覧画面へ
+          </button>
           <br />
           <p class="text-danger" v-show="errMsg">{{ errMsg }}</p>
 
@@ -75,22 +84,22 @@
 </template>
 
 <script>
+// util関連
 import * as UserUtil from "@/utils/UserUtil";
 import * as AjaxUtil from "@/utils/AjaxUtil";
 import UserConst from "@/utils/const/UserConst";
-// 共通
+
+// コンポーネント関連
 import Header from "../../components/Header.vue";
-import "../../utils/sb-admin";
 import Loading from "../../components/Loading.vue";
-import CancelButton from "../../components/CancelButton.vue";
 export default {
-  props: ["flashMsg", "flashErrMsg"],
-  components: { Header, Loading, CancelButton },
+  components: { Header, Loading },
   data() {
     return {
-      //各項目初期値
       errMsg: "",
       isLoading: false,
+
+      //各項目初期値
       clientNo: "",
       name: "",
       postCode: "",
@@ -110,13 +119,8 @@ export default {
         this.$router.push({ name: "logIn", params: { flashMsg: "権限がありません" } });
       }
 
-      // メッセージ設定
-      this.msg = this.flashMsg;
-      this.errMsg = this.flashErrMsg;
-
       //画面更新処理
       await this.updateView();
-
     } catch (e) {
       this.errMsg = e.message;
     }
@@ -132,7 +136,7 @@ export default {
       const query = this.$route.query;
       //削除対象の顧客番号を設定する
       this.clientNo = query.clientNo;
-
+      
       try {
         // 顧客番号から顧客情報を取得
         const response = await AjaxUtil.getClientsByClientNo(this.clientNo);
@@ -147,7 +151,7 @@ export default {
         this.address2 = clientData.address2;
         this.telNo = clientData.tel_no;
       } catch (e) {
-        this.errMsg = "顧客情報取得に失敗しました";
+        this.errMsg = "顧客情報取得に失敗しました。";
         console.log(e);
       }
       this.isLoading = false;
@@ -162,12 +166,12 @@ export default {
       this.isLoading = true;
       try {
         //削除確認用ポップアップを表示
-        const comfirmResult = window.confirm("本当に削除しますか?");
+        const confirmResult = window.confirm("本当に削除しますか?");
         //Ok(true)の場合実行
-        if (comfirmResult) {
+        if (confirmResult) {
           await AjaxUtil.deleteClients(this.clientNo);
           window.alert("顧客情報削除処理が完了しました。");
-          window.location.href = "/public/pages/clients/list.html";
+          this.$router.push({ name: "clientsList" });
         }
       } catch (e) {
         window.alert("顧客情報削除処理に失敗しました。");

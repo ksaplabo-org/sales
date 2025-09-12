@@ -102,7 +102,7 @@ app.delete("/api/clients/:clientNo", async function (req, res) {
     res.send();
   } catch (e) {
     //異常レスポンス
-    console.log("failed to edit client", e);
+    console.log("failed to delete client", e);
     res.status(500).send("server error occur");
   }
 });
