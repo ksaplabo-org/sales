@@ -60,6 +60,23 @@ module.exports.edit = async function (db, clientNo, name, postCode, address1, ad
 };
 
 /**
+ * 顧客情報削除
+ */
+module.exports.delete = async function (db, clientNo) {
+  const clientsModel = ClientsRepository.getClientsModel(db);
+  console.log(clientNo);
+  try {
+    await clientsModel.destroy({
+      where: {
+        client_no: clientNo,
+      },
+    });
+  } catch (e) {
+    throw e;
+  }
+};
+
+/**
  * 顧客情報を取得
  *
  * [検索条件]
