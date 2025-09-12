@@ -91,7 +91,7 @@ app.post("/api/clients", async function (req, res) {
   const reqBody = req.body;
 
   try {
-    await ClientsLogic.create(
+    const createResult = await ClientsLogic.create(
       db,
       reqBody.name,
       reqBody.postCode,
@@ -101,8 +101,12 @@ app.post("/api/clients", async function (req, res) {
       reqBody.updateId,
       reqBody.entryId
     );
-    console.log("errtest");
-    res.send();
+    //顧客番号が上限を超えているか判定
+    if (createResult === 400) {
+      res.status(400).send();
+    } else {
+      res.send();
+    }
   } catch (e) {
     // 異常レスポンス
     console.log("failed to add clients.", e);

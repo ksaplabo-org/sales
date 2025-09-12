@@ -11,7 +11,7 @@
         <!-- コンテンツStart -->
         <div style="width: 90%; margin: auto">
           <!-- インポートしたテーブル -->
-          <Table :items="items" :fields="fields" @sendRow="setReceiveRow" />
+          <Table :items="items" :fields="fields" empDataMsg="顧客情報がありません" @sendRow="setReceiveRow" />
 
           <!-- 登録・修正・削除ボタンStart -->
           <div class="form-group d-flex justify-content-center">
@@ -63,10 +63,10 @@ export default {
       errMsg: "",
       isLoading: false,
       clientRow: null,
-
       //テーブル定義
       items: [],
       fields: [
+        // フォーマッターで0埋め処理
         { key: "display_client_no", label: "顧客番号", sortable: true },
         { key: "name", label: "顧客名", sortable: false },
         { key: "post_code", label: "郵便番号", sortable: false },
@@ -80,11 +80,11 @@ export default {
     try {
       this.isLoading = true;
 
-      //ログインチェック
+      // ログインチェック
       if (!UserUtil.isLogIn()) {
         this.$router.push({ name: "logIn", params: { flashMsg: "ログインしてください" } });
 
-        //権限チェック(管理者以外拒否)
+        // 権限チェック(管理者以外拒否)
       } else if (UserUtil.currentUserInfo().userRole != UserConst.UserRole.admin) {
         this.$router.push({ name: "logIn", params: { flashMsg: "権限がありません" } });
       }
