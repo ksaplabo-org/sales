@@ -2,11 +2,18 @@
   <div>
     <Header />
 
-    <div id="wrapper">
-      <div id="content-wrapper" class="bg-light vh-100">
+
+      <div id="content-wrapper" class="bg-light min-vh-100">
         <div class="container-fluid">
-          <h1>顧客情報修正</h1>
-          <button type="button" class="btn btn-dark" v-on:click="() => $router.push({ name: 'clientsList' })">
+          <h1 class="border-bottom">顧客情報修正</h1>
+          <button
+            class="btn btn-dark mb-4"
+            v-on:click="
+              () => {
+                this.$router.push({ name: 'clientsList' });
+              }
+            "
+          >
             顧客情報一覧画面へ
           </button>
           <br />
@@ -16,8 +23,6 @@
 
           <form @submit.stop.prevent="clientsEdit" method="post" autocomplete="new-password">
             <div class="col-5 mx-auto center-block">
-              <div class="" />
-
               <div class="form-group d-flex flex-row">
                 <label class="col">顧客番号</label>
                 <p v-show="clientNo" class="col-7 h5 pl-0">{{ clientNo }}</p>
@@ -41,25 +46,27 @@
               <div class="form-group d-flex flex-row">
                 <label class="col">郵便番号</label>
                 <input
-                  type="tel"
+                  type="number"
+                  step="1"
                   id="postCode1"
                   class="form-control col-3"
                   placeholder="000"
                   v-model="postCode1"
-                  autocomplete
-                  maxlength="3"
-                  inputmode="numeric"
+                  autocomplete="off"
+                  min="000"
+                  max="999"
                 />
                 <label class="pt-2 col-1 text-center">ー</label>
                 <input
-                  type="tel"
+                  type="number"
+                  step="1"
                   id="postCode2"
                   class="form-control col-3"
                   placeholder="0000"
                   v-model="postCode2"
-                  autocomplete
-                  maxlength="4"
-                  inputmode="numeric"
+                  autocomplete="off"
+                  min="0000"
+                  max="9999"
                 />
               </div>
               <div class="text-danger col text-right pr-0 mb-3" v-show="postCodeMsg">{{ postCodeMsg }}</div>
@@ -68,7 +75,7 @@
                 <label class="col">住所１</label>
                 <input
                   type="text"
-                  id="clientsName"
+                  id="address1"
                   class="form-control col-7"
                   placeholder="20字以内で入力してください"
                   v-model="address1"
@@ -83,7 +90,7 @@
                 <label class="col">住所２</label>
                 <input
                   type="text"
-                  id="clientsName"
+                  id="address2"
                   class="form-control col-7"
                   placeholder="20字以内で入力してください"
                   v-model="address2"
@@ -102,16 +109,16 @@
                   class="form-control col-7"
                   placeholder="20字以内で入力してください"
                   v-model="telNo"
-                  autocomplete
+                  autocomplete="off"
                   maxlength="20"
                 />
               </div>
               <div class="text-danger col text-right pr-0 mb-3" v-show="telNoMsg">{{ telNoMsg }}</div>
             </div>
             <!-- 修正・キャンセルボタン -->
-            <div class="form-group d-flex justify-content-center">
+            <div class="form-group d-flex justify-content-center col">
               <div class="p-2 w-25">
-                <input class="btn btn-primary btn-lg btn-block" type="submit" value="修正" />
+                <input class="btn btn-info btn-lg btn-block" type="submit" value="修正" />
               </div>
               <div class="p-2 w-25">
                 <CancelButton />
@@ -119,7 +126,6 @@
             </div>
           </form>
         </div>
-      </div>
     </div>
 
     <!-- スクロールトップボタン -->
@@ -150,7 +156,6 @@ export default {
       //各項目初期値
       clientNo: "",
       name: "",
-      postCode: "",
       postCode1: "",
       postCode2: "",
       address1: "",
@@ -163,7 +168,7 @@ export default {
       address1Msg: "",
       address2Msg: "",
       telNoMsg: "",
-      isErr: false,
+      id: "",
     };
   },
   async mounted() {
@@ -186,17 +191,18 @@ export default {
     /**
      * 画面更新
      */
-    async updateView() {
+    updateView: async function () {
       this.isLoading = true;
 
       //クエリストリングを取得
       const query = this.$route.query;
-      //編集対象の顧客番号を設定する
-      this.clientNo = query.clientNo;
+
+      //ログイン中のユーザーを取得
+      this.id = UserUtil.currentUserInfo().id;
 
       try {
         // 顧客番号から顧客情報を取得
-        const response = await AjaxUtil.getClientsByClientNo(this.clientNo);
+        const response = await AjaxUtil.getClientsByClientNo(query.clientNo);
         const clientData = JSON.parse(response.data.Items);
 
         // 顧客情報を各項目にセット
@@ -215,9 +221,9 @@ export default {
     },
 
     /**
-     * ユーザー更新
+     * 顧客更新
      */
-    async clientsEdit() {
+    clientsEdit: async function () {
       // メッセージ初期化
       this.errMsg = "";
       this.clientNameMsg = "";
@@ -225,58 +231,57 @@ export default {
       this.address1Msg = "";
       this.address2Msg = "";
       this.telNoMsg = "";
-      this.id;
       this.isLoading = true;
-      this.isErr = false;
+      let isErr = false;
 
       try {
         // 入力チェック
         if (this.name == null || this.name === "") {
           this.clientNameMsg = "顧客名が未入力です。";
-          this.isErr = true;
+          isErr = true;
         }
         if (this.name.length > 20) {
           this.clientNameMsg = "顧客名は20字以内で入力してください。";
-          this.isErr = true;
+          isErr = true;
         }
         if ((this.postCode1 || this.postCode2) && (this.postCode1.length != 3 || this.postCode2.length != 4)) {
           this.postCodeMsg = "正しい郵便番号を入力してください。";
-          this.isErr = true;
+          isErr = true;
         }
         if (this.address1.length > 20) {
-          this.address1Msg = "住所1は20字以内で入力してください。";
-          this.isErr = true;
+          this.address1Msg = "住所１は20字以内で入力してください。";
+          isErr = true;
         }
         if (this.address2.length > 20) {
-          this.address2Msg = "住所2は20字以内で入力してください。";
-          this.isErr = true;
+          this.address2Msg = "住所２は20字以内で入力してください。";
+          isErr = true;
         }
         if (this.telNo.length > 20) {
           this.telNoMsg = "電話番号は20字以内で入力してください。";
-          this.isErr = true;
+          isErr = true;
         }
         if (!this.postCode1.match("^[0-9]*$") || !this.postCode2.match("^[0-9]*$")) {
           this.postCodeMsg = "郵便番号は半角数字で入力してください。";
-          this.isErr = true;
+          isErr = true;
         }
         if (this.telNo && !this.telNo.match("^[0-9][0-9-]*$")) {
           this.telNoMsg = "電話番号は半角数字と-(半角ハイフン)のみで入力してください。";
-          this.isErr = true;
+          isErr = true;
         }
-        if (this.isErr) {
+        if (isErr) {
           return;
         }
-        this.postCode = this.postCode1 + "-" + this.postCode2;
+        const postCode = this.postCode1 + "-" + this.postCode2;
         // 引数格納
 
         const model = {
-          clientNo: this.clientNo,
+          clientNo: Number(this.clientNo),
           name: this.name,
-          postCode: this.postCode,
+          postCode: postCode,
           address1: this.address1,
           address2: this.address2,
           telNo: this.telNo,
-          updateId: UserUtil.currentUserInfo().id,
+          updateId: this.id,
         };
 
         await AjaxUtil.putClients(model);
@@ -292,3 +297,13 @@ export default {
   },
 };
 </script>
+<style>
+input[type="number"]#postCode1::-webkit-outer-spin-button,
+input[type="number"]#postCode1::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+input[type="number"]#postCode2::-webkit-outer-spin-button,
+input[type="number"]#postCode2::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+</style>
