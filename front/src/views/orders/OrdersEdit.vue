@@ -164,7 +164,7 @@
           </div>
         </div>
       </div>
-
+</div>
     <!-- 一覧モーダルStart -->
     <div
       class="modal fade"
