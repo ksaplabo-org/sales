@@ -68,6 +68,41 @@ app.get("/api/clients", async function (req, res) {
 });
 
 /**
+ * 顧客情報登録API
+ */
+app.post("/api/clients", async function (req, res) {
+  // リクエストボディ取得
+  const reqBody = req.body;
+
+  try {
+    const maxClientNo = await ClientsLogic.getMaxClientNo(db);
+
+    //顧客番号が上限を超えているか判定
+    if (maxClientNo >= 99999999) {
+      res.status(400).send();
+    } else {
+      const clientNo = maxClientNo + 1;
+      await ClientsLogic.create(
+        db,
+        clientNo,
+        reqBody.name,
+        reqBody.postCode,
+        reqBody.address1,
+        reqBody.address2,
+        reqBody.telNo,
+        reqBody.updateId,
+        reqBody.entryId
+      );
+      res.send();
+    }
+  } catch (e) {
+    // 異常レスポンス
+    console.log("failed to add clients.", e);
+    res.status(500).send("server error occur");
+  }
+});
+
+/**
  * 顧客情報修正API
  */
 app.put("/api/clients", async function (req, res) {

@@ -21,6 +21,58 @@ module.exports.getAll = async function (db) {
 };
 
 /**
+ * 顧客番号の最大値検索
+ *
+ * @param {*} db
+ * @returns {Promise<number>}
+ */
+module.exports.getMaxClientNo = async function (db) {
+  const clientsModel = ClientsRepository.getClientsModel(db);
+
+  try {
+    // 顧客番号の最大値を取得
+    return await clientsModel.max("client_no");
+  } catch (e) {
+    throw e;
+  }
+};
+
+/**
+ * 顧客情報を登録
+ *
+ * @param {*} db
+ * @param {*} clientNo
+ * @param {*} name
+ * @param {*} postCode
+ * @param {*} address1
+ * @param {*} address2
+ * @param {*} telNo
+ * @param {*} updateId
+ * @param {*} entryId
+ * @returns {Promise<void>}
+ */
+module.exports.create = async function (db, clientNo, name, postCode, address1, address2, telNo, updateId, entryId) {
+  const clientsModel = ClientsRepository.getClientsModel(db);
+
+  try {
+    return await clientsModel.create({
+      client_no: clientNo,
+      name: name,
+      post_code: postCode,
+      address1: address1,
+      address2: address2,
+      tel_no: telNo,
+      update_id: updateId,
+      update_date: sequelize.fn("now"),
+      entry_id: entryId,
+      entry_date: sequelize.fn("now"),
+    });
+  } catch (e) {
+    throw e;
+  }
+};
+
+/**
  * 顧客情報を編集
  *
  * @param {*} db
@@ -32,7 +84,7 @@ module.exports.getAll = async function (db) {
  * @param {*} telNo
  * @param {*} updateId
  * @param {*} updateDate
- * @returns {promise<void>}
+ * @returns {Promise<void>}
  */
 module.exports.edit = async function (db, clientNo, name, postCode, address1, address2, telNo, updateId) {
   const clientsModel = ClientsRepository.getClientsModel(db);
