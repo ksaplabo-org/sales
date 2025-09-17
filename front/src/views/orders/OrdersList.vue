@@ -116,9 +116,9 @@ export default {
             client_no: order.client_no,
             // 0埋めされた表示用の顧客番号
             display_client_no: String(order.client_no).padStart(8, "0"),
-            order_date: order.order_date,
-            ship_date: order.ship_date,
-            deliver_date: order.deliver_date,
+            order_date: String(order.order_date).replace(/-/g, "/"),
+            ship_date:  String(order.ship_date).replace(/-/g, "/"),
+            deliver_date:  String(order.deliver_date).replace(/-/g, "/"),
           };
         });
       } catch (e) {

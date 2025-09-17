@@ -216,9 +216,9 @@ export default {
         this.postCode = orderData.client.post_code;
         this.address1 = orderData.client.address1;
         this.address2 = orderData.client.address2;
-        this.orderDate = orderData.order_date;
-        this.shipDate = orderData.ship_date;
-        this.deliverDate = orderData.deliver_date;
+        this.orderDate = String(orderData.order_date).replace(/-/g, "/");
+        this.shipDate = String(orderData.ship_date).replace(/-/g, "/");
+        this.deliverDate = String(orderData.deliver_date).replace(/-/g, "/");
         this.productCode = orderData.product.product_code;
         this.productName = orderData.product.product_name;
         this.amount = orderData.amount;
@@ -227,7 +227,7 @@ export default {
         //計算処理(戻り値は連想配列)を呼び出し、計算結果の項目にセット
         this.calcResults = OrdersUtil.calcValue(this.amount, this.price);
       } catch (e) {
-        this.errMsg = "受注情報取得に失敗しました";
+        this.errMsg = "受注情報取得に失敗しました。";
         console.log(e);
       }
     },
