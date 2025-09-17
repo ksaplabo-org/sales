@@ -123,7 +123,7 @@
               <div class="col-lg-6">
                 <input type="number" id="amount" class="form-control" v-model="amount" v-on:change="displayValue()" />
                 <!-- 数量エラーメッセージ -->
-                <div class="text-danger small" style="white-space: pre-wrap" v-show="amountErrMsg">
+                <div class="text-danger small" v-show="amountErrMsg">
                   {{ amountErrMsg }}
                 </div>
               </div>
