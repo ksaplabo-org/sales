@@ -15,50 +15,50 @@
           <br />
 
           <form @submit.stop.prevent="clientsDelete" method="post" autocomplete="new-password">
-            <div class="col-lg-5 mx-auto center-block">
+            <div class="col-sm-5 mx-auto center-block">
               <div class="" />
 
               <!-- 顧客番号 -->
               <div class="form-group row">
-                <label class="col-lg-6">顧客番号</label>
-                <p v-show="clientNo" class="col-lg-6 h5">{{ clientNo }}</p>
+                <label class="col-sm-6">顧客番号</label>
+                <p v-show="clientNo" class="col-sm-6 h5">{{ clientNo }}</p>
               </div>
 
               <!-- 顧客名 -->
               <div class="form-group row">
-                <label class="col-lg-6">顧客名</label>
-                <p v-show="name" class="col-lg-6 h5">{{ name }}</p>
+                <label class="col-sm-6">顧客名</label>
+                <p v-show="name" class="col-sm-6 h5">{{ name }}</p>
               </div>
 
               <!-- 郵便番号 -->
               <div class="form-group row">
-                <label class="col-lg-6">郵便番号</label>
-                <p class="col-lg-6 h5">{{ postCode }}</p>
+                <label class="col-sm-6">郵便番号</label>
+                <p class="col-sm-6 h5">{{ postCode }}</p>
               </div>
 
               <!-- 住所１ -->
               <div class="form-group row">
-                <label class="col-lg-6">住所１</label>
-                <p v-show="address1" class="col-lg-6 h5">{{ address1 }}</p>
+                <label class="col-sm-6">住所１</label>
+                <p v-show="address1" class="col-sm-6 h5">{{ address1 }}</p>
               </div>
 
               <!-- 住所２ -->
               <div class="form-group row">
-                <label class="col-lg-6">住所２</label>
-                <p v-show="address2" class="col-lg-6 h5">{{ address2 }}</p>
+                <label class="col-sm-6">住所２</label>
+                <p v-show="address2" class="col-sm-6 h5">{{ address2 }}</p>
               </div>
 
               <!-- 電話番号 -->
               <div class="form-group row">
-                <label class="col-lg-6">電話番号</label>
-                <p v-show="telNo" class="col-lg-6 h5">{{ telNo }}</p>
+                <label class="col-sm-6">電話番号</label>
+                <p v-show="telNo" class="col-sm-6 h5">{{ telNo }}</p>
               </div>
             </div>
 
             <!-- 削除ボタン -->
             <div class="form-group justify-content-center row">
-              <div class="col-lg-6">
-                <input class="btn btn-danger btn-lg btn-block" type="submit" value="削除" />
+              <div class="col-sm-6">
+                <input class="btn btn-danger btn-sm btn-block" type="submit" value="削除" />
               </div>
             </div>
           </form>
