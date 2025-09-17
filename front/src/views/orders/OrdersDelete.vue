@@ -6,7 +6,7 @@
       <div id="content-wrapper" class="bg-light min-vh-100">
         <div class="container-fluid">
           <h1 class="border-bottom">受注情報削除</h1>
-          <button type="button" class="btn btn-dark" v-on:click="() => $router.push({ name: 'ordersList' })">
+          <button type="button" class="btn btn-dark mb-4" v-on:click="() => $router.push({ name: 'ordersList' })">
             受注情報一覧画面へ
           </button>
           <br />
