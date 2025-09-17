@@ -79,8 +79,7 @@ app.post("/api/clients", async function (req, res) {
 
     //顧客番号が上限を超えているか判定
     if (maxClientNo >= 99999999) {
-      const status = 400;
-      res.status(status).send();
+      res.status(400).send();
     } else {
       const clientNo = maxClientNo + 1;
       await ClientsLogic.create(
