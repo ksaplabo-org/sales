@@ -1,4 +1,3 @@
-const { where } = require("sequelize/lib/sequelize");
 const UsersRepository = require("../db/users");
 
 /**
