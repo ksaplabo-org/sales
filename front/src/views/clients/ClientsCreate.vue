@@ -107,7 +107,7 @@
 
           <div class="form-group justify-content-center row">
             <div class="mb-3 col-lg-4">
-              <btn class="btn btn-info btn-lg btn-block" v-on:click="clientsCreate()">登録</btn>
+              <btn class="btn btn-primary btn-lg btn-block" v-on:click="clientsCreate()">登録</btn>
             </div>
             <div class="col-lg-4">
               <CancelButton />
