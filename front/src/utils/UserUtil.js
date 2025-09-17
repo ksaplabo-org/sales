@@ -1,19 +1,4 @@
-import * as AjaxUtil from "@/utils/AjaxUtil";
 import UserConst from "./const/UserConst";
-
-/**
- * SessionStorageに保持すログインユーザー情報のキー
- */
-const LOGIN_KEY = "logInUser";
-
-/**
- * ログアウト
- */
-export function deleteCurrentUserInfo() {
-  // SessionStorageから、ログインユーザー情報を削除する
-  sessionStorage.removeItem(LOGIN_KEY);
-}
-
 /**
  * ユーザー情報取得
  *
@@ -21,7 +6,7 @@ export function deleteCurrentUserInfo() {
  */
 export function currentUserInfo() {
   // SessionStorageから、ログインユーザー情報を取得する
-  const logInUser = sessionStorage.getItem(LOGIN_KEY);
+  const logInUser = sessionStorage.getItem(UserConst.SessionKey);
   
   //logInUserがnullかどうか判定
   if (logInUser === null) {

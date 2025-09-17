@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="bg-light min-vh-100">
     <Header />
     <div class="container">
       <div class="card card-login mx-auto mt-5">
@@ -34,6 +34,7 @@
                   v-model="userPass"
                   autocomplete="off"
                   pattern="^[0-9A-Za-z]+$"
+
                 />
                 <label for="inputUserPass">パスワード</label>
               </div>
@@ -73,6 +74,7 @@
 <script>
 import Loading from "../components/Loading.vue";
 import * as AjaxUtil from "@/utils/AjaxUtil";
+import UserConst from "@/utils/const/UserConst";
 import Header from "../components/Header.vue";
 
 export default {
@@ -92,7 +94,6 @@ export default {
      * ログイン処理
      */
     async logIn() {
-      const LOGIN_KEY = "logInUser";
       this.msg = "";
       this.errMsg = "";
       this.isLoading = true;
@@ -101,7 +102,7 @@ export default {
         // ログイン情報を取得
         const response = await AjaxUtil.logIn(this.userId, this.userPass);
         // セッションストレージにLOGIN_KEYとしてログイン情報を保存
-        sessionStorage.setItem(LOGIN_KEY, JSON.stringify(response.data));
+        sessionStorage.setItem(UserConst.SessionKey, JSON.stringify(response.data));
         this.$router.push({ name: "menu" });
       } catch (e) {
         if (e.response.status === 401) {

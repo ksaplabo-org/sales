@@ -8,4 +8,6 @@ export default {
     admin: "1",
     post: "2",
   },
+  // SessionStorageに保持するログインユーザ情報のキー
+  SessionKey: "logInUser",
 };
