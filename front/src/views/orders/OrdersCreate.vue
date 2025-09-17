@@ -16,28 +16,32 @@
 
           <form @submit.stop.prevent="ordersCreate" method="post" autocomplete="new-password">
             <div class="col-lg-5 mx-auto center-block">
-              <div class="form-group d-flex flex-row">
+              <!-- 伝票番号 -->
+              <div class="form-group row">
                 <label class="col-lg-6">伝票番号</label>
-                <p class="col-lg-6 h5 pl-0">自動で登録されます</p>
+                <p class="col-lg-6 h5">自動で登録されます</p>
               </div>
               <!-- 顧客番号 -->
               <div class="form-group d-lg-flex flex-lg-row">
-                <label class="col-lg-6">顧客番号<label class="text-danger">*</label></label>
-                <input
-                  type="number"
-                  id="clientNo"
-                  class="form-control col-lg-6"
-                  placeholder="8桁以内で入力してください"
-                  v-model="clientNo"
-                  autocomplete="off"
-                  max="99999999"
-                  min="1"
-                  @change="inputClientNo()"
-                />
+                <label class="col-lg-6 pl-0">顧客番号<label class="text-danger">*</label></label>
+                <div class="pl-0 col-lg-6 pl-lg-3">
+                  <input
+                    type="number"
+                    id="clientNo"
+                    class="form-control"
+                    placeholder="8桁以内で入力してください"
+                    v-model="clientNo"
+                    autocomplete="off"
+                    max="99999999"
+                    min="1"
+                    @change="inputClientNo()"
+                  />
+                  <div class="text-danger small" v-show="clientNoMsg">{{ clientNoMsg }}</div>
+                </div>
                 <!-- 顧客情報一覧表示ボタン -->
                 <b-button
-                  variant="form-control btn btn-secondary ml-1"
-                  class="col-11 mt-3 col-lg-4 mt-lg-0"
+                  variant="form-control btn btn-secondary ml-0"
+                  class="col-10 mt-3 col-lg-4 mt-lg-0"
                   data-toggle="modal"
                   data-target="#ClientsListModal"
                   style="height: 40px"
@@ -45,67 +49,79 @@
                   >顧客情報一覧</b-button
                 >
               </div>
-              <div class="text-danger col text-right pr-0 mb-3" v-show="clientNoMsg">{{ clientNoMsg }}</div>
+
               <!-- 顧客名 -->
-              <div class="form-group d-lg-flex flex-lg-row">
+              <div class="form-group row">
                 <label class="col-lg-6">顧客名</label>
                 <p class="col-lg-6 h5">{{ name }}</p>
               </div>
               <!-- 郵便番号 -->
-              <div class="form-group d-lg-flex flex-lg-row">
+              <div class="form-group row">
                 <label class="col-lg-6">郵便番号</label>
                 <p class="col-lg-6 h5">{{ postCode }}</p>
               </div>
               <!-- 住所１ -->
-              <div class="form-group d-lg-flex flex-lg-row">
+              <div class="form-group row">
                 <label class="col-lg-6">住所１</label>
                 <p class="col-lg-6 h5">{{ address1 }}</p>
               </div>
 
               <!-- 住所２ -->
-              <div class="form-group d-lg-flex flex-lg-row">
+              <div class="form-group row">
                 <label class="col-lg-6">住所２</label>
                 <p class="col-lg-6 h5">{{ address2 }}</p>
               </div>
 
               <!-- 発注日 -->
-              <div class="form-group d-lg-flex flex-lg-row">
+              <div class="form-group row">
                 <label class="col-lg-6">発注日<label class="text-danger">*</label></label>
-                <input type="date" id="orderDate" class="form-control col-lg-6 mr-1" v-model="orderDate" />
+                <div class="col-lg-6">
+                  <input type="date" id="orderDate" class="form-control" v-model="orderDate" />
+                  <div class="text-danger small" v-show="orderDateMsg">{{ orderDateMsg }}</div>
+                </div>
               </div>
-              <div class="text-danger col text-right pr-0 mb-3" v-show="orderDateMsg">{{ orderDateMsg }}</div>
 
               <!-- 出荷日 -->
-              <div class="form-group d-lg-flex flex-lg-row">
+              <div class="form-group row">
                 <label class="col-lg-6">出荷日<label class="text-danger">*</label></label>
-                <input type="date" id="shipDate" class="form-control col-lg-6 mr-1" v-model="shipDate" />
+                <div class="col-lg-6">
+                  <input type="date" id="shipDate" class="form-control" v-model="shipDate" />
+                  <div class="text-danger small" v-show="shipDateMsg">{{ shipDateMsg }}</div>
+                </div>
               </div>
-              <div class="text-danger col text-right pr-0 mb-3" v-show="shipDateMsg">{{ shipDateMsg }}</div>
 
               <!-- 納品日 -->
-              <div class="form-group d-lg-flex flex-lg-row">
+              <div class="form-group row">
                 <label class="col-lg-6">納品日<label class="text-danger">*</label></label>
-                <input type="date" id="deliverDate" class="form-control col-lg-6 mr-1" v-model="deliverDate" />
+                <div class="col-lg-6">
+                  <input type="date" id="deliverDate" class="form-control" v-model="deliverDate" />
+                  <div class="text-danger small" v-show="deliverDateMsg">
+                    {{ deliverDateMsg }}
+                  </div>
+                </div>
               </div>
-              <div class="text-danger col text-right pr-0 mb-3" v-show="deliverDateMsg">{{ deliverDateMsg }}</div>
-
               <!-- 商品コード -->
               <div class="form-group d-lg-flex flex-lg-row">
-                <label class="col-lg-6">商品コード<label class="text-danger">*</label></label>
-                <input
-                  type="number"
-                  id="productCode"
-                  class="form-control col-lg-6"
-                  placeholder="7桁で入力してください"
-                  v-model="productCode"
-                  max="9999999"
-                  min="1000001"
-                  @change="inputProductCode()"
-                />
+                <label class="col-lg-6 pl-0">商品コード<label class="text-danger">*</label></label>
+                <div class="pl-0 col-lg-6 pl-lg-3">
+                  <input
+                    type="number"
+                    id="productCode"
+                    class="form-control"
+                    placeholder="7桁で入力してください"
+                    v-model="productCode"
+                    max="9999999"
+                    min="1000001"
+                    @change="inputProductCode()"
+                  />
+                  <div class="text-danger small" v-show="productCodeMsg">
+                    {{ productCodeMsg }}
+                  </div>
+                </div>
                 <!-- 商品情報一覧表示ボタン -->
                 <b-button
-                  variant="form-control  btn btn-secondary ml-1"
-                  class="col-11 mt-3 col-lg-4 mt-lg-0"
+                  variant="form-control  btn btn-secondary ml-0"
+                  class="col-10 mt-3 col-lg-4 mt-lg-0"
                   data-toggle="modal"
                   data-target="#ProductsListModal"
                   style="height: 40px"
@@ -114,48 +130,50 @@
                   商品情報一覧
                 </b-button>
               </div>
-              <div class="text-danger col-lg-6 text-right pr-0 mb-3" v-show="productCodeMsg">{{ productCodeMsg }}</div>
 
               <!-- 商品名 -->
-              <div class="form-group d-flex flex-row">
+              <div class="form-group row">
                 <label class="col-lg-6">商品名</label>
                 <p class="col-lg-6 h5">{{ productName }}</p>
               </div>
 
               <!-- 数量 -->
-              <div class="form-group d-flex flex-row">
+              <div class="form-group row">
                 <label class="col-lg-6">数量<label class="text-danger">*</label></label>
-                <input
-                  type="number"
-                  id="amount"
-                  class="form-control col-lg-6 mr-1"
-                  placeholder="2桁以内で入力してください"
-                  v-model="amount"
-                  max="99"
-                  @change="displayValue()"
-                />
+                <div class="pl-0 col-lg-6 pl-lg-3">
+                  <input
+                    type="number"
+                    id="amount"
+                    class="form-control"
+                    placeholder="2桁以内で入力してください"
+                    v-model="amount"
+                    max="99"
+                    min="1"
+                    @change="displayValue()"
+                  />
+                  <div class="text-danger small col-lg text-right pr-0 mb-3" v-show="amountMsg">{{ amountMsg }}</div>
+                </div>
               </div>
-              <div class="text-danger col text-right pr-0 mb-3" v-show="amountMsg">{{ amountMsg }}</div>
 
               <!-- 単価 -->
-              <div class="form-group d-flex flex-row">
+              <div class="form-group row">
                 <label class="col-lg-6">単価</label>
                 <p class="col-lg-6 h5">{{ price }}</p>
               </div>
 
               <!-- 金額 -->
-              <div class="form-group d-flex flex-row">
+              <div class="form-group row">
                 <label class="col-lg-6">金額</label>
                 <p class="col-lg-6 h5">{{ value }}</p>
               </div>
 
               <!-- 消費税額 -->
-              <div class="form-group d-flex flex-row">
+              <div class="form-group row">
                 <label class="col-lg-6">消費税額</label>
                 <p class="col-lg-6 h5">{{ taxValue }}</p>
               </div>
               <!-- 合計金額 -->
-              <div class="form-group d-flex flex-row">
+              <div class="form-group row">
                 <label class="col-lg-6">合計金額</label>
                 <p class="col-lg-6 h5">{{ totalValue }}</p>
               </div>
