@@ -10,6 +10,7 @@
             顧客情報一覧画面へ
           </button>
           <br />
+          <br/>
           <div class="col-lg-5 mx-auto center-block">
             <div class="form-group row">
               <label for="clientNo" class="col-lg-6">顧客番号</label>
@@ -17,7 +18,7 @@
             </div>
 
             <div class="form-group row">
-              <label for="name" class="col-lg-6">顧客名</label>
+              <label for="name" class="col-lg-6">顧客名<label class="text-danger">*</label></label>
               <div class="col-lg-6">
                 <input
                   type="text"
