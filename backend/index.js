@@ -292,6 +292,26 @@ app.get("/api/products/:productCode", async function (req, res) {
   }
 });
 
+
+
+
+
+/**
+ * ユーザー情報全件取得API
+ */
+app.get("/api/users", async function (req, res) {
+  try {
+    const users = await UsersLogic.getAll(db);
+    res.send({
+      Items: JSON.stringify(users),
+    });
+  } catch (e) {
+    // 異常レスポンス
+    console.log("failed to get users.", e);
+    res.status(500).send("ユーザー情報取得処理に失敗しました");
+  }
+});
+
 /**
  * ユーザー情報取得API
  */

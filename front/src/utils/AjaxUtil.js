@@ -118,6 +118,13 @@ export async function getProductsByProductCode(productCode) {
   return await axios.get(url);
 }
 
+
+// ユーザー情報全件取得処理
+export async function getUsers() {
+  const url = "/api/users";
+  return await axios.get(url);
+}
+
 //ユーザー情報を管理用IDで検索
 export async function getUsersById(id) {
   const url = "/api/users/" + id;
