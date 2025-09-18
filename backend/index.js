@@ -29,11 +29,8 @@ app.post("/api/log-in", async function (req, res) {
   try {
     const user = await UsersLogic.findByUserId(db, reqBody.userId);
 
-    if (user == null) {
-      // 認証失敗として401エラーを設定(ユーザーが存在しない)
-      status = 401;
-    } else if (user.user_pass != reqBody.userPass) {
-      // 認証失敗として401エラーを設定(パスワードが不一致)
+    if (user == null || user.user_pass != reqBody.userPass) {
+      // 認証失敗として401エラーを設定(ユーザーが存在しない、または、パスワード不一致)
       status = 401;
     } else {
       // 認証成功としてレスポンスボディを設定
