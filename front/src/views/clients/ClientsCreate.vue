@@ -2,158 +2,128 @@
   <div>
     <Header />
     <div id="wrapper">
+      <div id="content-wrapper" class="bg-light min-vh-100">
+        <div class="container-fluid">
+          <h1 class="border-bottom">顧客情報登録</h1>
 
-    <div id="content-wrapper" class="bg-light min-vh-100">
-      <div class="container-fluid">
-        <h1 class="border-bottom">顧客情報登録</h1>
+          <button type="button" class="btn btn-dark mb-4" v-on:click="() => $router.push({ name: 'clientsList' })">
+            顧客情報一覧画面へ
+          </button>
+          <br />
+          <br/>
+          <div class="col-lg-5 mx-auto center-block">
+            <div class="form-group row">
+              <label for="clientNo" class="col-lg-6">顧客番号</label>
+              <label class="col-lg-6 h5 newlineControl">自動で登録されます</label>
+            </div>
 
-        <button type="button" class="btn btn-dark" v-on:click="() => $router.push({ name: 'clientsList' })">
-          顧客情報一覧画面へ
-        </button>
-        <br />
-        <div class="col-lg-5 mx-auto center-block">
-          <div class="row" style="margin: 15px;">
-            <div class="col-lg" style="height: 30px">顧客番号</div>
-            <p class="col-lg-7 h5 errText">自動で登録されます</p>
-          </div>
-          <div class="row" style="margin: 15px 15px 0px 15px">
-            <label class="col-lg mb-0">顧客名<label class="text-danger" style="margin-bottom: 0px">*</label></label>
-            <div class="col-lg-7" style="margin-bottom: 0px">
-              <input
-                type="text"
-                id="name"
-                class="form-control"
-                placeholder="20字以内で入力してください"
-                v-model="name"
-                autocomplete="off"
-              />
-            </div>
-          </div>
-          <div class="row" style="margin: 0px 15px 0px 15px">
-            <div class="col-lg"></div>
-            <div class="col-lg-7">
-              <p class="text-danger errText small" v-show="nameErrMsg">{{ nameErrMsg }}</p>
-            </div>
-          </div>
-          <div class="row" style="margin: 15px 15px 0px 15px">
-            <div class="col-lg">郵便番号</div>
-            <div class="col-lg-7 d-flex flex-row" style="text-align: center;">
-              <div class="col-5 p-0">
+            <div class="form-group row">
+              <label for="name" class="col-lg-6">顧客名<label class="text-danger">*</label></label>
+              <div class="col-lg-6">
                 <input
-                  type="number"
-                  id="postCode1"
+                  type="text"
+                  id="name"
                   class="form-control"
-                  placeholder="000"
-                  v-model="postCode1"
+                  v-model="name"
+                  placeholder="20字以内で入力してください"
                   autocomplete="off"
                 />
+                <div class="text-danger small newlineControl" v-show="nameErrMsg">{{ nameErrMsg }}</div>
               </div>
-              <div class="text-center col-2 pt-2">ー</div>
-              <div class="col-5 p-0">
+            </div>
+            <div class="form-group row">
+              <label for="postCode" class="col-lg-6">郵便番号</label>
+              <div class="col-lg-6">
+                <div class="d-flex flex-row">
+                  <div class="col-4 px-0">
+                    <input
+                      type="number"
+                      id="postCode1"
+                      class="form-control"
+                      v-model="postCode1"
+                      placeholder="000"
+                      autocomplete="off"
+                    />
+                  </div>
+                  <label class="text-center col-2 px-0">ー</label>
+                  <div class="col-6 px-0">
+                    <input
+                      type="number"
+                      id="postCode2"
+                      class="form-control"
+                      v-model="postCode2"
+                      placeholder="0000"
+                      autocomplete="off"
+                    />
+                  </div>
+                </div>
+                <div class="text-danger small newlineControl" v-show="postCodeErrMsg">{{ postCodeErrMsg }}</div>
+              </div>
+            </div>
+
+            <div class="form-group row">
+              <label for="address1" class="col-lg-6">住所１</label>
+              <div class="col-lg-6">
                 <input
-                  type="number"
-                  id="postCode2"
+                  type="text"
+                  id="address1"
                   class="form-control"
-                  placeholder="0000"
-                  v-model="postCode2"
+                  v-model="address1"
+                  placeholder="20字以内で入力してください"
                   autocomplete="off"
                 />
+                <div class="text-danger small newlineControl" v-show="address1ErrMsg">{{ address1ErrMsg }}</div>
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="address2" class="col-lg-6">住所２</label>
+              <div class="col-lg-6">
+                <input
+                  type="text"
+                  id="address2"
+                  class="form-control"
+                  v-model="address2"
+                  placeholder="20字以内で入力してください"
+                  autocomplete="off"
+                />
+                <div class="text-danger small newlineControl" v-show="address2ErrMsg">{{ address2ErrMsg }}</div>
+              </div>
+            </div>
+
+            <div class="form-group row">
+              <label for="telNo" class="col-lg-6">電話番号</label>
+              <div class="col-lg-6">
+                <input
+                  type="text"
+                  id="telNo"
+                  class="form-control"
+                  v-model="telNo"
+                  placeholder="20字以内で入力してください"
+                  autocomplete="off"
+                />
+                <div class="text-danger small newlineControl" v-show="telNoErrMsg">{{ telNoErrMsg }}</div>
               </div>
             </div>
           </div>
-          <div class="row" style="margin: 0px 15px 0px 15px">
-            <div class="col-lg"></div>
 
-            <div class="col-lg-7">
-              <p class="text-danger errText small" v-show="postCodeErrMsg">{{ postCodeErrMsg }}</p>
+          <div class="form-group justify-content-center row">
+            <div class="mb-3 col-lg-4">
+              <btn class="btn btn-primary btn-lg btn-block" v-on:click="clientsCreate()">登録</btn>
             </div>
-          </div>
-          <div class="row" style="margin: 15px 15px 0px 15px">
-            <div class="col-lg">住所1</div>
-            <div class="col-lg-7" style="margin-bottom: 0px">
-              <input
-                type="text"
-                id="address1"
-                class="form-control"
-                placeholder="20字以内で入力してください"
-                v-model="address1"
-                autocomplete="off"
-              />
+            <div class="col-lg-4">
+              <CancelButton />
             </div>
-          </div>
-          <div class="row" style="margin: 0px 15px 0px 15px">
-            <div class="col-lg"></div>
-
-            <div class="col-lg-7">
-              <p class="text-danger errText small" v-show="address1ErrMsg">{{ address1ErrMsg }}</p>
-            </div>
-          </div>
-          <div class="row" style="margin: 15px 15px 0px 15px">
-            <div class="col-lg">住所2</div>
-            <div class="col-lg-7" style="margin-bottom: 0px">
-              <input
-                type="text"
-                id="address2"
-                class="form-control"
-                placeholder="20字以内で入力してください"
-                v-model="address2"
-                autocomplete="off"
-              />
-            </div>
-          </div>
-          <div class="row" style="margin: 0px 15px 0px 15px">
-            <div class="col-lg"></div>
-
-            <div class="col-lg-7">
-              <p class="text-danger errText small" v-show="address2ErrMsg">{{ address2ErrMsg }}</p>
-            </div>
-          </div>
-          <div class="row" style="margin: 15px 15px 0px 15px">
-            <div class="col-lg">電話番号</div>
-            <div class="col-lg-7" style="margin-bottom: 0px">
-              <input
-                type="text"
-                id="telNo"
-                class="form-control"
-                placeholder="20字以内で入力してください"
-                v-model="telNo"
-                autocomplete="off"
-              />
-            </div>
-          </div>
-          <div class="row" style="margin: 0px 15px 0px 15px">
-            <div class="col-lg"></div>
-
-            <div class="col-lg-7">
-              <p class="text-danger errText small" v-show="telNoErrMsg" >{{ telNoErrMsg }}</p>
-            </div>
-          </div>
-        </div>
-        <div class="row justify-content-center" style="margin: 15px">
-          <div class="col-lg-4">
-            <button
-              type="button"
-              class="btn btn-primary btn-lg btn-block"
-              v-on:click="clientsCreate()"
-              style="margin: 15px"
-            >
-              登録
-            </button>
-          </div>
-          <div class="col-lg-4">
-            <CancelButton style="margin: 15px" />
           </div>
         </div>
       </div>
-    </div>
-    <!-- トップにスクロール -->
-    <a class="scroll-to-top rounded" href="#page-top">
-      <i class="fas fa-angle-up"></i>
-    </a>
+      <!-- トップにスクロール -->
+      <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+      </a>
 
-    <!-- ローディングマスク -->
-    <loading v-if="isLoading === true" />
-  </div>
+      <!-- ローディングマスク -->
+      <loading v-if="isLoading === true" />
+    </div>
   </div>
 </template>
 
@@ -280,7 +250,7 @@ export default {
 </script>
 <style scoped>
 @media screen and (min-width: 992px) {
-  .errText {
+  .newlineControl {
     white-space: nowrap;
   }
 }
