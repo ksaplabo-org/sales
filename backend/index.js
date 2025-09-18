@@ -291,3 +291,45 @@ app.get("/api/products/:productCode", async function (req, res) {
     res.status(500).send("server error occur");
   }
 });
+
+/**
+ * ユーザー情報取得API
+ */
+app.get("/api/users/:id", async function (req, res) {
+  try {
+    const user = await UsersLogic.findById(db, req.params.id);
+
+    //正常レスポンス
+    res.send({
+      Items: JSON.stringify(user),
+    });
+  } catch (e) {
+    //異常レスポンス
+    console.log("failed to get user.", e);
+    res.status(500).send("server error occur");
+  }
+});
+
+/**
+ * ユーザー情報修正API
+ */
+app.put("/api/users", async function (req, res) {
+  const reqBody = req.body;
+  try {
+    await UsersLogic.edit(
+      db,
+      reqBody.id,
+      reqBody.userId,
+      reqBody.userPass,
+      reqBody.userName,
+      reqBody.userRole,
+      reqBody.updateId
+    );
+    //正常レスポンス
+    res.send();
+  } catch (e) {
+    //異常レスポンス
+    console.log("failed to edit user", e);
+    res.status(500).send("server error occur");
+  }
+});
