@@ -111,7 +111,6 @@ export default {
       admin: UserConst.UserRole.admin,
       post: UserConst.UserRole.post,
 
-      updateId: "",
       //エラーメッセージ
       errMsg: "",
       userIdErrMsg: "",
