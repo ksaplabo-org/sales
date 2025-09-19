@@ -16,7 +16,7 @@
           <div class="col-lg-5 mx-auto center-block">
             <div class="" />
             <div class="form-group row">
-              <label for="userId" class="col-lg-6">ユーザーID</label>
+              <label for="userId" class="col-lg-6">ユーザーID<label class="text-danger">*</label></label>
               <div class="col-lg-6">
                 <input
                   type="text"
@@ -30,7 +30,7 @@
               </div>
             </div>
             <div class="form-group row">
-              <label for="userPass" class="col-lg-6">パスワード</label>
+              <label for="userPass" class="col-lg-6">パスワード<label class="text-danger">*</label></label>
               <div class="col-lg-6">
                 <input
                   type="password"
@@ -44,7 +44,7 @@
               </div>
             </div>
             <div class="form-group row">
-              <label for="userName" class="col-lg-6">ユーザー名</label>
+              <label for="userName" class="col-lg-6">ユーザー名<label class="text-danger">*</label></label>
               <div class="col-lg-6">
                 <input
                   type="text"
