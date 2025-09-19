@@ -19,35 +19,49 @@
             <!-- ユーザーID -->
             <div class="form-group row">
               <label class="col-lg-6">ユーザーID</label>
-              <input v-model="userId" class="form-control col-lg-6 h5" />
+              <div class="col-lg-6">
+                <input v-model="userId" class="form-control h5" />
+                <!-- ユーザーIDエラーメッセージ -->
+                <div class="text-danger small" v-show="userIdErrMsg">{{ userIdErrMsg }}</div>
+              </div>
             </div>
 
             <!--パスワード -->
             <div class="form-group row">
               <label class="col-lg-6">パスワード</label>
-              <input v-model="userPass" class="form-control col-lg-6 h5" />
+              <div class="col-lg-6">
+                <input v-model="userPass" class="form-control h5" />
+                <!-- パスワードエラーメッセージ -->
+                <div class="text-danger small" v-show="userPassErrMsg">{{ userPassErrMsg }}</div>
+              </div>
             </div>
 
             <!-- ユーザー名 -->
             <div class="form-group row">
               <label class="col-lg-6">ユーザー名</label>
-              <input v-model="userName" class="form-control col-lg-6 h5" />
+              <div class="col-lg-6">
+                <input v-model="userName" class="form-control h5" />
+                <!-- ユーザー名エラーメッセージ -->
+                <div class="text-danger small" v-show="userNameErrMsg">{{ userNameErrMsg }}</div>
+              </div>
             </div>
 
             <!-- 権限 -->
             <div class="form-group row">
               <label class="col-lg-6">権限</label>
-              <select v-model="userRole" class="form-control col-lg-6 h5">
-                <option :value="UserConst.UserRole.general">一般</option>
-                <option :value="UserConst.UserRole.general">役職</option>
-                <option :value="UserConst.UserRole.general">管理</option>
-              </select>
+              <div class="col-lg-6">
+                <select v-model="selectedUserRole" class="form-control h5">
+                  <option :value="general">一般</option>
+                  <option :value="admin">管理</option>
+                  <option :value="post">役職</option>
+                </select>
+              </div>
             </div>
           </div>
           <!-- 登録・キャンセルボタン -->
           <div class="form-group justify-content-center row">
             <div class="mb-3 col-lg-4">
-              <btn class="btn btn-primary btn-lg btn-block" v-on:click="ordersEdit()">登録</btn>
+              <btn class="btn btn-primary btn-lg btn-block" v-on:click="usersCreate()">登録</btn>
             </div>
             <div class="col-lg-4">
               <CancelButton />
@@ -91,7 +105,11 @@ export default {
       userId: "",
       userPass: "",
       userName: "",
-      userRole: UserConst.UserRole.general,
+      // プルダウンボタンの初期値は一般権限であるため
+      selectedUserRole: UserConst.UserRole.general,
+      general: UserConst.UserRole.general,
+      admin: UserConst.UserRole.admin,
+      post: UserConst.UserRole.post,
 
       updateId: "",
       //エラーメッセージ
@@ -99,7 +117,6 @@ export default {
       userIdErrMsg: "",
       userPassErrMsg: "",
       userNameErrMsg: "",
-      userRoleErrMsg: "",
     };
   },
   async mounted() {
@@ -109,9 +126,6 @@ export default {
       if (!UserUtil.isLogIn()) {
         this.$router.push({ name: "logIn", params: { flashMsg: "ログインしてください。" } });
       }
-
-      // 画面更新処理を呼び出す
-      await this.updateView();
     } catch (e) {
       this.errMsg = e.message;
     } finally {
@@ -119,7 +133,7 @@ export default {
     }
   },
   methods: {
-    async clientsCreate() {
+    async usersCreate() {
       this.isLoading = true;
       //   エラーメッセージ初期化
       this.userIdErrMsg = "";
@@ -130,38 +144,47 @@ export default {
       let errFlag = false;
 
       try {
-        if (this.name == null || this.name === "") {
-          this.nameErrMsg = "顧客名が未入力です。";
+        // ユーザーID入力チェック
+        if (this.userId == null || this.userId === "") {
+          this.userIdErrMsg = "ユーザーIDが未入力です。";
+          errFlag = true;
+        } else if (this.userId.length > 4) {
+          this.userIdErrMsg = "ユーザーIDは4字以内で入力してください。";
+          errFlag = true;
+        } else if (!String(this.userId).match("^[A-Za-z0-9]+$")) {
+          this.userIdErrMsg = "ユーザーIDは半角英数字で入力してください。";
+          errFlag = true;
+        } else {
+          // 同じユーザーIDが登録されていないかチェック
+          const response = await AjaxUtil.getUsersByUserId(this.userId);
+          const user = JSON.parse(response.data.Items);
+          if (user) {
+            this.userIdErrMsg = "既に同一のユーザーIDが登録されています。";
+            errFlag = true;
+          }
+        }
+
+        // パスワード入力チェック
+        if (this.userPass == null || this.userPass === "") {
+          this.userPassErrMsg = "パスワードが未入力です。";
+          errFlag = true;
+        } else if (String(this.userPass).length < 8 || String(this.userPass).length > 20) {
+          this.userPassErrMsg = "パスワードは8字以上20字以内で入力してください。";
+          errFlag = true;
+        } else if (!String(this.userPass).match("^[A-Za-z0-9]+$")) {
+          this.userPassErrMsg = "パスワードは半角英数字で入力してください。";
           errFlag = true;
         }
-        if (this.name.length > 20) {
-          this.nameErrMsg = "顧客名は20字以下で入力してください。";
+
+        // ユーザー名入力チェック
+        if (this.userName == null || this.userName === "") {
+          this.userNameErrMsg = "ユーザー名が未入力です。";
+          errFlag = true;
+        } else if (String(this.userName).length > 20) {
+          this.userPassErrMsg = "ユーザー名は20字以内で入力してください。";
           errFlag = true;
         }
-        if ((this.postCode1 || this.postCode2) && (this.postCode1.length != 3 || this.postCode2.length != 4)) {
-          this.postCodeErrMsg = "正しい郵便番号を入力してください。";
-          errFlag = true;
-        }
-        if (this.address1.length > 20) {
-          this.address1ErrMsg = "住所１は20字以内で入力してください。";
-          errFlag = true;
-        }
-        if (this.address2.length > 20) {
-          this.address2ErrMsg = "住所２は20字以内で入力してください。";
-          errFlag = true;
-        }
-        if (this.telNo.length > 20) {
-          this.telNoErrMsg = "電話番号は20字以内で入力してください。";
-          errFlag = true;
-        }
-        if (!this.postCode1.match("^[0-9]*$") || !this.postCode2.match("^[0-9]*$")) {
-          this.postCodeErrMsg = "郵便番号は半角数字で入力してください。";
-          errFlag = true;
-        }
-        if (this.telNo != null && this.telNo !== "" && !this.telNo.match("^[0-9][0-9-]*$")) {
-          this.telNoErrMsg = "電話番号は半角数字と-(半角ハイフン)のみで入力してください。";
-          errFlag = true;
-        }
+
         if (errFlag) {
           return;
         }
@@ -170,10 +193,10 @@ export default {
           userId: this.userId,
           userPass: this.userPass,
           userName: this.userName,
-          userRole: this.userRole,
+          userRole: this.selectedUserRole,
         };
         // 登録
-        await AjaxUtil.postUsers(userModel);
+        // await AjaxUtil.postUsers(userModel);
         alert("ユーザー情報登録処理が完了しました。");
         // 一覧画面に遷移する
         this.$router.push({ name: "usersList" });

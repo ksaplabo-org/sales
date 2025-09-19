@@ -24,3 +24,4 @@ module.exports.findByUserId = async function (db, userId) {
     throw e;
   }
 };
+

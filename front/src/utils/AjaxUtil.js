@@ -117,3 +117,9 @@ export async function getProductsByProductCode(productCode) {
   const url = "/api/products/" + productCode;
   return await axios.get(url);
 }
+
+//ユーザー情報をユーザーIDで検索
+export async function getUsersByUserId(userId) {
+  const url = "/api/users/searchUserId/" + userId;
+  return await axios.get(url);
+}
