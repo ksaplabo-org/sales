@@ -118,12 +118,22 @@ export async function getProductsByProductCode(productCode) {
   return await axios.get(url);
 }
 
+//商品情報修正
+export async function putProducts(productsModel) {
+  const url = "/api/products";
+  return await axios.put(url, {
+    productCode: productsModel.productCode,
+    productname: productsModel.productName,
+    price: productsModel.price,
+    updateId: UserUtil.currentUserInfo().id,
+  });
+}
+
 //商品情報削除
 export async function deleteProducts(productCode) {
   const url = "/api/products/" + productCode;
   return await axios.delete(url);
 }
-
 
 // ユーザー情報全件取得処理
 export async function getUsers() {

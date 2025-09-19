@@ -298,6 +298,22 @@ app.get("/api/products/:productCode", async function (req, res) {
 });
 
 /**
+ * 商品情報修正API
+ */
+app.put("/api/products", async function (req, res) {
+  const reqBody = req.body;
+  try {
+    await ProductsLogic.edit(db, reqBody.productCode, reqBody.productName, reqBody.price, reqBody.updateId);
+    //正常レスポンス
+    res.send();
+  } catch (e) {
+    //異常レスポンス
+    console.log("failed to edit product", e);
+    res.status(500).send("server error occur");
+  }
+});
+
+/**
  * 商品情報削除API
  */
 app.delete("/api/products/:productCode", async function (req, res) {
