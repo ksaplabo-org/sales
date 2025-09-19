@@ -5,9 +5,9 @@
     <div id="wrapper">
       <div id="content-wrapper" class="bg-light min-vh-100">
         <div class="container-fluid">
-          <h1 class="border-bottom">受注情報修正</h1>
-          <button type="button" class="btn btn-dark mb-4" v-on:click="() => $router.push({ name: 'ordersList' })">
-            受注情報一覧画面へ
+          <h1 class="border-bottom">ユーザー情報登録</h1>
+          <button type="button" class="btn btn-dark mb-4" v-on:click="() => $router.push({ name: 'usersList' })">
+              ユーザー情報一覧画面へ
           </button>
           <p class="text-danger" v-show="errMsg">{{ errMsg }}</p>
 
@@ -30,7 +30,7 @@
             <div class="form-group row">
               <label class="col-lg-6">パスワード</label>
               <div class="col-lg-6">
-                <input v-model="userPass" class="form-control h5" />
+                <input type="password" v-model="userPass" class="form-control h5" />
                 <!-- パスワードエラーメッセージ -->
                 <div class="text-danger small" v-show="userPassErrMsg">{{ userPassErrMsg }}</div>
               </div>
@@ -148,7 +148,7 @@ export default {
         if (this.userId == null || this.userId === "") {
           this.userIdErrMsg = "ユーザーIDが未入力です。";
           errFlag = true;
-        } else if (this.userId.length > 4) {
+        } else if (String(this.userId).length > 4) {
           this.userIdErrMsg = "ユーザーIDは4字以内で入力してください。";
           errFlag = true;
         } else if (!String(this.userId).match("^[A-Za-z0-9]+$")) {
@@ -181,7 +181,7 @@ export default {
           this.userNameErrMsg = "ユーザー名が未入力です。";
           errFlag = true;
         } else if (String(this.userName).length > 20) {
-          this.userPassErrMsg = "ユーザー名は20字以内で入力してください。";
+          this.userNameErrMsg = "ユーザー名は20字以内で入力してください。";
           errFlag = true;
         }
 
@@ -196,7 +196,7 @@ export default {
           userRole: this.selectedUserRole,
         };
         // 登録
-        // await AjaxUtil.postUsers(userModel);
+        await AjaxUtil.postUsers(userModel);
         alert("ユーザー情報登録処理が完了しました。");
         // 一覧画面に遷移する
         this.$router.push({ name: "usersList" });

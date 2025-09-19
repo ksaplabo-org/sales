@@ -123,3 +123,17 @@ export async function getUsersByUserId(userId) {
   const url = "/api/users/searchUserId/" + userId;
   return await axios.get(url);
 }
+
+// ユーザー情報登録
+export async function postUsers(usersModel) {
+  const url = "/api/users";
+
+  return await axios.post(url, {
+    userId: usersModel.userId,
+    userPass: usersModel.userPass,
+    userName: usersModel.userName,
+    userRole: usersModel.userRole,
+    updateId: UserUtil.currentUserInfo().id,
+    entryId: UserUtil.currentUserInfo().id,
+  });
+}

@@ -292,7 +292,6 @@ app.get("/api/products/:productCode", async function (req, res) {
   }
 });
 
-
 /**
  *  ユーザーIDでユーザ情報取得API
  */
@@ -307,6 +306,31 @@ app.get("/api/users/searchUserId/:userId", async function (req, res) {
   } catch (e) {
     //異常レスポンス
     console.log("failed to get user.", e);
+    res.status(500).send("server error occur");
+  }
+});
+
+/**
+ * ユーザー情報登録API
+ */
+app.post("/api/users", async function (req, res) {
+  // リクエストボディ取得
+  const reqBody = req.body;
+
+  try {
+    await UsersLogic.create(
+      db,
+      reqBody.userId,
+      reqBody.userPass,
+      reqBody.userName,
+      reqBody.userRole,
+      reqBody.updateId,
+      reqBody.entryId
+    );
+    res.send();
+  } catch (e) {
+    // 異常レスポンス
+    console.log("failed to add clients.", e);
     res.status(500).send("server error occur");
   }
 });
