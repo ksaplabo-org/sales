@@ -23,7 +23,6 @@
 </template>
 <script>
 import * as UserUtil from "@/utils/UserUtil";
-import { isLogIn } from "../utils/UserUtil";
 export default {
   data() {
     return {
