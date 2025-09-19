@@ -1,6 +1,5 @@
 const UsersRepository = require("../db/users");
 const sequelize = require("sequelize");
-const sequelize = require("sequelize");
 
 /**
  * ユーザー情報を取得
