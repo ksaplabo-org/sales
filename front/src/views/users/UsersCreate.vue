@@ -18,9 +18,11 @@
 
             <!-- ユーザーID -->
             <div class="form-group row">
-              <label class="col-lg-6">ユーザーID<span class="text-danger">*</span></label>
+              <label for="userId" class="col-lg-6">ユーザーID<span class="text-danger">*</span></label>
               <div class="col-lg-6">
                 <input
+                  id="userId"
+                  type="text"
                   placeholder="1桁以上4桁以下で入力してください"
                   autocomplete="off"
                   v-model="userId"
@@ -31,11 +33,12 @@
               </div>
             </div>
 
-            <!--パスワード -->
+            <!-- パスワード -->
             <div class="form-group row">
-              <label class="col-lg-6">パスワード<span class="text-danger">*</span></label>
+              <label for="userPass" class="col-lg-6">パスワード<span class="text-danger">*</span></label>
               <div class="col-lg-6">
                 <input
+                  id="userPass"
                   placeholder="8桁以上20桁以下で入力してください"
                   autocomplete="new-password"
                   type="password"
@@ -51,9 +54,15 @@
 
             <!-- ユーザー名 -->
             <div class="form-group row">
-              <label class="col-lg-6">ユーザー名<span class="text-danger">*</span></label>
+              <label for="userName" class="col-lg-6">ユーザー名<span class="text-danger">*</span></label>
               <div class="col-lg-6">
-                <input placeholder="1桁以上20桁以下で入力してください" v-model="userName" class="form-control h5" />
+                <input
+                  id="userName"
+                  type="text"
+                  placeholder="1桁以上20桁以下で入力してください"
+                  v-model="userName"
+                  class="form-control h5"
+                />
                 <!-- ユーザー名エラーメッセージ -->
                 <div class="text-danger small" v-show="userNameErrMsg">{{ userNameErrMsg }}</div>
               </div>
@@ -61,9 +70,9 @@
 
             <!-- 権限 -->
             <div class="form-group row">
-              <label class="col-lg-6">権限</label>
+              <label for="userRole" class="col-lg-6">権限</label>
               <div class="col-lg-6">
-                <select v-model="selectedUserRole" class="form-control h5">
+                <select id="userRole" v-model="selectedUserRole" class="form-control h5">
                   <option :value="general">一般</option>
                   <option :value="admin">管理者</option>
                   <option :value="post">役職</option>
