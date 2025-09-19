@@ -69,3 +69,20 @@ module.exports.create = async function (db, productName, price, updateId, entryI
     throw e;
   }
 };
+
+
+/**
+ * 商品情報削除
+ */
+module.exports.delete = async function (db, productCode) {
+  const productsModel = ProductsRepository.getProductsModel(db);
+  try {
+    await productsModel.destroy({
+      where: {
+        product_code: productCode,
+      },
+    });
+  } catch (e) {
+    throw e;
+  }
+};

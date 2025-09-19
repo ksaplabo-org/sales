@@ -293,6 +293,23 @@ app.get("/api/products/:productCode", async function (req, res) {
 });
 
 /**
+ * 商品情報削除API
+ */
+app.delete("/api/products/:productCode", async function (req, res) {
+  try {
+    await ProductsLogic.delete(db, req.params.productCode);
+    //正常レスポンス
+    res.send();
+  } catch (e) {
+    //異常レスポンス
+    console.log("failed to delete product", e);
+    res.status(500).send("server error occur");
+  }
+});
+
+
+
+/**
  * ユーザー情報全件取得API
  */
 app.get("/api/users", async function (req, res) {
