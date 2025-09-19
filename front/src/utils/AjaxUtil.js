@@ -124,3 +124,15 @@ export async function getUsers() {
   const url = "/api/users";
   return await axios.get(url);
 }
+
+// ユーザー情報を管理用IDで検索
+export async function getUsersByid(id) {
+  const url = "/api/users/" + id;
+  return await axios.get(url);
+}
+
+//顧客情報削除
+export async function deleteUsers(id) {
+  const url = "/api/users/" + id;
+  return await axios.delete(url);
+}

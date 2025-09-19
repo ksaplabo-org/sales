@@ -44,3 +44,42 @@ module.exports.getAll = async function (db) {
   }
 };
 
+
+/**
+ * ユーザー情報を取得
+ *
+ * [検索条件]
+ * 管理用IDの完全一致
+ *
+ * @param {*} db
+ * @param {*} id
+ * @returns {Promise<Object>}
+ */
+module.exports.findByid = async function (db, id) {
+  //顧客情報の定義を取得
+  const usersModel = UsersRepository.getUsersModel(db);
+
+  try {
+    return await usersModel.findByPk(id);
+  } catch (e) {
+    throw e;
+  }
+};
+
+
+
+/**
+ * ユーザー情報削除
+ */
+module.exports.delete = async function (db, id) {
+  const usersModel = UsersRepository.getUsersModel(db);
+  try {
+    await usersModel.destroy({
+      where: {
+        id: id,
+      },
+    });
+  } catch (e) {
+    throw e;
+  }
+};
