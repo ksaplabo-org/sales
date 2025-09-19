@@ -1,5 +1,6 @@
 const UsersRepository = require("../db/users");
 const sequelize = require("sequelize");
+const sequelize = require("sequelize");
 
 /**
  * ユーザー情報を取得
@@ -27,6 +28,32 @@ module.exports.findByUserId = async function (db, userId) {
 };
 
 /**
+ * ユーザー情報を登録
+ */
+module.exports.create = async function (db, userId, userPass, userName, userRole, updateId, entryId) {
+  const usersModel = UsersRepository.getUsersModel(db);
+
+  try {
+    // 管理用IDの自動採番(最新IDに+1)
+    const id = (await usersModel.max("id")) + 1;
+    // ユーザー情報登録
+    return await usersModel.create({
+      id: id,
+      user_id: userId,
+      user_name: userName,
+      user_pass: userPass,
+      user_role: userRole,
+      update_id: updateId,
+      update_date: sequelize.fn("now"),
+      entry_id: entryId,
+      entry_date: sequelize.fn("now"),
+    });
+  } catch (e) {
+    throw e;
+  }
+};
+
+/**
  * ユーザー情報の全件検索処理
  *
  * @param {*} db
@@ -44,6 +71,7 @@ module.exports.getAll = async function (db) {
   }
 };
 
+
 /**
  * ユーザー情報を取得
  *
@@ -54,17 +82,12 @@ module.exports.getAll = async function (db) {
  * @param {*} id
  * @returns {Promise<Object>}
  */
-module.exports.findById = async function (db, id) {
+module.exports.findByid = async function (db, id) {
   //顧客情報の定義を取得
   const usersModel = UsersRepository.getUsersModel(db);
 
   try {
-    // ユーザーIDに合致するユーザーを検索
-    return await usersModel.findOne({
-      where: {
-        id: id,
-      },
-    });
+    return await usersModel.findByPk(id);
   } catch (e) {
     throw e;
   }
@@ -92,6 +115,22 @@ module.exports.edit = async function (db, id, userId, userPass, userName, userRo
         },
       }
     );
+  } catch (e) {
+    throw e;
+  }
+};
+
+/**
+ * ユーザー情報削除
+ */
+module.exports.delete = async function (db, id) {
+  const usersModel = UsersRepository.getUsersModel(db);
+  try {
+    await usersModel.destroy({
+      where: {
+        id: id,
+      },
+    });
   } catch (e) {
     throw e;
   }

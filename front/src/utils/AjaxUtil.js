@@ -118,6 +118,7 @@ export async function getProductsByProductCode(productCode) {
   return await axios.get(url);
 }
 
+
 // ユーザー情報全件取得処理
 export async function getUsers() {
   const url = "/api/users";
@@ -147,4 +148,30 @@ export async function putUsers(usersModel) {
     userRole: usersModel.userRole,
     updateId: UserUtil.currentUserInfo().id,
   });
+}
+
+// ユーザー情報登録
+export async function postUsers(usersModel) {
+  const url = "/api/users";
+
+  return await axios.post(url, {
+    userId: usersModel.userId,
+    userPass: usersModel.userPass,
+    userName: usersModel.userName,
+    userRole: usersModel.userRole,
+    updateId: UserUtil.currentUserInfo().id,
+    entryId: UserUtil.currentUserInfo().id,
+  });
+}
+
+// ユーザー情報を管理用IDで検索
+export async function getUsersByid(id) {
+  const url = "/api/users/" + id;
+  return await axios.get(url);
+}
+
+//顧客情報削除
+export async function deleteUsers(id) {
+  const url = "/api/users/" + id;
+  return await axios.delete(url);
 }
