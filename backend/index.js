@@ -292,10 +292,6 @@ app.get("/api/products/:productCode", async function (req, res) {
   }
 });
 
-
-
-
-
 /**
  * ユーザー情報全件取得API
  */
@@ -330,6 +326,23 @@ app.get("/api/users/:id", async function (req, res) {
   }
 });
 
+/**
+ *  ユーザーIDでユーザ情報取得API
+ */
+app.get("/api/users/searchUserId/:userId", async function (req, res) {
+  try {
+    const user = await UsersLogic.findByUserId(db, req.params.userId);
+
+    //正常レスポンス
+    res.send({
+      Items: JSON.stringify(user),
+    });
+  } catch (e) {
+    //異常レスポンス
+    console.log("failed to get user.", e);
+    res.status(500).send("server error occur");
+  }
+});
 /**
  * ユーザー情報修正API
  */

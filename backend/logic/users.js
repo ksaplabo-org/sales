@@ -1,4 +1,5 @@
 const UsersRepository = require("../db/users");
+const sequelize = require("sequelize");
 
 /**
  * ユーザー情報を取得
@@ -17,14 +18,13 @@ module.exports.findByUserId = async function (db, userId) {
     // ユーザーIDに合致するユーザーを検索
     return await usersModel.findOne({
       where: {
-        user_id: userId, 
-      }
+        user_id: userId,
+      },
     });
   } catch (e) {
     throw e;
   }
 };
-
 
 /**
  * ユーザー情報の全件検索処理
@@ -44,7 +44,6 @@ module.exports.getAll = async function (db) {
   }
 };
 
-
 /**
  * ユーザー情報を取得
  *
@@ -60,7 +59,12 @@ module.exports.findById = async function (db, id) {
   const usersModel = UsersRepository.getUsersModel(db);
 
   try {
-    return await usersModel.findByPk(id);
+    // ユーザーIDに合致するユーザーを検索
+    return await usersModel.findOne({
+      where: {
+        id: id,
+      },
+    });
   } catch (e) {
     throw e;
   }
