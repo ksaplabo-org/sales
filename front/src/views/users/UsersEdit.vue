@@ -65,7 +65,6 @@
                   <option :value="this.admin">管理者</option>
                   <option :value="this.post">役職</option>
                 </select>
-                <div class="text-danger small newlineControl" v-show="userRoleErrMsg">{{ userRoleErrMsg }}</div>
               </div>
             </div>
           </div>
