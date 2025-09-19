@@ -147,8 +147,12 @@ export default {
           this.$router.push({ name: "productsList" });
         }
       } catch (e) {
+        if (e.response.status === 409) {
+          window.alert("受注情報に登録されている商品のため、削除できません。");
+          console.log(e);
+        } else {
         window.alert("商品情報削除処理に失敗しました。");
-        console.log(e);
+        console.log(e);}
       } finally {
         this.isLoading = false;
       }
