@@ -26,9 +26,9 @@
 
             <!-- 商品名 -->
             <div class="form-group row">
-              <label class="col-lg-6">商品名</label>
+              <label for="productName" class="col-lg-6">商品名<span class="text-danger">*</span></label>
               <div class="col-lg-6">
-                <input placeholder="20字以内で入力してください" v-model="productName" class="form-control h5" />
+                <input id="productName" placeholder="20字以内で入力してください" v-model="productName" class="form-control h5" />
                 <!-- 商品名エラーメッセージ -->
                 <div class="text-danger small" v-show="productNameErrMsg">
                   {{ productNameErrMsg }}
@@ -38,9 +38,9 @@
 
             <!-- 単価 -->
             <div class="form-group row">
-              <label class="col-lg-6">単価</label>
+              <label for="price"  class="col-lg-6">単価<span class="text-danger">*</span></label>
               <div class="col-lg-6">
-                <input type="number" placeholder="8桁以内で入力してください" v-model="price" class="form-control h5" />
+                <input id="price"  type="number" placeholder="8桁以内で入力してください" v-model="price" class="form-control h5" />
                 <!-- ユーザー名エラーメッセージ -->
                 <div class="text-danger small" v-show="priceErrMsg">{{ priceErrMsg }}</div>
               </div>
@@ -138,8 +138,8 @@ export default {
         } else if (isNaN(this.price)) {
           this.priceErrMsg = "単価は半角数字で入力してください。";
           errFlag = true;
-        } else if (Number(this.price) < 0 || Number(this.price) > 99999999) {
-          this.priceErrMsg = "単価は0以上99999999以内で入力してください。";
+        } else if (Number(this.price) < 0 || String(this.price).length > 8) {
+          this.priceErrMsg = "単価は0以上8桁以内で入力してください。";
           errFlag = true;
         }
 
@@ -161,7 +161,7 @@ export default {
           this.msg = "";
           alert("商品情報の登録上限を超えています。");
           console.log(e);
-          this.$router.push({ name: "usersList" });
+          this.$router.push({ name: "productsList" });
         } else {
           this.msg = "";
           alert("商品情報登録に失敗しました。");

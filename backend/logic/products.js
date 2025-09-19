@@ -22,7 +22,6 @@ module.exports.getAll = async function (db) {
   }
 };
 
-
 /**
  * 商品情報を取得
  *
@@ -44,6 +43,29 @@ module.exports.findByProductCode = async function (db, productCode) {
   }
 };
 
+/**
+ * 商品情報を登録
+ *
+ */
+module.exports.create = async function (db, productName, price, updateId, entryId) {
+  const productsModel = ProductsRepository.getProductsModel(db);
 
-
-
+  try {
+    const productCode = (await productsModel.max("product_code")) + 1;
+    if (String(productCode).length > 7) {
+      const status = 400;
+      return status;
+    }
+    return await productsModel.create({
+      product_code: productCode,
+      product_name: productName,
+      price: price,
+      update_id: updateId,
+      update_date: sequelize.fn("now"),
+      entry_id: entryId,
+      entry_date: sequelize.fn("now"),
+    });
+  } catch (e) {
+    throw e;
+  }
+};
