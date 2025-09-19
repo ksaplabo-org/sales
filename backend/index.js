@@ -292,8 +292,6 @@ app.get("/api/products/:productCode", async function (req, res) {
   }
 });
 
-
-
 /**
  * ユーザー情報全件取得API
  */
@@ -309,3 +307,50 @@ app.get("/api/users", async function (req, res) {
     res.status(500).send("ユーザー情報取得処理に失敗しました");
   }
 });
+
+/**
+ *  ユーザーIDでユーザ情報取得API
+ */
+app.get("/api/users/searchUserId/:userId", async function (req, res) {
+  try {
+    const user = await UsersLogic.findByUserId(db, req.params.userId);
+
+    //正常レスポンス
+    res.send({
+      Items: JSON.stringify(user),
+    });
+  } catch (e) {
+    //異常レスポンス
+    console.log("failed to get user.", e);
+    res.status(500).send("server error occur");
+  }
+});
+
+/**
+ * ユーザー情報登録API
+ */
+app.post("/api/users", async function (req, res) {
+  // リクエストボディ取得
+  const reqBody = req.body;
+
+  try {
+    await UsersLogic.create(
+      db,
+      reqBody.userId,
+      reqBody.userPass,
+      reqBody.userName,
+      reqBody.userRole,
+      reqBody.updateId,
+      reqBody.entryId
+    );
+    res.send();
+  } catch (e) {
+    // 異常レスポンス
+    console.log("failed to add clients.", e);
+    res.status(500).send("server error occur");
+  }
+});
+
+
+
+
