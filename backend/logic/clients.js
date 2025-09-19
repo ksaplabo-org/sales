@@ -114,11 +114,12 @@ module.exports.edit = async function (db, clientNo, name, postCode, address1, ad
 module.exports.delete = async function (db, clientNo) {
   const clientsModel = ClientsRepository.getClientsModel(db);
   try {
-    await clientsModel.destroy({
+    const result =await clientsModel.destroy({
       where: {
         client_no: clientNo,
       },
     });
+    console.log();
   } catch (e) {
     throw e;
   }
