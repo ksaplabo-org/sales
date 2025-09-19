@@ -118,6 +118,12 @@ export async function getProductsByProductCode(productCode) {
   return await axios.get(url);
 }
 
+//商品情報削除
+export async function deleteProducts(productCode) {
+  const url = "/api/products/" + productCode;
+  return await axios.delete(url);
+}
+
 
 // ユーザー情報全件取得処理
 export async function getUsers() {
