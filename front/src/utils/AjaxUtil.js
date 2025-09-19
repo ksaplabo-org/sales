@@ -170,8 +170,20 @@ export async function getUsersByid(id) {
   return await axios.get(url);
 }
 
-//顧客情報削除
+//ユーザー情報削除
 export async function deleteUsers(id) {
   const url = "/api/users/" + id;
   return await axios.delete(url);
+}
+
+// 商品情報登録
+export async function postProducts(productModel) {
+  const url = "/api/products";
+
+  return await axios.post(url, {
+    productName: productModel.productName,
+    price: productModel.price,
+    updateId: UserUtil.currentUserInfo().id,
+    entryId: UserUtil.currentUserInfo().id,
+  });
 }

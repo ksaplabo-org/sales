@@ -414,6 +414,30 @@ app.delete("/api/users/:id", async function (req, res) {
   }
 });
 
+/**
+ * 商品情報登録API
+ */
+app.post("/api/products", async function (req, res) {
+  // リクエストボディ取得
+  const reqBody = req.body;
 
-
-
+  try {
+    const createResult = await ProductsLogic.create(
+      db,
+      reqBody.productName,
+      reqBody.price,
+      reqBody.updateId,
+      reqBody.entryId
+    );
+    // 商品コードが上限を超えているか判定
+    if (createResult === 400) {
+      res.status(400).send();
+    } else {
+      res.send();
+    }
+  } catch (e) {
+    // 異常レスポンス
+    console.log("failed to add clients.", e);
+    res.status(500).send("server error occur");
+  }
+});
