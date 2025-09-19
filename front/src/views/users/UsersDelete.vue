@@ -46,7 +46,12 @@
             <!-- 削除ボタン -->
             <div class="form-group justify-content-center row">
               <div class="col-sm-6">
-                <input class="btn btn-danger btn-sm btn-block" type="submit" value="削除" />
+                <input
+                  class="btn btn-danger btn-sm btn-block"
+                  type="submit"
+                  value="削除"
+                  :disabled="this.userInfo.id == this.id"
+                />
               </div>
             </div>
           </form>
@@ -91,12 +96,11 @@ export default {
   },
   async mounted() {
     try {
-       this.userInfo = UserUtil.currentUserInfo();
+      this.userInfo = UserUtil.currentUserInfo();
       //ログインチェック
       if (!UserUtil.isLogIn()) {
         this.$router.push({ name: "logIn", params: { flashMsg: "ログインしてください" } });
 
-       
         //権限チェック(管理者以外拒否)
       } else if (this.userInfo.userRole != UserConst.UserRole.admin) {
         this.$router.push({ name: "logIn", params: { flashMsg: "権限がありません" } });
@@ -151,6 +155,11 @@ export default {
         // ユーザー情報を各項目にセット
         this.userId = userData.user_id;
         this.userName = userData.user_name;
+
+        //ログイン中ユーザー一致チェック
+        if(this.userInfo.id==this.id){
+          window.alert("ログイン中のユーザーは削除できません。");
+        }
       } catch (e) {
         this.errMsg = "ユーザー情報取得に失敗しました";
         console.log(e);
@@ -172,12 +181,7 @@ export default {
         if (comfirmResult) {
           await AjaxUtil.deleteUsers(this.id);
           window.alert("ユーザー情報削除処理が完了しました。");
-          if (this.userInfo.id == this.id) {
-            UserUtil.deleteCurrentUserInfo();
-            this.$router.push({ name: "logIn" , params: { flashMsg: "ログアウトしました。" } });
-          } else {
-            this.$router.push({ name: "usersList" });
-          }
+          this.$router.push({ name: "usersList" });
         }
       } catch (e) {
         window.alert("ユーザー情報削除処理に失敗しました。");
