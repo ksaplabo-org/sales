@@ -376,6 +376,30 @@ app.get("/api/users/:id", async function (req, res) {
 });
 
 /**
+ * ユーザー情報修正API
+ */
+app.put("/api/users", async function (req, res) {
+  const reqBody = req.body;
+  try {
+    await UsersLogic.edit(
+      db,
+      reqBody.id,
+      reqBody.userId,
+      reqBody.userPass,
+      reqBody.userName,
+      reqBody.userRole,
+      reqBody.updateId
+    );
+    //正常レスポンス
+    res.send();
+  } catch (e) {
+    //異常レスポンス
+    console.log("failed to edit user", e);
+    res.status(500).send("server error occur");
+  }
+});
+
+/**
  * ユーザー情報削除API
  */
 app.delete("/api/users/:id", async function (req, res) {
@@ -389,3 +413,7 @@ app.delete("/api/users/:id", async function (req, res) {
     res.status(500).send("server error occur");
   }
 });
+
+
+
+

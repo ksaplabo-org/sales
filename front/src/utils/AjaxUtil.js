@@ -117,9 +117,17 @@ export async function getProductsByProductCode(productCode) {
   const url = "/api/products/" + productCode;
   return await axios.get(url);
 }
+
+
 // ユーザー情報全件取得処理
 export async function getUsers() {
   const url = "/api/users";
+  return await axios.get(url);
+}
+
+//ユーザー情報を管理用IDで検索
+export async function getUsersById(id) {
+  const url = "/api/users/" + id;
   return await axios.get(url);
 }
 
@@ -127,6 +135,19 @@ export async function getUsers() {
 export async function getUsersByUserId(userId) {
   const url = "/api/users/searchUserId/" + userId;
   return await axios.get(url);
+}
+
+//ユーザー情報修正
+export async function putUsers(usersModel) {
+  const url = "/api/users";
+  return await axios.put(url, {
+    id: usersModel.id,
+    userId: usersModel.userId,
+    userPass: usersModel.userPass,
+    userName: usersModel.userName,
+    userRole: usersModel.userRole,
+    updateId: UserUtil.currentUserInfo().id,
+  });
 }
 
 // ユーザー情報登録

@@ -96,6 +96,33 @@ module.exports.findByid = async function (db, id) {
 };
 
 /**
+ * ユーザー情報修正
+ */
+module.exports.edit = async function (db, id, userId, userPass, userName, userRole, updateId) {
+  const usersModel = UsersRepository.getUsersModel(db);
+
+  try {
+    await usersModel.update(
+      {
+        user_id: userId,
+        user_pass: userPass,
+        user_name: userName,
+        user_role: userRole,
+        update_id: updateId,
+        update_date: sequelize.fn("now"),
+      },
+      {
+        where: {
+          id: id,
+        },
+      }
+    );
+  } catch (e) {
+    throw e;
+  }
+};
+
+/**
  * ユーザー情報削除
  */
 module.exports.delete = async function (db, id) {

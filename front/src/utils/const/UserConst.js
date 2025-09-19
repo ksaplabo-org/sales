@@ -8,4 +8,5 @@ export default {
     admin: "1",
     post: "2",
   },
+  SessionKey: "logInUser",
 };
