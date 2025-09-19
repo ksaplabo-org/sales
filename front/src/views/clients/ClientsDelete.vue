@@ -171,8 +171,13 @@ export default {
           this.$router.push({ name: "clientsList" });
         }
       } catch (e) {
-        window.alert("顧客情報削除処理に失敗しました。");
-        console.log(e);
+        if (e.response.status === 409) {
+          window.alert("受注情報に登録されている顧客番号のため、削除できません。");
+          console.log(e);
+        } else {
+          window.alert("顧客情報削除処理に失敗しました。");
+          console.log(e);
+        }
       } finally {
         this.isLoading = false;
       }

@@ -149,13 +149,18 @@ app.delete("/api/clients/:clientNo", async function (req, res) {
     res.send();
   } catch (e) {
     //異常レスポンス
-    console.log("failed to edit client", e);
-    res.status(500).send("server error occur");
+    if (e.parent.errno == 1451) {
+      // 受注情報が削除しようとしてる顧客番号を参照している場合
+      res.status(409).send("server error occur");
+    } else {
+      console.log("failed to get orders.", e);
+      res.status(500).send("server error occur");
+    }
   }
 });
 
 /**
- * 受注情報全件取得API
+ * 受注情報全件取得APIW
  */
 app.get("/api/orders", async function (req, res) {
   try {
@@ -306,8 +311,6 @@ app.delete("/api/products/:productCode", async function (req, res) {
     res.status(500).send("server error occur");
   }
 });
-
-
 
 /**
  * ユーザー情報全件取得API
