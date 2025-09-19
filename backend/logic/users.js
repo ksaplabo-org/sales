@@ -35,6 +35,10 @@ module.exports.create = async function (db, userId, userPass, userName, userRole
   try {
     // 管理用IDの自動採番(最新IDに+1)
     const id = (await usersModel.max("id")) + 1;
+    if (String(id).length > 4) {
+      const status = 400;
+      return status;
+    }
     // ユーザー情報登録
     return await usersModel.create({
       id: id,
@@ -51,7 +55,6 @@ module.exports.create = async function (db, userId, userPass, userName, userRole
     throw e;
   }
 };
-
 
 /**
  * ユーザー情報の全件検索処理
@@ -70,7 +73,6 @@ module.exports.getAll = async function (db) {
     throw e;
   }
 };
-
 
 /**
  * ユーザー情報を取得
@@ -92,8 +94,6 @@ module.exports.findByid = async function (db, id) {
     throw e;
   }
 };
-
-
 
 /**
  * ユーザー情報削除

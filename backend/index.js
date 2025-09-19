@@ -334,7 +334,7 @@ app.post("/api/users", async function (req, res) {
   const reqBody = req.body;
 
   try {
-    await UsersLogic.create(
+    const createResult = await UsersLogic.create(
       db,
       reqBody.userId,
       reqBody.userPass,
@@ -343,6 +343,12 @@ app.post("/api/users", async function (req, res) {
       reqBody.updateId,
       reqBody.entryId
     );
+    //管理用IDが上限を超えているか判定
+    if (createResult === 400) {
+      res.status(400).send();
+    } else {
+      res.send();
+    }
     res.send();
   } catch (e) {
     // 異常レスポンス
@@ -350,7 +356,6 @@ app.post("/api/users", async function (req, res) {
     res.status(500).send("server error occur");
   }
 });
-
 
 /**
  * ユーザー情報取得API
@@ -370,7 +375,6 @@ app.get("/api/users/:id", async function (req, res) {
   }
 });
 
-
 /**
  * ユーザー情報削除API
  */
@@ -385,7 +389,3 @@ app.delete("/api/users/:id", async function (req, res) {
     res.status(500).send("server error occur");
   }
 });
-
-
-
-

@@ -18,7 +18,7 @@
 
             <!-- ユーザーID -->
             <div class="form-group row">
-              <label class="col-lg-6">ユーザーID</label>
+              <label class="col-lg-6">ユーザーID<span class="text-danger">*</span></label>
               <div class="col-lg-6">
                 <input
                   placeholder="1桁以上4桁以下で入力してください"
@@ -33,7 +33,7 @@
 
             <!--パスワード -->
             <div class="form-group row">
-              <label class="col-lg-6">パスワード</label>
+              <label class="col-lg-6">パスワード<span class="text-danger">*</span></label>
               <div class="col-lg-6">
                 <input
                   placeholder="8桁以上20桁以下で入力してください"
@@ -51,7 +51,7 @@
 
             <!-- ユーザー名 -->
             <div class="form-group row">
-              <label class="col-lg-6">ユーザー名</label>
+              <label class="col-lg-6">ユーザー名<span class="text-danger">*</span></label>
               <div class="col-lg-6">
                 <input placeholder="1桁以上20桁以下で入力してください" v-model="userName" class="form-control h5" />
                 <!-- ユーザー名エラーメッセージ -->
