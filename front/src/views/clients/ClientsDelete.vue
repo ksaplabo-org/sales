@@ -172,7 +172,7 @@ export default {
         }
       } catch (e) {
         if (e.response.status === 409) {
-          window.alert("受注情報に登録されている顧客番号のため、削除できません。");
+          window.alert("受注情報に登録されている顧客のため、削除できません。");
           console.log(e);
         } else {
           window.alert("顧客情報削除処理に失敗しました。");
