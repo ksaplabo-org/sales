@@ -71,6 +71,7 @@ export default {
       fields: [
         { key: "order_no", label: "伝票番号", sortable: true },
         { key: "display_client_no", label: "顧客番号", sortable: false },
+        { key: "product_code", label: "商品コード", sortable: false },
         { key: "order_date", label: "発注日", sortable: false },
         { key: "ship_date", label: "出荷日", sortable: false },
         { key: "deliver_date", label: "納品日", sortable: false },
@@ -114,6 +115,7 @@ export default {
           return {
             order_no: order.order_no,
             client_no: order.client_no,
+            product_code: order.product_code,
             // 0埋めされた表示用の顧客番号
             display_client_no: String(order.client_no).padStart(8, "0"),
             order_date: String(order.order_date).replace(/-/g, "/"),
