@@ -7,7 +7,7 @@
         <div class="container-fluid">
           <h1 class="border-bottom">ユーザー情報登録</h1>
           <button type="button" class="btn btn-dark mb-4" v-on:click="() => $router.push({ name: 'usersList' })">
-              ユーザー情報一覧画面へ
+            ユーザー情報一覧画面へ
           </button>
           <p class="text-danger" v-show="errMsg">{{ errMsg }}</p>
 
@@ -20,7 +20,12 @@
             <div class="form-group row">
               <label class="col-lg-6">ユーザーID</label>
               <div class="col-lg-6">
-                <input v-model="userId" class="form-control h5" />
+                <input
+                  placeholder="1桁以上4桁以下で入力してください"
+                  autocomplete="off"
+                  v-model="userId"
+                  class="form-control h5"
+                />
                 <!-- ユーザーIDエラーメッセージ -->
                 <div class="text-danger small" v-show="userIdErrMsg">{{ userIdErrMsg }}</div>
               </div>
@@ -30,9 +35,17 @@
             <div class="form-group row">
               <label class="col-lg-6">パスワード</label>
               <div class="col-lg-6">
-                <input type="password" v-model="userPass" class="form-control h5" />
+                <input
+                  placeholder="8桁以上20桁以下で入力してください"
+                  autocomplete="new-password"
+                  type="password"
+                  v-model="userPass"
+                  class="form-control h5"
+                />
                 <!-- パスワードエラーメッセージ -->
-                <div class="text-danger small" v-show="userPassErrMsg">{{ userPassErrMsg }}</div>
+                <div class="text-danger small" v-show="userPassErrMsg">
+                  {{ userPassErrMsg }}
+                </div>
               </div>
             </div>
 
@@ -40,7 +53,7 @@
             <div class="form-group row">
               <label class="col-lg-6">ユーザー名</label>
               <div class="col-lg-6">
-                <input v-model="userName" class="form-control h5" />
+                <input placeholder="1桁以上20桁以下で入力してください" v-model="userName" class="form-control h5" />
                 <!-- ユーザー名エラーメッセージ -->
                 <div class="text-danger small" v-show="userNameErrMsg">{{ userNameErrMsg }}</div>
               </div>
@@ -52,7 +65,7 @@
               <div class="col-lg-6">
                 <select v-model="selectedUserRole" class="form-control h5">
                   <option :value="general">一般</option>
-                  <option :value="admin">管理</option>
+                  <option :value="admin">管理者</option>
                   <option :value="post">役職</option>
                 </select>
               </div>
