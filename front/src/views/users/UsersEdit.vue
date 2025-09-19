@@ -60,12 +60,11 @@
             <div class="form-group row">
               <label for="userRole" class="col-lg-6">権限</label>
               <div class="col-lg-6">
-                <select v-model="userRole" :disabled="this.logInId == this.id">
+                <select v-model="userRole" :disabled="this.logInId == this.id" class="form-control h5">
                   <option :value="this.general">一般</option>
                   <option :value="this.admin">管理者</option>
                   <option :value="this.post">役職</option>
                 </select>
-
                 <div class="text-danger small newlineControl" v-show="userRoleErrMsg">{{ userRoleErrMsg }}</div>
               </div>
             </div>
@@ -94,9 +93,6 @@
 </template>
 
 <script>
-// 共通設定
-import "../../utils/sb-admin";
-
 // util関連
 import * as UserUtil from "@/utils/UserUtil";
 import * as AjaxUtil from "@/utils/AjaxUtil";
@@ -106,18 +102,12 @@ import UserConst from "@/utils/const/UserConst";
 import Header from "../../components/Header.vue";
 import Loading from "../../components/Loading.vue";
 import CancelButton from "../../components/CancelButton.vue";
-import Table from "../../components/Table.vue";
 
 export default {
-  components: { Header, Loading, CancelButton, Table },
+  components: { Header, Loading, CancelButton },
   data() {
     return {
       isLoading: false,
-
-      //テーブル用
-      items: [],
-      fields: [],
-      tmpProductRow: null,
 
       //各項目初期値
       id: "",
@@ -137,7 +127,6 @@ export default {
       userIdErrMsg: "",
       userPassErrMsg: "",
       userNameErrMsg: "",
-      userRoleErrMsg: "",
     };
   },
   async mounted() {
@@ -193,7 +182,6 @@ export default {
       this.userIdErrMsg = "";
       this.userPassErrMsg = "";
       this.userNameErrMsg = "";
-      this.userRoleErrMsg = "";
 
       // エラーが1つでもあるかどうかチェックする用
       let isErr = false;
