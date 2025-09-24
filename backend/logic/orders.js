@@ -12,7 +12,7 @@ module.exports.getAll = async function (db) {
     const ordersModel = OrdersRepository.getOrdersModel(db);
 
     // 受注情報を全件取得
-    return ordersModel.findAll();;
+    return ordersModel.findAll();
   } catch (e) {
     throw e;
   }

@@ -38,7 +38,7 @@ export default new Router({
       name: "menu",
       component: Menu,
     },
-     {
+    {
       path: "/pages/clients/list.html",
       name: "clientsList",
       component: ClientsList,
@@ -78,7 +78,7 @@ export default new Router({
       name: "ordersDelete",
       component: OrdersDelete,
     },
-        {
+    {
       path: "/pages/products/list.html",
       name: "productsList",
       component: ProductsList,
@@ -118,17 +118,10 @@ export default new Router({
       name: "usersDelete",
       component: UsersDelete,
     },
-     {
+    {
       path: "*",
       name: "sorry",
       component: Sorry,
     },
   ],
-    scrollBehavior (to, from, savedPosition) {
-    if (savedPosition) {
-      return savedPosition
-    } else {
-      return { x: 0, y: 0 }
-    }
-  }
 });
