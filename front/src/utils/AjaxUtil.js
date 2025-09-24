@@ -55,3 +55,8 @@ export async function getClientsByClientNo(clientNo) {
   const url = "/api/clients/" + clientNo;
   return await axios.get(url);
 }
+
+export async function getOrders() {
+  const url = "/api/orders";
+  return await axios.get(url);
+}

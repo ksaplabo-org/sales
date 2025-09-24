@@ -1,6 +1,7 @@
 // Business Logic define
 const UsersLogic = require("./logic/users");
 const ClientsLogic = require("./logic/clients");
+const OrdersLogic = require("./logic/orders");
 
 // DB Connection define
 const DbUtil = require("./db/utility");
@@ -153,6 +154,22 @@ app.get("/api/clients/:clientNo", async function (req, res) {
   } catch (e) {
     //異常レスポンス
     console.log("failed to get client.", e);
+    res.status(500).send("server error occur");
+  }
+});
+
+/**
+ * 受注情報全件取得API
+ */
+app.get("/api/orders", async function (req, res) {
+  try {
+    const orders = await OrdersLogic.getAll(db);
+    res.send({
+      Items: JSON.stringify(orders),
+    });
+  } catch (e) {
+    // 異常レスポンス
+    console.log("failed to get orders.", e);
     res.status(500).send("server error occur");
   }
 });
