@@ -2,6 +2,7 @@
 const UsersLogic = require("./logic/users");
 const ClientsLogic = require("./logic/clients");
 const OrdersLogic = require("./logic/orders");
+const ProductsLogic = require("./logic/products");
 
 // DB Connection define
 const DbUtil = require("./db/utility");
@@ -170,6 +171,70 @@ app.get("/api/orders", async function (req, res) {
   } catch (e) {
     // 異常レスポンス
     console.log("failed to get orders.", e);
+    res.status(500).send("server error occur");
+  }
+});
+
+/**
+ * 受注情報登録API
+ */
+app.post("/api/orders", async function (req, res) {
+  const reqBody = req.body;
+
+  try {
+    const result = await OrdersLogic.create(
+      db,
+      reqBody.clientNo,
+      reqBody.orderDate,
+      reqBody.shipDate,
+      reqBody.deliverDate,
+      reqBody.productCode,
+      reqBody.amount,
+      reqBody.updateId,
+      reqBody.entryId
+    );
+    if (result == 400) {
+      res.status(400).send("Exceeds daily registration limit");
+    } else {
+      res.send();
+    }
+  } catch (e) {
+    // 異常レスポンス
+    console.log("failed to add orders.", e);
+    res.status(500).send("server error occur");
+  }
+});
+
+/**
+ * 商品情報全件取得API
+ */
+app.get("/api/products", async function (req, res) {
+  try {
+    const products = await ProductsLogic.getAll(db);
+    res.send({
+      Items: JSON.stringify(products),
+    });
+  } catch (e) {
+    // 異常レスポンス
+    console.log("failed to verify user.", e);
+    res.status(500).send("商品情報取得処理に失敗しました");
+  }
+});
+
+/**
+ * 商品情報取得API
+ */
+app.get("/api/products/:productCode", async function (req, res) {
+  try {
+    const product = await ProductsLogic.findByProductCode(db, req.params.productCode);
+
+    //正常レスポンスProductsLogic
+    res.send({
+      Items: JSON.stringify(product),
+    });
+  } catch (e) {
+    //異常レスポンス
+    console.log("failed to get client.", e);
     res.status(500).send("server error occur");
   }
 });

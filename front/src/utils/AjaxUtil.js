@@ -60,3 +60,30 @@ export async function getOrders() {
   const url = "/api/orders";
   return await axios.get(url);
 }
+
+//受注登録
+export async function postOrders(ordersModel) {
+  const url = "/api/orders/";
+  return await axios.post(url, {
+    clientNo: ordersModel.clientNo,
+    orderDate: ordersModel.orderDate,
+    shipDate: ordersModel.shipDate,
+    deliverDate: ordersModel.deliverDate,
+    productCode: ordersModel.productCode,
+    amount: ordersModel.amount,
+    updateId: ordersModel.updateId,
+    entryId: ordersModel.entryId,
+  });
+}
+
+// 商品情報全件取得処理
+export async function getProducts() {
+  const url = "/api/products/";
+  return await axios.get(url);
+}
+
+// 商品情報を商品コードで検索
+export async function getProductsByProductCode(productCode) {
+  const url = "/api/products/" + productCode;
+  return await axios.get(url);
+}
