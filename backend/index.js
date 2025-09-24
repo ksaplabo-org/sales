@@ -422,15 +422,19 @@ app.get("/api/users/:id", async function (req, res) {
 app.put("/api/users", async function (req, res) {
   const reqBody = req.body;
   try {
-    await UsersLogic.edit(
-      db,
-      reqBody.id,
-      reqBody.userId,
-      reqBody.userPass,
-      reqBody.userName,
-      reqBody.userRole,
-      reqBody.updateId
-    );
+    if (reqBody.id == reqBody.updateId) {
+      await UsersLogic.edit(db, reqBody.id, reqBody.userId, reqBody.userPass, reqBody.userName, reqBody.updateId);
+    } else {
+      await UsersLogic.edit(
+        db,
+        reqBody.id,
+        reqBody.userId,
+        reqBody.userPass,
+        reqBody.userName,
+        reqBody.userRole,
+        reqBody.updateId
+      );
+    }
     //正常レスポンス
     res.send();
   } catch (e) {

@@ -46,12 +46,7 @@
             <!-- 削除ボタン -->
             <div class="form-group justify-content-center row">
               <div class="col-sm-6">
-                <input
-                  class="btn btn-danger btn-sm btn-block"
-                  type="submit"
-                  value="削除"
-                  :disabled="this.userInfo.id == this.id"
-                />
+                <input class="btn btn-danger btn-sm btn-block" type="submit" value="削除" />
               </div>
             </div>
           </form>
@@ -157,8 +152,9 @@ export default {
         this.userName = userData.user_name;
 
         //ログイン中ユーザー一致チェック
-        if(this.userInfo.id==this.id){
+        if (this.userInfo.id == this.id) {
           window.alert("ログイン中のユーザーは削除できません。");
+          this.$router.push({ name: "usersList" });
         }
       } catch (e) {
         this.errMsg = "ユーザー情報取得に失敗しました";

@@ -101,6 +101,7 @@ import UserConst from "@/utils/const/UserConst";
 import Header from "../../components/Header.vue";
 import Loading from "../../components/Loading.vue";
 import CancelButton from "../../components/CancelButton.vue";
+import { currentUserInfo } from "../../utils/UserUtil";
 
 export default {
   components: { Header, Loading, CancelButton },
@@ -248,7 +249,7 @@ export default {
           const newLogInInfo = {
             id: this.id,
             userName: this.userName,
-            userRole: this.userRole,
+            userRole: UserUtil.currentUserInfo().userRole,
           };
           sessionStorage.setItem(UserConst.SessionKey, JSON.stringify(newLogInInfo));
         }
