@@ -1,11 +1,7 @@
 <template>
   <nav class="navbar navbar-expand navbar-dark bg-dark static-top">
     <!-- タイトル(ログイン中はクリックでメニュー画面へ遷移可能) -->
-    <h1
-      class="text-white"
-      v-on:click="onClickTitle()"
-      :style="{ cursor: isLogIn ? 'pointer' : 'default' }"
-    >
+    <h1 class="text-white" v-on:click="onClickTitle()" :style="{ cursor: isLogIn ? 'pointer' : 'default' }">
       販売管理システム
     </h1>
 
@@ -32,7 +28,10 @@ export default {
   },
   async mounted() {
     this.isLogIn = UserUtil.isLogIn();
-    this.userName = UserUtil.currentUserInfo().userName;
+    // ログイン中のみユーザー名を保持
+    if (this.isLogIn) {
+      this.userName = UserUtil.currentUserInfo().userName;
+    }
   },
   methods: {
     /*
