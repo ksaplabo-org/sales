@@ -6,7 +6,7 @@
       <div id="content-wrapper" class="bg-light min-vh-100">
         <div class="container-fluid">
           <h1 class="border-bottom">受注情報修正</h1>
-          <button type="button" class="btn btn-dark mb-4" v-on:click="() => $router.push({ name: 'ordersList' })">
+          <button type="button" class="btn btn-dark" v-on:click="() => $router.push({ name: 'ordersList' })">
             受注情報一覧画面へ
           </button>
           <p class="text-danger" v-show="errMsg">{{ errMsg }}</p>
@@ -76,7 +76,7 @@
             <div class="form-group row">
               <label for="deliverDate" class="col-lg-6">納品日</label>
               <div class="col-lg-6">
-                <input type="date" id="deliverDate" class="form-control" v-model="deliverDate" />
+                <input type="" id="deliverDate" class="form-control" v-model="deliverDate" />
                 <!-- 納品日エラーメッセージ -->
                 <div class="text-danger small" v-show="deliverDateErrMsg">{{ deliverDateErrMsg }}</div>
               </div>
@@ -182,6 +182,7 @@
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
+          <p class="text-danger ml-3" v-show="modalErrMsg">{{ modalErrMsg }}</p>
           <div class="modal-body">
             <!-- インポートしたテーブル -->
             <Table :items="items" :fields="fields" :empDataMsg="'受注情報がありません'" @sendRow="setReceiveRow" />
@@ -225,10 +226,10 @@ import * as AjaxUtil from "@/utils/AjaxUtil";
 import * as OrdersUtil from "@/utils/OrdersUtil";
 
 // コンポーネント関連
-import Header from "../../components/Header.vue";
-import Loading from "../../components/Loading.vue";
-import CancelButton from "../../components/CancelButton.vue";
-import Table from "../../components/Table.vue";
+import Header from "@/components/Header.vue";
+import Loading from "@/components/Loading.vue";
+import CancelButton from "@/components/CancelButton.vue";
+import Table from "@/components/Table.vue";
 
 export default {
   components: { Header, Loading, CancelButton, Table },
@@ -260,6 +261,7 @@ export default {
 
       //エラーメッセージ
       errMsg: "",
+      modalErrMsg: "",
       orderDateErrMsg: "",
       shipDateErrMsg: "",
       deliverDateErrMsg: "",
@@ -421,7 +423,7 @@ export default {
           { key: "price", label: "単価", sortable: false },
         ];
       } catch (e) {
-        this.errMsg = "商品情報取得に失敗しました。";
+        this.modalErrMsg = "商品情報取得に失敗しました。";
         console.log(e);
       } finally {
         this.isLoading = false;
