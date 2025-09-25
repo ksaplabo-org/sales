@@ -81,20 +81,20 @@ export default {
   async mounted() {
     try {
       //ログインチェック
-      if (!UserUtil.isLogIn()) {
+      if (UserUtil.isLogIn()) {
+        this.isLoading = true;
+
+        // 受注情報取得
+        await this.getOrders();
+        // テーブルに表示するページ数を設定
+        this.rows = this.items.length;
+
+        this.isLoading = false;
+      } else {
         this.$router.push({ name: "logIn", params: { flashMsg: "ログインしてください" } });
-
-        //権限チェック(管理者以外拒否)
-      } else if (UserUtil.currentUserInfo().userRole != UserConst.UserRole.admin) {
-        this.$router.push({ name: "logIn", params: { flashMsg: "権限がありません" } });
       }
-
-      // 受注情報取得
-      await this.getOrders();
-      // テーブルに表示するページ数を設定
-      this.rows = this.items.length;
     } catch (e) {
-      this.$router.push({ name: "logIn", params: { flashMsg: "ログインしてください" } });
+      this.errMsg = e.message;
     }
   },
   methods: {
@@ -102,8 +102,6 @@ export default {
      *受注情報取得処理
      */
     async getOrders() {
-      this.isLoading = true;
-
       this.msg = "";
       this.errMsg = "";
 
@@ -119,16 +117,14 @@ export default {
             // 0埋めされた表示用の顧客番号
             display_client_no: String(order.client_no).padStart(8, "0"),
             order_date: String(order.order_date).replace(/-/g, "/"),
-            ship_date:  String(order.ship_date).replace(/-/g, "/"),
-            deliver_date:  String(order.deliver_date).replace(/-/g, "/"),
+            ship_date: String(order.ship_date).replace(/-/g, "/"),
+            deliver_date: String(order.deliver_date).replace(/-/g, "/"),
           };
         });
       } catch (e) {
         this.msg = "";
         this.errMsg = "受注情報取得処理に失敗しました。";
         console.log(e);
-      } finally {
-        this.isLoading = false;
       }
     },
 

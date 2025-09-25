@@ -5,7 +5,7 @@
     <div id="wrapper">
       <div id="content-wrapper" class="bg-light min-vh-100">
         <div class="container-fluid">
-          <h1  class="border-bottom">受注情報修正</h1>
+          <h1 class="border-bottom">受注情報修正</h1>
           <button type="button" class="btn btn-dark mb-4" v-on:click="() => $router.push({ name: 'ordersList' })">
             受注情報一覧画面へ
           </button>
@@ -164,7 +164,7 @@
           </div>
         </div>
       </div>
-</div>
+    </div>
     <!-- 一覧モーダルStart -->
     <div
       class="modal fade"
@@ -345,7 +345,7 @@ export default {
         const productData = JSON.parse(response.data.Items);
 
         if (productData) {
-          // 存在する場合、顧客情報を各項目にセット
+          // 存在する場合、商品情報を各項目にセット
           this.productCode = productData.product_code;
           this.productName = productData.product_name;
           this.price = productData.price;
@@ -383,6 +383,9 @@ export default {
         }
         if (isNaN(this.amount)) {
           this.amountErrMsg = "数量は半角数字で入力してください。";
+          return;
+        }
+        if (this.price == null) {
           return;
         }
 
@@ -459,71 +462,73 @@ export default {
       let isErr = false;
 
       try {
-        // 入力チェック
-        if (this.orderDate == null || this.orderDate === "") {
-          this.orderDateErrMsg = "発注日が未入力です。";
-          isErr = true;
-        }
-        if (this.shipDate == null || this.shipDate === "") {
-          this.shipDateErrMsg = "出荷日が未入力です。";
-          isErr = true;
-        }
-        if (this.deliverDate == null || this.deliverDate === "") {
-          this.deliverDateErrMsg = "納品日が未入力です。";
-          isErr = true;
-        }
+        // 商品コードの入力チェック
         if (this.productCode == null || this.productCode === "") {
           this.productCodeErrMsg = "商品コードが未入力です。";
           isErr = true;
+        } else if (String(this.productCode).length != 7) {
+          this.productCodeErrMsg = "商品コードは7桁で入力してください。";
+          isErr = true;
+        } else {
+          // 商品コードから商品情報を取得
+          const response = await AjaxUtil.getProductsByProductCode(this.productCode);
+          const productData = JSON.parse(response.data.Items);
+
+          // 存在チェック
+          if (!productData) {
+            this.productCodeErrMsg = "入力された商品コードは存在しません。";
+            isErr = true;
+          }
         }
+
+        // 数量の入力チェック
         if (this.amount == null || this.amount === "") {
           this.amountErrMsg = "数量が未入力です。";
           isErr = true;
-        }
-        if (this.amount <= 0 || 100 <= this.amount) {
+        } else if (isNaN(this.amount)) {
+          this.amountErrMsg = "数量は半角数字で入力してください。";
+          isErr = true;
+        } else if (this.amount <= 0 || 100 <= this.amount) {
           this.amountErrMsg = "数量が誤っています。1以上かつ2桁以内で入力してください。";
           isErr = true;
         }
-        if (isNaN(this.amount)) {
-          this.amountErrMsg = "数量は半角数字で入力してください。";
+
+        // 発注日の入力チェック
+        if (this.orderDate == null || this.orderDate === "") {
+          this.orderDateErrMsg = "発注日が未入力です。";
           isErr = true;
-        }
-        if (isNaN(orderDate.getDate())) {
+        } else if (isNaN(orderDate.getDate())) {
           this.orderDateErrMsg = "発注日が不正です。yyyy/mm/dd形式で入力してください。";
           isErr = true;
-        }
-        if (isNaN(shipDate.getDate())) {
-          this.shipDateErrMsg = "出荷日が不正です。yyyy/mm/dd形式で入力してください。";
-          isErr = true;
-        }
-        if (isNaN(deliverDate.getDate())) {
-          this.deliverDateErrMsg = "納品日が不正です。yyyy/mm/dd形式で入力してください。";
-          isErr = true;
-        }
-
-        if (orderDate < minDate || maxDate < orderDate) {
+        } else if (orderDate < minDate || maxDate < orderDate) {
           this.orderDateErrMsg = "発注日が不正です。2016/01/01～9999/12/31の間で指定してください。";
           isErr = true;
         }
-        if (shipDate < minDate || maxDate < shipDate) {
+
+        // 出荷日の入力チェック
+        if (this.shipDate == null || this.shipDate === "") {
+          this.shipDateErrMsg = "出荷日が未入力です。";
+          isErr = true;
+        } else if (isNaN(shipDate.getDate())) {
+          this.shipDateErrMsg = "出荷日が不正です。yyyy/mm/dd形式で入力してください。";
+          isErr = true;
+        } else if (shipDate < minDate || maxDate < shipDate) {
           this.shipDateErrMsg = "出荷日が不正です。2016/01/01～9999/12/31の間で指定してください。";
           isErr = true;
         }
-        if (deliverDate < minDate || maxDate < deliverDate) {
+
+        // 納品日の入力チェック
+        if (this.deliverDate == null || this.deliverDate === "") {
+          this.deliverDateErrMsg = "納品日が未入力です。";
+          isErr = true;
+        } else if (isNaN(deliverDate.getDate())) {
+          this.deliverDateErrMsg = "納品日が不正です。yyyy/mm/dd形式で入力してください。";
+          isErr = true;
+        } else if (deliverDate < minDate || maxDate < deliverDate) {
           this.deliverDateErrMsg = "納品日が不正です。2016/01/01～9999/12/31の間で指定してください。";
           isErr = true;
         }
 
-        // 商品コードから商品情報を取得
-        const response = await AjaxUtil.getProductsByProductCode(this.productCode);
-        const productData = JSON.parse(response.data.Items);
-
-        // 存在チェック
-        if (!productData) {
-          this.productCodeErrMsg = "入力された商品コードは存在しません。";
-          isErr = true;
-        }
-        console.log(isErr);
         // エラーが1つでもあった(trueの)場合、処理を終了
         if (isErr) {
           return;

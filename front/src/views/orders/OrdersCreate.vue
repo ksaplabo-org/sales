@@ -472,7 +472,7 @@ export default {
           return;
         }
 
-        const resultValue = OrdersUtill.calcValue(this.amount, this.price);
+        const resultValue = OrdersUtil.calcValue(this.amount, this.price);
 
         this.value = resultValue.value;
         this.taxValue = resultValue.taxValue;
@@ -556,7 +556,7 @@ export default {
     },
 
     /**
-     * ユーザー登録
+     * 受注情報登録
      */
     async ordersCreate() {
       // メッセージ初期化

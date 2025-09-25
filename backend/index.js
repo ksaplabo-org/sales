@@ -160,7 +160,7 @@ app.delete("/api/clients/:clientNo", async function (req, res) {
 });
 
 /**
- * 受注情報全件取得APIW
+ * 受注情報全件取得API
  */
 app.get("/api/orders", async function (req, res) {
   try {
