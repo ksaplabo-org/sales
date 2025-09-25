@@ -493,10 +493,7 @@ export default {
           updateId: UserUtil.currentUserInfo().id,
           entryId: UserUtil.currentUserInfo().id,
         };
-
-        console.log(model);
         const result = await AjaxUtil.postOrders(model);
-        console.log(result.data);
         console.log(result.e);
 
         window.alert("受注情報登録処理が完了しました。");
