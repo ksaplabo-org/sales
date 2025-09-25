@@ -151,7 +151,7 @@
                     min="1"
                     @change="displayValue()"
                   />
-                  <div class="text-danger small col-lg text-right pr-0 mb-3" v-show="amountMsg">{{ amountMsg }}</div>
+                  <div class="text-danger small" v-show="amountMsg">{{ amountMsg }}</div>
                 </div>
               </div>
 
@@ -197,18 +197,19 @@
         id="ProductsListModal"
         tabindex="-1"
         role="dialog"
-        aria-labelledby="myModalLabel"
+        aria-labelledby="productsModalLabel"
         aria-hidden="true"
       >
         <div class="modal-dialog modal-xl">
           <div class="modal-content">
             <div class="modal-header">
-              <p class="modal-title font-weight-bold text-secondary" id="myModalLabel">商品情報一覧</p>
+              <p class="modal-title font-weight-bold text-secondary" id="productsModalLabel">商品情報一覧</p>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
             <div class="modal-body">
+              <p class="text-danger" v-show="errMsg">{{ MoErrMsg }}</p>
               <!-- インポートしたテーブル -->
               <Table :items="items" :fields="fields" :empDataMsg="'受注情報がありません'" @sendRow="setReceiveRow" />
             </div>
@@ -249,6 +250,7 @@
               </button>
             </div>
             <div class="modal-body">
+              <p class="text-danger" v-show="errMsg">{{ MoErrMsg }}</p>
               <!-- インポートしたテーブル -->
               <Table :items="items" :fields="fields" :empDataMsg="'顧客情報がありません'" @sendRow="setReceiveRow" />
             </div>
@@ -285,7 +287,7 @@
 <script>
 import * as UserUtil from "@/utils/UserUtil";
 import * as AjaxUtil from "@/utils/AjaxUtil";
-import * as OrdersUtill from "@/utils/OrdersUtil";
+import * as OrdersUtil from "@/utils/OrdersUtil";
 // 共通
 import Header from "../../components/Header.vue";
 import "../../utils/sb-admin";
@@ -298,6 +300,7 @@ export default {
   data() {
     return {
       errMsg: "",
+      MoErrMsg: "",
       isLoading: false,
       //各項目初期値
       clientNo: "",
@@ -314,7 +317,7 @@ export default {
       taxValue: "",
       totalValue: "",
       entryId: "",
-      entoryName: "",
+      entryName: "",
       updateId: "",
       updateDate: "",
       clientNoMsg: "",
@@ -357,8 +360,8 @@ export default {
     async inputClientNo() {
       // メッセージ初期化
       this.errMsg = "";
+      this.MoErrMsg = "";
       this.clientNoMsg = "";
-      this.cientNo = "";
       this.name = "";
       this.postCode = "";
       this.address1 = "";
@@ -368,8 +371,8 @@ export default {
         if (this.clientNo == null || this.clientNo === "") {
           return;
         }
-        if (!String(this.clientNo).match("^[0-9]*$")) {
-          this.clientNoMsg = "商品コードは半角数字で入力してください。";
+        if (isNaN(this.clientNo)) {
+          this.clientNoMsg = "顧客番号は半角数字で入力してください。";
           return;
         }
         if (String(this.clientNo).length > 8) {
@@ -405,6 +408,7 @@ export default {
      */
     async inputProductCode() {
       this.errMsg = "";
+      this.MoErrMsg = "";
       this.productCodeMsg = "";
       this.isLoading = true;
       this.productName = "";
@@ -438,7 +442,7 @@ export default {
 
         this.displayValue();
       } catch (e) {
-        this.errMsg = "商品情報取得処理に失敗しました。";
+        this.MoErrMsg = "商品情報取得処理に失敗しました。";
         console.log(e);
       } finally {
         this.isLoading = false;
@@ -472,7 +476,7 @@ export default {
           return;
         }
 
-        const resultValue = OrdersUtill.calcValue(this.amount, this.price);
+        const resultValue = OrdersUtil.calcValue(this.amount, this.price);
 
         this.value = resultValue.value;
         this.taxValue = resultValue.taxValue;
@@ -510,7 +514,7 @@ export default {
           { key: "tel_no", label: "電話番号", sortable: false },
         ];
       } catch (e) {
-        this.errMsg = "顧客情報取得に失敗しました";
+        this.MoErrMsg = "顧客情報取得に失敗しました";
         console.log(e);
       } finally {
         this.isLoading = false;
@@ -601,7 +605,7 @@ export default {
           this.isErr = true;
         }
 
-        if ("2016-01-01" > this.shipDate || this.sihpDate > "9999-12-31") {
+        if ("2016-01-01" > this.shipDate || this.shipDate > "9999-12-31") {
           this.shipDateMsg = "出荷日が不正です。2016/01/01～9999/12/31の間で指定してください。";
           this.isErr = true;
         }
@@ -627,14 +631,14 @@ export default {
           this.deliverDateMsg = "納品日が不正です。yyyy/mm/dd形式で入力してください。";
           this.isErr = true;
         }
-        // if (!this.clientData) {
-        //   this.clientNoMsg = "入力された顧客番号は存在しません。";
-        //   this.isErr = true;
-        // }
-        // if (!this.productData) {
-        //   this.productCodeMsg = "入力された商品コードは存在しません。";
-        //   this.isErr = true;
-        // }
+        if (!this.clientData) {
+          this.clientNoMsg = "入力された顧客番号は存在しません。";
+          this.isErr = true;
+        }
+        if (!this.productData) {
+          this.productCodeMsg = "入力された商品コードは存在しません。";
+          this.isErr = true;
+        }
         if (this.clientNo == null || this.clientNo === "") {
           this.clientNoMsg = "顧客番号が未入力です。";
           this.isErr = true;
