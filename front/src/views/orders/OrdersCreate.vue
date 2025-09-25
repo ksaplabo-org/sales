@@ -76,7 +76,7 @@
               <div class="form-group row">
                 <label class="col-lg-6">発注日<label class="text-danger">*</label></label>
                 <div class="col-lg-6">
-                  <input type="date" id="orderDate" class="form-control" v-model="orderDate" />
+                  <input type="date" id="orderDate" class="form-control" v-model="orderDate"  max="9999-12-31" min="2016-01-01"/>
                   <div class="text-danger small" v-show="orderDateMsg">{{ orderDateMsg }}</div>
                 </div>
               </div>
@@ -85,7 +85,7 @@
               <div class="form-group row">
                 <label class="col-lg-6">出荷日<label class="text-danger">*</label></label>
                 <div class="col-lg-6">
-                  <input type="date" id="shipDate" class="form-control" v-model="shipDate" />
+                  <input type="date" id="shipDate" class="form-control" v-model="shipDate"  max="9999-12-31" min="2016-01-01"/>
                   <div class="text-danger small" v-show="shipDateMsg">{{ shipDateMsg }}</div>
                 </div>
               </div>
@@ -94,7 +94,7 @@
               <div class="form-group row">
                 <label class="col-lg-6">納品日<label class="text-danger">*</label></label>
                 <div class="col-lg-6">
-                  <input type="date" id="deliverDate" class="form-control" v-model="deliverDate" />
+                  <input type="date" id="deliverDate" class="form-control" v-model="deliverDate"  max="9999-12-31" min="2016-01-01"/>
                   <div class="text-danger small" v-show="deliverDateMsg">
                     {{ deliverDateMsg }}
                   </div>
@@ -209,9 +209,9 @@
               </button>
             </div>
             <div class="modal-body">
-              <p class="text-danger" v-show="errMsg">{{ MoErrMsg }}</p>
+              <p class="text-danger" v-show="modalErrMsg">{{ modalErrMsg }}</p>
               <!-- インポートしたテーブル -->
-              <Table :items="items" :fields="fields" :empDataMsg="'受注情報がありません'" @sendRow="setReceiveRow" />
+              <Table :items="items" :fields="fields" :empDataMsg="'商品情報がありません'" @sendRow="setReceiveRow" />
             </div>
             <div class="modal-footer">
               <!-- 選択ボタン -->
@@ -250,7 +250,7 @@
               </button>
             </div>
             <div class="modal-body">
-              <p class="text-danger" v-show="errMsg">{{ MoErrMsg }}</p>
+              <p class="text-danger" v-show="modalErrMsg">{{ modalErrMsg }}</p>
               <!-- インポートしたテーブル -->
               <Table :items="items" :fields="fields" :empDataMsg="'顧客情報がありません'" @sendRow="setReceiveRow" />
             </div>
@@ -285,22 +285,21 @@
 </template>
 
 <script>
-import * as UserUtil from "@/utils/UserUtil";
 import * as AjaxUtil from "@/utils/AjaxUtil";
 import * as OrdersUtil from "@/utils/OrdersUtil";
+import * as UserUtil from "@/utils/UserUtil";
 // 共通
-import Header from "../../components/Header.vue";
-import "../../utils/sb-admin";
-import Loading from "../../components/Loading.vue";
-import CancelButton from "../../components/CancelButton.vue";
-import Table from "../../components/Table.vue";
+import CancelButton from "@/components/CancelButton.vue";
+import Header from "@/components/Header.vue";
+import Loading from "@/components/Loading.vue";
+import Table from "@/components/Table.vue";
 export default {
   props: ["flashMsg", "flashErrMsg"],
   components: { Header, Loading, CancelButton, Table },
   data() {
     return {
       errMsg: "",
-      MoErrMsg: "",
+      modalErrMsg: "",
       isLoading: false,
       //各項目初期値
       clientNo: "",
@@ -331,21 +330,19 @@ export default {
       orderDateMsg: "",
       productCodeMsg: "",
       productName: "",
-      isErr: false,
+      clientData: "",
+      productData: "",
 
       //テーブル用
       items: [],
       fields: [],
-      tmpRow: "",
+      tmpRow: null,
     };
   },
   async mounted() {
     try {
       //ログイン確認
       if (UserUtil.isLogIn()) {
-        // メッセージ設定
-        this.msg = this.flashMsg;
-        this.errMsg = this.flashErrMsg;
       } else {
         this.$router.push({ name: "logIn", params: { flashMsg: "ログインしてください。" } });
       }
@@ -355,24 +352,164 @@ export default {
   },
   methods: {
     /**
+     * ユーザー登録
+     */
+    async ordersCreate() {
+      // メッセージ初期化
+      this.errMsg = "";
+      this.clientNoMsg = "";
+      this.orderDateMsg = "";
+      this.shipDateMsg = "";
+      this.deliverDateMsg = "";
+      this.productCodeMsg = "";
+      this.amountMsg = "";
+      this.id;
+      this.isLoading = true;
+      let isErr = false;
+
+      try {
+        // 入力チェック
+        if (String(this.clientNo).length > 8) {
+          this.clientNoMsg = "顧客番号は8桁以内で入力してください。";
+          isErr = true;
+        }
+        if (String(this.productCode).length != 7) {
+          this.productCodeMsg = "商品コードは7桁で入力してください。";
+          isErr = true;
+        }
+
+        if (!this.clientNo.match("^[0-9]*$")) {
+          this.clientNoMsg = "顧客番号は半角数字で入力してください。";
+          isErr = true;
+        }
+
+        if (String(!this.productCode).match("^[0-9]*$")) {
+          this.productCodeMsg = "商品コードは半角数字で入力してください。";
+          isErr = true;
+        }
+        if (!this.amount.match("^[0-9]*$")) {
+          this.amountMsg = "数量は半角数字で入力してください。";
+          isErr = true;
+        }
+
+        if ("2016-01-01" > this.orderDate || this.orderDate > "9999-12-31") {
+          this.orderDateMsg = "発注日が不正です。2016/01/01～9999/12/31の間で指定してください。";
+          isErr = true;
+        }
+
+        if ("2016-01-01" > this.shipDate || this.shipDate > "9999-12-31") {
+          this.shipDateMsg = "出荷日が不正です。2016/01/01～9999/12/31の間で指定してください。";
+          isErr = true;
+        }
+
+        if ("2016-01-01" > this.deliverDate || this.deliverDate > "9999-12-31") {
+          this.deliverDateMsg = "納品日が不正です。2016/01/01～9999/12/31の間で指定してください。";
+          isErr = true;
+        }
+
+        if (0 >= this.amount || this.amount >= 100) {
+          this.amountMsg = "数量が誤っています。1以上かつ2桁以内で入力してください。";
+          isErr = true;
+        }
+        if (isNaN(new Date(this.orderDate).getDate())) {
+          this.orderDateMsg = "発注日が不正です。yyyy/mm/dd形式で入力してください。";
+          isErr = true;
+        }
+        if (isNaN(new Date(this.shipDate).getDate())) {
+          this.shipDateMsg = "出荷日が不正です。yyyy/mm/dd形式で入力してください。";
+          isErr = true;
+        }
+        if (isNaN(new Date(this.deliverDate).getDate())) {
+          this.deliverDateMsg = "納品日が不正です。yyyy/mm/dd形式で入力してください。";
+          isErr = true;
+        }
+        if (!this.clientData) {
+          this.clientNoMsg = "入力された顧客番号は存在しません。";
+          isErr = true;
+        }
+        if (!this.productData) {
+          this.productCodeMsg = "入力された商品コードは存在しません。";
+          isErr = true;
+        }
+        if (this.clientNo == null || this.clientNo === "") {
+          this.clientNoMsg = "顧客番号が未入力です。";
+          isErr = true;
+        }
+        if (this.orderDate == null || this.orderDate === "") {
+          this.orderDateMsg = "発注日が未入力です。";
+          isErr = true;
+        }
+        if (this.shipDate == null || this.shipDate === "") {
+          this.shipDateMsg = "出荷日が未入力です。";
+          isErr = true;
+        }
+        if (this.deliverDate == null || this.deliverDate === "") {
+          this.deliverDateMsg = "納品日が未入力です。";
+          isErr = true;
+        }
+        if (this.productCode == null || this.productCode === "") {
+          this.productCodeMsg = "商品コードが未入力です。";
+          isErr = true;
+        }
+        if (this.amount == null || this.amount === "") {
+          this.amountMsg = "数量が未入力です。";
+          isErr = true;
+        }
+        if (isErr) {
+          return;
+        }
+
+        // 引数格納
+        const model = {
+          clientNo: Number(this.clientNo),
+          orderDate: this.orderDate,
+          shipDate: this.shipDate,
+          deliverDate: this.deliverDate,
+          productCode: this.productCode,
+          amount: this.amount,
+          updateId: UserUtil.currentUserInfo().id,
+          entryId: UserUtil.currentUserInfo().id,
+        };
+
+        console.log(model);
+        const result = await AjaxUtil.postOrders(model);
+        console.log(result.data);
+        console.log(result.e);
+
+        window.alert("受注情報登録処理が完了しました。");
+      } catch (e) {
+        if (e.response.status === 400) {
+          window.alert("一日の登録上限を超えています。");
+          console.log(e);
+        } else {
+          window.alert("受注情報登録処理に失敗しました。");
+          console.log(e);
+        }
+      } finally {
+        this.isLoading = false;
+      }
+      this.$router.push({ name: "ordersList" });
+    },
+
+    /**
      * 顧客情報入力時
      */
     async inputClientNo() {
       // メッセージ初期化
       this.errMsg = "";
-      this.MoErrMsg = "";
       this.clientNoMsg = "";
       this.name = "";
       this.postCode = "";
       this.address1 = "";
       this.address2 = "";
+      this.clientData = "";
       this.isLoading = true;
       try {
         if (this.clientNo == null || this.clientNo === "") {
           return;
         }
-        if (isNaN(this.clientNo)) {
-          this.clientNoMsg = "顧客番号は半角数字で入力してください。";
+        if (!String(this.clientNo).match("^[0-9]*$")) {
+          this.clientNoMsg = "商品コードは半角数字で入力してください。";
           return;
         }
         if (String(this.clientNo).length > 8) {
@@ -381,20 +518,20 @@ export default {
         }
 
         // 顧客番号から顧客情報を取得
-        const response = await AjaxUtil.getClientsByClientNo(this.clientNo);
-        const clientData = JSON.parse(response.data.Items);
+        const response = await AjaxUtil.getClientsByClientNo(Number(this.clientNo));
+        this.clientData = JSON.parse(response.data.Items);
 
-        if (!clientData) {
+        if (!this.clientData) {
           this.clientNoMsg = "入力された顧客番号は存在しません。";
           return;
         }
 
         // 顧客情報を各項目にセット
-        this.clientNo = clientData.client_no.toString().padStart(8, "0");
-        this.name = clientData.name;
-        this.postCode = clientData.post_code;
-        this.address1 = clientData.address1;
-        this.address2 = clientData.address2;
+        this.clientNo = this.clientData.client_no.toString().padStart(8, "0");
+        this.name = this.clientData.name;
+        this.postCode = this.clientData.post_code;
+        this.address1 = this.clientData.address1;
+        this.address2 = this.clientData.address2;
       } catch (e) {
         this.errMsg = "顧客情報取得処理に失敗しました";
         console.log(e);
@@ -403,16 +540,12 @@ export default {
       }
     },
 
-    /**
-     * 商品情報入力時
-     */
     async inputProductCode() {
       this.errMsg = "";
-      this.MoErrMsg = "";
       this.productCodeMsg = "";
       this.isLoading = true;
       this.productName = "";
-      this.productCode;
+      this.productData = "";
       this.price = "";
       try {
         if (this.productCode == null || this.productCode === "") {
@@ -429,29 +562,26 @@ export default {
 
         // 商品コードから商品情報を取得
         const response = await AjaxUtil.getProductsByProductCode(this.productCode);
-        const productData = JSON.parse(response.data.Items);
+        this.productData = JSON.parse(response.data.Items);
 
-        if (!productData) {
+        if (!this.productData) {
           this.productCodeMsg = "入力された商品コードは存在しません。";
           return;
         }
 
-        // 顧客情報を各項目にセット
-        this.productName = productData.product_name;
-        this.price = productData.price;
+        // 商品情報を各項目にセット
+        this.productName = this.productData.product_name;
+        this.price = this.productData.price;
 
         this.displayValue();
       } catch (e) {
-        this.MoErrMsg = "商品情報取得処理に失敗しました。";
+        this.errMsg = "商品情報取得処理に失敗しました。";
         console.log(e);
       } finally {
         this.isLoading = false;
       }
     },
 
-    /*
-     *金額表示
-     */
     displayValue() {
       this.errMsg = "";
       this.productCodeMsg = "";
@@ -486,18 +616,47 @@ export default {
         this.isLoading = false;
       }
     },
-
     /**
-     * 顧客一覧押下時
+     * 商品一覧押下時
      */
-    async onClickClientsList() {
+    async onClickProductsList() {
       this.isLoading = true;
+      this.modalErrMsg = "";
 
       // 主キーを一時的に保存する変数を初期化
       this.tmpRow = null;
       // テーブル定義初期化
-      this.items = null;
-      this.fields = null;
+      this.items = [];
+      this.fields = [];
+
+      try {
+        // 商品情報を全件取得し、テーブルで使用する項目へ代入
+        const response = await AjaxUtil.getProducts();
+        this.items = JSON.parse(response.data.Items);
+
+        // テーブル定義
+        this.fields = [
+          { key: "product_code", label: "商品コード", sortable: true },
+          { key: "product_name", label: "商品名", sortable: false },
+          { key: "price", label: "単価", sortable: false },
+        ];
+      } catch (e) {
+        this.modalErrMsg = "商品情報取得に失敗しました";
+        console.log(e);
+      } finally {
+        this.isLoading = false;
+      }
+    },
+
+    async onClickClientsList() {
+      this.isLoading = true;
+      this.modalErrMsg = "";
+
+      // 主キーを一時的に保存する変数を初期化
+      this.tmpRow = null;
+      // テーブル定義初期化
+      this.items = [];
+      this.fields = [];
 
       try {
         // 顧客情報を全件取得し、テーブルで使用する項目へ代入
@@ -514,38 +673,7 @@ export default {
           { key: "tel_no", label: "電話番号", sortable: false },
         ];
       } catch (e) {
-        this.MoErrMsg = "顧客情報取得に失敗しました";
-        console.log(e);
-      } finally {
-        this.isLoading = false;
-      }
-    },
-
-    /**
-     * 商品一覧押下時
-     */
-    async onClickProductsList() {
-      this.isLoading = true;
-
-      // 主キーを一時的に保存する変数を初期化
-      this.tmpRow = null;
-      // テーブル定義初期化
-      this.items = null;
-      this.fields = null;
-
-      try {
-        // 商品情報を全件取得し、テーブルで使用する項目へ代入
-        const response = await AjaxUtil.getProducts();
-        this.items = JSON.parse(response.data.Items);
-
-        // テーブル定義
-        this.fields = [
-          { key: "product_code", label: "商品コード", sortable: true },
-          { key: "product_name", label: "商品名", sortable: false },
-          { key: "price", label: "単価", sortable: false },
-        ];
-      } catch (e) {
-        this.errMsg = "商品情報取得に失敗しました";
+        this.modalErrMsg = "顧客情報取得に失敗しました。";
         console.log(e);
       } finally {
         this.isLoading = false;
@@ -557,146 +685,6 @@ export default {
      */
     setReceiveRow(variousRow) {
       this.tmpRow = variousRow;
-    },
-
-    /**
-     * ユーザー登録
-     */
-    async ordersCreate() {
-      // メッセージ初期化
-      this.errMsg = "";
-      this.clientNoMsg = "";
-      this.orderDateMsg = "";
-      this.shipDateMsg = "";
-      this.deliverDateMsg = "";
-      this.productCodeMsg = "";
-      this.amountMsg = "";
-      this.id;
-      this.isLoading = true;
-      this.isErr = false;
-
-      try {
-        // 入力チェック
-        if (this.clientNo.length > 8) {
-          this.clientNoMsg = "顧客番号は8桁以内で入力してください。";
-          this.isErr = true;
-        }
-        if (String(this.productCode).length != 7) {
-          this.productCodeMsg = "商品コードは7桁で入力してください。";
-          this.isErr = true;
-        }
-
-        if (!this.clientNo.match("^[0-9]*$")) {
-          this.clientNoMsg = "顧客番号は半角数字で入力してください。";
-          this.isErr = true;
-        }
-
-        if (String(!this.productCode).match("^[0-9]*$")) {
-          this.productCodeMsg = "商品コードは半角数字で入力してください。";
-          this.isErr = true;
-        }
-        if (!this.amount.match("^[0-9]*$")) {
-          this.amountMsg = "数量は半角数字で入力してください。";
-          this.isErr = true;
-        }
-
-        if ("2016-01-01" > this.orderDate || this.orderDate > "9999-12-31") {
-          this.orderDateMsg = "発注日が不正です。2016/01/01～9999/12/31の間で指定してください。";
-          this.isErr = true;
-        }
-
-        if ("2016-01-01" > this.shipDate || this.shipDate > "9999-12-31") {
-          this.shipDateMsg = "出荷日が不正です。2016/01/01～9999/12/31の間で指定してください。";
-          this.isErr = true;
-        }
-
-        if ("2016-01-01" > this.deliverDate || this.deliverDate > "9999-12-31") {
-          this.deliverDateMsg = "納品日が不正です。2016/01/01～9999/12/31の間で指定してください。";
-          this.isErr = true;
-        }
-
-        if (0 >= this.amount || this.amount >= 100) {
-          this.amountMsg = "数量が誤っています。1以上かつ2桁以内で入力してください。";
-          this.isErr = true;
-        }
-        if (!isNaN(new Date(this.orderDate).getDate)) {
-          this.orderDateMsg = "発注日が不正です。yyyy/mm/dd形式で入力してください。";
-          this.isErr = true;
-        }
-        if (!isNaN(new Date(this.shipDate).getDate)) {
-          this.shipDateMsg = "出荷日が不正です。yyyy/mm/dd形式で入力してください。";
-          this.isErr = true;
-        }
-        if (!isNaN(new Date(this.deliverDate).getDate)) {
-          this.deliverDateMsg = "納品日が不正です。yyyy/mm/dd形式で入力してください。";
-          this.isErr = true;
-        }
-        if (!this.clientData) {
-          this.clientNoMsg = "入力された顧客番号は存在しません。";
-          this.isErr = true;
-        }
-        if (!this.productData) {
-          this.productCodeMsg = "入力された商品コードは存在しません。";
-          this.isErr = true;
-        }
-        if (this.clientNo == null || this.clientNo === "") {
-          this.clientNoMsg = "顧客番号が未入力です。";
-          this.isErr = true;
-        }
-        if (this.orderDate == null || this.orderDate === "") {
-          this.orderDateMsg = "発注日が未入力です。";
-          this.isErr = true;
-        }
-        if (this.shipDate == null || this.shipDate === "") {
-          this.shipDateMsg = "出荷日が未入力です。";
-          this.isErr = true;
-        }
-        if (this.deliverDate == null || this.deliverDate === "") {
-          this.deliverDateMsg = "納品日が未入力です。";
-          this.isErr = true;
-        }
-        if (this.productCode == null || this.productCode === "") {
-          this.productCodeMsg = "商品コードが未入力です。";
-          this.isErr = true;
-        }
-        if (this.amount == null || this.amount === "") {
-          this.amountMsg = "数量が未入力です。";
-          this.isErr = true;
-        }
-        if (this.isErr) {
-          return;
-        }
-
-        // 引数格納
-        const model = {
-          clientNo: this.clientNo,
-          orderDate: this.orderDate,
-          shipDate: this.shipDate,
-          deliverDate: this.deliverDate,
-          productCode: this.productCode,
-          amount: this.amount,
-          updateId: UserUtil.currentUserInfo().id,
-          entryId: UserUtil.currentUserInfo().id,
-        };
-
-        console.log(model);
-        const result = await AjaxUtil.postOrders(model);
-        console.log(result.data);
-        console.log(result.e);
-        if (result.data) {
-          window.alert("一日の登録上限を超えています。");
-          this.$router.push({ name: "ordersList" });
-        } else {
-          window.alert("受注情報登録処理が完了しました。");
-          this.$router.push({ name: "ordersList" });
-        }
-      } catch (e) {
-        this.errorMessage = e.message;
-        window.alert("受注情報登録処理に失敗しました。");
-        console.log(e);
-      } finally {
-        this.isLoading = false;
-      }
     },
   },
 };
