@@ -61,7 +61,7 @@ export async function getOrders() {
   return await axios.get(url);
 }
 
-//受注登録
+//受注情報登録
 export async function postOrders(ordersModel) {
   const url = "/api/orders/";
   return await axios.post(url, {

@@ -3,174 +3,210 @@
     <Header />
 
     <div id="wrapper">
-      <div id="content-wrapper" class="bg-light min-vh-100">
+      <div id="content-wrapper" class="bg-light vh-100">
         <div class="container-fluid">
-          <h1>受注情報登録</h1>
-          <a
-            class="btn-dark btn-lg text-light"
-            v-on:click="
-              () => {
-                this.$router.push({ name: 'ordersList' });
-              }
-            "
-            role="button"
-            >受注情報一覧画面へ</a
-          >
+          <h1 class="border-bottom">受注情報登録</h1>
+          <button type="button" class="btn btn-dark" v-on:click="() => $router.push({ name: 'ordersList' })">
+            受注情報一覧画面へ
+          </button>
           <br />
           <p class="text-danger" v-show="errMsg">{{ errMsg }}</p>
 
           <br />
 
           <form @submit.stop.prevent="ordersCreate" method="post" autocomplete="new-password">
-            <div class="col-5 mx-auto center-block">
-              <div class="form-group d-flex flex-row">
-                <label class="col">伝票番号</label>
-                <p class="col-7 h5 pl-0">自動で登録されます</p>
+            <div class="col-lg-5 mx-auto center-block">
+              <!-- 伝票番号 -->
+              <div class="form-group row">
+                <label class="col-lg-6">伝票番号</label>
+                <p class="col-lg-6 h5">自動で登録されます</p>
               </div>
               <!-- 顧客番号 -->
-              <div class="form-group d-flex flex-row">
-                <label class="col-5">顧客番号<label class="text-danger">*</label></label>
-                <input
-                  type="number"
-                  id="clientNo"
-                  class="form-control col-7"
-                  placeholder="8桁以内で入力してください"
-                  v-model="clientNo"
-                  max="99999999"
-                  min="1"
-                  @change="inputClientNo()"
-                />
+              <div class="form-group d-lg-flex flex-lg-row">
+                <label class="col-lg-6 pl-0">顧客番号<label class="text-danger">*</label></label>
+                <div class="pl-0 col-lg-6 pl-lg-3">
+                  <input
+                    type="number"
+                    id="clientNo"
+                    class="form-control"
+                    placeholder="8桁以内で入力してください"
+                    v-model="clientNo"
+                    autocomplete="off"
+                    max="99999999"
+                    min="1"
+                    @change="inputClientNo()"
+                  />
+                  <div class="text-danger small" v-show="clientNoMsg">{{ clientNoMsg }}</div>
+                </div>
                 <!-- 顧客情報一覧表示ボタン -->
                 <b-button
-                  variant="form-control col-2 btn btn-secondary ml-1"
-                  class="col-4"
+                  variant="form-control btn btn-secondary ml-0"
+                  class="col-10 mt-3 col-lg-4 mt-lg-0"
                   data-toggle="modal"
                   data-target="#ClientsListModal"
+                  style="height: 40px"
                   v-on:click="onClickClientsList()"
                   >顧客情報一覧</b-button
                 >
               </div>
-              <div class="text-danger col text-right pr-0 mb-3" v-show="clientNoMsg">{{ clientNoMsg }}</div>
+
               <!-- 顧客名 -->
-              <div class="form-group d-flex flex-row">
-                <label class="col">顧客名</label>
-                <p class="col-7 h5 pl-0">{{ name }}</p>
+              <div class="form-group row">
+                <label class="col-lg-6">顧客名</label>
+                <p class="col-lg-6 h5">{{ name }}</p>
               </div>
               <!-- 郵便番号 -->
-              <div class="form-group d-flex flex-row">
-                <label class="col">郵便番号</label>
-                <p class="col-7 h5 pl-0">{{ postCode }}</p>
+              <div class="form-group row">
+                <label class="col-lg-6">郵便番号</label>
+                <p class="col-lg-6 h5">{{ postCode }}</p>
               </div>
               <!-- 住所１ -->
-              <div class="form-group d-flex flex-row">
-                <label class="col">住所１</label>
-                <p class="col-7 h5 pl-0">{{ address1 }}</p>
+              <div class="form-group row">
+                <label class="col-lg-6">住所１</label>
+                <p class="col-lg-6 h5">{{ address1 }}</p>
               </div>
 
               <!-- 住所２ -->
-              <div class="form-group d-flex flex-row">
-                <label class="col">住所２</label>
-                <p class="col-7 h5 pl-0">{{ address2 }}</p>
+              <div class="form-group row">
+                <label class="col-lg-6">住所２</label>
+                <p class="col-lg-6 h5">{{ address2 }}</p>
               </div>
 
               <!-- 発注日 -->
-              <div class="form-group d-flex flex-row">
-                <label class="col">発注日<label class="text-danger">*</label></label>
-                <input type="date" id="orderDate" class="form-control col-7" v-model="orderDate" />
+              <div class="form-group row">
+                <label class="col-lg-6">発注日<label class="text-danger">*</label></label>
+                <div class="col-lg-6">
+                  <input
+                    type="date"
+                    id="orderDate"
+                    class="form-control"
+                    v-model="orderDate"
+                    max="9999-12-31"
+                    min="2016-01-01"
+                  />
+                  <div class="text-danger small" v-show="orderDateMsg">{{ orderDateMsg }}</div>
+                </div>
               </div>
-              <div class="text-danger col text-right pr-0 mb-3" v-show="orderDateMsg">{{ orderDateMsg }}</div>
 
               <!-- 出荷日 -->
-              <div class="form-group d-flex flex-row">
-                <label class="col">出荷日<label class="text-danger">*</label></label>
-                <input type="date" id="shipDate" class="form-control col-7" v-model="shipDate" />
+              <div class="form-group row">
+                <label class="col-lg-6">出荷日<label class="text-danger">*</label></label>
+                <div class="col-lg-6">
+                  <input
+                    type="date"
+                    id="shipDate"
+                    class="form-control"
+                    v-model="shipDate"
+                    max="9999-12-31"
+                    min="2016-01-01"
+                  />
+                  <div class="text-danger small" v-show="shipDateMsg">{{ shipDateMsg }}</div>
+                </div>
               </div>
-              <div class="text-danger col text-right pr-0 mb-3" v-show="shipDateMsg">{{ shipDateMsg }}</div>
 
               <!-- 納品日 -->
-              <div class="form-group d-flex flex-row">
-                <label class="col">納品日<label class="text-danger">*</label></label>
-                <input type="date" id="deliverDate" class="form-control col-7" v-model="deliverDate" />
+              <div class="form-group row">
+                <label class="col-lg-6">納品日<label class="text-danger">*</label></label>
+                <div class="col-lg-6">
+                  <input
+                    type="date"
+                    id="deliverDate"
+                    class="form-control"
+                    v-model="deliverDate"
+                    max="9999-12-31"
+                    min="2016-01-01"
+                  />
+                  <div class="text-danger small" v-show="deliverDateMsg">
+                    {{ deliverDateMsg }}
+                  </div>
+                </div>
               </div>
-              <div class="text-danger col text-right pr-0 mb-3" v-show="deliverDateMsg">{{ deliverDateMsg }}</div>
-
               <!-- 商品コード -->
-              <div class="form-group d-flex flex-row">
-                <label class="col-5">商品コード<label class="text-danger">*</label></label>
-                <input
-                  type="number"
-                  id="productCode"
-                  class="form-control col-7"
-                  placeholder="7桁で入力してください"
-                  v-model="productCode"
-                  max="9999999"
-                  min="1000001"
-                  @change="inputProductCode()"
-                />
+              <div class="form-group d-lg-flex flex-lg-row">
+                <label class="col-lg-6 pl-0">商品コード<label class="text-danger">*</label></label>
+                <div class="pl-0 col-lg-6 pl-lg-3">
+                  <input
+                    type="number"
+                    id="productCode"
+                    class="form-control"
+                    placeholder="7桁で入力してください"
+                    v-model="productCode"
+                    max="9999999"
+                    min="1000001"
+                    @change="inputProductCode()"
+                  />
+                  <div class="text-danger small" v-show="productCodeMsg">
+                    {{ productCodeMsg }}
+                  </div>
+                </div>
                 <!-- 商品情報一覧表示ボタン -->
                 <b-button
-                  variant="form-control col-4 btn btn-secondary ml-1"
+                  variant="form-control  btn btn-secondary ml-0"
+                  class="col-10 mt-3 col-lg-4 mt-lg-0"
                   data-toggle="modal"
                   data-target="#ProductsListModal"
+                  style="height: 40px"
                   v-on:click="onClickProductsList()"
                 >
                   商品情報一覧
                 </b-button>
               </div>
-              <div class="text-danger col text-right pr-0 mb-3" v-show="productCodeMsg">{{ productCodeMsg }}</div>
 
               <!-- 商品名 -->
-              <div class="form-group d-flex flex-row">
-                <label class="col">商品名</label>
-                <p class="col-7 h5 pl-0">{{ productName }}</p>
+              <div class="form-group row">
+                <label class="col-lg-6">商品名</label>
+                <p class="col-lg-6 h5">{{ productName }}</p>
               </div>
 
               <!-- 数量 -->
-              <div class="form-group d-flex flex-row">
-                <label class="col">数量<label class="text-danger">*</label></label>
-                <input
-                  type="number"
-                  id="amount"
-                  class="form-control col-7"
-                  placeholder="2桁以内で入力してください"
-                  v-model="amount"
-                  max="99"
-                  @change="displayValue()"
-                />
+              <div class="form-group row">
+                <label class="col-lg-6">数量<label class="text-danger">*</label></label>
+                <div class="pl-0 col-lg-6 pl-lg-3">
+                  <input
+                    type="number"
+                    id="amount"
+                    class="form-control"
+                    placeholder="2桁以内で入力してください"
+                    v-model="amount"
+                    max="99"
+                    min="1"
+                    @change="displayValue()"
+                  />
+                  <div class="text-danger small" v-show="amountMsg">{{ amountMsg }}</div>
+                </div>
               </div>
-              <div class="text-danger col text-right pr-0 mb-3" v-show="amountMsg">{{ amountMsg }}</div>
 
               <!-- 単価 -->
-              <div class="form-group d-flex flex-row">
-                <label class="col">単価</label>
-                <p class="col-7 h5 pl-0">{{ price }}</p>
+              <div class="form-group row">
+                <label class="col-lg-6">単価</label>
+                <p class="col-lg-6 h5">{{ price }}</p>
               </div>
 
               <!-- 金額 -->
-              <div class="form-group d-flex flex-row">
-                <label class="col">金額</label>
-                <p class="col-7 h5 pl-0">{{ value }}</p>
+              <div class="form-group row">
+                <label class="col-lg-6">金額</label>
+                <p class="col-lg-6 h5">{{ value }}</p>
               </div>
 
               <!-- 消費税額 -->
-              <div class="form-group d-flex flex-row">
-                <label class="col">消費税額</label>
-                <p class="col-7 h5 pl-0">{{ taxValue }}</p>
+              <div class="form-group row">
+                <label class="col-lg-6">消費税額</label>
+                <p class="col-lg-6 h5">{{ taxValue }}</p>
               </div>
               <!-- 合計金額 -->
-              <div class="form-group d-flex flex-row">
-                <label class="col">合計金額</label>
-                <p class="col-7 h5 pl-0">{{ totalValue }}</p>
+              <div class="form-group row">
+                <label class="col-lg-6">合計金額</label>
+                <p class="col-lg-6 h5">{{ totalValue }}</p>
               </div>
             </div>
 
             <!-- 登録・キャンセルボタン -->
-            <div class="form-group d-flex justify-content-center col">
-              <div class="col-2">
+            <div class="form-group justify-content-center row">
+              <div class="mb-3 col-lg-4">
                 <input class="btn btn-primary btn-lg btn-block" type="submit" value="登録" />
               </div>
-              <div class="col-2">
-              <CancelButton />
+              <div class="col-lg-4">
+                <CancelButton />
               </div>
             </div>
           </form>
@@ -182,18 +218,19 @@
         id="ProductsListModal"
         tabindex="-1"
         role="dialog"
-        aria-labelledby="myModalLabel"
+        aria-labelledby="productsModalLabel"
         aria-hidden="true"
       >
         <div class="modal-dialog modal-xl">
           <div class="modal-content">
             <div class="modal-header">
-              <p class="modal-title font-weight-bold text-secondary" id="myModalLabel">商品情報一覧</p>
+              <p class="modal-title font-weight-bold text-secondary" id="productsModalLabel">商品情報一覧</p>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
             <div class="modal-body">
+              <p class="text-danger" v-show="modalErrMsg">{{ modalErrMsg }}</p>
               <!-- インポートしたテーブル -->
               <Table :items="items" :fields="fields" :empDataMsg="'商品情報がありません'" @sendRow="setReceiveRow" />
             </div>
@@ -234,6 +271,7 @@
               </button>
             </div>
             <div class="modal-body">
+              <p class="text-danger" v-show="modalErrMsg">{{ modalErrMsg }}</p>
               <!-- インポートしたテーブル -->
               <Table :items="items" :fields="fields" :empDataMsg="'顧客情報がありません'" @sendRow="setReceiveRow" />
             </div>
@@ -268,21 +306,21 @@
 </template>
 
 <script>
-import * as UserUtil from "@/utils/UserUtil";
 import * as AjaxUtil from "@/utils/AjaxUtil";
-import * as OrdersUtill from "@/utils/OrdersUtil";
+import * as OrdersUtil from "@/utils/OrdersUtil";
+import * as UserUtil from "@/utils/UserUtil";
 // 共通
-import Header from "../../components/Header.vue";
-import "../../utils/sb-admin";
-import Loading from "../../components/Loading.vue";
-import CancelButton from "../../components/CancelButton.vue";
-import Table from "../../components/Table.vue";
+import CancelButton from "@/components/CancelButton.vue";
+import Header from "@/components/Header.vue";
+import Loading from "@/components/Loading.vue";
+import Table from "@/components/Table.vue";
 export default {
   props: ["flashMsg", "flashErrMsg"],
   components: { Header, Loading, CancelButton, Table },
   data() {
     return {
       errMsg: "",
+      modalErrMsg: "",
       isLoading: false,
       //各項目初期値
       clientNo: "",
@@ -299,9 +337,7 @@ export default {
       taxValue: "",
       totalValue: "",
       entryId: "",
-      entoryName: "",
       updateId: "",
-      updateDate: "",
       clientNoMsg: "",
       orderDateMsg: "",
       shipDateMsg: "",
@@ -310,11 +346,10 @@ export default {
       amountMsg: "",
       id: "",
       amount: "",
-      orderDateMsg: "",
-      productCodeMsg: "",
       productName: "",
       clientData: "",
       productData: "",
+      databaseErr: false,
 
       //テーブル用
       items: [],
@@ -346,13 +381,25 @@ export default {
       this.deliverDateMsg = "";
       this.productCodeMsg = "";
       this.amountMsg = "";
-      this.id;
       this.isLoading = true;
       let isErr = false;
 
+      if (this.databaseErr) {
+        window.alert("受注情報登録処理に失敗しました。");
+        this.isLoading = false;
+        return;
+      }
       try {
         // 入力チェック
-        if (this.clientNo.length > 8) {
+        if (!this.clientData) {
+          this.clientNoMsg = "入力された顧客番号は存在しません。";
+          isErr = true;
+        }
+        if (!this.productData) {
+          this.productCodeMsg = "入力された商品コードは存在しません。";
+          isErr = true;
+        }
+        if (String(this.clientNo).length > 8) {
           this.clientNoMsg = "顧客番号は8桁以内で入力してください。";
           isErr = true;
         }
@@ -366,7 +413,7 @@ export default {
           isErr = true;
         }
 
-        if (String(!this.productCode).match("^[0-9]*$")) {
+        if (!this.productCode.match("^[0-9]*$")) {
           this.productCodeMsg = "商品コードは半角数字で入力してください。";
           isErr = true;
         }
@@ -380,7 +427,7 @@ export default {
           isErr = true;
         }
 
-        if ("2016-01-01" > this.shipDate || this.sihpDate > "9999-12-31") {
+        if ("2016-01-01" > this.shipDate || this.shipDate > "9999-12-31") {
           this.shipDateMsg = "出荷日が不正です。2016/01/01～9999/12/31の間で指定してください。";
           isErr = true;
         }
@@ -394,24 +441,16 @@ export default {
           this.amountMsg = "数量が誤っています。1以上かつ2桁以内で入力してください。";
           isErr = true;
         }
-        if (!isNaN(new Date(this.orderDate).getDate)) {
+        if (isNaN(new Date(this.orderDate).getDate())) {
           this.orderDateMsg = "発注日が不正です。yyyy/mm/dd形式で入力してください。";
           isErr = true;
         }
-        if (!isNaN(new Date(this.shipDate).getDate)) {
+        if (isNaN(new Date(this.shipDate).getDate())) {
           this.shipDateMsg = "出荷日が不正です。yyyy/mm/dd形式で入力してください。";
           isErr = true;
         }
-        if (!isNaN(new Date(this.deliverDate).getDate)) {
+        if (isNaN(new Date(this.deliverDate).getDate())) {
           this.deliverDateMsg = "納品日が不正です。yyyy/mm/dd形式で入力してください。";
-          isErr = true;
-        }
-        if (!this.clientData) {
-          this.clientNoMsg = "入力された顧客番号は存在しません。";
-          isErr = true;
-        }
-        if (!this.productData) {
-          this.productCodeMsg = "入力された商品コードは存在しません。";
           isErr = true;
         }
         if (this.clientNo == null || this.clientNo === "") {
@@ -438,6 +477,7 @@ export default {
           this.amountMsg = "数量が未入力です。";
           isErr = true;
         }
+
         if (isErr) {
           return;
         }
@@ -467,6 +507,7 @@ export default {
         } else {
           window.alert("受注情報登録処理に失敗しました。");
           console.log(e);
+          return;
         }
       } finally {
         this.isLoading = false;
@@ -481,19 +522,19 @@ export default {
       // メッセージ初期化
       this.errMsg = "";
       this.clientNoMsg = "";
-      this.cientNo = "";
       this.name = "";
       this.postCode = "";
       this.address1 = "";
       this.address2 = "";
       this.clientData = "";
+      this.databaseErr = false;
       this.isLoading = true;
       try {
         if (this.clientNo == null || this.clientNo === "") {
           return;
         }
         if (!String(this.clientNo).match("^[0-9]*$")) {
-          this.clientNoMsg = "商品コードは半角数字で入力してください。";
+          this.clientNoMsg = "顧客番号は半角数字で入力してください。";
           return;
         }
         if (String(this.clientNo).length > 8) {
@@ -517,8 +558,9 @@ export default {
         this.address1 = this.clientData.address1;
         this.address2 = this.clientData.address2;
       } catch (e) {
-        this.errMsg = "顧客情報取得処理に失敗しました";
+        this.errMsg = "顧客情報取得処理に失敗しました。";
         console.log(e);
+        this.databaseErr = true;
       } finally {
         this.isLoading = false;
       }
@@ -527,15 +569,16 @@ export default {
     async inputProductCode() {
       this.errMsg = "";
       this.productCodeMsg = "";
-      this.isLoading = true;
       this.productName = "";
       this.productData = "";
       this.price = "";
+      this.databaseErr = false;
+      this.isLoading = true;
       try {
         if (this.productCode == null || this.productCode === "") {
           return;
         }
-        if (isNaN(this.productCode)) {
+        if (!String(this.productCode).match("^[0-9]*$")) {
           this.productCodeMsg = "商品コードは半角数字で入力してください。";
           return;
         }
@@ -561,6 +604,7 @@ export default {
       } catch (e) {
         this.errMsg = "商品情報取得処理に失敗しました。";
         console.log(e);
+        this.databaseErr = true;
       } finally {
         this.isLoading = false;
       }
@@ -569,11 +613,11 @@ export default {
     displayValue() {
       this.errMsg = "";
       this.productCodeMsg = "";
-      this.isLoading = true;
       this.amountMsg = "";
       this.value = "";
       this.taxValue = "";
       this.totalValue = "";
+      this.isLoading = true;
       try {
         if (this.amount == null || this.amount === "") {
           return;
@@ -590,7 +634,7 @@ export default {
           return;
         }
 
-        const resultValue = OrdersUtill.calcValue(this.amount, this.price);
+        const resultValue = OrdersUtil.calcValue(this.amount, this.price);
 
         this.value = resultValue.value;
         this.taxValue = resultValue.taxValue;
@@ -601,11 +645,12 @@ export default {
       }
     },
     /**
-     * 商品一覧押下時
+     * 商品情報一覧押下時
      */
     async onClickProductsList() {
       this.isLoading = true;
-    
+      this.modalErrMsg = "";
+
       // 主キーを一時的に保存する変数を初期化
       this.tmpRow = null;
       // テーブル定義初期化
@@ -624,15 +669,19 @@ export default {
           { key: "price", label: "単価", sortable: false },
         ];
       } catch (e) {
-        this.errMsg = "商品情報取得に失敗しました";
+        this.modalErrMsg = "商品情報取得処理に失敗しました。";
         console.log(e);
       } finally {
         this.isLoading = false;
       }
     },
 
+    /**
+     * 顧客情報一覧押下時
+     */
     async onClickClientsList() {
       this.isLoading = true;
+      this.modalErrMsg = "";
 
       // 主キーを一時的に保存する変数を初期化
       this.tmpRow = null;
@@ -655,7 +704,7 @@ export default {
           { key: "tel_no", label: "電話番号", sortable: false },
         ];
       } catch (e) {
-        this.errMsg = "顧客情報取得に失敗しました。";
+        this.modalErrMsg = "顧客情報取得処理に失敗しました。";
         console.log(e);
       } finally {
         this.isLoading = false;

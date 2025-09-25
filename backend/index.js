@@ -216,7 +216,7 @@ app.get("/api/products", async function (req, res) {
     });
   } catch (e) {
     // 異常レスポンス
-    console.log("failed to verify user.", e);
+    console.log("failed to verify product.", e);
     res.status(500).send("商品情報取得処理に失敗しました");
   }
 });
@@ -234,7 +234,7 @@ app.get("/api/products/:productCode", async function (req, res) {
     });
   } catch (e) {
     //異常レスポンス
-    console.log("failed to get client.", e);
+    console.log("failed to get product.", e);
     res.status(500).send("server error occur");
   }
 });
