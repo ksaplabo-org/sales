@@ -60,3 +60,15 @@ export async function getOrders() {
   const url = "/api/orders";
   return await axios.get(url);
 }
+
+//受注情報を伝票番号で検索
+export async function getOrdersByOrderNo(orderNo) {
+  const url = "/api/orders/" + orderNo;
+  return await axios.get(url);
+}
+
+//受注情報削除
+export async function deleteOrders(orderNo) {
+  const url = "/api/orders/" + orderNo;
+  return await axios.delete(url);
+}
