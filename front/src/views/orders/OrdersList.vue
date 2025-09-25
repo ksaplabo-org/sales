@@ -53,7 +53,6 @@ import Header from "@/components/Header.vue";
 import Loading from "@/components/Loading.vue";
 import * as UserUtil from "@/utils/UserUtil";
 import * as AjaxUtil from "@/utils/AjaxUtil";
-import UserConst from "@/utils/const/UserConst";
 import Table from "../../components/Table.vue";
 
 export default {

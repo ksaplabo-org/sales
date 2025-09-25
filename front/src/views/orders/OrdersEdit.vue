@@ -372,23 +372,22 @@ export default {
       this.amountErrMsg = "";
 
       try {
-        // 入力チェック
+        // 数量の入力チェック
         if (this.amount == null || this.amount === "") {
           this.amountErrMsg = "数量が未入力です。";
           return;
-        }
-        if (this.amount <= 0 || 100 <= this.amount) {
+        } else if (isNaN(this.amount)) {
+          this.amountErrMsg = "数量は半角数字で入力してください。";
+          return;
+        } else if (this.amount <= 0 || 100 <= this.amount) {
           this.amountErrMsg = "数量が誤っています。1以上かつ2桁以内で入力してください。";
           return;
         }
-        if (isNaN(this.amount)) {
-          this.amountErrMsg = "数量は半角数字で入力してください。";
-          return;
-        }
+
+        // 単価の入力チェック
         if (this.price == null) {
           return;
         }
-
         //計算処理(戻り値は連想配列)を呼び出し、計算結果の項目にセット
         this.calcResults = OrdersUtil.calcValue(this.amount, this.price);
       } finally {
