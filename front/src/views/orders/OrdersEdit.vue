@@ -462,37 +462,6 @@ export default {
       let isErr = false;
 
       try {
-        // 商品コードの入力チェック
-        if (this.productCode == null || this.productCode === "") {
-          this.productCodeErrMsg = "商品コードが未入力です。";
-          isErr = true;
-        } else if (String(this.productCode).length != 7) {
-          this.productCodeErrMsg = "商品コードは7桁で入力してください。";
-          isErr = true;
-        } else {
-          // 商品コードから商品情報を取得
-          const response = await AjaxUtil.getProductsByProductCode(this.productCode);
-          const productData = JSON.parse(response.data.Items);
-
-          // 存在チェック
-          if (!productData) {
-            this.productCodeErrMsg = "入力された商品コードは存在しません。";
-            isErr = true;
-          }
-        }
-
-        // 数量の入力チェック
-        if (this.amount == null || this.amount === "") {
-          this.amountErrMsg = "数量が未入力です。";
-          isErr = true;
-        } else if (isNaN(this.amount)) {
-          this.amountErrMsg = "数量は半角数字で入力してください。";
-          isErr = true;
-        } else if (this.amount <= 0 || 100 <= this.amount) {
-          this.amountErrMsg = "数量が誤っています。1以上かつ2桁以内で入力してください。";
-          isErr = true;
-        }
-
         // 発注日の入力チェック
         if (this.orderDate == null || this.orderDate === "") {
           this.orderDateErrMsg = "発注日が未入力です。";
@@ -526,6 +495,36 @@ export default {
           isErr = true;
         } else if (deliverDate < minDate || maxDate < deliverDate) {
           this.deliverDateErrMsg = "納品日が不正です。2016/01/01～9999/12/31の間で指定してください。";
+          isErr = true;
+        }
+
+        // 商品コードの入力チェック
+        if (this.productCode == null || this.productCode === "") {
+          this.productCodeErrMsg = "商品コードが未入力です。";
+          isErr = true;
+        } else if (String(this.productCode).length != 7) {
+          this.productCodeErrMsg = "商品コードは7桁で入力してください。";
+          isErr = true;
+        } else {
+          // 商品コードから商品情報を取得
+          const response = await AjaxUtil.getProductsByProductCode(this.productCode);
+          const productData = JSON.parse(response.data.Items);
+          // 存在チェック
+          if (!productData) {
+            this.productCodeErrMsg = "入力された商品コードは存在しません。";
+            isErr = true;
+          }
+        }
+
+        // 数量の入力チェック
+        if (this.amount == null || this.amount === "") {
+          this.amountErrMsg = "数量が未入力です。";
+          isErr = true;
+        } else if (isNaN(this.amount)) {
+          this.amountErrMsg = "数量は半角数字で入力してください。";
+          isErr = true;
+        } else if (this.amount <= 0 || 100 <= this.amount) {
+          this.amountErrMsg = "数量が誤っています。1以上かつ2桁以内で入力してください。";
           isErr = true;
         }
 
