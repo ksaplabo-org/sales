@@ -45,7 +45,8 @@
                       autocomplete="off"
                     />
                   </div>
-                  <label class="text-center col-2 px-0">ー</label>
+                    <label class="pt-2 col-2 px-0 text-center">ー</label>
+        
                   <div class="col-6 px-0">
                     <input
                       type="number"
@@ -227,12 +228,10 @@ export default {
         this.$router.push({ name: "clientsList" });
       } catch (e) {
         if (e.response.status === 400) {
-          this.msg = "";
           alert("顧客情報の登録上限を超えています。");
           console.log(e);
           this.$router.push({ name: "clientsList" });
         } else {
-          this.msg = "";
           alert("顧客情報登録に失敗しました。");
           console.log(e);
         }

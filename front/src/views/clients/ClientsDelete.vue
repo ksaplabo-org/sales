@@ -77,17 +77,16 @@
 </template>
 
 <script>
-//util関連
-import * as AjaxUtil from "@/utils/AjaxUtil";
-import * as UserUtil from "@/utils/UserUtil";
-import UserConst from "@/utils/const/UserConst";
 
 // コンポーネント関連
 import Header from "@/components/Header.vue";
 import Loading from "@/components/Loading.vue";
+//utils関連
+import * as AjaxUtil from "@/utils/AjaxUtil";
+import * as UserUtil from "@/utils/UserUtil";
+import UserConst from "@/utils/const/UserConst";
 
 export default {
-  props: ["flashMsg", "flashErrMsg"],
   components: { Header, Loading },
   data() {
     return {
@@ -115,8 +114,7 @@ export default {
       }
 
       // メッセージ設定
-      this.msg = this.flashMsg;
-      this.errMsg = this.flashErrMsg;
+      this.errMsg = "";
 
       //画面更新処理
       await this.updateView();

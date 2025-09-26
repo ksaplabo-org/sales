@@ -157,13 +157,12 @@
 </template>
 
 <script>
+import CancelButton from "@/components/CancelButton.vue";
+import Header from "@/components/Header.vue";
+import Loading from "@/components/Loading.vue";
+
 import * as AjaxUtil from "@/utils/AjaxUtil";
 import * as UserUtil from "@/utils/UserUtil";
-
-// 共通
-import CancelButton from "../../components/CancelButton.vue";
-import Header from "../../components/Header.vue";
-import Loading from "../../components/Loading.vue";
 
 export default {
   components: { CancelButton, Header, Loading },
@@ -196,8 +195,7 @@ export default {
         //画面更新
         await this.updateView();
         // メッセージ設定
-        this.msg = this.flashMsg;
-        this.errMsg = this.flashErrMsg;
+        this.errMsg = "";
       } else {
         this.$router.push({ name: "logIn", params: { flashMsg: "ログインしてください。" } });
       }
@@ -290,8 +288,8 @@ export default {
           return;
         }
         const postCode = this.postCode1 + "-" + this.postCode2;
-        // 引数格納
 
+        // 引数格納
         const model = {
           clientNo: Number(this.clientNo),
           name: this.name,
@@ -315,6 +313,7 @@ export default {
   },
 };
 </script>
+<!-- inputタグtype="number"のスピンボタンを消す記述 -->
 <style>
 input[type="number"]#postCode1::-webkit-outer-spin-button,
 input[type="number"]#postCode1::-webkit-inner-spin-button {

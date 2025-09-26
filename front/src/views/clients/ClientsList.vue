@@ -51,20 +51,19 @@
 </template>
 
 <script>
-// 共通
+
 import Header from "@/components/Header.vue";
 import Loading from "@/components/Loading.vue";
-import * as UserUtil from "@/utils/UserUtil";
+import Table from "@/components/Table.vue";
+
 import * as AjaxUtil from "@/utils/AjaxUtil";
+import * as UserUtil from "@/utils/UserUtil";
 import UserConst from "@/utils/const/UserConst";
-import Table from "../../components/Table.vue";
 
 export default {
-  props: ["flashMsg"],
   components: { Header, Loading, Table },
   data() {
     return {
-      msg: this.flashMsg,
       errMsg: "",
       isLoading: false,
       clientRow: null,
@@ -87,17 +86,17 @@ export default {
 
       // ログインチェック
       if (!UserUtil.isLogIn()) {
-        this.$router.push({ name: "logIn", params: { flashMsg: "ログインしてください" } });
+        this.$router.push({ name: "logIn", params: { flashMsg: "ログインしてください。" } });
 
         // 権限チェック(管理者以外拒否)
       } else if (UserUtil.currentUserInfo().userRole != UserConst.UserRole.admin) {
-        this.$router.push({ name: "logIn", params: { flashMsg: "権限がありません" } });
+        this.$router.push({ name: "logIn", params: { flashMsg: "権限がありません。" } });
       }
 
       // 顧客情報取得
       await this.getClients();
     } catch (e) {
-      this.$router.push({ name: "logIn", params: { flashMsg: "ログインしてください" } });
+      this.$router.push({ name: "logIn", params: { flashMsg: "ログインしてください。" } });
     } finally {
       this.isLoading = false;
     }
@@ -107,7 +106,6 @@ export default {
      *顧客情報取得処理
      */
     async getClients() {
-      this.msg = "";
       this.errMsg = "";
 
       try {
@@ -128,7 +126,6 @@ export default {
           };
         });
       } catch (e) {
-        this.msg = "";
         this.errMsg = "顧客情報取得処理に失敗しました。";
         console.log(e);
       }
