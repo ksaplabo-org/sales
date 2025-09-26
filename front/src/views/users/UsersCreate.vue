@@ -169,11 +169,11 @@ export default {
         if (this.userId == null || this.userId === "") {
           this.userIdErrMsg = "ユーザーIDが未入力です。";
           errFlag = true;
-        } else if (String(this.userId).length > 4) {
-          this.userIdErrMsg = "ユーザーIDは4字以内で入力してください。";
-          errFlag = true;
         } else if (!String(this.userId).match("^[A-Za-z0-9]+$")) {
           this.userIdErrMsg = "ユーザーIDは半角英数字で入力してください。";
+          errFlag = true;
+        } else if (String(this.userId).length > 4) {
+          this.userIdErrMsg = "ユーザーIDは4字以内で入力してください。";
           errFlag = true;
         } else {
           // 同じユーザーIDが登録されていないかチェック
@@ -189,11 +189,11 @@ export default {
         if (this.userPass == null || this.userPass === "") {
           this.userPassErrMsg = "パスワードが未入力です。";
           errFlag = true;
-        } else if (String(this.userPass).length < 8 || String(this.userPass).length > 20) {
-          this.userPassErrMsg = "パスワードは8字以上20字以内で入力してください。";
-          errFlag = true;
         } else if (!String(this.userPass).match("^[A-Za-z0-9]+$")) {
           this.userPassErrMsg = "パスワードは半角英数字で入力してください。";
+          errFlag = true;
+        } else if (String(this.userPass).length < 8 || String(this.userPass).length > 20) {
+          this.userPassErrMsg = "パスワードは8字以上20字以内で入力してください。";
           errFlag = true;
         }
 
