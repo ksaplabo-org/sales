@@ -194,7 +194,7 @@ export default {
         // 自動クリック(無理矢理)
         link.click();
       } catch {
-        this.errMsg = "Excelファイル出力に失敗しました";
+        this.errMsg = "Excelファイル出力に失敗しました。";
       }
     },
 
