@@ -1,22 +1,21 @@
 <template>
-  <div>
-    <nav class="navbar navbar-expand navbar-dark bg-dark static-top">
-      <a href="/public/pages/menu.html" style="text-decoration: none; color: white"><h1>販売管理システム</h1></a>
+  <nav class="navbar navbar-expand navbar-dark bg-dark static-top">
+    <!-- タイトル(ログイン中はクリックでメニュー画面へ遷移可能) -->
+    <h1 class="text-white" v-on:click="onClickTitle()" :style="{ cursor: isLogIn ? 'pointer' : 'default' }">
+      販売管理システム
+    </h1>
 
-      <!-- Navbar Search(なし) -->
-      <form class="d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0"></form>
-      <!-- Navbar -->
-      <ul class="navbar-nav ml-auto ml-md-0">
-        <div class="container text-center">
-          <div v-if="isLogIn" class="row">
-            <p class="text-white h5">ログイン中のユーザー名：</p>
-            <p v-html="userName" class="mr-3 text-white h5"></p>
-            <button class="btn-light btn-sm" v-on:click="logOut()">ログアウト</button>
-          </div>
+    <!-- ログイン中のユーザー名表示とログアウトボタン -->
+    <div class="ml-auto my-auto">
+      <div class="container text-center">
+        <div v-if="isLogIn" class="row text-white">
+          <h5>ログイン中のユーザー名：</h5>
+          <h5 v-show="userName" class="mr-3">{{ userName }}</h5>
+          <button class="btn btn-light btn-sm" v-on:click="logOut()">ログアウト</button>
         </div>
-      </ul>
-    </nav>
-  </div>
+      </div>
+    </div>
+  </nav>
 </template>
 <script>
 import * as UserUtil from "@/utils/UserUtil";
@@ -29,20 +28,31 @@ export default {
   },
   async mounted() {
     this.isLogIn = UserUtil.isLogIn();
-    const query = this.$route.query;
-    this.userName = query.userName ? query.userName : UserUtil.currentUserInfo().userName;
+    // ログイン中のみユーザー名を保持
+    if (this.isLogIn) {
+      this.userName = UserUtil.currentUserInfo().userName;
+    }
   },
   methods: {
     /*
      *ログアウト処理
      */
-    logOut: async function () {
+    logOut() {
       try {
-        await UserUtil.deleteCurrentUserInfo();
+        UserUtil.deleteCurrentUserInfo();
         this.$router.push({ name: "logIn", params: { flashMsg: "ログアウトしました" } });
       } catch (e) {
-        this.msg = e.message;
         this.$router.push({ name: "logIn", params: { flashErrMsg: "ログアウト中にエラーが発生しました" } });
+      }
+    },
+
+    /*
+     *タイトル押下時処理(メニュー画面遷移)
+     */
+    onClickTitle() {
+      // ログイン中のみ、メニューへ遷移可能
+      if (this.isLogIn) {
+        this.$router.push({ name: "menu" });
       }
     },
   },
