@@ -173,3 +173,41 @@ app.get("/api/orders", async function (req, res) {
     res.status(500).send("server error occur");
   }
 });
+
+/**
+ * 商品情報取得API
+ */
+app.get("/api/products/:productCode", async function (req, res) {
+  try {
+    const product = await ProductsLogic.findByProductCode(db, req.params.productCode);
+
+    //正常レスポンスProductsLogic
+    res.send({
+      Items: JSON.stringify(product),
+    });
+  } catch (e) {
+    //異常レスポンス
+    console.log("failed to get product.", e);
+    res.status(500).send("server error occur");
+  }
+});
+
+/**
+ * 商品情報削除API
+ */
+app.delete("/api/products/:productCode", async function (req, res) {
+  try {
+    await ProductsLogic.delete(db, req.params.productCode);
+    //正常レスポンス
+    res.send();
+  } catch (e) {
+    //異常レスポンス
+    if (e.parent.errno == 1451) {
+      //削除対象の商品が受注情報に登録されている場合
+      res.status(409).send("server error occur");
+    } else {
+      console.log("failed to delete product", e);
+      res.status(500).send("server error occur");
+    }
+  }
+});
