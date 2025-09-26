@@ -211,14 +211,14 @@ app.post("/api/orders", async function (req, res) {
       reqBody.updateId,
       reqBody.entryId
     );
-    if (result) {
-      res.send();
+    if (result == 400) {
+      res.status(400).send("Exceeds daily registration limit");
     } else {
-      res.send("一日の登録上限を超えています");
+      res.send();
     }
   } catch (e) {
     // 異常レスポンス
-    console.log("failed to add order.", e);
+    console.log("failed to add orders.", e);
     res.status(500).send("server error occur");
   }
 });

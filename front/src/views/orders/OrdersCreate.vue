@@ -76,7 +76,14 @@
               <div class="form-group row">
                 <label class="col-lg-6">発注日<label class="text-danger">*</label></label>
                 <div class="col-lg-6">
-                  <input type="date" id="orderDate" class="form-control" v-model="orderDate"  max="9999-12-31" min="2016-01-01"/>
+                  <input
+                    type="date"
+                    id="orderDate"
+                    class="form-control"
+                    v-model="orderDate"
+                    max="9999-12-31"
+                    min="2016-01-01"
+                  />
                   <div class="text-danger small" v-show="orderDateMsg">{{ orderDateMsg }}</div>
                 </div>
               </div>
@@ -85,7 +92,14 @@
               <div class="form-group row">
                 <label class="col-lg-6">出荷日<label class="text-danger">*</label></label>
                 <div class="col-lg-6">
-                  <input type="date" id="shipDate" class="form-control" v-model="shipDate"  max="9999-12-31" min="2016-01-01"/>
+                  <input
+                    type="date"
+                    id="shipDate"
+                    class="form-control"
+                    v-model="shipDate"
+                    max="9999-12-31"
+                    min="2016-01-01"
+                  />
                   <div class="text-danger small" v-show="shipDateMsg">{{ shipDateMsg }}</div>
                 </div>
               </div>
@@ -94,7 +108,14 @@
               <div class="form-group row">
                 <label class="col-lg-6">納品日<label class="text-danger">*</label></label>
                 <div class="col-lg-6">
-                  <input type="date" id="deliverDate" class="form-control" v-model="deliverDate"  max="9999-12-31" min="2016-01-01"/>
+                  <input
+                    type="date"
+                    id="deliverDate"
+                    class="form-control"
+                    v-model="deliverDate"
+                    max="9999-12-31"
+                    min="2016-01-01"
+                  />
                   <div class="text-danger small" v-show="deliverDateMsg">
                     {{ deliverDateMsg }}
                   </div>
@@ -316,9 +337,7 @@ export default {
       taxValue: "",
       totalValue: "",
       entryId: "",
-      entryName: "",
       updateId: "",
-      updateDate: "",
       clientNoMsg: "",
       orderDateMsg: "",
       shipDateMsg: "",
@@ -327,11 +346,10 @@ export default {
       amountMsg: "",
       id: "",
       amount: "",
-      orderDateMsg: "",
-      productCodeMsg: "",
       productName: "",
       clientData: "",
       productData: "",
+      databaseErr: false,
 
       //テーブル用
       items: [],
@@ -363,12 +381,24 @@ export default {
       this.deliverDateMsg = "";
       this.productCodeMsg = "";
       this.amountMsg = "";
-      this.id;
       this.isLoading = true;
       let isErr = false;
 
+      if (this.databaseErr) {
+        window.alert("受注情報登録処理に失敗しました。");
+        this.isLoading = false;
+        return;
+      }
       try {
         // 入力チェック
+        if (!this.clientData) {
+          this.clientNoMsg = "入力された顧客番号は存在しません。";
+          isErr = true;
+        }
+        if (!this.productData) {
+          this.productCodeMsg = "入力された商品コードは存在しません。";
+          isErr = true;
+        }
         if (String(this.clientNo).length > 8) {
           this.clientNoMsg = "顧客番号は8桁以内で入力してください。";
           isErr = true;
@@ -383,7 +413,7 @@ export default {
           isErr = true;
         }
 
-        if (String(!this.productCode).match("^[0-9]*$")) {
+        if (!this.productCode.match("^[0-9]*$")) {
           this.productCodeMsg = "商品コードは半角数字で入力してください。";
           isErr = true;
         }
@@ -423,14 +453,6 @@ export default {
           this.deliverDateMsg = "納品日が不正です。yyyy/mm/dd形式で入力してください。";
           isErr = true;
         }
-        if (!this.clientData) {
-          this.clientNoMsg = "入力された顧客番号は存在しません。";
-          isErr = true;
-        }
-        if (!this.productData) {
-          this.productCodeMsg = "入力された商品コードは存在しません。";
-          isErr = true;
-        }
         if (this.clientNo == null || this.clientNo === "") {
           this.clientNoMsg = "顧客番号が未入力です。";
           isErr = true;
@@ -455,6 +477,7 @@ export default {
           this.amountMsg = "数量が未入力です。";
           isErr = true;
         }
+
         if (isErr) {
           return;
         }
@@ -470,10 +493,7 @@ export default {
           updateId: UserUtil.currentUserInfo().id,
           entryId: UserUtil.currentUserInfo().id,
         };
-
-        console.log(model);
         const result = await AjaxUtil.postOrders(model);
-        console.log(result.data);
         console.log(result.e);
 
         window.alert("受注情報登録処理が完了しました。");
@@ -484,6 +504,7 @@ export default {
         } else {
           window.alert("受注情報登録処理に失敗しました。");
           console.log(e);
+          return;
         }
       } finally {
         this.isLoading = false;
@@ -503,13 +524,14 @@ export default {
       this.address1 = "";
       this.address2 = "";
       this.clientData = "";
+      this.databaseErr = false;
       this.isLoading = true;
       try {
         if (this.clientNo == null || this.clientNo === "") {
           return;
         }
         if (!String(this.clientNo).match("^[0-9]*$")) {
-          this.clientNoMsg = "商品コードは半角数字で入力してください。";
+          this.clientNoMsg = "顧客番号は半角数字で入力してください。";
           return;
         }
         if (String(this.clientNo).length > 8) {
@@ -533,8 +555,9 @@ export default {
         this.address1 = this.clientData.address1;
         this.address2 = this.clientData.address2;
       } catch (e) {
-        this.errMsg = "顧客情報取得処理に失敗しました";
+        this.errMsg = "顧客情報取得処理に失敗しました。";
         console.log(e);
+        this.databaseErr = true;
       } finally {
         this.isLoading = false;
       }
@@ -543,15 +566,16 @@ export default {
     async inputProductCode() {
       this.errMsg = "";
       this.productCodeMsg = "";
-      this.isLoading = true;
       this.productName = "";
       this.productData = "";
       this.price = "";
+      this.databaseErr = false;
+      this.isLoading = true;
       try {
         if (this.productCode == null || this.productCode === "") {
           return;
         }
-        if (isNaN(this.productCode)) {
+        if (!String(this.productCode).match("^[0-9]*$")) {
           this.productCodeMsg = "商品コードは半角数字で入力してください。";
           return;
         }
@@ -577,6 +601,7 @@ export default {
       } catch (e) {
         this.errMsg = "商品情報取得処理に失敗しました。";
         console.log(e);
+        this.databaseErr = true;
       } finally {
         this.isLoading = false;
       }
@@ -585,11 +610,11 @@ export default {
     displayValue() {
       this.errMsg = "";
       this.productCodeMsg = "";
-      this.isLoading = true;
       this.amountMsg = "";
       this.value = "";
       this.taxValue = "";
       this.totalValue = "";
+      this.isLoading = true;
       try {
         if (this.amount == null || this.amount === "") {
           return;
@@ -617,7 +642,7 @@ export default {
       }
     },
     /**
-     * 商品一覧押下時
+     * 商品情報一覧押下時
      */
     async onClickProductsList() {
       this.isLoading = true;
@@ -641,13 +666,16 @@ export default {
           { key: "price", label: "単価", sortable: false },
         ];
       } catch (e) {
-        this.modalErrMsg = "商品情報取得に失敗しました";
+        this.modalErrMsg = "商品情報取得処理に失敗しました。";
         console.log(e);
       } finally {
         this.isLoading = false;
       }
     },
 
+    /**
+     * 顧客情報一覧押下時
+     */
     async onClickClientsList() {
       this.isLoading = true;
       this.modalErrMsg = "";
@@ -673,7 +701,7 @@ export default {
           { key: "tel_no", label: "電話番号", sortable: false },
         ];
       } catch (e) {
-        this.modalErrMsg = "顧客情報取得に失敗しました。";
+        this.modalErrMsg = "顧客情報取得処理に失敗しました。";
         console.log(e);
       } finally {
         this.isLoading = false;
