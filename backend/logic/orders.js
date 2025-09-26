@@ -63,9 +63,7 @@ module.exports.findByOrderNo = async function (db, orderNo) {
   }
 };
 
-/*
- *受注情報登録
- */
+//受注情報登録
 module.exports.create = async function (
   db,
   clientNo,
@@ -87,32 +85,32 @@ module.exports.create = async function (
     const nowDate = date.getFullYear() + month.toString().padStart(2, "0") + date.getDate().toString().padStart(2, "0");
 
     if (String(latestOrderNo).substring(0, 8) == nowDate) {
-      if (String(latestOrderNo).substring(8) != "99") {
+      if (String(latestOrderNo).substring(8) == "99") {
+        return 400;
+      } else {
         orderNo = parseInt(latestOrderNo) + 1;
       }
     } else {
       orderNo = nowDate + "01";
     }
-    if (String(latestOrderNo).substring(8) != "99") {
-      return await ordersModel.create({
-        order_no: orderNo,
-        client_no: clientNo,
-        order_date: orderDate,
-        ship_date: shipDate,
-        deliver_date: deliverDate,
-        product_code: productCode,
-        amount: amount,
-        update_id: updateId,
-        update_date: sequelize.fn("now"),
-        entry_id: entryId,
-        entry_date: sequelize.fn("now"),
-      });
-    }
-    return false;
+    return await ordersModel.create({
+      order_no: orderNo,
+      client_no: clientNo,
+      order_date: orderDate,
+      ship_date: shipDate,
+      deliver_date: deliverDate,
+      product_code: productCode,
+      amount: amount,
+      update_id: updateId,
+      update_date: sequelize.fn("now"),
+      entry_id: entryId,
+      entry_date: sequelize.fn("now"),
+    });
   } catch (e) {
     throw e;
   }
 };
+
 
 /**
  * 受注情報修正
