@@ -123,7 +123,7 @@ export async function putProducts(productsModel) {
   const url = "/api/products";
   return await axios.put(url, {
     productCode: productsModel.productCode,
-    productname: productsModel.productName,
+    productName: productsModel.productName,
     price: productsModel.price,
     updateId: UserUtil.currentUserInfo().id,
   });
