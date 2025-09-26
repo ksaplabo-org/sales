@@ -306,16 +306,16 @@
 </template>
 
 <script>
-import * as AjaxUtil from "@/utils/AjaxUtil";
-import * as OrdersUtil from "@/utils/OrdersUtil";
-import * as UserUtil from "@/utils/UserUtil";
 // 共通
 import CancelButton from "@/components/CancelButton.vue";
 import Header from "@/components/Header.vue";
 import Loading from "@/components/Loading.vue";
 import Table from "@/components/Table.vue";
+
+import * as AjaxUtil from "@/utils/AjaxUtil";
+import * as OrdersUtil from "@/utils/OrdersUtil";
+import * as UserUtil from "@/utils/UserUtil";
 export default {
-  props: ["flashMsg", "flashErrMsg"],
   components: { Header, Loading, CancelButton, Table },
   data() {
     return {
