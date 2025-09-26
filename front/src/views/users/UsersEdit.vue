@@ -240,6 +240,9 @@ export default {
           userName: this.userName,
           userRole: this.userRole,
         };
+        if (this.logInId == this.id) {
+          usersModel.userRole = UserConst.UserRole.admin;
+        }
 
         // ユーザー情報修正処理
         await AjaxUtil.putUsers(usersModel);
