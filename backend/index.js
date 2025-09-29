@@ -60,7 +60,7 @@ app.get("/api/clients", async function (req, res) {
     });
   } catch (e) {
     // 異常レスポンス
-    console.log("failed to verify user.", e);
+    console.log("failed to get clients.", e);
     res.status(500).send("顧客情報取得処理に失敗しました");
   }
 });
@@ -153,7 +153,7 @@ app.delete("/api/clients/:clientNo", async function (req, res) {
       // 受注情報が削除しようとしてる顧客番号を参照している場合
       res.status(409).send("server error occur");
     } else {
-      console.log("failed to get orders.", e);
+      console.log("failed to delete orders.", e);
       res.status(500).send("server error occur");
     }
   }

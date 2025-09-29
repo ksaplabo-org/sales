@@ -245,7 +245,7 @@ export default {
       //各項目初期値
       orderNo: "",
       clientNo: "",
-      name: "",
+      clientName: "",
       postCode: "",
       address1: "",
       address2: "",
@@ -304,7 +304,7 @@ export default {
         this.orderNo = orderData.order_no;
         // 顧客番号の0埋め処理
         this.clientNo = orderData.client_no.toString().padStart(8, "0");
-        this.name = orderData.client.name;
+        this.clientName = orderData.client.name;
         this.postCode = orderData.client.post_code;
         this.address1 = orderData.client.address1;
         this.address2 = orderData.client.address2;
