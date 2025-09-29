@@ -1,4 +1,5 @@
 USE sales;
+DROP TABLE IF EXISTS orders;
 
 #------------------------------------------
 # ユーザー情報TBL 作成
@@ -72,7 +73,13 @@ CREATE TABLE IF NOT EXISTS orders
     update_id int NOT NULL,
     update_date datetime NOT NULL,
     entry_id int NOT NULL,
-    entry_date datetime NOT NULL
+    entry_date datetime NOT NULL,
+    FOREIGN KEY (client_no) REFERENCES clients(client_no)  -- 外部キーの設定
+    ON DELETE RESTRICT
+    ON UPDATE RESTRICT,
+    FOREIGN KEY (product_code) REFERENCES products(product_code)  -- 外部キーの設定
+    ON DELETE RESTRICT
+    ON UPDATE RESTRICT
 )
 CHARACTER SET utf8mb4
 COLLATE utf8mb4_0900_ai_ci;
@@ -85,11 +92,11 @@ DELETE FROM users;
 INSERT INTO users values (1, "root", "password","管理者用アカウント", 1, 1, '2025-8-25 00:00:01', 1, '2025-8-25 00:00:01');
 INSERT INTO users values (2, "como", "password","一般用アカウント", 0, 1, '2025-8-25 00:00:01', 1, '2025-8-25 00:00:01');
 INSERT INTO users values (3, "erai", "password","役職用アカウント", 2, 1, '2025-8-25 00:00:01', 1, '2025-8-25 00:00:01');
-INSERT INTO users values (4, "c2", "password","一般用アカウント2", 0, 1, '2025-8-25 00:00:01', 1, '2025-8-25 00:00:01');
-INSERT INTO users values (5, "e2", "password","役職用アカウント2", 2, 1, '2025-8-25 00:00:01', 1, '2025-8-25 00:00:01');
-INSERT INTO users values (6, "c3", "password","一般用アカウント3", 0, 1, '2025-8-25 00:00:01', 1, '2025-8-25 00:00:01');
-INSERT INTO users values (7, "e3", "password","役職用アカウント3", 2, 1, '2025-8-25 00:00:01', 1, '2025-8-25 00:00:01');
-INSERT INTO users values (8, "c4", "password","一般用アカウント4", 0, 1, '2025-8-25 00:00:01', 1, '2025-8-25 00:00:01');
+INSERT INTO users values (4, "c2", "passwordd","一般用アカウント2", 0, 1, '2025-8-25 00:00:01', 1, '2025-8-25 00:00:01');
+INSERT INTO users values (5, "e2", "passworddd","役職用アカウント2", 2, 1, '2025-8-25 00:00:01', 1, '2025-8-25 00:00:01');
+INSERT INTO users values (6, "c3", "passwordddd","一般用アカウント3", 0, 1, '2025-8-25 00:00:01', 1, '2025-8-25 00:00:01');
+INSERT INTO users values (7, "e3", "passworddddd","役職用アカウント3", 2, 1, '2025-8-25 00:00:01', 1, '2025-8-25 00:00:01');
+INSERT INTO users values (8, "c4", "passwordddddd","一般用アカウント4", 0, 1, '2025-8-25 00:00:01', 1, '2025-8-25 00:00:01');
 INSERT INTO users values (9, "e4", "password","役職用アカウント4", 2, 1, '2025-8-25 00:00:01', 1, '2025-8-25 00:00:01');
 INSERT INTO users values (10, "c5", "password","一般用アカウント5", 0, 1, '2025-8-25 00:00:01', 1, '2025-8-25 00:00:01');
 INSERT INTO users values (11, "e5", "password","役職用アカウント5", 2, 1, '2025-8-25 00:00:01', 1, '2025-8-25 00:00:01');
