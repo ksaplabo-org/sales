@@ -133,19 +133,20 @@
 </template>
 
 <script>
-import * as AjaxUtil from "@/utils/AjaxUtil";
-import * as OrdersUtil from "@/utils/OrdersUtil";
-import * as UserUtil from "@/utils/UserUtil";
 // 共通
 import Header from "@/components/Header.vue";
 import Loading from "@/components/Loading.vue";
+
+import * as AjaxUtil from "@/utils/AjaxUtil";
+import * as OrdersUtil from "@/utils/OrdersUtil";
+import * as UserUtil from "@/utils/UserUtil";
+
 export default {
-  props: ["flashMsg", "flashErrMsg"],
   components: { Header, Loading },
   data() {
     return {
       isLoading: false,
-      
+
       //テーブル用
       items: [],
       fields: [],
