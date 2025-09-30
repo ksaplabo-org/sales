@@ -91,8 +91,7 @@ export default {
 
       // 受注情報取得
       await this.getOrders();
-      // テーブルに表示するページ数を設定
-      this.rows = this.items.length;
+
     } catch (e) {
       this.$router.push({ name: "logIn", params: { flashMsg: "ログインしてください" } });
     }
