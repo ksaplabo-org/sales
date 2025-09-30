@@ -194,12 +194,11 @@ export default {
     async updateView() {
       //クエリストリングを取得
       const query = this.$route.query;
-      //削除対象の伝票番号を設定する
-      this.orderNo = query.orderNo;
+      
 
       try {
         // 伝票番号から顧客・商品情報を結合した受注情報を取得
-        const response = await AjaxUtil.getOrdersByOrderNo(this.orderNo);
+        const response = await AjaxUtil.getOrdersByOrderNo(query.orderNo);
         const orderData = JSON.parse(response.data.Items);
 
         // 受注情報を各項目にセット
