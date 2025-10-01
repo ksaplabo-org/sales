@@ -165,6 +165,7 @@ export default {
       } catch (e) {
         if (e.response.status === 422) {
           window.alert("受注情報に登録されている顧客のため、削除できません。");
+          this.$router.push({ name: "clientsList" });
         } else {
           window.alert("顧客情報削除処理に失敗しました。");
         }
