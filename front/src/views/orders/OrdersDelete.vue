@@ -6,14 +6,11 @@
       <div id="content-wrapper" class="bg-light min-vh-100">
         <div class="container-fluid">
           <h1 class="border-bottom">受注情報削除</h1>
-          <button type="button" class="btn btn-dark mb-4" v-on:click="() => $router.push({ name: 'ordersList' })">
+          <button type="button" class="btn btn-dark" v-on:click="() => $router.push({ name: 'ordersList' })">
             受注情報一覧画面へ
           </button>
-          <br />
           <p class="text-danger" v-show="errMsg">{{ errMsg }}</p>
-          <br />
-
-          <div class="col-sm-5 mx-auto center-block">
+          <div class="col-sm-5 mx-auto center-block mt-4">
             <div class="" />
 
             <!-- 伝票番号 -->
@@ -97,19 +94,19 @@
             <!-- 金額 -->
             <div class="form-group row">
               <label for="calcResults" class="col-sm-6">金額</label>
-              <p v-show="calcResults" class="col-sm-6 h5">{{ calcResults.value }}</p>
+              <p v-show="calcResults" class="col-sm-6 h5">{{ totalPriceWithoutTax }}</p>
             </div>
 
             <!-- 消費税額 -->
             <div class="form-group row">
               <label for="calcResults" class="col-sm-6">消費税額</label>
-              <p v-show="calcResults" class="col-sm-6 h5">{{ calcResults.taxValue }}</p>
+              <p v-show="calcResults" class="col-sm-6 h5">{{ calcResults.tax }}</p>
             </div>
 
             <!-- 合計金額 -->
             <div class="form-group row">
               <label for="calcResults" class="col-sm-6">合計金額</label>
-              <p v-show="calcResults" class="col-sm-6 h5">{{ calcResults.totalValue }}</p>
+              <p v-show="calcResults" class="col-sm-6 h5">{{ calcResults.totalPricePlusTax }}</p>
             </div>
           </div>
           <!-- 削除 -->
@@ -147,11 +144,6 @@ export default {
     return {
       isLoading: false,
 
-      //テーブル用
-      items: [],
-      fields: [],
-      tmpRow: "",
-
       //各項目初期値
       orderNo: "",
       clientNo: "",
@@ -166,6 +158,7 @@ export default {
       productName: "",
       amount: null,
       price: null,
+      totalPriceWithoutTax: null,
       calcResults: "",
 
       //エラーメッセージ
@@ -195,7 +188,6 @@ export default {
     async updateView() {
       //クエリストリングを取得
       const query = this.$route.query;
-      
 
       try {
         // 伝票番号から顧客・商品情報を結合した受注情報を取得
@@ -219,7 +211,8 @@ export default {
         this.price = orderData.product.price;
 
         //計算処理(戻り値は連想配列)を呼び出し、計算結果の項目にセット
-        this.calcResults = OrdersUtil.calcValue(this.amount, this.price);
+        this.totalPriceWithoutTax = this.price * this.amount;
+        this.calcResults = OrdersUtil.calcTax(this.totalPriceWithoutTax);
       } catch (e) {
         this.errMsg = "受注情報取得処理に失敗しました。";
         console.log(e);
