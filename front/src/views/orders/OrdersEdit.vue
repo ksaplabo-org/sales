@@ -52,7 +52,7 @@
 
             <!-- 発注日 -->
             <div class="form-group row">
-              <label for="orderDate" class="col-lg-6">発注日</label>
+              <label for="orderDate" class="col-lg-6">発注日<span class="text-danger">*</span></label>
               <div class="col-lg-6">
                 <input
                   id="orderDate"
@@ -69,7 +69,7 @@
 
             <!-- 出荷日 -->
             <div class="form-group row">
-              <label for="shipDate" class="col-lg-6">出荷日</label>
+              <label for="shipDate" class="col-lg-6">出荷日<span class="text-danger">*</span></label>
               <div class="col-lg-6">
                 <input
                   id="shipDate"
@@ -86,7 +86,7 @@
 
             <!-- 納品日 -->
             <div class="form-group row">
-              <label for="deliverDate" class="col-lg-6">納品日</label>
+              <label for="deliverDate" class="col-lg-6">納品日<span class="text-danger">*</span></label>
               <div class="col-lg-6">
                 <input
                   id="deliverDate"
@@ -103,7 +103,7 @@
 
             <!-- 商品コード -->
             <div class="form-group d-lg-flex flex-lg-row">
-              <label for="productCode" class="col-lg-6 pl-0">商品コード</label>
+              <label for="productCode" class="col-lg-6 pl-0">商品コード<span class="text-danger">*</span></label>
               <div class="pl-0 col-lg-6 pl-lg-3">
                 <input
                   id="productCode"
@@ -140,7 +140,7 @@
 
             <!-- 数量 -->
             <div class="form-group row">
-              <label for="amount" class="col-lg-6">数量</label>
+              <label for="amount" class="col-lg-6">数量<span class="text-danger">*</span></label>
               <div class="col-lg-6">
                 <input type="number" id="amount" class="form-control" v-model="amount" v-on:change="displayValue()" />
                 <!-- 数量エラーメッセージ -->
