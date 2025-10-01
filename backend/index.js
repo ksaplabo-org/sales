@@ -151,7 +151,7 @@ app.delete("/api/clients/:clientNo", async function (req, res) {
     //異常レスポンス
     if (e.parent.errno == 1451) {
       // 受注情報が削除しようとしてる顧客番号を参照している場合
-      res.status(409).send("server error occur");
+      res.status(422).send("unable to delete");
     } else {
       console.log("failed to delete orders.", e);
       res.status(500).send("server error occur");
