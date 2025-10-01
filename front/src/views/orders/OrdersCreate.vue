@@ -9,13 +9,10 @@
           <button type="button" class="btn btn-dark" v-on:click="() => $router.push({ name: 'ordersList' })">
             受注情報一覧画面へ
           </button>
-          <br />
           <p class="text-danger" v-show="errMsg">{{ errMsg }}</p>
 
-          <br />
-
           <form @submit.stop.prevent="ordersCreate" method="post" autocomplete="new-password">
-            <div class="col-lg-5 mx-auto center-block">
+            <div class="col-lg-5 mx-auto center-block mt-4">
               <!-- 伝票番号 -->
               <div class="form-group row">
                 <label class="col-lg-6">伝票番号</label>
@@ -628,7 +625,7 @@ export default {
           return;
         }
 
-        this.totalPriceWithoutTax=this.amount*this.price;
+        this.totalPriceWithoutTax = this.amount * this.price;
         const calcResult = OrdersUtil.calcTax(this.totalPriceWithoutTax);
 
         this.tax = calcResult.tax;
