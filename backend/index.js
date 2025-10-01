@@ -2,6 +2,7 @@
 const UsersLogic = require("./logic/users");
 const ClientsLogic = require("./logic/clients");
 const OrdersLogic = require("./logic/orders");
+const ProductsLogic = require("./logic/products");
 
 // DB Connection define
 const DbUtil = require("./db/utility");
@@ -175,7 +176,7 @@ app.get("/api/orders", async function (req, res) {
 });
 
 /**
- * 受注情報取得API
+ * 受注情報取得API(伝票番号と一致)
  */
 app.get("/api/orders/:orderNo", async function (req, res) {
   try {
@@ -223,24 +224,25 @@ app.put("/api/orders", async function (req, res) {
 app.get("/api/products", async function (req, res) {
   try {
     const products = await ProductsLogic.getAll(db);
+    //正常レスポンス
     res.send({
       Items: JSON.stringify(products),
     });
   } catch (e) {
     // 異常レスポンス
     console.log("failed to get products.", e);
-    res.status(500).send("商品情報取得処理に失敗しました");
+    res.status(500).send("server error occur");
   }
 });
 
 /**
- * 商品情報取得API
+ * 商品情報取得API(商品コードと一致)
  */
 app.get("/api/products/:productCode", async function (req, res) {
   try {
     const product = await ProductsLogic.findByProductCode(db, req.params.productCode);
 
-    //正常レスポンスProductsLogic
+    //正常レスポンス
     res.send({
       Items: JSON.stringify(product),
     });

@@ -7,34 +7,26 @@ const ProductsRepository = require("../db/products");
  *
  */
 module.exports.getAll = async function (db) {
+  // 商品情報の定義を取得
+  const productsModel = ProductsRepository.getProductsModel(db);
   try {
-    // 顧客情報の定義を取得
-    const productsModel = ProductsRepository.getProductsModel(db);
-
-    // 顧客情報を全件取得
-    const products = await productsModel.findAll();
-
-    return products;
+    // 商品情報を全件取得
+    return await productsModel.findAll();
   } catch (e) {
     throw e;
   }
 };
-
 
 /**
  * 商品情報を商品コードを元に取得
  */
 module.exports.findByProductCode = async function (db, productCode) {
-  //顧客情報の定義を取得
+  //商品情報の定義を取得
   const productsModel = ProductsRepository.getProductsModel(db);
-
   try {
+    // 商品コードと一致する商品情報を取得
     return await productsModel.findByPk(productCode);
   } catch (e) {
     throw e;
   }
 };
-
-
-
-

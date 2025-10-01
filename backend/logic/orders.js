@@ -42,7 +42,8 @@ module.exports.findByOrderNo = async function (db, orderNo) {
   ordersModel.associate(clientsModel, productsModel);
 
   try {
-    const order = await ordersModel.findOne({
+    // 伝票番号と一致する受注情報を取得
+    return await ordersModel.findOne({
       where: {
         order_no: orderNo,
       },
@@ -56,8 +57,6 @@ module.exports.findByOrderNo = async function (db, orderNo) {
         },
       ],
     });
-
-    return order;
   } catch (e) {
     throw e;
   }
@@ -67,9 +66,11 @@ module.exports.findByOrderNo = async function (db, orderNo) {
  * 受注情報修正
  */
 module.exports.edit = async function (db, orderNo, orderDate, shipDate, deliverDate, productCode, amount, updateId) {
+  // 受注情報の定義を取得
   const ordersModel = OrdersRepository.getOrdersModel(db);
 
   try {
+    // 伝票番号と一致する受注情報を修正
     await ordersModel.update(
       {
         order_no: orderNo,

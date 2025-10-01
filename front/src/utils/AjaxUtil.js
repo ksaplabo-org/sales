@@ -78,7 +78,7 @@ export async function putOrders(ordersModel) {
 
 // 商品情報全件取得処理
 export async function getProducts() {
-  const url = "/api/products/";
+  const url = "/api/products";
   return await axios.get(url);
 }
 
