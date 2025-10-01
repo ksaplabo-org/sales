@@ -22,6 +22,7 @@ module.exports.getAll = async function (db) {
 //受注情報登録
 module.exports.create = async function (
   db,
+  orderNo,
   clientNo,
   orderDate,
   shipDate,
@@ -34,21 +35,6 @@ module.exports.create = async function (
   const ordersModel = OrdersRepository.getOrdersModel(db);
 
   try {
-    let orderNo = "";
-    const latestOrderNo = await ordersModel.max("order_no");
-    const date = new Date();
-    const month = date.getMonth() + 1;
-    const nowDate = date.getFullYear() + month.toString().padStart(2, "0") + date.getDate().toString().padStart(2, "0");
-
-    if (String(latestOrderNo).substring(0, 8) == nowDate) {
-      if (String(latestOrderNo).substring(8) == "99") {
-        return 400;
-      } else {
-        orderNo = parseInt(latestOrderNo) + 1;
-      }
-    } else {
-      orderNo = nowDate + "01";
-    }
     return await ordersModel.create({
       order_no: orderNo,
       client_no: clientNo,
@@ -62,6 +48,23 @@ module.exports.create = async function (
       entry_id: entryId,
       entry_date: sequelize.fn("now"),
     });
+  } catch (e) {
+    throw e;
+  }
+};
+
+/**
+ * 伝票番号の最新の値を検索
+ *
+ * @param {*} db
+ * @returns {Promise<number>}
+ */
+module.exports.getLatestOrderNo = async function (db) {
+  const ordersModel = OrdersRepository.getOrdersModel(db);
+
+  try {
+    // 伝票番号の最大値を取得
+    return await ordersModel.max("order_no");
   } catch (e) {
     throw e;
   }

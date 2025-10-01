@@ -182,8 +182,26 @@ app.post("/api/orders", async function (req, res) {
   const reqBody = req.body;
 
   try {
-    const result = await OrdersLogic.create(
+    //伝票番号採番
+    let orderNo = "";
+    const latestOrderNo = await OrdersLogic.getLatestOrderNo(db);
+    const date = new Date();
+    const month = date.getMonth() + 1;
+    const nowDate = date.getFullYear() + month.toString().padStart(2, "0") + date.getDate().toString().padStart(2, "0");
+
+    if (String(latestOrderNo).substring(0, 8) == nowDate) {
+      if (String(latestOrderNo).substring(8) == "99") {
+        res.status(400).send("Exceeds daily registration limit");
+      } else {
+        orderNo = parseInt(latestOrderNo) + 1;
+      }
+    } else {
+      orderNo = nowDate + "01";
+    }
+
+    await OrdersLogic.create(
       db,
+      orderNo,
       reqBody.clientNo,
       reqBody.orderDate,
       reqBody.shipDate,
@@ -193,11 +211,7 @@ app.post("/api/orders", async function (req, res) {
       reqBody.updateId,
       reqBody.entryId
     );
-    if (result == 400) {
-      res.status(400).send("Exceeds daily registration limit");
-    } else {
-      res.send();
-    }
+    res.send();
   } catch (e) {
     // 異常レスポンス
     console.log("failed to add orders.", e);
@@ -216,8 +230,8 @@ app.get("/api/products", async function (req, res) {
     });
   } catch (e) {
     // 異常レスポンス
-    console.log("failed to verify product.", e);
-    res.status(500).send("商品情報取得処理に失敗しました");
+    console.log("failed to get product.", e);
+    res.status(500).send("server error occur");
   }
 });
 

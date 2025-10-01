@@ -185,18 +185,18 @@
               <!-- 金額 -->
               <div class="form-group row">
                 <label class="col-lg-6">金額</label>
-                <p class="col-lg-6 h5">{{ value }}</p>
+                <p class="col-lg-6 h5" v-show="productCode">{{ totalPriceWithoutTax }}</p>
               </div>
 
               <!-- 消費税額 -->
               <div class="form-group row">
                 <label class="col-lg-6">消費税額</label>
-                <p class="col-lg-6 h5">{{ taxValue }}</p>
+                <p class="col-lg-6 h5">{{ tax }}</p>
               </div>
               <!-- 合計金額 -->
               <div class="form-group row">
                 <label class="col-lg-6">合計金額</label>
-                <p class="col-lg-6 h5">{{ totalValue }}</p>
+                <p class="col-lg-6 h5">{{ totalPricePlusTax }}</p>
               </div>
             </div>
 
@@ -333,9 +333,9 @@ export default {
       deliverDate: "",
       productCode: "",
       price: "",
-      value: "",
-      taxValue: "",
-      totalValue: "",
+      totalPriceWithoutTax: "",
+      tax: "",
+      totalPricePlusTax: "",
       entryId: "",
       updateId: "",
       clientNoMsg: "",
@@ -493,19 +493,16 @@ export default {
           updateId: UserUtil.currentUserInfo().id,
           entryId: UserUtil.currentUserInfo().id,
         };
-        const result = await AjaxUtil.postOrders(model);
-        console.log(result.e);
+        await AjaxUtil.postOrders(model);
 
         window.alert("受注情報登録処理が完了しました。");
       } catch (e) {
         if (e.response.status === 400) {
           window.alert("一日の登録上限を超えています。");
-          console.log(e);
         } else {
           window.alert("受注情報登録処理に失敗しました。");
-          console.log(e);
-          return;
         }
+        console.log(e);
       } finally {
         this.isLoading = false;
       }
@@ -611,9 +608,9 @@ export default {
       this.errMsg = "";
       this.productCodeMsg = "";
       this.amountMsg = "";
-      this.value = "";
-      this.taxValue = "";
-      this.totalValue = "";
+      this.totalPriceWithoutTax = "";
+      this.tax = "";
+      this.totalPricePlusTax = "";
       this.isLoading = true;
       try {
         if (this.amount == null || this.amount === "") {
@@ -631,11 +628,11 @@ export default {
           return;
         }
 
-        const resultValue = OrdersUtil.calcValue(this.amount, this.price);
+        this.totalPriceWithoutTax=this.amount*this.price;
+        const calcResult = OrdersUtil.calcTax(this.totalPriceWithoutTax);
 
-        this.value = resultValue.value;
-        this.taxValue = resultValue.taxValue;
-        this.totalValue = resultValue.totalValue;
+        this.tax = calcResult.tax;
+        this.totalPricePlusTax = calcResult.totalPricePlusTax;
       } catch (e) {
       } finally {
         this.isLoading = false;
@@ -709,7 +706,7 @@ export default {
     },
 
     /*
-     *一覧のデータ選択時、行を一時的に格納する処理
+     *一覧選択行の情報を保持する
      */
     setReceiveRow(variousRow) {
       this.tmpRow = variousRow;
