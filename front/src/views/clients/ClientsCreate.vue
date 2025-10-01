@@ -6,19 +6,19 @@
         <div class="container-fluid">
           <h1 class="border-bottom">顧客情報登録</h1>
 
-          <button type="button" class="btn btn-dark mb-4" v-on:click="() => $router.push({ name: 'clientsList' })">
+          <button type="button" class="btn btn-dark" v-on:click="() => $router.push({ name: 'clientsList' })">
             顧客情報一覧画面へ
           </button>
-          <br />
-          <br />
-          <div class="col-lg-5 mx-auto center-block">
+          <div class="col-lg-5 mx-auto center-block mt-4">
+            <!-- 顧客番号 -->
             <div class="form-group row">
               <label for="clientNo" class="col-lg-6">顧客番号</label>
               <label class="col-lg-6 h5 newlineControl">自動で登録されます</label>
             </div>
 
+            <!-- 顧客名 -->
             <div class="form-group row">
-              <label for="name" class="col-lg-6">顧客名<label class="text-danger">*</label></label>
+              <label for="name" class="col-lg-6">顧客名<span class="text-danger">*</span></label>
               <div class="col-lg-6">
                 <input
                   type="text"
@@ -31,6 +31,8 @@
                 <div class="text-danger small newlineControl" v-show="nameErrMsg">{{ nameErrMsg }}</div>
               </div>
             </div>
+
+            <!-- 郵便番号 -->
             <div class="form-group row">
               <label for="postCode" class="col-lg-6">郵便番号</label>
               <div class="col-lg-6">
@@ -45,8 +47,8 @@
                       autocomplete="off"
                     />
                   </div>
-                    <label class="pt-2 col-2 px-0 text-center">ー</label>
-        
+                  <label class="pt-2 col-2 px-0 text-center">ー</label>
+
                   <div class="col-6 px-0">
                     <input
                       type="number"
@@ -62,6 +64,7 @@
               </div>
             </div>
 
+            <!-- 住所1 -->
             <div class="form-group row">
               <label for="address1" class="col-lg-6">住所１</label>
               <div class="col-lg-6">
@@ -76,6 +79,8 @@
                 <div class="text-danger small newlineControl" v-show="address1ErrMsg">{{ address1ErrMsg }}</div>
               </div>
             </div>
+
+            <!-- 住所2 -->
             <div class="form-group row">
               <label for="address2" class="col-lg-6">住所２</label>
               <div class="col-lg-6">
@@ -91,6 +96,7 @@
               </div>
             </div>
 
+            <!-- 電話番号 -->
             <div class="form-group row">
               <label for="telNo" class="col-lg-6">電話番号</label>
               <div class="col-lg-6">
@@ -107,6 +113,7 @@
             </div>
           </div>
 
+          <!-- 登録・キャンセルボタン -->
           <div class="form-group justify-content-center row">
             <div class="mb-3 col-lg-4">
               <btn class="btn btn-primary btn-lg btn-block" v-on:click="clientsCreate()">登録</btn>

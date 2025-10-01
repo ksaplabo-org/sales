@@ -6,10 +6,10 @@
         <div class="container-fluid">
           <!-- タイトルとメニュー遷移ボタン -->
           <h1 class="border-bottom">顧客情報一覧</h1>
-          <button class="btn btn-dark mb-4" v-on:click="onClickMenuButton()">メニュー画面へ</button>
+          <button class="btn btn-dark" v-on:click="onClickMenuButton()">メニュー画面へ</button>
           <p class="text-danger" v-show="errMsg">{{ errMsg }}</p>
           <!-- コンテンツStart -->
-          <div style="width: 90%; margin: auto">
+          <div class="mt-4" style="width: 90%; margin: auto">
             <!-- インポートしたテーブル -->
             <Table :items="items" :fields="fields" empDataMsg="顧客情報がありません" @sendRow="setReceiveRow" />
 
@@ -51,7 +51,6 @@
 </template>
 
 <script>
-
 import Header from "@/components/Header.vue";
 import Loading from "@/components/Loading.vue";
 import Table from "@/components/Table.vue";

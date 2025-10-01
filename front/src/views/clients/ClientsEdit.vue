@@ -7,7 +7,7 @@
         <div class="container-fluid">
           <h1 class="border-bottom">顧客情報修正</h1>
           <button
-            class="btn btn-dark mb-4"
+            class="btn btn-dark"
             v-on:click="
               () => {
                 this.$router.push({ name: 'clientsList' });
@@ -16,20 +16,19 @@
           >
             顧客情報一覧画面へ
           </button>
-          <br />
           <p class="text-danger" v-show="errMsg">{{ errMsg }}</p>
 
-          <br />
-
           <form @submit.stop.prevent="clientsEdit" method="post" autocomplete="new-password">
-            <div class="col-lg-5 mx-auto center-block">
+            <div class="col-lg-5 mx-auto center-block mt-4">
+              <!-- 顧客番号 -->
               <div class="form-group row">
                 <label class="col-lg-6">顧客番号</label>
                 <p v-show="clientNo" class="col-lg-6 h5">{{ clientNo }}</p>
               </div>
+
               <!-- 顧客名 -->
               <div class="form-group row">
-                <label class="col-lg-6">顧客名<label class="text-danger">*</label></label>
+                <label class="col-lg-6">顧客名<span class="text-danger">*</span></label>
                 <div class="col-lg-6">
                   <input
                     type="text"
@@ -44,6 +43,7 @@
                   <div class="text-danger small" v-show="clientNameMsg">{{ clientNameMsg }}</div>
                 </div>
               </div>
+
               <!-- 郵便番号 -->
               <div class="form-group row">
                 <label class="col-lg-6">郵便番号</label>
@@ -132,6 +132,7 @@
                 </div>
               </div>
             </div>
+
             <!-- 修正・キャンセルボタン -->
             <div class="form-group justify-content-center row">
               <div class="mb-3 col-lg-4">
@@ -194,8 +195,6 @@ export default {
       if (UserUtil.isLogIn()) {
         //画面更新
         await this.updateView();
-        // メッセージ設定
-        this.errMsg = "";
       } else {
         this.$router.push({ name: "logIn", params: { flashMsg: "ログインしてください。" } });
       }
@@ -209,7 +208,7 @@ export default {
      */
     async updateView() {
       this.isLoading = true;
-
+      this.errMsg = "";
       //クエリストリングを取得
       const query = this.$route.query;
 
@@ -230,7 +229,7 @@ export default {
         this.address2 = clientData.address2;
         this.telNo = clientData.tel_no;
       } catch (e) {
-        this.errMsg = "顧客情報取得に失敗しました。";
+        this.errMsg = "顧客情報取得処理に失敗しました。";
         console.log(e);
       }
       this.isLoading = false;

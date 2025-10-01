@@ -3,6 +3,8 @@ USE sales;
 #------------------------------------------
 # ユーザー情報TBL 作成
 #------------------------------------------
+DROP TABLE IF EXISTS orders;
+
 DROP TABLE IF EXISTS users;
 CREATE TABLE IF NOT EXISTS users
 (
@@ -72,7 +74,13 @@ CREATE TABLE IF NOT EXISTS orders
     update_id int NOT NULL,
     update_date datetime NOT NULL,
     entry_id int NOT NULL,
-    entry_date datetime NOT NULL
+    entry_date datetime NOT NULL,
+    FOREIGN KEY (client_no) REFERENCES clients(client_no)  -- 外部キーの設定
+    ON DELETE RESTRICT
+    ON UPDATE RESTRICT,
+    FOREIGN KEY (product_code) REFERENCES products(product_code)  -- 外部キーの設定
+    ON DELETE RESTRICT
+    ON UPDATE RESTRICT
 )
 CHARACTER SET utf8mb4
 COLLATE utf8mb4_0900_ai_ci;

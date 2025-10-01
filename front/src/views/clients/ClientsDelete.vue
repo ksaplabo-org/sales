@@ -9,15 +9,10 @@
           <button class="btn btn-dark" v-on:click="() => $router.push({ name: 'clientsList' })">
             顧客情報一覧画面へ
           </button>
-          <br />
           <p class="text-danger" v-show="errMsg">{{ errMsg }}</p>
 
-          <br />
-
           <form @submit.stop.prevent="clientsDelete" method="post" autocomplete="new-password">
-            <div class="col-sm-5 mx-auto center-block">
-              <div class="" />
-
+            <div class="col-sm-5 mx-auto center-block mt-4">
               <!-- 顧客番号 -->
               <div class="form-group row">
                 <label class="col-sm-6">顧客番号</label>
@@ -77,7 +72,6 @@
 </template>
 
 <script>
-
 // コンポーネント関連
 import Header from "@/components/Header.vue";
 import Loading from "@/components/Loading.vue";
@@ -131,12 +125,10 @@ export default {
 
       //クエリストリングを取得
       const query = this.$route.query;
-      //削除対象の顧客番号を設定する
-      this.clientNo = query.clientNo;
 
       try {
         // 顧客番号から顧客情報を取得
-        const response = await AjaxUtil.getClientsByClientNo(this.clientNo);
+        const response = await AjaxUtil.getClientsByClientNo(query.clientNo);
         const clientData = JSON.parse(response.data.Items);
 
         // 顧客情報を各項目にセット
@@ -148,7 +140,7 @@ export default {
         this.address2 = clientData.address2;
         this.telNo = clientData.tel_no;
       } catch (e) {
-        this.errMsg = "顧客情報取得に失敗しました。";
+        this.errMsg = "顧客情報取得処理に失敗しました。";
         console.log(e);
       }
       this.isLoading = false;
@@ -171,11 +163,12 @@ export default {
           this.$router.push({ name: "clientsList" });
         }
       } catch (e) {
-        
-     
+        if (e.response.status === 422) {
+          window.alert("受注情報に登録されている顧客のため、削除できません。");
+        } else {
           window.alert("顧客情報削除処理に失敗しました。");
-          console.log(e);
-        
+        }
+        console.log(e);
       } finally {
         this.isLoading = false;
       }
