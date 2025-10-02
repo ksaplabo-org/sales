@@ -683,8 +683,18 @@ export default {
       try {
         // 顧客情報を全件取得し、テーブルで使用する項目へ代入
         const response = await AjaxUtil.getClients();
-        this.items = JSON.parse(response.data.Items);
-
+        const tmpResponse = JSON.parse(response.data.Items);
+        this.items = tmpResponse.map((client) => {
+          return {
+            // 顧客番号を0埋め
+            client_no: String(client.client_no).padStart(8, "0"),
+            name: client.name,
+            post_code: client.post_code,
+            address1: client.address1,
+            address2: client.address2,
+            tel_no: client.tel_no,
+          };
+        });
         // テーブル定義
         this.fields = [
           { key: "client_no", label: "顧客番号", sortable: true },
