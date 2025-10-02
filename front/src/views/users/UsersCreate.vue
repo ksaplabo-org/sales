@@ -225,13 +225,12 @@ export default {
         if (e.response.status === 400) {
           this.msg = "";
           alert("ユーザー情報の登録上限を超えています。");
-          console.log(e);
           this.$router.push({ name: "usersList" });
         } else {
           this.msg = "";
           alert("ユーザー情報登録に失敗しました。");
-          console.log(e);
         }
+        console.log(e);
       } finally {
         this.isLoading = false;
       }

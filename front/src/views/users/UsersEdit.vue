@@ -240,8 +240,10 @@ export default {
           userName: this.userName,
           userRole: this.userRole,
         };
-        if (this.logInId == this.id) {
-          usersModel.userRole = UserConst.UserRole.admin;
+
+        if (this.logInId == this.id && this.userRole != UserUtil.currentUserInfo().userRole) {
+          this.userRoleErrMsg = "ログイン中ユーザーの権限は変更できません。";
+          isErr = true;
         }
 
         // ユーザー情報修正処理
