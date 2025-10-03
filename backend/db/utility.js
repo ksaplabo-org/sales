@@ -21,5 +21,5 @@ module.exports.connect = function () {
  * エラーコード
  */
 module.exports.ErrorCode = {
-  foreignKeyConstraint: 1451
+  foreignKeyConstraint: 1451,
 };
