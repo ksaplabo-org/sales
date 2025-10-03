@@ -38,12 +38,8 @@ export default {
      *ログアウト処理
      */
     logOut() {
-      try {
-        UserUtil.deleteCurrentUserInfo();
-        this.$router.push({ name: "logIn", params: { flashMsg: "ログアウトしました。" } });
-      } catch (e) {
-        this.$router.push({ name: "logIn", params: { flashErrMsg: "ログアウト中にエラーが発生しました。" } });
-      }
+      UserUtil.deleteCurrentUserInfo();
+      this.$router.push({ name: "logIn", params: { flashMsg: "ログアウトしました。" } });
     },
 
     /*

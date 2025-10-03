@@ -78,7 +78,6 @@ import Loading from "@/components/Loading.vue";
 //utils関連
 import * as AjaxUtil from "@/utils/AjaxUtil";
 import * as UserUtil from "@/utils/UserUtil";
-import UserConst from "@/utils/const/UserConst";
 
 export default {
   components: { Header, Loading },
@@ -101,14 +100,7 @@ export default {
       //ログインチェック
       if (!UserUtil.isLogIn()) {
         this.$router.push({ name: "logIn", params: { flashMsg: "ログインしてください。" } });
-
-        //権限チェック(管理者以外拒否)
-      } else if (UserUtil.currentUserInfo().userRole != UserConst.UserRole.admin) {
-        this.$router.push({ name: "logIn", params: { flashMsg: "権限がありません。" } });
       }
-
-      // メッセージ設定
-      this.errMsg = "";
 
       //画面更新処理
       await this.updateView();
@@ -165,7 +157,6 @@ export default {
       } catch (e) {
         if (e.response.status === 422) {
           window.alert("受注情報に登録されている顧客のため、削除できません。");
-          this.$router.push({ name: "clientsList" });
         } else {
           window.alert("顧客情報削除処理に失敗しました。");
         }

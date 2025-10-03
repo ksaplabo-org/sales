@@ -236,12 +236,11 @@ export default {
       } catch (e) {
         if (e.response.status === 400) {
           alert("顧客情報の登録上限を超えています。");
-          console.log(e);
           this.$router.push({ name: "clientsList" });
         } else {
           alert("顧客情報登録に失敗しました。");
-          console.log(e);
         }
+        console.log(e);
       } finally {
         this.isLoading = false;
       }
@@ -249,6 +248,8 @@ export default {
   },
 };
 </script>
+
+<!-- 画面サイズを変更したときにエラーメッセージがテキストボックスに合わせて改行するのを防ぐ -->
 <style scoped>
 @media screen and (min-width: 992px) {
   .newlineControl {

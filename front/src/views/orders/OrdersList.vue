@@ -115,7 +115,6 @@ export default {
       try {
         const response = await AjaxUtil.getOrders();
         const tmpResponse = JSON.parse(response.data.Items);
-        // 配列に入っている値を一つずつ取り出し、新しい変数を追加していく処理
         this.items = tmpResponse.map((order) => {
           return {
             order_no: order.order_no,
