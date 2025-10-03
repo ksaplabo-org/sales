@@ -359,6 +359,10 @@ export default {
 
       try {
         // 商品コードの入力チェック
+        if 
+        (this.productCode == null || this.productCode === "") {
+          return;
+        }
         if (isNaN(this.productCode)) {
           this.productCodeErrMsg = "商品コードは半角数字で入力してください。";
           return;
@@ -405,7 +409,6 @@ export default {
       try {
         // 数量の入力チェック
         if (this.amount == null || this.amount === "") {
-          this.amountErrMsg = "数量が未入力です。";
           return;
         }
         if (this.amount <= 0 || 100 <= this.amount) {
