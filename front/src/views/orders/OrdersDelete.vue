@@ -106,7 +106,7 @@
             <!-- 合計金額 -->
             <div class="form-group row">
               <label for="calcResults" class="col-sm-6">合計金額</label>
-              <p v-show="calcResults" class="col-sm-6 h5">{{ calcResults.totalPricePlusTax }}</p>
+              <p v-show="calcResults" class="col-sm-6 h5">{{ calcResults.pricePlusTax }}</p>
             </div>
           </div>
           <!-- 削除 -->
