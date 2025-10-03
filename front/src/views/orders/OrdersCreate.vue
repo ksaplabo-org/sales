@@ -193,7 +193,7 @@
               <!-- 合計金額 -->
               <div class="form-group row">
                 <label class="col-lg-6">合計金額</label>
-                <p class="col-lg-6 h5">{{ totalPricePlusTax }}</p>
+                <p class="col-lg-6 h5">{{ pricePlusTax }}</p>
               </div>
             </div>
 
@@ -332,7 +332,7 @@ export default {
       price: "",
       totalPriceWithoutTax: "",
       tax: "",
-      totalPricePlusTax: "",
+      pricePlusTax: "",
       entryId: "",
       updateId: "",
       clientNoMsg: "",
@@ -607,7 +607,7 @@ export default {
       this.amountMsg = "";
       this.totalPriceWithoutTax = "";
       this.tax = "";
-      this.totalPricePlusTax = "";
+      this.pricePlusTax = "";
       this.isLoading = true;
       try {
         if (this.amount == null || this.amount === "") {
@@ -629,7 +629,7 @@ export default {
         const calcResult = OrdersUtil.calcTax(this.totalPriceWithoutTax);
 
         this.tax = calcResult.tax;
-        this.totalPricePlusTax = calcResult.totalPricePlusTax;
+        this.pricePlusTax = calcResult.pricePlusTax;
       } catch (e) {
       } finally {
         this.isLoading = false;
