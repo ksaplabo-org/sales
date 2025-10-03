@@ -171,7 +171,7 @@
             <!-- 合計金額 -->
             <div class="form-group row">
               <label class="col-lg-6">合計金額</label>
-              <p v-show="totalPricePlusTax" class="col-lg-6 h5">{{ totalPricePlusTax }}</p>
+              <p v-show="pricePlusTax" class="col-lg-6 h5">{{ pricePlusTax }}</p>
             </div>
           </div>
           <!-- 修正・キャンセルボタン -->
@@ -279,7 +279,7 @@ export default {
       price: null,
       totalPriceWithoutTax: "",
       tax: "",
-      totalPricePlusTax: "",
+      pricePlusTax: "",
       updateId: "",
 
       //エラーメッセージ
@@ -341,7 +341,7 @@ export default {
         this.totalPriceWithoutTax = this.amount * this.price;
         const calcResults = OrdersUtil.calcTax(this.totalPriceWithoutTax);
         this.tax = calcResults.tax;
-        this.totalPricePlusTax = calcResults.totalPricePlusTax;
+        this.pricePlusTax = calcResults.pricePlusTax;
       } catch (e) {
         this.errMsg = "受注情報取得処理に失敗しました。";
         console.log(e);
@@ -404,7 +404,7 @@ export default {
       this.amountErrMsg = "";
       this.totalPriceWithoutTax = "";
       this.tax = "";
-      this.totalPricePlusTax = "";
+      this.pricePlusTax = "";
 
       try {
         // 数量の入力チェック
@@ -428,7 +428,7 @@ export default {
         this.totalPriceWithoutTax = this.amount * this.price;
         const calcResults = OrdersUtil.calcTax(this.totalPriceWithoutTax);
         this.tax = calcResults.tax;
-        this.totalPricePlusTax = calcResults.totalPricePlusTax;
+        this.pricePlusTax = calcResults.pricePlusTax;
       } finally {
         this.isLoading = false;
       }
