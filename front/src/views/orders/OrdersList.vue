@@ -136,66 +136,66 @@ export default {
      *納品書出力処理
      */
     async deliveryNoteOutput() {
-      try {
-        // 選択された顧客情報を取得
-        const tmporderData = await AjaxUtil.getOrdersByOrderNo(this.orderRow.order_no);
-        const orderData = JSON.parse(tmporderData.data.Items);
+      // try {
+      //   // 選択された顧客情報を取得
+      //   const tmporderData = await AjaxUtil.getOrdersByOrderNo(this.orderRow.order_no);
+      //   const orderData = JSON.parse(tmporderData.data.Items);
 
-        // テンプレートのExcelファイル(public/excel配下)を取得し、読み込みができるようにバイナリ形式に変換
-        const response = await fetch("/excel/deliverNoteTemplate.xlsx");
-        const arrayBufferTemplate = await response.arrayBuffer();
+      //   // テンプレートのExcelファイル(public/excel配下)を取得し、読み込みができるようにバイナリ形式に変換
+      //   const response = await fetch("/excel/deliverNoteTemplate.xlsx");
+      //   const arrayBufferTemplate = await response.arrayBuffer();
 
-        // 新しいワークブックを作成
-        const workBook = new Workbook();
-        // テンプレートファイルを読み込む
-        await workBook.xlsx.load(arrayBufferTemplate);
-        // エクセルのシートを取得
-        const sheet = workBook.getWorksheet("納品書");
+      //   // 新しいワークブックを作成
+      //   const workBook = new Workbook();
+      //   // テンプレートファイルを読み込む
+      //   await workBook.xlsx.load(arrayBufferTemplate);
+      //   // エクセルのシートを取得
+      //   const sheet = workBook.getWorksheet("納品書");
 
-        // 取得したデータをExcelに書き込む処理
-        // 受注情報
-        sheet.getCell("E5").value = orderData.order_no;
-        sheet.getCell("B13").value = String(orderData.order_date).replace(/-/g, "/");
-        sheet.getCell("C13").value = String(orderData.ship_date).replace(/-/g, "/");
-        sheet.getCell("D13").value = String(orderData.deliver_date).replace(/-/g, "/");
-        // 顧客情報
-        sheet.getCell("B9").value = orderData.client.name;
-        sheet.getCell("E8").value = "〒" + orderData.client.post_code;
-        sheet.getCell("E9").value = orderData.client.address1;
-        sheet.getCell("E10").value = orderData.client.address2;
-        // 商品情報
-        sheet.getCell("B16").value = orderData.product.product_code;
-        sheet.getCell("C16").value = orderData.product.product_name;
-        sheet.getCell("D16").value = orderData.amount;
-        sheet.getCell("E16").value = orderData.product.price;
-        //計算処理(戻り値は連想配列)を呼び出し、計算結果をExcelに書き込む
-        const calcResults = OrdersUtil.calcValue(orderData.amount, orderData.product.price);
-        sheet.getCell("E17").value = calcResults.value;
-        sheet.getCell("E18").value = calcResults.taxValue;
-        sheet.getCell("E19").value = calcResults.totalValue;
+      //   // 取得したデータをExcelに書き込む処理
+      //   // 受注情報
+      //   sheet.getCell("E5").value = orderData.order_no;
+      //   sheet.getCell("B13").value = String(orderData.order_date).replace(/-/g, "/");
+      //   sheet.getCell("C13").value = String(orderData.ship_date).replace(/-/g, "/");
+      //   sheet.getCell("D13").value = String(orderData.deliver_date).replace(/-/g, "/");
+      //   // 顧客情報
+      //   sheet.getCell("B9").value = orderData.client.name;
+      //   sheet.getCell("E8").value = "〒" + orderData.client.post_code;
+      //   sheet.getCell("E9").value = orderData.client.address1;
+      //   sheet.getCell("E10").value = orderData.client.address2;
+      //   // 商品情報
+      //   sheet.getCell("B16").value = orderData.product.product_code;
+      //   sheet.getCell("C16").value = orderData.product.product_name;
+      //   sheet.getCell("D16").value = orderData.amount;
+      //   sheet.getCell("E16").value = orderData.product.price;
+      //   //計算処理(戻り値は連想配列)を呼び出し、計算結果をExcelに書き込む
+      //   const calcResults = OrdersUtil.calcValue(orderData.amount, orderData.product.price);
+      //   sheet.getCell("E17").value = calcResults.value;
+      //   sheet.getCell("E18").value = calcResults.taxValue;
+      //   sheet.getCell("E19").value = calcResults.totalValue;
         
-        // js上でのExcelデータをブラウザ上でのExcelデータに変換する処理
-        // 加工したExcelファイルをバイナリデータに変換
-        const buffer = await workBook.xlsx.writeBuffer();
+      //   // js上でのExcelデータをブラウザ上でのExcelデータに変換する処理
+      //   // 加工したExcelファイルをバイナリデータに変換
+      //   const buffer = await workBook.xlsx.writeBuffer();
 
-        // バイナリデータをブラウザ上でファイルとして扱うための処理(blob化)
-        const blob = new Blob([buffer], {
-          // Excelファイル形式で扱うという指定
-          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        });
+      //   // バイナリデータをブラウザ上でファイルとして扱うための処理(blob化)
+      //   const blob = new Blob([buffer], {
+      //     // Excelファイル形式で扱うという指定
+      //     type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      //   });
 
-        // ダウンロード処理(js上で直接ダウンロードさせる関数がないのでパワー)
-        // 仮想アンカータグを生成
-        const link = document.createElement("a");
-        // blobをURLへ変換
-        link.href = URL.createObjectURL(blob);
-        // ダウンロード時のファイル名指定
-        link.download = "納品書" + orderData.order_no + ".xlsx";
-        // 自動クリック(無理矢理)
-        link.click();
-      } catch {
-        this.errMsg = "Excelファイル出力に失敗しました。";
-      }
+      //   // ダウンロード処理(js上で直接ダウンロードさせる関数がないのでパワー)
+      //   // 仮想アンカータグを生成
+      //   const link = document.createElement("a");
+      //   // blobをURLへ変換
+      //   link.href = URL.createObjectURL(blob);
+      //   // ダウンロード時のファイル名指定
+      //   link.download = "納品書" + orderData.order_no + ".xlsx";
+      //   // 自動クリック(無理矢理)
+      //   link.click();
+      // } catch {
+      //   this.errMsg = "Excelファイル出力に失敗しました。";
+      // }
     },
 
     /*

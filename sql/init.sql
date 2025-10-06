@@ -1,5 +1,7 @@
 USE sales;
 
+DROP TABLE IF EXISTS orders;
+
 #------------------------------------------
 # ユーザー情報TBL 作成
 #------------------------------------------
@@ -59,7 +61,6 @@ COLLATE utf8mb4_0900_ai_ci;
 #------------------------------------------
 # 受注情報TBL 作成
 #------------------------------------------
-DROP TABLE IF EXISTS orders;
 CREATE TABLE IF NOT EXISTS orders
 (
     order_no char(10) NOT NULL PRIMARY KEY,
