@@ -146,23 +146,23 @@ export default {
         const min = String(now.getMinutes()).padStart(2, "0");
         const ss = String(now.getSeconds()).padStart(2, "0");
         const nowForOutPut = `${yyyy}/${mm}/${dd}  ${hh}:${min}:${ss}`;
-
+        
         // 入力された年月のフォーマットを変更
         const [year, month] = this.yearMonth.split("-");
         const yearMonthForOutPut = `${year}年${month}月`;
-
-        // 入力された年月範囲内の受注情報を全件取得する
-        const searchResult = await AjaxUtil.getOrdersByYearMonth(this.yearMonth);
-        const ordersData = JSON.parse(searchResult.data.Items);
 
         // テンプレートのExcelファイル(public/excel配下)を取得し、読み込みができるようにバイナリ形式に変換
         const response = await fetch("/excel/salesSheetTemplate.xlsx");
         const arrayBufferTemplate = await response.arrayBuffer();
 
-        // 新しいワークブックを作成し、テンプレートのExcelファイルと中のシートを読み込む
+        // 新しいワークブックを作成し、テンプレートのExcelファイルとそのファイル内のシートを読み込む
         const workBook = new Workbook();
         await workBook.xlsx.load(arrayBufferTemplate);
         const sheet = workBook.getWorksheet("売上一覧");
+
+        // 入力された年月範囲内の受注情報を全件取得する
+        const searchResult = await AjaxUtil.getOrdersByYearMonth(this.yearMonth);
+        const ordersData = JSON.parse(searchResult.data.Items);
 
         // テーブルを作成するかどうかの分岐
         if (ordersData.length == 0) {
@@ -170,7 +170,7 @@ export default {
           if (confirmResult) {
             sheet.getCell("A8").value = "該当期間のデータが存在しません";
             sheet.getCell("B6").value = yearMonthForOutPut;
-            sheet.getCell("H1").value = nowForOutPut;
+            sheet.getCell("J1").value = nowForOutPut;
           } else {
             return;
           }
@@ -188,25 +188,27 @@ export default {
               showRowStripes: true,
             },
             columns: [
-              { name: "注文日" },
+              { name: "発注日" },
               { name: "顧客番号" },
               { name: "顧客名" },
               { name: "商品コード" },
+              { name: "商品名" },
               { name: "数量" },
               { name: "単価" },
-              { name: "税抜金額" },
-              { name: "消費税" },
-              { name: "税込金額" },
+              { name: "金額" },
+              { name: "消費税額" },
+              { name: "合計金額" },
             ],
             rows: ordersData.map((order) => {
               const totalPriceWithoutTax = order.amount * order.product.price;
               const calcResults = OrdersUtil.calcTax(totalPriceWithoutTax);
               totalPricePlusTax += calcResults.pricePlusTax;
               return [
-                order.order_date,
+                order.order_date.replace(/-/g, "/"),
                 String(order.client.client_no).padStart(8, "0"),
                 order.client.name,
                 order.product.product_code,
+                order.product.product_name,
                 order.amount,
                 order.product.price,
                 totalPriceWithoutTax,
@@ -217,9 +219,11 @@ export default {
           });
           // 各セルに値を代入
           sheet.getCell("B6").value = yearMonthForOutPut;
-          sheet.getCell("H1").value = nowForOutPut;
-          sheet.getCell("I6").value = totalPricePlusTax;
+          sheet.getCell("J1").value = nowForOutPut;
+          sheet.getCell("J6").value = totalPricePlusTax;
         }
+
+        // 以下ファイル出力処理
 
         // 加工したExcelファイルをバイナリデータに変換する。
         const buffer = await workBook.xlsx.writeBuffer();
