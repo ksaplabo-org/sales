@@ -11,7 +11,6 @@ DROP TABLE IF EXISTS clients;
 #------------------------------------------
 # ユーザー情報TBL 作成
 #------------------------------------------
-
 CREATE TABLE IF NOT EXISTS users
 (
     id int NOT NULL PRIMARY KEY,

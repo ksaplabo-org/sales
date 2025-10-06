@@ -168,6 +168,11 @@ export default {
     onClickDeleteButton() {
       this.$router.push({ name: "ordersDelete", query: { orderNo: this.orderRow.order_no } });
     },
+
+    /*
+     *納品書出力処理
+     */
+    deliveryNoteOutput() {},
   },
 };
 </script>

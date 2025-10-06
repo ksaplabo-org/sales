@@ -139,7 +139,7 @@ app.delete("/api/clients/:clientNo", async function (req, res) {
       // 受注情報が削除しようとしてる顧客番号を参照している場合
       res.status(422).send("unable to delete");
     } else {
-      console.log("failed to delete order.", e);
+      console.log("failed to delete client.", e);
       res.status(500).send("server error occur");
     }
   }
