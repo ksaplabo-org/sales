@@ -137,7 +137,21 @@ export default {
      */
     async salesSheetOutput() {
       try {
-        // 選択された顧客情報を取得
+        // 現在の時刻を取得し、フォーマットを変更
+        const now = new Date();
+        const yyyy = now.getFullYear();
+        const mm = String(now.getMonth() + 1).padStart(2, "0"); // 月は0始まりなので+1
+        const dd = String(now.getDate()).padStart(2, "0");
+        const hh = String(now.getHours()).padStart(2, "0");
+        const min = String(now.getMinutes()).padStart(2, "0");
+        const ss = String(now.getSeconds()).padStart(2, "0");
+        const nowForOutPut = `${yyyy}/${mm}/${dd}  ${hh}:${min}:${ss}`;
+
+        // 入力された年月のフォーマットを変更
+        const [year, month] = this.yearMonth.split("-");
+        const yearMonthForOutPut = `${year}年${month}月`;
+
+        // 入力された年月範囲内の受注情報を全件取得する
         const searchResult = await AjaxUtil.getOrdersByYearMonth(this.yearMonth);
         const ordersData = JSON.parse(searchResult.data.Items);
 
@@ -145,63 +159,81 @@ export default {
         const response = await fetch("/excel/salesSheetTemplate.xlsx");
         const arrayBufferTemplate = await response.arrayBuffer();
 
-        // 新しいワークブックを作成
+        // 新しいワークブックを作成し、テンプレートのExcelファイルと中のシートを読み込む
         const workBook = new Workbook();
-        // テンプレートファイルを読み込む
         await workBook.xlsx.load(arrayBufferTemplate);
-        // エクセルのシートを取得
         const sheet = workBook.getWorksheet("売上一覧");
 
-        const table = sheet.getTable("売上一覧テーブル");
+        // テーブルを作成するかどうかの分岐
+        if (ordersData.length == 0) {
+          const confirmResult = window.confirm("該当期間の売上が存在しませんがExcelファイルを出力しますか？");
+          if (confirmResult) {
+            sheet.getCell("A8").value = "該当期間のデータが存在しません";
+            sheet.getCell("B6").value = yearMonthForOutPut;
+            sheet.getCell("H1").value = nowForOutPut;
+          } else {
+            return;
+          }
+        } else {
+          // 合計売上金額計算用
+          let totalPricePlusTax = 0;
 
-        // 取得したデータをExcelに書き込む処理
-        ordersData.forEach((orderData) => {
-          table.addRow([
-            orderData.order_date,
-            String(orderData.client.client_no).padStart(8, "0"),
-            orderData.client.name,
-            orderData.product.product_code,
-            orderData.amount,
-            orderData.product.price,
-          ]);
+          // 売上一覧テーブルを作成し、取得した値を代入する。
+          sheet.addTable({
+            name: "売上一覧テーブル",
+            ref: "A8",
+            headerRow: true,
+            style: {
+              theme: "TableStyleMedium13",
+              showRowStripes: true,
+            },
+            columns: [
+              { name: "注文日" },
+              { name: "顧客番号" },
+              { name: "顧客名" },
+              { name: "商品コード" },
+              { name: "数量" },
+              { name: "単価" },
+              { name: "税抜金額" },
+              { name: "消費税" },
+              { name: "税込金額" },
+            ],
+            rows: ordersData.map((order) => {
+              const totalPriceWithoutTax = order.amount * order.product.price;
+              const calcResults = OrdersUtil.calcTax(totalPriceWithoutTax);
+              totalPricePlusTax += calcResults.pricePlusTax;
+              return [
+                order.order_date,
+                String(order.client.client_no).padStart(8, "0"),
+                order.client.name,
+                order.product.product_code,
+                order.amount,
+                order.product.price,
+                totalPriceWithoutTax,
+                calcResults.tax,
+                calcResults.pricePlusTax,
+              ];
+            }),
+          });
+          // 各セルに値を代入
+          sheet.getCell("B6").value = yearMonthForOutPut;
+          sheet.getCell("H1").value = nowForOutPut;
+          sheet.getCell("I6").value = totalPricePlusTax;
+        }
 
-          // const totalPriceWithoutTax = orderData.amount * orderData.product.price;
-          // const calcResults = OrdersUtil.calcTax(totalPriceWithoutTax);
-          // sheet.getCell("G" + (9 + index)).value = totalPriceWithoutTax;
-          // sheet.getCell("H" + (9 + index)).value = calcResults.tax;
-          // sheet.getCell("I" + (9 + index)).value = calcResults.pricePlusTax;
-
-          // sheet.getCell("A" + (9 + index)).value = orderData.order_date;
-          // sheet.getCell("B" + (9 + index)).value = String(orderData.client.client_no).padStart(8, "0");
-          // sheet.getCell("C" + (9 + index)).value = orderData.client.name;
-          // sheet.getCell("D" + (9 + index)).value = orderData.product.product_code;
-          // sheet.getCell("E" + (9 + index)).value = orderData.amount;
-          // sheet.getCell("F" + (9 + index)).value = orderData.product.price;
-          // const totalPriceWithoutTax = orderData.amount * orderData.product.price;
-          // const calcResults = OrdersUtil.calcTax(totalPriceWithoutTax);
-          // sheet.getCell("G" + (9 + index)).value = totalPriceWithoutTax;
-          // sheet.getCell("H" + (9 + index)).value = calcResults.tax;
-          // sheet.getCell("I" + (9 + index)).value = calcResults.pricePlusTax;
-        });
-
-        // js上でのExcelデータをブラウザ上でのExcelデータに変換する処理
-        // 加工したExcelファイルをバイナリデータに変換
+        // 加工したExcelファイルをバイナリデータに変換する。
         const buffer = await workBook.xlsx.writeBuffer();
-
-        // バイナリデータをブラウザ上でファイルとして扱うための処理(blob化)
+        // ブラウザ上でファイルとして扱うための処理(blob化)
         const blob = new Blob([buffer], {
           // Excelファイル形式で扱うという指定
           type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         });
 
-        // ダウンロード処理(js上で直接ダウンロードさせる関数がないのでパワー)
-        // 仮想アンカータグを生成
+        // ダウンロード処理
+        // 仮想アンカータグを作成し、作成したExcelファイルを設定し、js内でクリックする。
         const link = document.createElement("a");
-        // blobをURLへ変換
         link.href = URL.createObjectURL(blob);
-        // ダウンロード時のファイル名指定
-        link.download = "売上一覧.xlsx";
-        // 自動クリック(無理矢理)
+        link.download = `${yearMonthForOutPut}売上一覧.xlsx`;
         link.click();
       } catch {
         this.errMsg = "Excelファイル出力に失敗しました";
