@@ -16,3 +16,10 @@ module.exports.connect = function () {
     },
   });
 };
+
+/**
+ * エラーコード
+ */
+module.exports.ErrorCode = {
+  foreignKeyConstraint: 1451,
+};

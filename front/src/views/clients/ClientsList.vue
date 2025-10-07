@@ -1,65 +1,68 @@
 <template>
   <div>
     <Header />
+    <div id="wrapper">
+      <div id="content-wrapper" class="bg-light min-vh-100">
+        <div class="container-fluid">
+          <!-- タイトルとメニュー遷移ボタン -->
+          <h1 class="border-bottom">顧客情報一覧</h1>
+          <button class="btn btn-dark" v-on:click="onClickMenuButton()">メニュー画面へ</button>
+          <p class="text-danger" v-show="errMsg">{{ errMsg }}</p>
+          <!-- コンテンツStart -->
+          <div class="mt-4" style="width: 90%; margin: auto">
+            <!-- インポートしたテーブル -->
+            <Table :items="items" :fields="fields" empDataMsg="顧客情報がありません" @sendRow="setReceiveRow" />
 
-    <div id="content-wrapper" class="bg-light min-vh-100">
-      <div class="container-fluid">
-        <!-- タイトルとメニュー遷移ボタン -->
-        <h1 class="border-bottom">顧客情報一覧</h1>
-        <button class="btn btn-dark mb-4" v-on:click="onClickMenuButton()">メニュー画面へ</button>
-
-        <!-- コンテンツStart -->
-        <div style="width: 90%; margin: auto">
-          <!-- インポートしたテーブル -->
-          <Table :items="items" :fields="fields" empDataMsg="顧客情報がありません" @sendRow="setReceiveRow" />
-
-          <!-- 登録・修正・削除ボタンStart -->
-          <div class="form-group d-flex justify-content-center">
-            <div class="p-2 w-25">
-              <button class="btn btn-primary btn-block" v-on:click="onClickCreateButton()">登録</button>
+            <!-- 登録・修正・削除ボタンStart -->
+            <div class="form-group d-flex justify-content-center">
+              <div class="p-2 w-25">
+                <button class="btn btn-primary btn-block" v-on:click="onClickCreateButton()">登録</button>
+              </div>
+              <div class="p-2 w-25">
+                <button class="btn btn-info btn-block" v-on:click="onClickEditButton()" :disabled="clientRow == null">
+                  修正
+                </button>
+              </div>
+              <div class="p-2 w-25">
+                <button
+                  class="btn btn-danger btn-block"
+                  v-on:click="onClickDeleteButton()"
+                  :disabled="clientRow == null"
+                >
+                  削除
+                </button>
+              </div>
             </div>
-            <div class="p-2 w-25">
-              <button class="btn btn-info btn-block" v-on:click="onClickEditButton()" :disabled="clientRow == null">
-                修正
-              </button>
-            </div>
-            <div class="p-2 w-25">
-              <button class="btn btn-danger btn-block" v-on:click="onClickDeleteButton()" :disabled="clientRow == null">
-                削除
-              </button>
-            </div>
+            <!-- 登録・修正・削除ボタンEnd -->
           </div>
-          <!-- 登録・修正・削除ボタンEnd -->
         </div>
+        <!-- コンテンツEnd -->
       </div>
-      <!-- コンテンツEnd -->
+
+      <!-- スクロールトップボタン -->
+      <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+      </a>
+
+      <!-- ローディングマスク -->
+      <loading v-if="isLoading === true" />
     </div>
-
-    <!-- スクロールトップボタン -->
-    <a class="scroll-to-top rounded" href="#page-top">
-      <i class="fas fa-angle-up"></i>
-    </a>
-
-    <!-- ローディングマスク -->
-    <loading v-if="isLoading === true" />
   </div>
 </template>
 
 <script>
-// 共通
 import Header from "@/components/Header.vue";
 import Loading from "@/components/Loading.vue";
-import * as UserUtil from "@/utils/UserUtil";
+import Table from "@/components/Table.vue";
+
 import * as AjaxUtil from "@/utils/AjaxUtil";
+import * as UserUtil from "@/utils/UserUtil";
 import UserConst from "@/utils/const/UserConst";
-import Table from "../../components/Table.vue";
 
 export default {
-  props: ["flashMsg"],
   components: { Header, Loading, Table },
   data() {
     return {
-      msg: this.flashMsg,
       errMsg: "",
       isLoading: false,
       clientRow: null,
@@ -82,17 +85,13 @@ export default {
 
       // ログインチェック
       if (!UserUtil.isLogIn()) {
-        this.$router.push({ name: "logIn", params: { flashMsg: "ログインしてください" } });
-
-        // 権限チェック(管理者以外拒否)
-      } else if (UserUtil.currentUserInfo().userRole != UserConst.UserRole.admin) {
-        this.$router.push({ name: "logIn", params: { flashMsg: "権限がありません" } });
+        this.$router.push({ name: "logIn", params: { flashMsg: "ログインしてください。" } });
       }
 
       // 顧客情報取得
       await this.getClients();
     } catch (e) {
-      this.$router.push({ name: "logIn", params: { flashMsg: "ログインしてください" } });
+      this.errMsg = e.message
     } finally {
       this.isLoading = false;
     }
@@ -102,7 +101,6 @@ export default {
      *顧客情報取得処理
      */
     async getClients() {
-      this.msg = "";
       this.errMsg = "";
 
       try {
@@ -123,7 +121,6 @@ export default {
           };
         });
       } catch (e) {
-        this.msg = "";
         this.errMsg = "顧客情報取得処理に失敗しました。";
         console.log(e);
       }

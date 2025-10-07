@@ -131,7 +131,7 @@ module.exports.delete = async function (db, clientNo) {
  * 顧客情報を取得
  *
  * [検索条件]
- * ユーザーIDの完全一致
+ * 顧客番号の完全一致
  *
  * @param {*} db
  * @param {*} clientNo

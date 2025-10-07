@@ -71,9 +71,10 @@
 </template>
 
 <script>
-import Loading from "../components/Loading.vue";
+import Header from "@/components/Header.vue";
+import Loading from "@/components/Loading.vue";
+
 import * as AjaxUtil from "@/utils/AjaxUtil";
-import Header from "../components/Header.vue";
 import UserConst from "@/utils/const/UserConst";
 
 
