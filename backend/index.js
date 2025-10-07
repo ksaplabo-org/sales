@@ -96,7 +96,7 @@ app.post("/api/clients", async function (req, res) {
     }
   } catch (e) {
     // 異常レスポンス
-    console.log("failed to add clients.", e);
+    console.log("failed to add client.", e);
     res.status(500).send("server error occur");
   }
 });
@@ -136,8 +136,13 @@ app.delete("/api/clients/:clientNo", async function (req, res) {
     res.send();
   } catch (e) {
     //異常レスポンス
-    console.log("failed to delete client", e);
-    res.status(500).send("server error occur");
+    if (e.parent.errno == DbUtil.ErrorCode.foreignKeyConstraint) {
+      // 受注情報が削除しようとしてる顧客番号を参照している場合
+      res.status(422).send("unable to delete");
+    } else {
+      console.log("failed to delete client.", e);
+      res.status(500).send("server error occur");
+    }
   }
 });
 
