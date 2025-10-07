@@ -94,16 +94,16 @@ export default {
      *行選択時処理
      */
     onRowSelected(selectedRow) {
-      let variousRow = null;
+      let row = null;
 
       // 行選択時のみ、値を代入
       if (selectedRow.length > 0) {
         // selectedRowがオブジェクト配列になっているため、indexを0として取得している
-        variousRow = selectedRow[0];
+        row = selectedRow[0];
       }
 
-      // 親コンポーネントへ値(メソッドsendPk)を渡す
-      this.$emit("sendRow", variousRow);
+      // 親コンポーネントへ値(メソッドsendRow)を渡す
+      this.$emit("sendRow", row);
     },
   },
 };

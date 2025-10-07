@@ -57,7 +57,7 @@ module.exports.create = async function (
  * 伝票番号の最新の値を検索
  *
  * @param {*} db
- * @returns {Promise<number>}
+ * @returns {Promise<string>}
  */
 module.exports.getLatestOrderNo = async function (db) {
   const ordersModel = OrdersRepository.getOrdersModel(db);

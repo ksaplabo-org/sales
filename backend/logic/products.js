@@ -4,7 +4,7 @@ const ProductsRepository = require("../db/products");
  * 商品情報の全件検索処理
  *
  * @param {*} db
- * @returns {Promise<Object>}
+ * @returns {Promise<Object[]>}
  */
 module.exports.getAll = async function (db) {
   try {
@@ -13,8 +13,6 @@ module.exports.getAll = async function (db) {
 
     // 商品情報を全件取得
     return await productsModel.findAll();
-
-   
   } catch (e) {
     throw e;
   }

@@ -62,7 +62,6 @@
                 <label class="col-lg-6">住所１</label>
                 <p class="col-lg-6 h5">{{ address1 }}</p>
               </div>
-
               <!-- 住所２ -->
               <div class="form-group row">
                 <label class="col-lg-6">住所２</label>
@@ -167,7 +166,7 @@
                     v-model="amount"
                     max="99"
                     min="1"
-                    @change="displayValue()"
+                    @change="displayTotalPricePlusTax()"
                   />
                   <div class="text-danger small" v-show="amountMsg">{{ amountMsg }}</div>
                 </div>
@@ -182,7 +181,7 @@
               <!-- 金額 -->
               <div class="form-group row">
                 <label class="col-lg-6">金額</label>
-                <p class="col-lg-6 h5" v-show="productCode">{{ totalPriceWithoutTax }}</p>
+                <p class="col-lg-6 h5" v-show="productCode">{{ totalPrice }}</p>
               </div>
 
               <!-- 消費税額 -->
@@ -193,7 +192,7 @@
               <!-- 合計金額 -->
               <div class="form-group row">
                 <label class="col-lg-6">合計金額</label>
-                <p class="col-lg-6 h5">{{ pricePlusTax }}</p>
+                <p class="col-lg-6 h5">{{ totalPricePlusTax }}</p>
               </div>
             </div>
 
@@ -236,9 +235,9 @@
               <button
                 type="button"
                 class="btn btn-primary"
-                v-on:click="((productCode = tmpRow.product_code), inputProductCode())"
+                v-on:click="((productCode = selectedRow.product_code), inputProductCode())"
                 data-dismiss="modal"
-                :disabled="tmpRow == null"
+                :disabled="selectedRow == null"
               >
                 選択
               </button>
@@ -277,9 +276,9 @@
               <button
                 type="button"
                 class="btn btn-primary"
-                v-on:click="((clientNo = tmpRow.client_no), inputClientNo())"
+                v-on:click="((clientNo = selectedRow.client_no), inputClientNo())"
                 data-dismiss="modal"
-                :disabled="tmpRow == null"
+                :disabled="selectedRow == null"
               >
                 選択
               </button>
@@ -330,9 +329,9 @@ export default {
       deliverDate: "",
       productCode: "",
       price: "",
-      totalPriceWithoutTax: "",
+      totalPrice: "",
       tax: "",
-      pricePlusTax: "",
+      totalPricePlusTax: "",
       entryId: "",
       updateId: "",
       clientNoMsg: "",
@@ -346,12 +345,11 @@ export default {
       productName: "",
       clientData: "",
       productData: "",
-      databaseErr: false,
 
       //テーブル用
       items: [],
       fields: [],
-      tmpRow: null,
+      selectedRow: null,
     };
   },
   async mounted() {
@@ -371,7 +369,6 @@ export default {
      */
     async ordersCreate() {
       // メッセージ初期化
-      this.errMsg = "";
       this.clientNoMsg = "";
       this.orderDateMsg = "";
       this.shipDateMsg = "";
@@ -381,105 +378,90 @@ export default {
       this.isLoading = true;
       let isErr = false;
 
-      if (this.databaseErr) {
-        window.alert("受注情報登録処理に失敗しました。");
-        this.isLoading = false;
-        return;
-      }
       try {
         // 入力チェック
-        if (!this.clientData) {
-          this.clientNoMsg = "入力された顧客番号は存在しません。";
-          isErr = true;
-        }
-        if (!this.productData) {
-          this.productCodeMsg = "入力された商品コードは存在しません。";
-          isErr = true;
-        }
-        if (String(this.clientNo).length > 8) {
-          this.clientNoMsg = "顧客番号は8桁以内で入力してください。";
-          isErr = true;
-        }
-        if (String(this.productCode).length != 7) {
-          this.productCodeMsg = "商品コードは7桁で入力してください。";
-          isErr = true;
-        }
-
-        if (!this.clientNo.match("^[0-9]*$")) {
-          this.clientNoMsg = "顧客番号は半角数字で入力してください。";
-          isErr = true;
-        }
-
-        if (!this.productCode.match("^[0-9]*$")) {
-          this.productCodeMsg = "商品コードは半角数字で入力してください。";
-          isErr = true;
-        }
-        if (!this.amount.match("^[0-9]*$")) {
-          this.amountMsg = "数量は半角数字で入力してください。";
-          isErr = true;
-        }
-
-        if ("2016-01-01" > this.orderDate || this.orderDate > "9999-12-31") {
-          this.orderDateMsg = "発注日が不正です。2016/01/01～9999/12/31の間で指定してください。";
-          isErr = true;
-        }
-
-        if ("2016-01-01" > this.shipDate || this.shipDate > "9999-12-31") {
-          this.shipDateMsg = "出荷日が不正です。2016/01/01～9999/12/31の間で指定してください。";
-          isErr = true;
-        }
-
-        if ("2016-01-01" > this.deliverDate || this.deliverDate > "9999-12-31") {
-          this.deliverDateMsg = "納品日が不正です。2016/01/01～9999/12/31の間で指定してください。";
-          isErr = true;
-        }
-
-        if (0 >= this.amount || this.amount >= 100) {
-          this.amountMsg = "数量が誤っています。1以上かつ2桁以内で入力してください。";
-          isErr = true;
-        }
-        if (isNaN(new Date(this.orderDate).getDate())) {
-          this.orderDateMsg = "発注日が不正です。yyyy/mm/dd形式で入力してください。";
-          isErr = true;
-        }
-        if (isNaN(new Date(this.shipDate).getDate())) {
-          this.shipDateMsg = "出荷日が不正です。yyyy/mm/dd形式で入力してください。";
-          isErr = true;
-        }
-        if (isNaN(new Date(this.deliverDate).getDate())) {
-          this.deliverDateMsg = "納品日が不正です。yyyy/mm/dd形式で入力してください。";
-          isErr = true;
-        }
         if (this.clientNo == null || this.clientNo === "") {
           this.clientNoMsg = "顧客番号が未入力です。";
           isErr = true;
+        } else if (!this.clientNo.match("^[0-9]*$")) {
+          this.clientNoMsg = "顧客番号は半角数字で入力してください。";
+          isErr = true;
+        } else if (String(this.clientNo).length > 8) {
+          this.clientNoMsg = "顧客番号は8桁以内で入力してください。";
+          isErr = true;
+        } else {
+          // 顧客番号から顧客情報を取得
+          const response = await AjaxUtil.getClientsByClientNo(Number(this.clientNo));
+          const clientData = JSON.parse(response.data.Items);
+          if (!clientData) {
+            this.clientNoMsg = "入力された顧客番号は存在しません。";
+            isErr = true;
+          }
         }
         if (this.orderDate == null || this.orderDate === "") {
           this.orderDateMsg = "発注日が未入力です。";
+          isErr = true;
+        } else if (isNaN(new Date(this.orderDate).getDate())) {
+          this.orderDateMsg = "発注日が不正です。yyyy/mm/dd形式で入力してください。";
+          isErr = true;
+        } else if ("2016-01-01" > this.orderDate || this.orderDate > "9999-12-31") {
+          this.orderDateMsg = "発注日が不正です。2016/01/01～9999/12/31の間で指定してください。";
           isErr = true;
         }
         if (this.shipDate == null || this.shipDate === "") {
           this.shipDateMsg = "出荷日が未入力です。";
           isErr = true;
+        } else if (isNaN(new Date(this.shipDate).getDate())) {
+          this.shipDateMsg = "出荷日が不正です。yyyy/mm/dd形式で入力してください。";
+          isErr = true;
+        } else if ("2016-01-01" > this.shipDate || this.shipDate > "9999-12-31") {
+          this.shipDateMsg = "出荷日が不正です。2016/01/01～9999/12/31の間で指定してください。";
+          isErr = true;
         }
         if (this.deliverDate == null || this.deliverDate === "") {
           this.deliverDateMsg = "納品日が未入力です。";
+          isErr = true;
+        } else if (isNaN(new Date(this.deliverDate).getDate())) {
+          this.deliverDateMsg = "納品日が不正です。yyyy/mm/dd形式で入力してください。";
+          isErr = true;
+        } else if ("2016-01-01" > this.deliverDate || this.deliverDate > "9999-12-31") {
+          this.deliverDateMsg = "納品日が不正です。2016/01/01～9999/12/31の間で指定してください。";
           isErr = true;
         }
         if (this.productCode == null || this.productCode === "") {
           this.productCodeMsg = "商品コードが未入力です。";
           isErr = true;
+        } else if (!this.productCode.match("^[0-9]*$")) {
+          this.productCodeMsg = "商品コードは半角数字で入力してください。";
+          isErr = true;
+        } else if (String(this.productCode).length != 7) {
+          this.productCodeMsg = "商品コードは7桁で入力してください。";
+          isErr = true;
+        } else {
+          // 商品コードから商品情報を取得
+          const response = await AjaxUtil.getProductsByProductCode(this.productCode);
+          const productData = JSON.parse(response.data.Items);
+          if (!productData) {
+            this.productCodeMsg = "入力された商品コードは存在しません。";
+            isErr = true;
+          }
         }
         if (this.amount == null || this.amount === "") {
           this.amountMsg = "数量が未入力です。";
           isErr = true;
+        } else if (!this.amount.match("^[0-9]*$")) {
+          this.amountMsg = "数量は半角数字で入力してください。";
+          isErr = true;
+        } else if (0 >= this.amount || this.amount >= 100) {
+          this.amountMsg = "数量が誤っています。1以上かつ2桁以内で入力してください。";
+          isErr = true;
         }
-
         if (isErr) {
           return;
         }
 
         // 引数格納
+        const userInfoId = UserUtil.currentUserInfo().id;
         const model = {
           clientNo: Number(this.clientNo),
           orderDate: this.orderDate,
@@ -487,12 +469,13 @@ export default {
           deliverDate: this.deliverDate,
           productCode: this.productCode,
           amount: this.amount,
-          updateId: UserUtil.currentUserInfo().id,
-          entryId: UserUtil.currentUserInfo().id,
+          updateId: userInfoId,
+          entryId: userInfoId,
         };
         await AjaxUtil.postOrders(model);
 
         window.alert("受注情報登録処理が完了しました。");
+        this.$router.push({ name: "ordersList" });
       } catch (e) {
         if (e.response.status === 400) {
           window.alert("一日の登録上限を超えています。");
@@ -503,7 +486,6 @@ export default {
       } finally {
         this.isLoading = false;
       }
-      this.$router.push({ name: "ordersList" });
     },
 
     /**
@@ -511,14 +493,12 @@ export default {
      */
     async inputClientNo() {
       // メッセージ初期化
-      this.errMsg = "";
       this.clientNoMsg = "";
       this.name = "";
       this.postCode = "";
       this.address1 = "";
       this.address2 = "";
       this.clientData = "";
-      this.databaseErr = false;
       this.isLoading = true;
       try {
         if (this.clientNo == null || this.clientNo === "") {
@@ -549,23 +529,27 @@ export default {
         this.address1 = this.clientData.address1;
         this.address2 = this.clientData.address2;
       } catch (e) {
-        this.errMsg = "顧客情報取得処理に失敗しました。";
+        window.alert("顧客情報取得処理に失敗しました。");
         console.log(e);
-        this.databaseErr = true;
       } finally {
         this.isLoading = false;
       }
     },
 
+    /**
+     * 商品コード入力時
+     */
     async inputProductCode() {
-      this.errMsg = "";
       this.productCodeMsg = "";
       this.productName = "";
       this.productData = "";
       this.price = "";
-      this.databaseErr = false;
+      this.totalPrice = "";
+      this.tax = "";
+      this.totalPricePlusTax = "";
       this.isLoading = true;
       try {
+        //入力チェック
         if (this.productCode == null || this.productCode === "") {
           return;
         }
@@ -591,49 +575,37 @@ export default {
         this.productName = this.productData.product_name;
         this.price = this.productData.price;
 
-        this.displayValue();
+        //金額表示処理呼び出し
+        this.displayTotalPricePlusTax();
       } catch (e) {
-        this.errMsg = "商品情報取得処理に失敗しました。";
+        window.alert("商品情報取得処理に失敗しました。");
         console.log(e);
-        this.databaseErr = true;
       } finally {
         this.isLoading = false;
       }
     },
 
-    displayValue() {
-      this.errMsg = "";
-      this.productCodeMsg = "";
+    //金額計算処理呼び出し及び、その結果の表示
+    displayTotalPricePlusTax() {
       this.amountMsg = "";
-      this.totalPriceWithoutTax = "";
+      this.totalPrice = "";
       this.tax = "";
-      this.pricePlusTax = "";
+      this.totalPricePlusTax = "";
       this.isLoading = true;
-      try {
-        if (this.amount == null || this.amount === "") {
-          return;
-        }
-        if (!this.amount.match("^[0-9]*$")) {
-          this.amountMsg = "数量は半角数字で入力してください。";
-          return;
-        }
-        if (0 >= this.amount || this.amount >= 100) {
-          this.amountMsg = "数量が誤っています。1以上かつ2桁以内で入力してください。";
-          return;
-        }
-        if (this.price == null || this.price === "") {
-          return;
-        }
 
-        this.totalPriceWithoutTax = this.amount * this.price;
-        const calcResult = OrdersUtil.calcTax(this.totalPriceWithoutTax);
-
+      if (this.amount == null || this.amount === "") {
+      } else if (!this.amount.match("^[0-9]*$")) {
+        this.amountMsg = "数量は半角数字で入力してください。";
+      } else if (0 >= this.amount || this.amount >= 100) {
+        this.amountMsg = "数量が誤っています。1以上かつ2桁以内で入力してください。";
+      } else if (this.price == null || this.price === "") {
+      } else {
+        this.totalPrice = this.amount * this.price;
+        const calcResult = OrdersUtil.calcTax(this.totalPrice);
         this.tax = calcResult.tax;
-        this.pricePlusTax = calcResult.pricePlusTax;
-      } catch (e) {
-      } finally {
-        this.isLoading = false;
+        this.totalPricePlusTax = calcResult.pricePlusTax;
       }
+      this.isLoading = false;
     },
     /**
      * 商品情報一覧押下時
@@ -643,7 +615,7 @@ export default {
       this.modalErrMsg = "";
 
       // 主キーを一時的に保存する変数を初期化
-      this.tmpRow = null;
+      this.selectedRow = null;
       // テーブル定義初期化
       this.items = [];
       this.fields = [];
@@ -675,7 +647,7 @@ export default {
       this.modalErrMsg = "";
 
       // 主キーを一時的に保存する変数を初期化
-      this.tmpRow = null;
+      this.selectedRow = null;
       // テーブル定義初期化
       this.items = [];
       this.fields = [];
@@ -715,8 +687,8 @@ export default {
     /*
      *一覧選択行の情報を保持する
      */
-    setReceiveRow(variousRow) {
-      this.tmpRow = variousRow;
+    setReceiveRow(selectedRow) {
+      this.selectedRow = selectedRow;
     },
   },
 };

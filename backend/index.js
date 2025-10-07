@@ -171,7 +171,7 @@ app.get("/api/orders", async function (req, res) {
   } catch (e) {
     // 異常レスポンス
     console.log("failed to get orders.", e);
-    res.status(500).send("server error occur");
+    res.sendStatus(500);
   }
 });
 
@@ -183,21 +183,33 @@ app.post("/api/orders", async function (req, res) {
 
   try {
     //伝票番号採番
-    let orderNo = "";
+    let serialNo = 1;
+    //最新の伝票番号取得
     const latestOrderNo = await OrdersLogic.getLatestOrderNo(db);
+    //伝票番号日付部分
+    const latestOrderDateNo = latestOrderNo.substring(0, 8);
+    //伝票番号連番部分
+    const latestOrderSerialNo = latestOrderNo.substring(8);
     const date = new Date();
     const month = date.getMonth() + 1;
-    const nowDate = date.getFullYear() + month.toString().padStart(2, "0") + date.getDate().toString().padStart(2, "0");
+    //本日の日付をyyMMdd形式にする
+    const formattedDate =
+      date.getFullYear() + month.toString().padStart(2, "0") + date.getDate().toString().padStart(2, "0");
 
-    if (String(latestOrderNo).substring(0, 8) == nowDate) {
-      if (String(latestOrderNo).substring(8) == "99") {
+    //最新の伝票番号の日付部分が本日の日付と一致した場合
+    if (latestOrderDateNo == formattedDate) {
+      //最新の伝票番号の連番が99の場合
+      if (latestOrderSerialNo == "99") {
+        //レスポンスステータスコード400を返す
         res.status(400).send("Exceeds daily registration limit");
+        return;
       } else {
-        orderNo = parseInt(latestOrderNo) + 1;
+        //連番を最新の伝票番号の連番+1に設定
+        serialNo = parseInt(latestOrderSerialNo) + 1;
       }
-    } else {
-      orderNo = nowDate + "01";
     }
+    //yyyyMMdd + 連番を伝票番号とする
+    const orderNo = formattedDate + serialNo.toString().padStart(2, "0");
 
     await OrdersLogic.create(
       db,
@@ -215,7 +227,7 @@ app.post("/api/orders", async function (req, res) {
   } catch (e) {
     // 異常レスポンス
     console.log("failed to add orders.", e);
-    res.status(500).send("server error occur");
+    res.sendStatus(500);
   }
 });
 
@@ -231,7 +243,7 @@ app.get("/api/products", async function (req, res) {
   } catch (e) {
     // 異常レスポンス
     console.log("failed to get product.", e);
-    res.status(500).send("server error occur");
+    res.sendStatus(500);
   }
 });
 
@@ -249,6 +261,6 @@ app.get("/api/products/:productCode", async function (req, res) {
   } catch (e) {
     //異常レスポンス
     console.log("failed to get product.", e);
-    res.status(500).send("server error occur");
+    res.sendStatus(500);
   }
 });
