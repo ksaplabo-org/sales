@@ -24,10 +24,10 @@ module.exports.getAll = async function (db) {
  * 受注情報を取得
  *
  * [検索条件]
- * ユーザーIDの完全一致
+ * 伝票番号の完全一致
  *
  * @param {*} db
- * @param {*} clientNo
+ * @param {*} orderNo
  * @returns {Promise<Object>}
  */
 module.exports.findByOrderNo = async function (db, orderNo) {
@@ -36,26 +36,27 @@ module.exports.findByOrderNo = async function (db, orderNo) {
   const clientsModel = ClientsRepository.getClientsModel(db);
   const productsModel = ProductsRepository.getProductsModel(db);
 
-  //受注情報に顧客・商品情報を結合する処理
+  // モデル間の関連付け(受注に顧客・商品情報を紐づけ)
   ordersModel.associate(clientsModel, productsModel);
 
   try {
-    const order = await ordersModel.findOne({
+    // 伝票番号と一致する受注情報を取得
+    return await ordersModel.findOne({
       where: {
         order_no: orderNo,
       },
-      // 顧客・商品情報から値を取得
+      // 内部結合処理
       include: [
         {
           model: clientsModel,
+          required: true,
         },
         {
           model: productsModel,
+          required: true,
         },
       ],
     });
-
-    return order;
   } catch (e) {
     throw e;
   }
