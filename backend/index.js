@@ -187,7 +187,7 @@ app.get("/api/orders/orderNo/:orderNo", async function (req, res) {
 /**
  * 月間受注情報取得API
  */
-app.get("/api/orders/yearMonth/:yearMonth", async function (req, res) {
+app.get("/api/orders/searchYearMonth/:yearMonth", async function (req, res) {
   try {
     const orders = await OrdersLogic.findByYearMonth(db, req.params.yearMonth);
     //正常レスポンス

@@ -73,7 +73,7 @@ export async function getOrdersByOrderNo(orderNo) {
 
 //月間の受注情報を取得する処理
 export async function getOrdersByYearMonth(yearMonth) {
-  const url = "/api/orders/yearMonth/" + yearMonth;
+  const url = "/api/orders/searchYearMonth/" + yearMonth;
   return await axios.get(url);
 }
 
