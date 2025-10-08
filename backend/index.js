@@ -171,7 +171,7 @@ app.get("/api/orders", async function (req, res) {
   } catch (e) {
     // 異常レスポンス
     console.log("failed to get orders.", e);
-    res.status(500).send("受注情報取得処理に失敗しました");
+    res.sendStatus(500);
   }
 });
 
@@ -189,7 +189,7 @@ app.get("/api/orders/:orderNo", async function (req, res) {
   } catch (e) {
     //異常レスポンス
     console.log("failed to get order.", e);
-    res.status(500).send("server error occur");
+    res.sendStatus(500);
   }
 });
 
@@ -214,7 +214,7 @@ app.put("/api/orders", async function (req, res) {
   } catch (e) {
     //異常レスポンス
     console.log("failed to edit order", e);
-    res.status(500).send("server error occur");
+    res.sendStatus(500);
   }
 });
 
@@ -231,7 +231,7 @@ app.get("/api/products", async function (req, res) {
   } catch (e) {
     // 異常レスポンス
     console.log("failed to get products.", e);
-    res.status(500).send("server error occur");
+    res.sendStatus(500);
   }
 });
 
@@ -249,6 +249,6 @@ app.get("/api/products/:productCode", async function (req, res) {
   } catch (e) {
     //異常レスポンス
     console.log("failed to get product.", e);
-    res.status(500).send("server error occur");
+    res.sendStatus(500);
   }
 });

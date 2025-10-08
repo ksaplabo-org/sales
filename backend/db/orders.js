@@ -6,7 +6,7 @@ module.exports.getOrdersModel = (db) => {
     {
       order_no: {
         field: "order_no",
-        type: sequelize.INTEGER,
+        type: sequelize.CHAR(10),
         primaryKey: true,
         allowNull: false,
       },

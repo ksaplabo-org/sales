@@ -142,7 +142,13 @@
             <div class="form-group row">
               <label for="amount" class="col-lg-6">数量<span class="text-danger">*</span></label>
               <div class="col-lg-6">
-                <input type="number" id="amount" class="form-control" v-model="amount" v-on:change="displayValue()" />
+                <input
+                  type="number"
+                  id="amount"
+                  class="form-control"
+                  v-model="amount"
+                  v-on:change="displayTotalPricePlusTax()"
+                />
                 <!-- 数量エラーメッセージ -->
                 <div class="text-danger small" v-show="amountErrMsg">
                   {{ amountErrMsg }}
@@ -159,7 +165,7 @@
             <!-- 金額 -->
             <div class="form-group row">
               <label class="col-lg-6">金額</label>
-              <p v-show="totalPriceWithoutTax" class="col-lg-6 h5">{{ totalPriceWithoutTax }}</p>
+              <p v-show="totalPrice" class="col-lg-6 h5">{{ totalPrice }}</p>
             </div>
 
             <!-- 消費税額 -->
@@ -171,7 +177,7 @@
             <!-- 合計金額 -->
             <div class="form-group row">
               <label class="col-lg-6">合計金額</label>
-              <p v-show="pricePlusTax" class="col-lg-6 h5">{{ pricePlusTax }}</p>
+              <p v-show="totalPricePlusTax" class="col-lg-6 h5">{{ totalPricePlusTax }}</p>
             </div>
           </div>
           <!-- 修正・キャンセルボタン -->
@@ -213,9 +219,9 @@
             <button
               type="button"
               class="btn btn-primary"
-              v-on:click="((productCode = tmpProductRow.product_code), inputProductCode())"
+              v-on:click="((productCode = selectedRow.product_code), inputProductCode())"
               data-dismiss="modal"
-              :disabled="tmpProductRow == null"
+              :disabled="selectedRow == null"
             >
               選択
             </button>
@@ -238,9 +244,6 @@
 </template>
 
 <script>
-// 共通設定
-import "../../utils/sb-admin";
-
 // util関連
 import * as UserUtil from "@/utils/UserUtil";
 import * as AjaxUtil from "@/utils/AjaxUtil";
@@ -261,7 +264,7 @@ export default {
       //テーブル用
       items: [],
       fields: [],
-      tmpProductRow: null,
+      selectedRow: null,
 
       //各項目初期値
       orderNo: "",
@@ -277,9 +280,9 @@ export default {
       productName: "",
       amount: null,
       price: null,
-      totalPriceWithoutTax: "",
+      totalPrice: "",
       tax: "",
-      pricePlusTax: "",
+      totalPricePlusTax: "",
       updateId: "",
 
       //エラーメッセージ
@@ -338,10 +341,10 @@ export default {
         this.price = orderData.product.price;
 
         // 金額計算処理
-        this.totalPriceWithoutTax = this.amount * this.price;
-        const calcResults = OrdersUtil.calcTax(this.totalPriceWithoutTax);
+        this.totalPrice = this.amount * this.price;
+        const calcResults = OrdersUtil.calcTax(this.totalPrice);
         this.tax = calcResults.tax;
-        this.pricePlusTax = calcResults.pricePlusTax;
+        this.totalPricePlusTax = calcResults.pricePlusTax;
       } catch (e) {
         this.errMsg = "受注情報取得処理に失敗しました。";
         console.log(e);
@@ -359,8 +362,7 @@ export default {
 
       try {
         // 商品コードの入力チェック
-        if 
-        (this.productCode == null || this.productCode === "") {
+        if (this.productCode == null || this.productCode === "") {
           return;
         }
         if (isNaN(this.productCode)) {
@@ -383,13 +385,13 @@ export default {
           this.price = productData.price;
 
           // 金額表示処理を呼び出す
-          this.displayValue();
+          this.displayTotalPricePlusTax();
         } else {
           // 存在しない場合、エラーメッセージを表示
           this.productCodeErrMsg = "入力された商品コードは存在しません。";
         }
       } catch (e) {
-        errMsg = "商品情報取得処理に失敗しました。";
+        window.alert("商品情報取得処理に失敗しました。");
         console.log(e);
       } finally {
         this.isLoading = false;
@@ -399,36 +401,37 @@ export default {
     /**
      * 金額情報表示処理
      */
-    displayValue() {
+    displayTotalPricePlusTax() {
       this.isLoading = true;
       this.amountErrMsg = "";
-      this.totalPriceWithoutTax = "";
+      this.totalPrice = "";
       this.tax = "";
-      this.pricePlusTax = "";
+      this.totalPricePlusTax = "";
 
       try {
         // 数量の入力チェック
         if (this.amount == null || this.amount === "") {
           return;
         }
-        if (this.amount <= 0 || 100 <= this.amount) {
-          this.amountErrMsg = "数量が誤っています。1以上かつ2桁以内で入力してください。";
-          return;
-        }
         if (isNaN(this.amount)) {
           this.amountErrMsg = "数量は半角数字で入力してください。";
           return;
         }
+        if (this.amount <= 0 || 100 <= this.amount) {
+          this.amountErrMsg = "数量が誤っています。1以上かつ2桁以内で入力してください。";
+          return;
+        }
+
         // 単価の入力チェック
         if (this.price == null) {
           return;
         }
 
         // 金額計算処理
-        this.totalPriceWithoutTax = this.amount * this.price;
-        const calcResults = OrdersUtil.calcTax(this.totalPriceWithoutTax);
+        this.totalPrice = this.amount * this.price;
+        const calcResults = OrdersUtil.calcTax(this.totalPrice);
         this.tax = calcResults.tax;
-        this.pricePlusTax = calcResults.pricePlusTax;
+        this.totalPricePlusTax = calcResults.pricePlusTax;
       } finally {
         this.isLoading = false;
       }
@@ -441,7 +444,7 @@ export default {
       this.isLoading = true;
 
       // 主キーを一時的に保持する変数を初期化
-      this.tmpProductRow = null;
+      this.selectedRow = null;
 
       // テーブル定義初期化
       this.items = [];
@@ -467,10 +470,10 @@ export default {
     },
 
     /*
-     *一覧のデータ選択時、行を一時的に格納する処理
+     *一覧での行選択時処理
      */
-    setReceiveRow(productRow) {
-      this.tmpProductRow = productRow;
+    setReceiveRow(selectedRow) {
+      this.selectedRow = selectedRow;
     },
 
     /**

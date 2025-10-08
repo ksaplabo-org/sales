@@ -1,5 +1,3 @@
-const sequelize = require("sequelize");
-const Op = sequelize.Op;
 const ProductsRepository = require("../db/products");
 
 /**
