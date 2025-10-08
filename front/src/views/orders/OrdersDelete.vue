@@ -94,7 +94,7 @@
             <!-- 金額 -->
             <div class="form-group row">
               <label for="calcResults" class="col-sm-6">金額</label>
-              <p v-show="calcResults" class="col-sm-6 h5">{{ totalPriceWithoutTax }}</p>
+              <p v-show="calcResults" class="col-sm-6 h5">{{ totalPrice }}</p>
             </div>
 
             <!-- 消費税額 -->
@@ -158,7 +158,7 @@ export default {
       productName: "",
       amount: null,
       price: null,
-      totalPriceWithoutTax: null,
+      totalPrice: null,
       calcResults: "",
 
       //エラーメッセージ
@@ -166,13 +166,12 @@ export default {
     };
   },
   async mounted() {
-    this.isLoading = true;
     try {
       //ログインチェック
       if (!UserUtil.isLogIn()) {
         this.$router.push({ name: "logIn", params: { flashMsg: "ログインしてください。" } });
       }
-
+      this.isLoading = true;
       // 画面更新処理を呼び出す
       await this.updateView();
     } catch (e) {
@@ -211,8 +210,8 @@ export default {
         this.price = orderData.product.price;
 
         //計算処理(戻り値は連想配列)を呼び出し、計算結果の項目にセット
-        this.totalPriceWithoutTax = this.price * this.amount;
-        this.calcResults = OrdersUtil.calcTax(this.totalPriceWithoutTax);
+        this.totalPrice = this.price * this.amount;
+        this.calcResults = OrdersUtil.calcTax(this.totalPrice);
       } catch (e) {
         this.errMsg = "受注情報取得処理に失敗しました。";
         console.log(e);
