@@ -296,12 +296,13 @@ export default {
     };
   },
   async mounted() {
-    this.isLoading = true;
     try {
       //ログインチェック
       if (!UserUtil.isLogIn()) {
         this.$router.push({ name: "logIn", params: { flashMsg: "ログインしてください。" } });
       }
+      
+      this.isLoading = true;
 
       // 画面更新処理を呼び出す
       await this.updateView();
