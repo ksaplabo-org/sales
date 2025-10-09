@@ -6,13 +6,14 @@
       <div class="container-fluid">
         <!-- タイトルとメニュー遷移ボタン -->
         <h1 class="border-bottom">受注情報一覧</h1>
-        <button class="btn btn-dark mb-4" v-on:click="onClickMenuButton()">メニュー画面へ</button>
-        <button class="btn btn-secondary ml-3 mb-4" :disabled="orderRow == null" v-on:click="deliveryNoteOutput()">
+        <button class="btn btn-dark " v-on:click="onClickMenuButton()">メニュー画面へ</button>
+        <button class="btn btn-secondary ml-3" :disabled="orderRow == null" v-on:click="deliveryNoteOutput()">
           納品書出力
         </button>
+        <p class="text-danger" v-show="errMsg">{{ errMsg }}</p>
 
         <!-- コンテンツStart -->
-        <div style="width: 90%; margin: auto">
+        <div class="mt-4" style="width: 90%; margin: auto">
           <Table :items="items" :fields="fields" :empDataMsg="'受注情報がありません'" @sendRow="setReceiveRow" />
           <!-- 登録・修正・削除ボタンStart -->
           <div class="form-group d-flex justify-content-center">
@@ -137,6 +138,7 @@ export default {
      */
     async deliveryNoteOutput() {
       try {
+        this.isLoading = true;
         // 選択された顧客情報を取得
         const tmporderData = await AjaxUtil.getOrdersByOrderNo(this.orderRow.order_no);
         const orderData = JSON.parse(tmporderData.data.Items);
@@ -167,10 +169,11 @@ export default {
         sheet.getCell("D16").value = orderData.amount;
         sheet.getCell("E16").value = orderData.product.price;
         //計算処理(戻り値は連想配列)を呼び出し、計算結果をExcelに書き込む
-        const calcResults = OrdersUtil.calcValue(orderData.amount, orderData.product.price);
-        sheet.getCell("E17").value = calcResults.value;
-        sheet.getCell("E18").value = calcResults.taxValue;
-        sheet.getCell("E19").value = calcResults.totalValue;
+        const totalPriceWithoutTax = orderData.product.price * orderData.amount;
+        const calcResults = OrdersUtil.calcTax(totalPriceWithoutTax);
+        sheet.getCell("E17").value = totalPriceWithoutTax;
+        sheet.getCell("E18").value = calcResults.tax;
+        sheet.getCell("E19").value = calcResults.pricePlusTax;
 
         // js上でのExcelデータをブラウザ上でのExcelデータに変換する処理
         // 加工したExcelファイルをバイナリデータに変換
@@ -193,6 +196,8 @@ export default {
         link.click();
       } catch {
         this.errMsg = "Excelファイル出力に失敗しました。";
+      } finally {
+        this.isLoading = false;
       }
     },
 
