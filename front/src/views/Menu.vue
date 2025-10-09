@@ -170,7 +170,7 @@ export default {
           if (confirmResult) {
             sheet.getCell("A8").value = "該当期間のデータが存在しません";
             sheet.getCell("B6").value = yearMonthForOutPut;
-            sheet.getCell("J1").value = nowForOutPut;
+            sheet.getCell("K1").value = nowForOutPut;
           } else {
             return;
           }
@@ -189,6 +189,7 @@ export default {
             },
             columns: [
               { name: "発注日" },
+              { name: "伝票番号" },
               { name: "顧客番号" },
               { name: "顧客名" },
               { name: "商品コード" },
@@ -205,6 +206,7 @@ export default {
               totalPricePlusTax += calcResults.pricePlusTax;
               return [
                 order.order_date.replace(/-/g, "/"),
+                order.order_no,
                 String(order.client.client_no).padStart(8, "0"),
                 order.client.name,
                 order.product.product_code,
@@ -219,8 +221,8 @@ export default {
           });
           // 各セルに値を代入
           sheet.getCell("B6").value = yearMonthForOutPut;
-          sheet.getCell("J1").value = nowForOutPut;
-          sheet.getCell("J6").value = totalPricePlusTax;
+          sheet.getCell("K1").value = nowForOutPut;
+          sheet.getCell("K6").value = totalPricePlusTax;
         }
 
         // 以下ファイル出力処理
