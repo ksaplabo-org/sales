@@ -1,10 +1,16 @@
 USE sales;
+
+#------------------------------------------
+# 各TBL 削除
+#------------------------------------------
 DROP TABLE IF EXISTS orders;
+DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS products;
+DROP TABLE IF EXISTS clients;
 
 #------------------------------------------
 # ユーザー情報TBL 作成
 #------------------------------------------
-DROP TABLE IF EXISTS users;
 CREATE TABLE IF NOT EXISTS users
 (
     id int NOT NULL PRIMARY KEY,
@@ -23,7 +29,6 @@ COLLATE utf8mb4_0900_ai_ci;
 #------------------------------------------
 # 商品情報TBL 作成
 #------------------------------------------
-DROP TABLE IF EXISTS products;
 CREATE TABLE IF NOT EXISTS products
 (
     product_code int NOT NULL PRIMARY KEY,
@@ -40,7 +45,6 @@ COLLATE utf8mb4_0900_ai_ci;
 #------------------------------------------
 # 顧客情報TBL 作成
 #------------------------------------------
-DROP TABLE IF EXISTS clients;
 CREATE TABLE IF NOT EXISTS clients
 (
     client_no int NOT NULL PRIMARY KEY,
@@ -60,7 +64,6 @@ COLLATE utf8mb4_0900_ai_ci;
 #------------------------------------------
 # 受注情報TBL 作成
 #------------------------------------------
-DROP TABLE IF EXISTS orders;
 CREATE TABLE IF NOT EXISTS orders
 (
     order_no char(10) NOT NULL PRIMARY KEY,
@@ -83,7 +86,6 @@ CREATE TABLE IF NOT EXISTS orders
 )
 CHARACTER SET utf8mb4
 COLLATE utf8mb4_0900_ai_ci;
-
 
 #------------------------------------------
 # ユーザーTBL 初期データ登録
