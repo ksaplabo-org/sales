@@ -178,3 +178,20 @@ app.get("/api/orders", async function (req, res) {
     res.status(500).send("server error occur");
   }
 });
+
+/**
+ * 受注情報取得API
+ */
+app.get("/api/orders/searchOrderNo/:orderNo", async function (req, res) {
+  try {
+    const order = await OrdersLogic.findByOrderNo(db, req.params.orderNo);
+    //正常レスポンス
+    res.send({
+      Items: JSON.stringify(order),
+    });
+  } catch (e) {
+    //異常レスポンス
+    console.log("failed to get order.", e);
+    res.sendStatus(500);
+  }
+});
