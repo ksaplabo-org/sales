@@ -11,7 +11,7 @@
 
           <!-- コンテンツStart -->
           <div class="mt-4" style="width: 90%; margin: auto">
-            <Table :items="items" :fields="fields" :empDataMsg="'商品情報がありません'" @sendRow="setReceiveRow" />
+            <Table :items="items" :fields="fields" :empDataMsg="'商品情報がありません'" @sendRow="setSelectedRow" />
 
             <!-- 登録・修正・削除ボタンStart -->
             <div class="form-group d-flex justify-content-center">
@@ -107,7 +107,7 @@ export default {
     /*
      *一覧選択行の情報を保持する
      */
-    setReceiveRow(selectedRow) {
+    setSelectedRow(selectedRow) {
       this.selectedRow = selectedRow;
     },
 
