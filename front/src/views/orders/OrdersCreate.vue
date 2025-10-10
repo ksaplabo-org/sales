@@ -228,7 +228,7 @@
             <div class="modal-body">
               <p class="text-danger" v-show="modalErrMsg">{{ modalErrMsg }}</p>
               <!-- インポートしたテーブル -->
-              <Table :items="items" :fields="fields" :empDataMsg="'商品情報がありません'" @sendRow="setReceiveRow" />
+              <Table :items="items" :fields="fields" :empDataMsg="'商品情報がありません'" @sendRow="setSelectedRow" />
             </div>
             <div class="modal-footer">
               <!-- 選択ボタン -->
@@ -269,7 +269,7 @@
             <div class="modal-body">
               <p class="text-danger" v-show="modalErrMsg">{{ modalErrMsg }}</p>
               <!-- インポートしたテーブル -->
-              <Table :items="items" :fields="fields" :empDataMsg="'顧客情報がありません'" @sendRow="setReceiveRow" />
+              <Table :items="items" :fields="fields" :empDataMsg="'顧客情報がありません'" @sendRow="setSelectedRow" />
             </div>
             <div class="modal-footer">
               <!-- 選択ボタン -->
@@ -585,7 +585,9 @@ export default {
       }
     },
 
-    //金額計算処理呼び出し及び、その結果の表示
+    /**
+     * 各金額の計算結果を表示
+     */
     displayTotalPricePlusTax() {
       this.amountMsg = "";
       this.totalPrice = "";
@@ -614,7 +616,7 @@ export default {
       this.isLoading = true;
       this.modalErrMsg = "";
 
-      // 主キーを一時的に保存する変数を初期化
+      // 選択行を初期化
       this.selectedRow = null;
       // テーブル定義初期化
       this.items = [];
@@ -646,7 +648,7 @@ export default {
       this.isLoading = true;
       this.modalErrMsg = "";
 
-      // 主キーを一時的に保存する変数を初期化
+      // 選択行を初期化
       this.selectedRow = null;
       // テーブル定義初期化
       this.items = [];
@@ -687,7 +689,7 @@ export default {
     /*
      *一覧選択行の情報を保持する
      */
-    setReceiveRow(selectedRow) {
+    setSelectedRow(selectedRow) {
       this.selectedRow = selectedRow;
     },
   },

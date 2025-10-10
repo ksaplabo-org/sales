@@ -186,35 +186,35 @@ app.get("/api/orders", async function (req, res) {
 app.post("/api/orders", async function (req, res) {
   const reqBody = req.body;
 
+  //伝票番号採番
   try {
-    //伝票番号採番
-    let serialNo = 1;
     //最新の伝票番号取得
     const latestOrderNo = await OrdersLogic.getLatestOrderNo(db);
     //伝票番号日付部分
-    const latestOrderDateNo = latestOrderNo.substring(0, 8);
+    const latestOrderNoDate = latestOrderNo.substring(0, 8);
     //伝票番号連番部分
-    const latestOrderSerialNo = latestOrderNo.substring(8);
+    const latestOrderSeqNo = latestOrderNo.substring(8);
     const date = new Date();
     const month = date.getMonth() + 1;
-    //本日の日付をyyMMdd形式にする
+    //本日の日付をyyyyMMdd形式にする
     const formattedDate =
       date.getFullYear() + month.toString().padStart(2, "0") + date.getDate().toString().padStart(2, "0");
 
+    //連番
+    let seqNo = 1;
     //最新の伝票番号の日付部分が本日の日付と一致した場合
-    if (latestOrderDateNo == formattedDate) {
+    if (latestOrderNoDate == formattedDate) {
       //最新の伝票番号の連番が99の場合
-      if (latestOrderSerialNo == "99") {
-        //レスポンスステータスコード400を返す
-        res.status(400).send("Exceeds daily registration limit");
+      if (latestOrderSeqNo == "99") {
+        //1日の最大登録数を超過するため400ステータスコードでレスポンスする
+        res.sendStatus(400);
         return;
-      } else {
-        //連番を最新の伝票番号の連番+1に設定
-        serialNo = parseInt(latestOrderSerialNo) + 1;
       }
+      //連番を最新の伝票番号の連番+1に設定
+      seqNo = parseInt(latestOrderSeqNo) + 1;
     }
     //yyyyMMdd + 連番を伝票番号とする
-    const orderNo = formattedDate + serialNo.toString().padStart(2, "0");
+    const orderNo = formattedDate + seqNo.toString().padStart(2, "0");
 
     await OrdersLogic.create(
       db,
