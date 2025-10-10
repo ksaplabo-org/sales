@@ -62,10 +62,12 @@ import Header from "@/components/Header.vue";
 import Loading from "@/components/Loading.vue";
 import Table from "@/components/Table.vue";
 
-import * as OrdersUtil from "@/utils/OrdersUtil";
-
+// exceljsインポート
 import { Workbook } from "exceljs";
+
+// util関連
 import * as AjaxUtil from "@/utils/AjaxUtil";
+import * as OrdersUtil from "@/utils/OrdersUtil";
 import * as UserUtil from "@/utils/UserUtil";
 import UserConst from "@/utils/const/UserConst";
 
