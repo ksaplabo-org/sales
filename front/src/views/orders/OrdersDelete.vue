@@ -11,8 +11,6 @@
           </button>
           <p class="text-danger" v-show="errMsg">{{ errMsg }}</p>
           <div class="col-sm-5 mx-auto center-block mt-4">
-            <div class="" />
-
             <!-- 伝票番号 -->
             <div class="form-group row">
               <label class="col-sm-6">伝票番号</label>
@@ -209,7 +207,7 @@ export default {
         this.amount = orderData.amount;
         this.price = orderData.product.price;
 
-        //計算処理(戻り値は連想配列)を呼び出し、計算結果の項目にセット
+        //計算結果を各項目にセット
         this.totalPrice = this.price * this.amount;
         this.calcResults = OrdersUtil.calcTax(this.totalPrice);
       } catch (e) {
@@ -218,6 +216,9 @@ export default {
       }
     },
 
+    /**
+     * 受注情報削除処理
+     */
     async ordersDelete() {
       // メッセージ初期化
       this.errMsg = "";
