@@ -147,6 +147,7 @@ export default {
           errFlag = true;
         }
 
+        // エラーが1つでもあった場合、処理を終了
         if (errFlag) {
           return;
         }

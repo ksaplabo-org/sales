@@ -400,6 +400,7 @@ app.post("/api/products", async function (req, res) {
       return;
     }
 
+    //  商品情報登録処理
     await ProductsLogic.create(
       db,
       productCodeToRegister,

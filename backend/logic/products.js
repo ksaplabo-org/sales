@@ -70,7 +70,7 @@ module.exports.getLatestProductCode = async function (db) {
   const productsModel = ProductsRepository.getProductsModel(db);
 
   try {
-    // 伝票番号の最大値を取得
+    // 商品コードの最大値を取得
     return await productsModel.max("product_code");
   } catch (e) {
     throw e;
