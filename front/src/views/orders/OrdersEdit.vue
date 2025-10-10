@@ -212,7 +212,7 @@
           <p class="text-danger ml-3" v-show="modalErrMsg">{{ modalErrMsg }}</p>
           <div class="modal-body">
             <!-- インポートしたテーブル -->
-            <Table :items="items" :fields="fields" :empDataMsg="'受注情報がありません'" @sendRow="setReceiveRow" />
+            <Table :items="items" :fields="fields" :empDataMsg="'受注情報がありません'" @sendRow="setSelectedRow" />
           </div>
           <div class="modal-footer">
             <!-- 選択ボタン -->
@@ -301,7 +301,7 @@ export default {
       if (!UserUtil.isLogIn()) {
         this.$router.push({ name: "logIn", params: { flashMsg: "ログインしてください。" } });
       }
-      
+
       this.isLoading = true;
 
       // 画面更新処理を呼び出す
@@ -343,9 +343,7 @@ export default {
 
         // 金額計算処理
         this.totalPrice = this.amount * this.price;
-        const calcResults = OrdersUtil.calcTax(this.totalPrice);
-        this.tax = calcResults.tax;
-        this.totalPricePlusTax = calcResults.pricePlusTax;
+        this.displayTotalPricePlusTax(this.totalPrice);
       } catch (e) {
         this.errMsg = "受注情報取得処理に失敗しました。";
         console.log(e);
@@ -360,6 +358,9 @@ export default {
       this.productCodeErrMsg = "";
       this.productName = "";
       this.price = "";
+      this.totalPrice = "";
+      this.tax = "";
+      this.totalPricePlusTax = "";
 
       try {
         // 商品コードの入力チェック
@@ -403,39 +404,34 @@ export default {
      * 金額情報表示処理
      */
     displayTotalPricePlusTax() {
-      this.isLoading = true;
       this.amountErrMsg = "";
       this.totalPrice = "";
       this.tax = "";
       this.totalPricePlusTax = "";
 
-      try {
-        // 数量の入力チェック
-        if (this.amount == null || this.amount === "") {
-          return;
-        }
-        if (isNaN(this.amount)) {
-          this.amountErrMsg = "数量は半角数字で入力してください。";
-          return;
-        }
-        if (this.amount <= 0 || 100 <= this.amount) {
-          this.amountErrMsg = "数量が誤っています。1以上かつ2桁以内で入力してください。";
-          return;
-        }
-
-        // 単価の入力チェック
-        if (this.price == null) {
-          return;
-        }
-
-        // 金額計算処理
-        this.totalPrice = this.amount * this.price;
-        const calcResults = OrdersUtil.calcTax(this.totalPrice);
-        this.tax = calcResults.tax;
-        this.totalPricePlusTax = calcResults.pricePlusTax;
-      } finally {
-        this.isLoading = false;
+      // 数量の入力チェック
+      if (this.amount == null || this.amount === "") {
+        return;
       }
+      if (isNaN(this.amount)) {
+        this.amountErrMsg = "数量は半角数字で入力してください。";
+        return;
+      }
+      if (this.amount <= 0 || 100 <= this.amount) {
+        this.amountErrMsg = "数量が誤っています。1以上かつ2桁以内で入力してください。";
+        return;
+      }
+
+      // 単価の入力チェック
+      if (this.price == null) {
+        return;
+      }
+
+      // 金額計算処理
+      this.totalPrice = this.amount * this.price;
+      const calcResults = OrdersUtil.calcTax(this.totalPrice);
+      this.tax = calcResults.tax;
+      this.totalPricePlusTax = calcResults.pricePlusTax;
     },
 
     /**
@@ -444,7 +440,7 @@ export default {
     async onClickProductsList() {
       this.isLoading = true;
 
-      // 主キーを一時的に保持する変数を初期化
+      // 選択行を初期化
       this.selectedRow = null;
 
       // テーブル定義初期化
@@ -473,7 +469,7 @@ export default {
     /*
      *一覧での行選択時処理
      */
-    setReceiveRow(selectedRow) {
+    setSelectedRow(selectedRow) {
       this.selectedRow = selectedRow;
     },
 
