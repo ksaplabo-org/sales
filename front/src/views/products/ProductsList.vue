@@ -80,10 +80,15 @@ export default {
       if (!UserUtil.isLogIn()) {
         this.$router.push({ name: "logIn", params: { flashMsg: "ログインしてください" } });
       }
+
+      this.isLoading = true;
+
       // 商品情報取得全件処理を呼び出す
       await this.getProducts();
     } catch (e) {
       this.errMsg = e.message;
+    } finally {
+      this.isLoading = false;
     }
   },
   methods: {
@@ -91,16 +96,12 @@ export default {
      *商品情報取得処理
      */
     async getProducts() {
-      this.isLoading = true;
-
       try {
         const response = await AjaxUtil.getProducts();
         this.items = JSON.parse(response.data.Items);
       } catch (e) {
         this.errMsg = "商品情報取得処理に失敗しました。";
         console.log(e);
-      } finally {
-        this.isLoading = false;
       }
     },
 
