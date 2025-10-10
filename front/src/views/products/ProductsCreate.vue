@@ -11,11 +11,7 @@
           </button>
           <p class="text-danger" v-show="errMsg">{{ errMsg }}</p>
 
-          <br />
-
-          <div class="col-lg-5 mx-auto center-block">
-            <div class="" />
-
+          <div class="col-lg-5 mx-auto center-block mt-4">
             <!-- 商品コード -->
             <div class="form-group row">
               <label class="col-lg-6">商品コード</label>
@@ -28,7 +24,12 @@
             <div class="form-group row">
               <label for="productName" class="col-lg-6">商品名<span class="text-danger">*</span></label>
               <div class="col-lg-6">
-                <input id="productName" placeholder="20字以内で入力してください" v-model="productName" class="form-control h5" />
+                <input
+                  id="productName"
+                  placeholder="20字以内で入力してください"
+                  v-model="productName"
+                  class="form-control h5"
+                />
                 <!-- 商品名エラーメッセージ -->
                 <div class="text-danger small" v-show="productNameErrMsg">
                   {{ productNameErrMsg }}
@@ -38,10 +39,16 @@
 
             <!-- 単価 -->
             <div class="form-group row">
-              <label for="price"  class="col-lg-6">単価<span class="text-danger">*</span></label>
+              <label for="price" class="col-lg-6">単価<span class="text-danger">*</span></label>
               <div class="col-lg-6">
-                <input id="price"  type="number" placeholder="8桁以内で入力してください" v-model="price" class="form-control h5" />
-                <!-- ユーザー名エラーメッセージ -->
+                <input
+                  id="price"
+                  type="number"
+                  placeholder="8桁以内で入力してください"
+                  v-model="price"
+                  class="form-control h5"
+                />
+                <!-- 単価エラーメッセージ -->
                 <div class="text-danger small" v-show="priceErrMsg">{{ priceErrMsg }}</div>
               </div>
             </div>
@@ -70,22 +77,19 @@
 </template>
 
 <script>
-// 共通設定
-import "../../utils/sb-admin";
+// コンポーネント関連
+import Header from "@/components/Header.vue";
+import Loading from "@/components/Loading.vue";
+import CancelButton from "@/components/CancelButton.vue";
 
 // util関連
 import * as UserUtil from "@/utils/UserUtil";
 import * as AjaxUtil from "@/utils/AjaxUtil";
-
-// コンポーネント関連
-import Header from "../../components/Header.vue";
-import Loading from "../../components/Loading.vue";
-import CancelButton from "../../components/CancelButton.vue";
-
 export default {
   components: { Header, Loading, CancelButton },
   data() {
     return {
+      // ローディング設定
       isLoading: false,
 
       //各項目初期値
@@ -99,7 +103,6 @@ export default {
     };
   },
   async mounted() {
-    this.isLoading = true;
     try {
       //ログインチェック
       if (!UserUtil.isLogIn()) {
@@ -107,8 +110,6 @@ export default {
       }
     } catch (e) {
       this.errMsg = e.message;
-    } finally {
-      this.isLoading = false;
     }
   },
   methods: {
