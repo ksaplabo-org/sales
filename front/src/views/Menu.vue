@@ -97,12 +97,12 @@
 </template>
 
 <script>
+import Header from "@/components/Header.vue";
+import Loading from "@/components/Loading.vue";
+
 import * as UserUtil from "@/utils/UserUtil";
 import UserConst from "@/utils/const/UserConst";
 
-// 共通
-import Header from "../components/Header.vue";
-import Loading from "../components/Loading.vue";
 export default {
   components: { Header, Loading },
   data() {
