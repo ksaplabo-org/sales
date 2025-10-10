@@ -351,7 +351,6 @@ app.post("/api/users", async function (req, res) {
   }
 });
 
-
 /**
  * ユーザー情報取得API
  */
@@ -369,7 +368,6 @@ app.get("/api/users/:id", async function (req, res) {
     res.status(500).send("server error occur");
   }
 });
-
 
 /**
  * ユーザー情報削除API
@@ -392,24 +390,29 @@ app.delete("/api/users/:id", async function (req, res) {
 app.post("/api/products", async function (req, res) {
   // リクエストボディ取得
   const reqBody = req.body;
-
   try {
-    const createResult = await ProductsLogic.create(
+    // 登録用に最新の商品コードに+1をした値を取得
+    const productCodeToRegister = (await ProductsLogic.getLatestProductCode(db)) + 1;
+
+    // 上限(7桁)を超えていないかのチェック
+    if (String(productCodeToRegister).length > 7) {
+      res.sendStatus(400);
+      return;
+    }
+
+    await ProductsLogic.create(
       db,
+      productCodeToRegister,
       reqBody.productName,
       reqBody.price,
       reqBody.updateId,
       reqBody.entryId
     );
-    // 商品コードが上限を超えているか判定
-    if (createResult === 400) {
-      res.status(400).send();
-    } else {
-      res.send();
-    }
+
+    res.send();
   } catch (e) {
     // 異常レスポンス
-    console.log("failed to add clients.", e);
-    res.status(500).send("server error occur");
+    console.log("failed to add product.", e);
+    res.sendStatus(500);
   }
 });

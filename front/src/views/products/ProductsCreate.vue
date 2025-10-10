@@ -113,6 +113,9 @@ export default {
     }
   },
   methods: {
+    /*
+     *商品情報登録処理
+     */
     async productsCreate() {
       this.isLoading = true;
 
@@ -152,22 +155,19 @@ export default {
           productName: this.productName,
           price: this.price,
         };
-        // 登録
+        // 登録処理
         await AjaxUtil.postProducts(productModel);
         alert("商品情報登録処理が完了しました。");
         // 一覧画面に遷移する
         this.$router.push({ name: "productsList" });
       } catch (e) {
         if (e.response.status === 400) {
-          this.msg = "";
           alert("商品情報の登録上限を超えています。");
-          console.log(e);
           this.$router.push({ name: "productsList" });
         } else {
-          this.msg = "";
           alert("商品情報登録に失敗しました。");
-          console.log(e);
         }
+        console.log(e);
       } finally {
         this.isLoading = false;
       }

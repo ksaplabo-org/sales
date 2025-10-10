@@ -1,5 +1,4 @@
-const sequelize = require("sequelize");
-const Op = sequelize.Op;
+const {fn} = require("sequelize");
 const ProductsRepository = require("../db/products");
 
 /**
@@ -45,26 +44,34 @@ module.exports.findByProductCode = async function (db, productCode) {
 
 /**
  * 商品情報を登録
- *
  */
-module.exports.create = async function (db, productName, price, updateId, entryId) {
+module.exports.create = async function (db, productCode, productName, price, updateId, entryId) {
   const productsModel = ProductsRepository.getProductsModel(db);
 
   try {
-    const productCode = (await productsModel.max("product_code")) + 1;
-    if (String(productCode).length > 7) {
-      const status = 400;
-      return status;
-    }
     return await productsModel.create({
       product_code: productCode,
       product_name: productName,
       price: price,
       update_id: updateId,
-      update_date: sequelize.fn("now"),
+      update_date: fn("now"),
       entry_id: entryId,
-      entry_date: sequelize.fn("now"),
+      entry_date: fn("now"),
     });
+  } catch (e) {
+    throw e;
+  }
+};
+
+/**
+ * 商品コードの最新の値を検索
+ */
+module.exports.getLatestProductCode = async function (db) {
+  const productsModel = ProductsRepository.getProductsModel(db);
+
+  try {
+    // 伝票番号の最大値を取得
+    return await productsModel.max("product_code");
   } catch (e) {
     throw e;
   }
