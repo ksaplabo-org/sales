@@ -355,12 +355,12 @@ export default {
      */
     async inputProductCode() {
       this.isLoading = true;
+
+      // 初期化処理
       this.productCodeErrMsg = "";
       this.productName = "";
       this.price = "";
-      this.totalPrice = "";
-      this.tax = "";
-      this.totalPricePlusTax = "";
+      this.displayTotalPricePlusTax();
 
       try {
         // 商品コードの入力チェック
@@ -404,6 +404,7 @@ export default {
      * 金額情報表示処理
      */
     displayTotalPricePlusTax() {
+      // 初期化処理
       this.amountErrMsg = "";
       this.totalPrice = "";
       this.tax = "";
