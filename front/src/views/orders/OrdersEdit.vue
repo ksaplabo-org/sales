@@ -360,7 +360,6 @@ export default {
       this.productCodeErrMsg = "";
       this.productName = "";
       this.price = "";
-      this.displayTotalPricePlusTax();
 
       try {
         // 商品コードの入力チェック
@@ -385,9 +384,6 @@ export default {
           this.productCode = productData.product_code;
           this.productName = productData.product_name;
           this.price = productData.price;
-
-          // 金額表示処理を呼び出す
-          this.displayTotalPricePlusTax();
         } else {
           // 存在しない場合、エラーメッセージを表示
           this.productCodeErrMsg = "入力された商品コードは存在しません。";
@@ -396,6 +392,7 @@ export default {
         window.alert("商品情報取得処理に失敗しました。");
         console.log(e);
       } finally {
+        this.displayTotalPricePlusTax();
         this.isLoading = false;
       }
     },
