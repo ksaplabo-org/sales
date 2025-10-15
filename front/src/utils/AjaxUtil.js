@@ -60,3 +60,20 @@ export async function getOrders() {
   const url = "/api/orders";
   return await axios.get(url);
 }
+
+// 商品情報を商品コードで検索
+export async function getProductsByProductCode(productCode) {
+  const url = "/api/products/" + productCode;
+  return await axios.get(url);
+}
+
+//商品情報修正
+export async function putProducts(productsModel) {
+  const url = "/api/products";
+  return await axios.put(url, {
+    productCode: productsModel.productCode,
+    productName: productsModel.productName,
+    price: productsModel.price,
+    updateId: UserUtil.currentUserInfo().id,
+  });
+}
