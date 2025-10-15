@@ -2,6 +2,7 @@
 const UsersLogic = require("./logic/users");
 const ClientsLogic = require("./logic/clients");
 const OrdersLogic = require("./logic/orders");
+const ProductsLogic = require("./logic/products");
 
 // DB Connection define
 const DbUtil = require("./db/utility");
@@ -175,7 +176,97 @@ app.get("/api/orders", async function (req, res) {
   } catch (e) {
     // 異常レスポンス
     console.log("failed to get orders.", e);
-    res.status(500).send("server error occur");
+    res.sendStatus(500);
+  }
+});
+
+/**
+ * 受注情報登録API
+ */
+app.post("/api/orders", async function (req, res) {
+  const reqBody = req.body;
+
+  //伝票番号採番
+  try {
+    //最新の伝票番号取得
+    const latestOrderNo = await OrdersLogic.getLatestOrderNo(db);
+    //伝票番号日付部分
+    const latestOrderNoDate = latestOrderNo.substring(0, 8);
+    //伝票番号連番部分
+    const latestOrderSeqNo = latestOrderNo.substring(8);
+    const date = new Date();
+    const month = date.getMonth() + 1;
+    //本日の日付をyyyyMMdd形式にする
+    const formattedDate =
+      date.getFullYear() + month.toString().padStart(2, "0") + date.getDate().toString().padStart(2, "0");
+
+    //連番
+    let seqNo = 1;
+    //最新の伝票番号の日付部分が本日の日付と一致した場合
+    if (latestOrderNoDate == formattedDate) {
+      //最新の伝票番号の連番が99の場合
+      if (latestOrderSeqNo == "99") {
+        //1日の最大登録数を超過するため400ステータスコードでレスポンスする
+        res.sendStatus(400);
+        return;
+      }
+      //連番を最新の伝票番号の連番+1に設定
+      seqNo = parseInt(latestOrderSeqNo) + 1;
+    }
+    //yyyyMMdd + 連番を伝票番号とする
+    const orderNo = formattedDate + seqNo.toString().padStart(2, "0");
+
+    await OrdersLogic.create(
+      db,
+      orderNo,
+      reqBody.clientNo,
+      reqBody.orderDate,
+      reqBody.shipDate,
+      reqBody.deliverDate,
+      reqBody.productCode,
+      reqBody.amount,
+      reqBody.updateId,
+      reqBody.entryId
+    );
+    res.send();
+  } catch (e) {
+    // 異常レスポンス
+    console.log("failed to add orders.", e);
+    res.sendStatus(500);
+  }
+});
+
+/**
+ * 商品情報全件取得API
+ */
+app.get("/api/products", async function (req, res) {
+  try {
+    const products = await ProductsLogic.getAll(db);
+    res.send({
+      Items: JSON.stringify(products),
+    });
+  } catch (e) {
+    // 異常レスポンス
+    console.log("failed to get product.", e);
+    res.sendStatus(500);
+  }
+});
+
+/**
+ * 商品情報取得API
+ */
+app.get("/api/products/:productCode", async function (req, res) {
+  try {
+    const product = await ProductsLogic.findByProductCode(db, req.params.productCode);
+
+    //正常レスポンスProductsLogic
+    res.send({
+      Items: JSON.stringify(product),
+    });
+  } catch (e) {
+    //異常レスポンス
+    console.log("failed to get product.", e);
+    res.sendStatus(500);
   }
 });
 
