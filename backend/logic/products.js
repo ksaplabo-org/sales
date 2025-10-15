@@ -1,5 +1,5 @@
 const ProductsRepository = require("../db/products");
-
+const sequelize = require("sequelize");
 /**
  * 商品情報の全件検索処理
  *

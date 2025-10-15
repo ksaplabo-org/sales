@@ -11,10 +11,7 @@
           </button>
           <p class="text-danger" v-show="errMsg">{{ errMsg }}</p>
 
-          <br />
-
-          <div class="col-lg-5 mx-auto center-block">
-            <div class="" />
+          <div class="col-lg-5 mx-auto center-block mt-4">
             <div class="form-group row">
               <label for="productCode" class="col-lg-6">商品コード</label>
               <div class="col-lg-6">
@@ -74,17 +71,17 @@
 </template>
 
 <script>
-// util関連
-import * as UserUtil from "@/utils/UserUtil";
-import * as AjaxUtil from "@/utils/AjaxUtil";
-
 // コンポーネント関連
-import Header from "../../components/Header.vue";
-import Loading from "../../components/Loading.vue";
-import CancelButton from "../../components/CancelButton.vue";
+import CancelButton from "@/components/CancelButton.vue";
+import Header from "@/components/Header.vue";
+import Loading from "@/components/Loading.vue";
+
+// util関連
+import * as AjaxUtil from "@/utils/AjaxUtil";
+import * as UserUtil from "@/utils/UserUtil";
 
 export default {
-  components: { Header, Loading, CancelButton },
+  components: { CancelButton, Header, Loading },
   data() {
     return {
       isLoading: false,
@@ -94,8 +91,6 @@ export default {
       productCode: "",
       productName: "",
       price: "",
-
-      logInId: "",
 
       //エラーメッセージ
       errMsg: "",
@@ -159,24 +154,26 @@ export default {
 
       try {
         // 入力チェック
-        if (this.productName == null || this.productName === "") {
-          this.productNameErrMsg = "商品名が未入力です。";
-          isErr = true;
-        }
         if (this.price == null || this.price === "") {
           this.priceErrMsg = "単価が未入力です。";
           isErr = true;
         }
-        if (this.productName.length > 20) {
-          this.productNameErrMsg = "商品名は20字以内で入力してください。";
+        if (isNaN(this.price)) {
+          this.priceErrMsg = "単価は半角数字で入力してください。";
           isErr = true;
         }
-        if (this.price.length < 0 || this.price.length > 8) {
+
+        if (!isErr && (this.price < 0 || this.price.length > 8)) {
           this.priceErrMsg = "単価は0以上8桁以内で入力してください。";
           isErr = true;
         }
-        if (isNaN(this.price)) {
-          this.priceErrMsg = "単価は半角数字で入力してください。";
+
+        if (this.productName == null || this.productName === "") {
+          this.productNameErrMsg = "商品名が未入力です。";
+          isErr = true;
+        }
+        if (this.productName.length > 20) {
+          this.productNameErrMsg = "商品名は20字以内で入力してください。";
           isErr = true;
         }
 

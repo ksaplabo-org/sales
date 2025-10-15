@@ -259,7 +259,7 @@ app.get("/api/products/:productCode", async function (req, res) {
   try {
     const product = await ProductsLogic.findByProductCode(db, req.params.productCode);
 
-    //正常レスポンスProductsLogic
+    //正常レスポンス
     res.send({
       Items: JSON.stringify(product),
     });
@@ -270,23 +270,6 @@ app.get("/api/products/:productCode", async function (req, res) {
   }
 });
 
-/**
- * 商品情報取得API
- */
-app.get("/api/products/:productCode", async function (req, res) {
-  try {
-    const product = await ProductsLogic.findByProductCode(db, req.params.productCode);
-
-    //正常レスポンスProductsLogic
-    res.send({
-      Items: JSON.stringify(product),
-    });
-  } catch (e) {
-    //異常レスポンス
-    console.log("failed to get product.", e);
-    res.status(500).send("server error occur");
-  }
-});
 
 /**
  * 商品情報修正API
@@ -300,6 +283,6 @@ app.put("/api/products", async function (req, res) {
   } catch (e) {
     //異常レスポンス
     console.log("failed to edit product", e);
-    res.status(500).send("server error occur");
+    res.sendStatus(500);
   }
 });
