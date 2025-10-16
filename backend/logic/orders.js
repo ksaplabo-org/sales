@@ -146,48 +146,6 @@ module.exports.getLatestOrderNo = async function (db) {
 };
 
 /**
- * 受注情報を取得
- *
- * [検索条件]
- * 伝票番号の完全一致
- *
- * @param {*} db
- * @param {*} orderNo
- * @returns {Promise<Object>}
- */
-module.exports.findByOrderNo = async function (db, orderNo) {
-  //受注・顧客・商品情報の定義を取得
-  const ordersModel = OrdersRepository.getOrdersModel(db);
-  const clientsModel = ClientsRepository.getClientsModel(db);
-  const productsModel = ProductsRepository.getProductsModel(db);
-
-  // モデル間の関連付け(受注に顧客・商品情報を紐づけ)
-  ordersModel.associate(clientsModel, productsModel);
-
-  try {
-    // 伝票番号と一致する受注情報を取得
-    return await ordersModel.findOne({
-      where: {
-        order_no: orderNo,
-      },
-      // 内部結合処理
-      include: [
-        {
-          model: clientsModel,
-          required: true,
-        },
-        {
-          model: productsModel,
-          required: true,
-        },
-      ],
-    });
-  } catch (e) {
-    throw e;
-  }
-};
-
-/**
  * 受注情報削除
  */
 module.exports.delete = async function (db, orderNo) {

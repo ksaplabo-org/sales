@@ -315,24 +315,6 @@ app.get("/api/products/:productCode", async function (req, res) {
 });
 
 /**
- * 受注情報取得API
- */
-app.get("/api/orders/:orderNo", async function (req, res) {
-  try {
-    const order = await OrdersLogic.findByOrderNo(db, req.params.orderNo);
-
-    //正常レスポンス
-    res.send({
-      Items: JSON.stringify(order),
-    });
-  } catch (e) {
-    //異常レスポンス
-    console.log("failed to get order.", e);
-    res.sendStatus(500);
-  }
-});
-
-/**
  * 受注情報削除API
  */
 app.delete("/api/orders/:orderNo", async function (req, res) {
