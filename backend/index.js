@@ -313,3 +313,18 @@ app.get("/api/products/:productCode", async function (req, res) {
     res.sendStatus(500);
   }
 });
+
+/**
+ * 受注情報削除API
+ */
+app.delete("/api/orders/:orderNo", async function (req, res) {
+  try {
+    await OrdersLogic.delete(db, req.params.orderNo);
+    //正常レスポンス
+    res.send();
+  } catch (e) {
+    //異常レスポンス
+    console.log("failed to delete order", e);
+    res.sendStatus(500);
+  }
+});

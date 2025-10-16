@@ -144,3 +144,19 @@ module.exports.getLatestOrderNo = async function (db) {
     throw e;
   }
 };
+
+/**
+ * 受注情報削除
+ */
+module.exports.delete = async function (db, orderNo) {
+  const ordersModel = OrdersRepository.getOrdersModel(db);
+  try {
+    await ordersModel.destroy({
+      where: {
+        order_no: orderNo,
+      },
+    });
+  } catch (e) {
+    throw e;
+  }
+};
