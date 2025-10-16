@@ -593,22 +593,32 @@ export default {
       this.totalPrice = "";
       this.tax = "";
       this.totalPricePlusTax = "";
-      this.isLoading = true;
 
+      //数量のチェック
       if (this.amount == null || this.amount === "") {
-      } else if (!this.amount.match("^[0-9]*$")) {
-        this.amountMsg = "数量は半角数字で入力してください。";
-      } else if (0 >= this.amount || this.amount >= 100) {
-        this.amountMsg = "数量が誤っています。1以上かつ2桁以内で入力してください。";
-      } else if (this.price == null || this.price === "") {
-      } else {
-        this.totalPrice = this.amount * this.price;
-        const calcResult = OrdersUtil.calcTax(this.totalPrice);
-        this.tax = calcResult.tax;
-        this.totalPricePlusTax = calcResult.pricePlusTax;
+        return;
       }
-      this.isLoading = false;
+      if (!this.amount.match("^[0-9]*$")) {
+        this.amountMsg = "数量は半角数字で入力してください。";
+        return;
+      }
+      if (0 >= this.amount || this.amount >= 100) {
+        this.amountMsg = "数量が誤っています。1以上かつ2桁以内で入力してください。";
+        return;
+      }
+
+      //単価のチェック
+      if (this.price == null || this.price === "") {
+        return;
+      }
+
+      //金額計算
+      this.totalPrice = this.amount * this.price;
+      const calcResult = OrdersUtil.calcTax(this.totalPrice);
+      this.tax = calcResult.tax;
+      this.totalPricePlusTax = calcResult.pricePlusTax;
     },
+
     /**
      * 商品情報一覧押下時
      */
