@@ -56,6 +56,26 @@ export async function getClientsByClientNo(clientNo) {
   return await axios.get(url);
 }
 
+//受注情報を伝票番号を元に取得
+export async function getOrdersByOrderNo(orderNo) {
+  const url = "/api/orders/" + orderNo;
+  return await axios.get(url);
+}
+
+//受注情報更新
+export async function putOrders(ordersModel) {
+  const url = "/api/orders";
+  return await axios.put(url, {
+    orderNo: ordersModel.orderNo,
+    orderDate: ordersModel.orderDate,
+    shipDate: ordersModel.shipDate,
+    deliverDate: ordersModel.deliverDate,
+    productCode: ordersModel.productCode,
+    amount: ordersModel.amount,
+    updateId: ordersModel.updateId,
+  });
+}
+
 export async function getOrders() {
   const url = "/api/orders";
   return await axios.get(url);
@@ -85,12 +105,6 @@ export async function getProducts() {
 // 商品情報を商品コードで検索
 export async function getProductsByProductCode(productCode) {
   const url = "/api/products/" + productCode;
-  return await axios.get(url);
-}
-
-//受注情報を伝票番号で検索
-export async function getOrdersByOrderNo(orderNo) {
-  const url = "/api/orders/" + orderNo;
   return await axios.get(url);
 }
 
