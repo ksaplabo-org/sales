@@ -2,6 +2,7 @@
 const UsersLogic = require("./logic/users");
 const ClientsLogic = require("./logic/clients");
 const OrdersLogic = require("./logic/orders");
+const ProductsLogic = require("./logic/products")
 
 // DB Connection define
 const DbUtil = require("./db/utility");

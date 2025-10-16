@@ -9,37 +9,32 @@
           <button class="btn btn-dark" v-on:click="() => $router.push({ name: 'productsList' })">
             商品情報一覧画面へ
           </button>
-          <br />
           <p class="text-danger" v-show="errMsg">{{ errMsg }}</p>
 
-          <br />
-
           <form @submit.stop.prevent="productsDelete" method="post">
-            <div class="col-sm-5 mx-auto center-block">
-              <div class="" />
-
+            <div class="col-lg-5 mx-auto center-block mt-4">
               <!-- 商品コード -->
               <div class="form-group row">
-                <label class="col-sm-6">商品コード</label>
-                <p v-show="productCode" class="col-sm-6 h5">{{ productCode }}</p>
+                <label class="col-lg-6">商品コード</label>
+                <p v-show="productCode" class="col-lg-6 h5">{{ productCode }}</p>
               </div>
 
               <!-- 商品名 -->
               <div class="form-group row">
-                <label class="col-sm-6">商品名</label>
-                <p v-show="productName" class="col-sm-6 h5">{{ productName }}</p>
+                <label class="col-lg-6">商品名</label>
+                <p v-show="productName" class="col-lg-6 h5">{{ productName }}</p>
               </div>
 
               <!-- 単価 -->
               <div class="form-group row">
-                <label class="col-sm-6">単価</label>
-                <p v-show="price" class="col-sm-6 h5">{{ price }}</p>
+                <label class="col-lg-6">単価</label>
+                <p v-show="price" class="col-lg-6 h5">{{ price }}</p>
               </div>
             </div>
 
             <!-- 削除ボタン -->
             <div class="form-group justify-content-center row">
-              <div class="col-sm-6">
+              <div class="mb-3 col-lg-6">
                 <input class="btn btn-danger btn-sm btn-block" type="submit" value="削除" />
               </div>
             </div>
@@ -59,25 +54,23 @@
 </template>
 
 <script>
+// 共通
+import Header from "@/components/Header.vue";
+import Loading from "@/components/Loading.vue";
+
 import * as AjaxUtil from "@/utils/AjaxUtil";
-import UserConst from "@/utils/const/UserConst";
 import * as UserUtil from "@/utils/UserUtil";
 
-// 共通
-import Header from "../../components/Header.vue";
-import Loading from "../../components/Loading.vue";
-
 export default {
-  props: ["flashMsg", "flashErrMsg"],
   components: { Header, Loading },
   data() {
     return {
       //各項目初期値
       errMsg: "",
-      isLoading: false,
       productCode: "",
       productName: "",
       price: "",
+      isLoading: false,
     };
   },
   async mounted() {
@@ -86,15 +79,7 @@ export default {
       //ログインチェック
       if (!UserUtil.isLogIn()) {
         this.$router.push({ name: "logIn", params: { flashMsg: "ログインしてください。" } });
-
-        //権限チェック(管理者以外拒否)
-      } else if (this.userInfo.userRole != UserConst.UserRole.admin) {
-        this.$router.push({ name: "logIn", params: { flashMsg: "権限がありません。" } });
       }
-
-      // メッセージ設定
-      this.msg = this.flashMsg;
-      this.errMsg = this.flashErrMsg;
 
       //画面更新処理
       await this.updateView();
@@ -149,11 +134,10 @@ export default {
       } catch (e) {
         if (e.response.status === 409) {
           window.alert("受注情報に登録されている商品のため、削除できません。");
-          console.log(e);
         } else {
           window.alert("商品情報削除処理に失敗しました。");
-          console.log(e);
         }
+        console.log(e);
       } finally {
         this.isLoading = false;
       }
