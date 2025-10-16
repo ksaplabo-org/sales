@@ -226,7 +226,7 @@ export default {
       try {
         //削除確認用ポップアップを表示
         const confirmResult = window.confirm("本当に削除しますか?");
-        //Ok(true)の場合実行
+        //OK(true)の場合実行
         if (confirmResult) {
           await AjaxUtil.deleteOrders(this.orderNo);
           window.alert("受注情報削除処理が完了しました。");
