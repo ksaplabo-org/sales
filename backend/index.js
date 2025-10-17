@@ -237,24 +237,6 @@ app.post("/api/orders", async function (req, res) {
 });
 
 /**
- * 受注情報取得API(伝票番号と一致)
- */
-app.get("/api/orders/:orderNo", async function (req, res) {
-  try {
-    const order = await OrdersLogic.findByOrderNo(db, req.params.orderNo);
-
-    //正常レスポンス
-    res.send({
-      Items: JSON.stringify(order),
-    });
-  } catch (e) {
-    //異常レスポンス
-    console.log("failed to get order.", e);
-    res.sendStatus(500);
-  }
-});
-
-/**
  * 受注情報修正API
  */
 app.put("/api/orders", async function (req, res) {
@@ -342,6 +324,23 @@ app.get("/api/orders/searchOrderNo/:orderNo", async function (req, res) {
   } catch (e) {
     //異常レスポンス
     console.log("failed to get order.", e);
+    res.sendStatus(500);
+  }
+});
+
+/**
+ * 月間受注情報取得API
+ */
+app.get("/api/orders/searchYearMonth/:yearMonth", async function (req, res) {
+  try {
+    const orders = await OrdersLogic.findByYearMonth(db, req.params.yearMonth);
+    //正常レスポンス
+    res.send({
+      Items: JSON.stringify(orders),
+    });
+  } catch (e) {
+    //異常レスポンス
+    console.log("failed to get orders.", e);
     res.sendStatus(500);
   }
 });

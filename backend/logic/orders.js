@@ -1,3 +1,4 @@
+const { Op } = require("sequelize");
 const sequelize = require("sequelize");
 const OrdersRepository = require("../db/orders");
 const ClientsRepository = require("../db/clients");
@@ -161,10 +162,11 @@ module.exports.delete = async function (db, orderNo) {
   }
 };
 
+
 /**
- * 受注情報を取得
+ * 月間の受注情報を取得
  */
-module.exports.findByOrderNo = async function (db, orderNo) {
+module.exports.findByYearMonth = async function (db, yearMonth) {
   //受注・顧客・商品情報の定義を取得
   const ordersModel = OrdersRepository.getOrdersModel(db);
   const clientsModel = ClientsRepository.getClientsModel(db);
@@ -173,10 +175,19 @@ module.exports.findByOrderNo = async function (db, orderNo) {
   // モデル間の関連付け(受注に顧客・商品情報を紐づけ)
   ordersModel.associate(clientsModel, productsModel);
 
+  // 取得する範囲の両端を変数にセット
+  const startDate = new Date(yearMonth);
+  const endDate = new Date(yearMonth);
+  endDate.setMonth(endDate.getMonth() + 1); // 取得した年月の翌月に設定(12+1月は来年の1月に繰り越し)
+
   try {
-    return await ordersModel.findOne({
+    return await ordersModel.findAll({
       where: {
-        order_no: orderNo,
+        order_date: {
+          // yyyy年mm月01日以上、yyyy年mm+1月01日未満の範囲
+          [Op.gte]: startDate,
+          [Op.lt]: endDate,
+        },
       },
       // 内部結合処理
       include: [
@@ -194,3 +205,4 @@ module.exports.findByOrderNo = async function (db, orderNo) {
     throw e;
   }
 };
+

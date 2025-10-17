@@ -6,6 +6,7 @@
         <div class="container-fluid">
           <h1 class="border-bottom">メニュー</h1>
         </div>
+        <p class="text-danger mb-4" v-show="errMsg">{{ errMsg }}</p>
 
         <div class="row row-cols-auto justify-content-center" style="margin: 15px auto">
           <div class="col-lg-4 mb-4">
@@ -28,12 +29,23 @@
                 <div class="m-0 font-weight-bold text-primary text-secondary">売上一覧</div>
               </div>
               <div class="card-body">
-                <div class="text" style="margin-bottom: 10px">日付入力後、売上一覧の出力が可能です。</div>
-                <div class="text" style="margin-bottom: 10px">
-                  日付：
-                  <input type="month" />
+                <div class="text" style="margin-bottom: 10px">出力年月入力後、売上一覧の出力が可能です。</div>
+                <div class="text">
+                  <label for="inputOutputYearMonth">出力年月：</label>
+                  <input id="inputOutputYearMonth" type="month" v-model="outputYearMonth" />
                 </div>
-                <button type="button" class="btn btn-dark">売上一覧出力</button>
+                <div class="text-danger" v-show="outputYearMonthErrMsg">
+                  {{ outputYearMonthErrMsg }}
+                </div>
+                <button
+                  type="button"
+                  class="btn btn-dark"
+                  style="margin-top: 10px"
+                  :disabled="outputYearMonth == ''"
+                  v-on:click="salesSheetOutput()"
+                >
+                  売上一覧出力
+                </button>
               </div>
             </div>
           </div>
@@ -97,20 +109,34 @@
 </template>
 
 <script>
+// exceljsをインポート
+import { Workbook } from "exceljs";
+
+// コンポーネント関連
 import Header from "@/components/Header.vue";
 import Loading from "@/components/Loading.vue";
 
+// util関連
+import * as AjaxUtil from "@/utils/AjaxUtil";
+import * as OrdersUtil from "@/utils/OrdersUtil";
 import * as UserUtil from "@/utils/UserUtil";
 import UserConst from "@/utils/const/UserConst";
-
 export default {
   components: { Header, Loading },
   data() {
     return {
+      // ローディング設定
       isLoading: false,
+
+      // 項目
       role: "",
       admin: UserConst.UserRole.admin,
       post: UserConst.UserRole.post,
+      outputYearMonth: "",
+
+      // エラーメッセージ
+      errMsg: "",
+      outputYearMonthErrMsg: "",
     };
   },
   mounted() {
@@ -124,6 +150,138 @@ export default {
     }
   },
   methods: {
+    /*
+     *売上一覧出力
+     */
+    async salesSheetOutput() {
+      try {
+        this.isLoading = true;
+
+        // jsの月の仕様が0が1月、11が12月になっているのでこの書き方
+        const maxDate = new Date(9999, 11, 31); // 日付範囲の上限(9999/12/31)
+        const minDate = new Date(2016, 0, 1); // 日付範囲の下限(2016/01/01)
+
+        // Date同士での比較ができるように、string型で入力されたものをDate型へ変換
+        const outputYearMonth = new Date(this.outputYearMonth);
+
+        // 出力年月の入力チェック
+        if (this.outputYearMonth == null || this.outputYearMonth === "") {
+          this.outputYearMonthErrMsg = "出力年月が未入力です。";
+          return;
+        } else if (isNaN(outputYearMonth.getDate())) {
+          this.outputYearMonthErrMsg = "出力年月が不正です。yyyy/mm/dd形式で入力してください。";
+          return;
+        } else if (outputYearMonth < minDate || maxDate < outputYearMonth) {
+          this.outputYearMonthErrMsg = "出力年月が不正です。2016/01/01～9999/12/31の間で指定してください。";
+          return;
+        }
+        // 入力された年月範囲内の受注情報を全件取得する
+        const searchResult = await AjaxUtil.getOrdersByYearMonth(this.outputYearMonth);
+        const ordersData = JSON.parse(searchResult.data.Items);
+
+        // 現在の時刻を取得し、フォーマットを変更
+        const now = new Date();
+        const yyyy = now.getFullYear();
+        const mm = String(now.getMonth() + 1).padStart(2, "0"); // 月は0始まりなので+1
+        const dd = String(now.getDate()).padStart(2, "0");
+        const hh = String(now.getHours()).padStart(2, "0");
+        const min = String(now.getMinutes()).padStart(2, "0");
+        const ss = String(now.getSeconds()).padStart(2, "0");
+        const timestampForDisplay = `${yyyy}/${mm}/${dd}  ${hh}:${min}:${ss}`;
+
+        // 入力された年月のフォーマットを変更
+        const [year, month] = this.outputYearMonth.split("-");
+        const outputYearMonthForDisplay = `${year}年${month}月`;
+
+        // テンプレートのExcelファイル(public/excel配下)を取得し、読み込みができるようにバイナリ形式に変換
+        const response = await fetch("/excel/salesSheetTemplate.xlsx");
+        const arrayBufferTemplate = await response.arrayBuffer();
+
+        // 新しいワークブックを作成し、テンプレートのExcelファイルとそのファイル内のシートを読み込む
+        const workBook = new Workbook();
+        await workBook.xlsx.load(arrayBufferTemplate);
+        const sheet = workBook.getWorksheet("売上一覧");
+
+        // テーブルを作成するかどうかの分岐
+        if (ordersData.length == 0) {
+          const confirmResult = window.confirm("該当期間の売上が存在しませんがExcelファイルを出力しますか？");
+          if (confirmResult) {
+            sheet.getCell("A8").value = "該当期間のデータが存在しません";
+            sheet.getCell("B6").value = outputYearMonthForDisplay;
+            sheet.getCell("K1").value = timestampForDisplay;
+          } else {
+            return;
+          }
+        } else {
+          // 合計売上金額計算用
+          let totalPricePlusTax = 0;
+
+          // 売上一覧テーブルを作成し、取得した値を代入する。
+          sheet.addTable({
+            name: "売上一覧テーブル",
+            ref: "A8",
+            headerRow: true,
+            style: {
+              theme: "TableStyleMedium13",
+              showRowStripes: true,
+            },
+            columns: [
+              { name: "発注日" },
+              { name: "伝票番号" },
+              { name: "顧客番号" },
+              { name: "顧客名" },
+              { name: "商品コード" },
+              { name: "商品名" },
+              { name: "数量" },
+              { name: "単価" },
+              { name: "金額" },
+              { name: "消費税額" },
+              { name: "合計金額" },
+            ],
+            rows: ordersData.map((order) => {
+              const totalPriceWithoutTax = order.amount * order.product.price;
+              const calcResults = OrdersUtil.calcTax(totalPriceWithoutTax);
+              totalPricePlusTax += calcResults.pricePlusTax;
+              return [
+                order.order_date.replace(/-/g, "/"),
+                order.order_no,
+                String(order.client.client_no).padStart(8, "0"),
+                order.client.name,
+                order.product.product_code,
+                order.product.product_name,
+                order.amount,
+                order.product.price,
+                totalPriceWithoutTax,
+                calcResults.tax,
+                calcResults.pricePlusTax,
+              ];
+            }),
+          });
+          // 各セルに値を代入
+          sheet.getCell("B6").value = outputYearMonthForDisplay;
+          sheet.getCell("K1").value = timestampForDisplay;
+          sheet.getCell("K6").value = totalPricePlusTax;
+        }
+
+        // 編集したExcelファイルをバイナリデータに変換し、ブラウザ上でファイルとして扱えるようにblob化
+        const buffer = await workBook.xlsx.writeBuffer();
+        const blob = new Blob([buffer], {
+          // Excelファイル形式で扱うという指定
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        });
+
+        // 仮想アンカータグを作成し、作成したExcelファイルを設定し、js内でクリックしダウンロード
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = `${outputYearMonthForDisplay}売上一覧.xlsx`;
+        link.click();
+      } catch {
+        this.errMsg = "Excelファイル出力処理に失敗しました";
+      }finally{
+        this.isLoading = false;
+      }
+    },
+
     //受注情報一覧画面遷移
     onClickOrdersButton() {
       this.$router.push({ name: "ordersList" });
