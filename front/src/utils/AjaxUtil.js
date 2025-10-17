@@ -75,7 +75,7 @@ export async function putOrders(ordersModel) {
     updateId: ordersModel.updateId,
   });
 }
-
+// 受注情報全件検索
 export async function getOrders() {
   const url = "/api/orders";
   return await axios.get(url);
