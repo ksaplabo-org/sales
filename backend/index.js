@@ -174,11 +174,9 @@ app.get("/api/orders", async function (req, res) {
 
     if (query.yearMonth) {
       // 月間検索処理
-      console.log("月間");
       orders = await OrdersLogic.findByYearMonth(db, query.yearMonth);
     } else {
       // 全件検索処理
-      console.log("全件");
       orders = await OrdersLogic.getAll(db);
     }
 
