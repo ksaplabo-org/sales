@@ -1,4 +1,3 @@
-const { Op } = require("sequelize");
 const sequelize = require("sequelize");
 const OrdersRepository = require("../db/orders");
 const ClientsRepository = require("../db/clients");
@@ -184,8 +183,8 @@ module.exports.findByYearMonth = async function (db, yearMonth) {
       where: {
         order_date: {
           // yyyy年mm月01日以上、yyyy年mm+1月01日未満の範囲
-          [Op.gte]: startDate,
-          [Op.lt]: endDate,
+          [sequelize.Op.gte]: startDate,
+          [sequelize.Op.lt]: endDate,
         },
       },
       // 内部結合処理

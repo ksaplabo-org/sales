@@ -165,11 +165,23 @@ app.get("/api/clients/:clientNo", async function (req, res) {
 });
 
 /**
- * 受注情報全件取得API
+ * 受注情報の検索処理
  */
 app.get("/api/orders", async function (req, res) {
   try {
-    const orders = await OrdersLogic.getAll(db);
+    let orders;
+    const query = req.query;
+
+    if (query.yearMonth) {
+      // 月間検索処理
+      console.log("月間");
+      orders = await OrdersLogic.findByYearMonth(db, query.yearMonth);
+    } else {
+      // 全件検索処理
+      console.log("全件");
+      orders = await OrdersLogic.getAll(db);
+    }
+
     res.send({
       Items: JSON.stringify(orders),
     });
@@ -329,19 +341,3 @@ app.delete("/api/orders/:orderNo", async function (req, res) {
   }
 });
 
-/**
- * 月間受注情報取得API
- */
-app.get("/api/orders/searchYearMonth/:yearMonth", async function (req, res) {
-  try {
-    const orders = await OrdersLogic.findByYearMonth(db, req.params.yearMonth);
-    //正常レスポンス
-    res.send({
-      Items: JSON.stringify(orders),
-    });
-  } catch (e) {
-    //異常レスポンス
-    console.log("failed to get orders.", e);
-    res.sendStatus(500);
-  }
-});
