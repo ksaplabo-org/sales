@@ -165,22 +165,6 @@ app.get("/api/clients/:clientNo", async function (req, res) {
 });
 
 /**
- * 受注情報全件取得API
- */
-app.get("/api/orders", async function (req, res) {
-  try {
-    const orders = await OrdersLogic.getAll(db);
-    res.send({
-      Items: JSON.stringify(orders),
-    });
-  } catch (e) {
-    // 異常レスポンス
-    console.log("failed to get orders.", e);
-    res.sendStatus(500);
-  }
-});
-
-/**
  * 受注情報登録API
  */
 app.post("/api/orders", async function (req, res) {
@@ -312,11 +296,38 @@ app.delete("/api/orders/:orderNo", async function (req, res) {
 });
 
 /**
- * 受注情報取得API
+ * 受注情報の検索処理
  */
-app.get("/api/orders/searchOrderNo/:orderNo", async function (req, res) {
+app.get("/api/orders", async function (req, res) {
+  try {
+    let orders;
+    const query = req.query;
+
+    if (query.yearMonth) {
+      // 月間検索処理
+      orders = await OrdersLogic.findByYearMonth(db, query.yearMonth);
+    } else {
+      // 全件検索処理
+      orders = await OrdersLogic.getAll(db);
+    }
+
+    res.send({
+      Items: JSON.stringify(orders),
+    });
+  } catch (e) {
+    // 異常レスポンス
+    console.log("failed to get orders.", e);
+    res.sendStatus(500);
+  }
+});
+
+/**
+ * 受注情報取得API(主キー検索)
+ */
+app.get("/api/orders/:orderNo", async function (req, res) {
   try {
     const order = await OrdersLogic.findByOrderNo(db, req.params.orderNo);
+    console.log(order);
     //正常レスポンス
     res.send({
       Items: JSON.stringify(order),
@@ -324,23 +335,6 @@ app.get("/api/orders/searchOrderNo/:orderNo", async function (req, res) {
   } catch (e) {
     //異常レスポンス
     console.log("failed to get order.", e);
-    res.sendStatus(500);
-  }
-});
-
-/**
- * 月間受注情報取得API
- */
-app.get("/api/orders/searchYearMonth/:yearMonth", async function (req, res) {
-  try {
-    const orders = await OrdersLogic.findByYearMonth(db, req.params.yearMonth);
-    //正常レスポンス
-    res.send({
-      Items: JSON.stringify(orders),
-    });
-  } catch (e) {
-    //異常レスポンス
-    console.log("failed to get orders.", e);
     res.sendStatus(500);
   }
 });

@@ -56,12 +56,6 @@ export async function getClientsByClientNo(clientNo) {
   return await axios.get(url);
 }
 
-//受注情報を伝票番号を元に取得
-export async function getOrdersByOrderNo(orderNo) {
-  const url = "/api/orders/" + orderNo;
-  return await axios.get(url);
-}
-
 //受注情報更新
 export async function putOrders(ordersModel) {
   const url = "/api/orders";
@@ -74,11 +68,6 @@ export async function putOrders(ordersModel) {
     amount: ordersModel.amount,
     updateId: ordersModel.updateId,
   });
-}
-
-export async function getOrders() {
-  const url = "/api/orders";
-  return await axios.get(url);
 }
 
 //受注情報登録
@@ -113,9 +102,24 @@ export async function deleteOrders(orderNo) {
   const url = "/api/orders/" + orderNo;
   return await axios.delete(url);
 }
+// 全件検索
+export async function getOrders() {
+  const url = "/api/orders";
+  return await axios.get(url);
+}
 
 //月間の受注情報を取得する処理
 export async function getOrdersByYearMonth(yearMonth) {
-  const url = "/api/orders/searchYearMonth/" + yearMonth;
+  const url = "/api/orders";
+  return await axios.get(url,{　
+    params:{
+      yearMonth: yearMonth,
+    }
+  });
+}
+
+//受注情報を伝票番号を元に取得
+export async function getOrdersByOrderNo(orderNo) {
+  const url = "/api/orders/" + orderNo;
   return await axios.get(url);
 }
