@@ -62,7 +62,6 @@ import Table from "@/components/Table.vue";
 
 import * as AjaxUtil from "@/utils/AjaxUtil";
 import * as UserUtil from "@/utils/UserUtil";
-import UserConst from "@/utils/const/UserConst";
 
 export default {
   components: { Header, Loading, Table },
@@ -86,13 +85,10 @@ export default {
   },
   async mounted() {
     try {
+      this.isLoading = true;
       //ログインチェック
       if (!UserUtil.isLogIn()) {
         this.$router.push({ name: "logIn", params: { flashMsg: "ログインしてください。" } });
-
-        //権限チェック(管理者以外拒否)
-      } else if (UserUtil.currentUserInfo().userRole != UserConst.UserRole.admin) {
-        this.$router.push({ name: "logIn", params: { flashMsg: "権限がありません。" } });
       }
 
       // 受注情報取得
@@ -101,6 +97,8 @@ export default {
       this.rows = this.items.length;
     } catch (e) {
       this.$router.push({ name: "logIn", params: { flashMsg: "ログインしてください。" } });
+    } finally {
+      this.isLoading = false;
     }
   },
   methods: {
@@ -108,8 +106,6 @@ export default {
      *受注情報取得処理
      */
     async getOrders() {
-      this.isLoading = true;
-
       this.errMsg = "";
 
       try {
@@ -129,8 +125,6 @@ export default {
       } catch (e) {
         this.errMsg = "受注情報取得処理に失敗しました。";
         console.log(e);
-      } finally {
-        this.isLoading = false;
       }
     },
 
