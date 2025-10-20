@@ -85,6 +85,7 @@ export default {
   },
   async mounted() {
     try {
+      this.isLoading = true;
       //ログインチェック
       if (!UserUtil.isLogIn()) {
         this.$router.push({ name: "logIn", params: { flashMsg: "ログインしてください。" } });
@@ -96,6 +97,8 @@ export default {
       this.rows = this.items.length;
     } catch (e) {
       this.$router.push({ name: "logIn", params: { flashMsg: "ログインしてください。" } });
+    } finally {
+      this.isLoading = false;
     }
   },
   methods: {
@@ -103,8 +106,6 @@ export default {
      *受注情報取得処理
      */
     async getOrders() {
-      this.isLoading = true;
-
       this.errMsg = "";
 
       try {
@@ -124,8 +125,6 @@ export default {
       } catch (e) {
         this.errMsg = "受注情報取得処理に失敗しました。";
         console.log(e);
-      } finally {
-        this.isLoading = false;
       }
     },
 
