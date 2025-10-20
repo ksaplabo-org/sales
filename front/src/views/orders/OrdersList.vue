@@ -89,12 +89,8 @@ export default {
       //ログインチェック
       if (!UserUtil.isLogIn()) {
         this.$router.push({ name: "logIn", params: { flashMsg: "ログインしてください。" } });
-
-        //権限チェック(管理者以外拒否)
-      } else if (UserUtil.currentUserInfo().userRole != UserConst.UserRole.admin) {
-        this.$router.push({ name: "logIn", params: { flashMsg: "権限がありません。" } });
       }
-
+      
       // 受注情報取得
       await this.getOrders();
       // テーブルに表示するページ数を設定
