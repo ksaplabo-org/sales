@@ -62,7 +62,6 @@ import Table from "@/components/Table.vue";
 
 import * as AjaxUtil from "@/utils/AjaxUtil";
 import * as UserUtil from "@/utils/UserUtil";
-import UserConst from "@/utils/const/UserConst";
 
 export default {
   components: { Header, Loading, Table },
@@ -90,7 +89,7 @@ export default {
       if (!UserUtil.isLogIn()) {
         this.$router.push({ name: "logIn", params: { flashMsg: "ログインしてください。" } });
       }
-      
+
       // 受注情報取得
       await this.getOrders();
       // テーブルに表示するページ数を設定
