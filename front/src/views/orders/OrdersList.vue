@@ -15,6 +15,8 @@
           >
             納品書出力
           </button>
+          <p class="text-danger" v-show="errMsg">{{ errMsg }}</p>
+
           <!-- コンテンツStart -->
           <div class="mt-4" style="width: 90%; margin: auto">
             <Table :items="items" :fields="fields" :empDataMsg="'受注情報がありません'" @sendRow="setReceiveRow" />
