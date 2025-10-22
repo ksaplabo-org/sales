@@ -478,8 +478,8 @@ export default {
       this.isLoading = true;
 
       // jsの月の仕様が0が1月、11が12月になっているのでこの書き方
-      const maxDate = new Date(9999, 11, 31); // 日付範囲の上限(9999/12/31)
-      const minDate = new Date(2016, 0, 1); // 日付範囲の下限(2016/01/01)
+      const maxDate = new Date("9999-12-31"); // 日付範囲の上限(9999/12/31)
+      const minDate = new Date("2016-01-01"); // 日付範囲の下限(2016/01/01)
 
       // Date同士での比較ができるように、string型で入力されたものをDate型へ変換
       const orderDate = new Date(this.orderDate);
