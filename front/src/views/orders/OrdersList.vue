@@ -147,7 +147,7 @@ export default {
     async deliveryNoteOutput() {
       try {
         this.isLoading = true;
-        // 選択された顧客情報を取得
+        // 選択された受注情報を取得
         const searchResult = await AjaxUtil.getOrdersByOrderNo(this.selectedRow.order_no);
         const orderData = JSON.parse(searchResult.data.Items);
 
@@ -166,6 +166,7 @@ export default {
         sheet.getCell("B13").value = String(orderData.order_date).replace(/-/g, "/");
         sheet.getCell("C13").value = String(orderData.ship_date).replace(/-/g, "/");
         sheet.getCell("D13").value = String(orderData.deliver_date).replace(/-/g, "/");
+        sheet.getCell("D16").value = orderData.amount;
         // 顧客情報
         sheet.getCell("B9").value = orderData.client.name;
         sheet.getCell("E8").value = "〒" + orderData.client.post_code;
@@ -174,7 +175,6 @@ export default {
         // 商品情報
         sheet.getCell("B16").value = orderData.product.product_code;
         sheet.getCell("C16").value = orderData.product.product_name;
-        sheet.getCell("D16").value = orderData.amount;
         sheet.getCell("E16").value = orderData.product.price;
         //計算処理(戻り値は連想配列)を呼び出し、計算結果をExcelに書き込む
         const totalPriceWithoutTax = orderData.product.price * orderData.amount;
