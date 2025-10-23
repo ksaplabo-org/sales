@@ -477,7 +477,6 @@ export default {
     async ordersEdit() {
       this.isLoading = true;
 
-      // jsの月の仕様が0が1月、11が12月になっているのでこの書き方
       const maxDate = new Date("9999-12-31"); // 日付範囲の上限(9999/12/31)
       const minDate = new Date("2016-01-01"); // 日付範囲の下限(2016/01/01)
 
