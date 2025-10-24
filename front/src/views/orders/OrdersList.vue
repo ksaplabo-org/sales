@@ -152,7 +152,7 @@ export default {
         const orderData = JSON.parse(searchResult.data.Items);
 
         // テンプレートのExcelファイル(public/excel配下)を取得し、読み込みができるようにバイナリ形式に変換
-        const response = await fetch("/excel/deliverNoteTemplate.xlsx");
+        const response = await fetch("/excel/deliveryNoteTemplate.xlsx");
         const arrayBufferTemplate = await response.arrayBuffer();
 
         // 新しいワークブックを作成し、テンプレートのExcelファイルとそのファイル内のシートを読み込む
