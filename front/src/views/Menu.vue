@@ -30,18 +30,18 @@
               </div>
               <div class="card-body">
                 <div class="text" style="margin-bottom: 10px">出力年月入力後、売上一覧の出力が可能です。</div>
-                <div class="text">
-                  <label for="inputOutputYearMonth">出力年月：</label>
-                  <input id="inputOutputYearMonth" type="month" v-model="outputYearMonth" />
+                <div class="form-inline">
+                  <label for="inputOutputYM">出力年月：</label>
+                  <input class="form-control col-7 ml-2" id="inputOutputYM" type="month" v-model="outputYM" />
                 </div>
-                <div class="text-danger" v-show="outputYearMonthErrMsg">
-                  {{ outputYearMonthErrMsg }}
+                <div class="text-danger" v-show="outputYMErrMsg">
+                  {{ outputYMErrMsg }}
                 </div>
                 <button
                   type="button"
                   class="btn btn-dark"
                   style="margin-top: 10px"
-                  :disabled="outputYearMonth == ''"
+                  :disabled="outputYM == ''"
                   v-on:click="salesSheetOutput()"
                 >
                   売上一覧出力
@@ -132,11 +132,11 @@ export default {
       role: "",
       admin: UserConst.UserRole.admin,
       post: UserConst.UserRole.post,
-      outputYearMonth: "",
+      outputYM: "",
 
       // エラーメッセージ
       errMsg: "",
-      outputYearMonthErrMsg: "",
+      outputYMErrMsg: "",
     };
   },
   mounted() {
@@ -157,26 +157,25 @@ export default {
       try {
         this.isLoading = true;
 
-        // jsの月の仕様が0が1月、11が12月になっているのでこの書き方
-        const maxDate = new Date(9999, 11, 31); // 日付範囲の上限(9999/12/31)
-        const minDate = new Date(2016, 0, 1); // 日付範囲の下限(2016/01/01)
+        const maxDate = new Date("9999-12-31"); // 日付範囲の上限(9999/12/31)
+        const minDate = new Date("2016-01-01"); // 日付範囲の下限(2016/01/01)
 
         // Date同士での比較ができるように、string型で入力されたものをDate型へ変換
-        const outputYearMonth = new Date(this.outputYearMonth);
+        const outputYM = new Date(this.outputYM);
 
         // 出力年月の入力チェック
-        if (this.outputYearMonth == null || this.outputYearMonth === "") {
-          this.outputYearMonthErrMsg = "出力年月が未入力です。";
+        if (this.outputYM == null || this.outputYM === "") {
+          this.outputYMErrMsg = "出力年月が未入力です。";
           return;
-        } else if (isNaN(outputYearMonth.getDate())) {
-          this.outputYearMonthErrMsg = "出力年月が不正です。yyyy/mm/dd形式で入力してください。";
+        } else if (isNaN(outputYM.getDate())) {
+          this.outputYMErrMsg = "出力年月が不正です。yyyy/mm形式で入力してください。";
           return;
-        } else if (outputYearMonth < minDate || maxDate < outputYearMonth) {
-          this.outputYearMonthErrMsg = "出力年月が不正です。2016/01/01～9999/12/31の間で指定してください。";
+        } else if (outputYM < minDate || maxDate < outputYM) {
+          this.outputYMErrMsg = "出力年月が不正です。2016/01/01～9999/12/31の間で指定してください。";
           return;
         }
         // 入力された年月範囲内の受注情報を全件取得する
-        const searchResult = await AjaxUtil.getOrdersByYearMonth(this.outputYearMonth);
+        const searchResult = await AjaxUtil.findByOrderDateYM(this.outputYM);
         const ordersData = JSON.parse(searchResult.data.Items);
 
         // 現在の時刻を取得し、フォーマットを変更
@@ -190,8 +189,8 @@ export default {
         const timestampForDisplay = `${yyyy}/${mm}/${dd}  ${hh}:${min}:${ss}`;
 
         // 入力された年月のフォーマットを変更
-        const [year, month] = this.outputYearMonth.split("-");
-        const outputYearMonthForDisplay = `${year}年${month}月`;
+        const [year, month] = this.outputYM.split("-");
+        const outputYMForDisplay = `${year}年${month}月`;
 
         // テンプレートのExcelファイル(public/excel配下)を取得し、読み込みができるようにバイナリ形式に変換
         const response = await fetch("/excel/salesSheetTemplate.xlsx");
@@ -205,13 +204,10 @@ export default {
         // テーブルを作成するかどうかの分岐
         if (ordersData.length == 0) {
           const confirmResult = window.confirm("該当期間の売上が存在しませんがExcelファイルを出力しますか？");
-          if (confirmResult) {
-            sheet.getCell("A8").value = "該当期間のデータが存在しません";
-            sheet.getCell("B6").value = outputYearMonthForDisplay;
-            sheet.getCell("K1").value = timestampForDisplay;
-          } else {
+          if (!confirmResult) {
             return;
           }
+          sheet.getCell("A8").value = "該当期間のデータが存在しません";
         } else {
           // 合計売上金額計算用
           let totalPricePlusTax = 0;
@@ -257,11 +253,12 @@ export default {
               ];
             }),
           });
-          // 各セルに値を代入
-          sheet.getCell("B6").value = outputYearMonthForDisplay;
-          sheet.getCell("K1").value = timestampForDisplay;
+          // 合計売上金額をセルに代入
           sheet.getCell("K6").value = totalPricePlusTax;
         }
+        // 各セルに値を代入
+        sheet.getCell("B6").value = outputYMForDisplay;
+        sheet.getCell("K1").value = timestampForDisplay;
 
         // 編集したExcelファイルをバイナリデータに変換し、ブラウザ上でファイルとして扱えるようにblob化
         const buffer = await workBook.xlsx.writeBuffer();
@@ -273,11 +270,11 @@ export default {
         // 仮想アンカータグを作成し、作成したExcelファイルを設定し、js内でクリックしダウンロード
         const link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
-        link.download = `${outputYearMonthForDisplay}売上一覧.xlsx`;
+        link.download = `${outputYMForDisplay}売上一覧.xlsx`;
         link.click();
       } catch {
         this.errMsg = "Excelファイル出力処理に失敗しました";
-      }finally{
+      } finally {
         this.isLoading = false;
       }
     },

@@ -115,11 +115,11 @@ export async function deleteOrders(orderNo) {
 }
 
 //月間の受注情報を取得する処理
-export async function getOrdersByYearMonth(yearMonth) {
+export async function findByOrderDateYM(orderDateYM) {
   const url = "/api/orders";
-  return await axios.get(url,{
-    params:{
-      yearMonth: yearMonth,
-    }
+  return await axios.get(url, {
+    params: {
+      orderDateYM: orderDateYM,
+    },
   });
 }

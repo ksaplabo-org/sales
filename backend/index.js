@@ -172,9 +172,9 @@ app.get("/api/orders", async function (req, res) {
     let orders;
     const query = req.query;
 
-    if (query.yearMonth) {
+    if (query.orderDateYM) {
       // 月間検索処理
-      orders = await OrdersLogic.findByYearMonth(db, query.yearMonth);
+      orders = await OrdersLogic.findByOrderDateYM(db, query.orderDateYM);
     } else {
       // 全件検索処理
       orders = await OrdersLogic.getAll(db);
@@ -338,4 +338,3 @@ app.delete("/api/orders/:orderNo", async function (req, res) {
     res.sendStatus(500);
   }
 });
-
