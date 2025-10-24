@@ -165,11 +165,12 @@ app.get("/api/clients/:clientNo", async function (req, res) {
 });
 
 /**
- * 受注情報全件取得API
+ * 受注情報の検索処理
  */
 app.get("/api/orders", async function (req, res) {
   try {
     const orders = await OrdersLogic.getAll(db);
+
     res.send({
       Items: JSON.stringify(orders),
     });
@@ -309,7 +310,6 @@ app.get("/api/products/:productCode", async function (req, res) {
   } catch (e) {
     //異常レスポンス
     console.log("failed to get product.", e);
-    res.sendStatus(500);
     res.sendStatus(500);
   }
 });
