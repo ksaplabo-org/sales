@@ -173,7 +173,7 @@ app.get("/api/orders", async function (req, res) {
     const query = req.query;
 
     if (query.orderDateYM) {
-      // 月間検索処理
+      // 発注日について年月の範囲を指定し検索
       orders = await OrdersLogic.findByOrderDateYM(db, query.orderDateYM);
     } else {
       // 全件検索処理

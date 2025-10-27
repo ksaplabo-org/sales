@@ -171,7 +171,7 @@ export default {
           this.outputYMErrMsg = "出力年月が不正です。yyyy/mm形式で入力してください。";
           return;
         } else if (outputYM < minDate || maxDate < outputYM) {
-          this.outputYMErrMsg = "出力年月が不正です。2016/01/01～9999/12/31の間で指定してください。";
+          this.outputYMErrMsg = "出力年月が不正です。2016/01～9999/12の間で指定してください。";
           return;
         }
         // 入力された年月範囲内の受注情報を全件取得する

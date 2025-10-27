@@ -162,9 +162,9 @@ module.exports.delete = async function (db, orderNo) {
 };
 
 /**
- * 月間の受注情報を取得
+ * 発注日について年月の範囲を指定し受注情報を取得
  */
-module.exports.findByOrderDateYM = async function (db, OrderDateYM) {
+module.exports.findByOrderDateYM = async function (db, orderDateYM) {
   //受注・顧客・商品情報の定義を取得
   const ordersModel = OrdersRepository.getOrdersModel(db);
   const clientsModel = ClientsRepository.getClientsModel(db);
@@ -174,8 +174,8 @@ module.exports.findByOrderDateYM = async function (db, OrderDateYM) {
   ordersModel.associate(clientsModel, productsModel);
 
   // 取得する範囲の両端を変数にセット
-  const startDate = new Date(OrderDateYM);
-  const endDate = new Date(OrderDateYM);
+  const startDate = new Date(orderDateYM);
+  const endDate = new Date(orderDateYM);
   endDate.setMonth(endDate.getMonth() + 1); // 取得した年月の翌月に設定(12+1月は来年の1月に繰り越し)
 
   try {
