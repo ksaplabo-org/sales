@@ -169,7 +169,16 @@ app.get("/api/clients/:clientNo", async function (req, res) {
  */
 app.get("/api/orders", async function (req, res) {
   try {
-    const orders = await OrdersLogic.getAll(db);
+    let orders;
+    const query = req.query;
+
+    if (query.orderDateYM) {
+      // 発注日について年月の範囲を指定し検索
+      orders = await OrdersLogic.findByOrderDateYM(db, query.orderDateYM);
+    } else {
+      // 全件検索処理
+      orders = await OrdersLogic.getAll(db);
+    }
 
     res.send({
       Items: JSON.stringify(orders),

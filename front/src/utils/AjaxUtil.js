@@ -114,3 +114,12 @@ export async function deleteOrders(orderNo) {
   return await axios.delete(url);
 }
 
+//　発注日について年月の範囲を指定し受注情報を検索する処理
+export async function findByOrderDateYM(orderDateYM) {
+  const url = "/api/orders";
+  return await axios.get(url, {
+    params: {
+      orderDateYM: orderDateYM,
+    },
+  });
+}
