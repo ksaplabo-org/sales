@@ -320,7 +320,6 @@ app.get("/api/products/:productCode", async function (req, res) {
     //異常レスポンス
     console.log("failed to get product.", e);
     res.sendStatus(500);
-    res.sendStatus(500);
   }
 });
 
