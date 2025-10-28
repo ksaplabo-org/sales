@@ -18,131 +18,129 @@
           </button>
           <p class="text-danger" v-show="errMsg">{{ errMsg }}</p>
 
-          <form @submit.stop.prevent="clientsEdit" method="post" autocomplete="new-password">
-            <div class="col-lg-5 mx-auto center-block mt-4">
-              <!-- 顧客番号 -->
-              <div class="form-group row">
-                <label class="col-lg-6">顧客番号</label>
-                <p v-show="clientNo" class="col-lg-6 h5">{{ clientNo }}</p>
-              </div>
+          <div class="col-lg-5 mx-auto center-block mt-4">
+            <!-- 顧客番号 -->
+            <div class="form-group row">
+              <label class="col-lg-6">顧客番号</label>
+              <p v-show="clientNo" class="col-lg-6 h5">{{ clientNo }}</p>
+            </div>
 
-              <!-- 顧客名 -->
-              <div class="form-group row">
-                <label class="col-lg-6">顧客名<span class="text-danger">*</span></label>
-                <div class="col-lg-6">
-                  <input
-                    type="text"
-                    id="clientName"
-                    class="form-control"
-                    placeholder="20字以内で入力してください"
-                    v-model="name"
-                    autocomplete="off"
-                    maxlength="20"
-                    minlength="1"
-                  />
-                  <div class="text-danger small" v-show="clientNameMsg">{{ clientNameMsg }}</div>
-                </div>
+            <!-- 顧客名 -->
+            <div class="form-group row">
+              <label class="col-lg-6">顧客名<span class="text-danger">*</span></label>
+              <div class="col-lg-6">
+                <input
+                  type="text"
+                  id="clientName"
+                  class="form-control"
+                  placeholder="20字以内で入力してください"
+                  v-model="name"
+                  autocomplete="off"
+                  maxlength="20"
+                  minlength="1"
+                />
+                <div class="text-danger small" v-show="clientNameMsg">{{ clientNameMsg }}</div>
               </div>
+            </div>
 
-              <!-- 郵便番号 -->
-              <div class="form-group row">
-                <label class="col-lg-6">郵便番号</label>
-                <div class="col-lg-6">
-                  <div class="d-flex flex-row">
-                    <div class="col-4 px-0">
-                      <input
-                        type="number"
-                        step="1"
-                        id="postCode1"
-                        class="form-control"
-                        placeholder="000"
-                        v-model="postCode1"
-                        autocomplete="off"
-                        min="000"
-                        max="999"
-                      />
-                    </div>
-                    <label class="pt-2 col-2 px-0 text-center">ー</label>
-                    <div class="col-6 px-0">
-                      <input
-                        type="number"
-                        step="1"
-                        id="postCode2"
-                        class="form-control"
-                        placeholder="0000"
-                        v-model="postCode2"
-                        autocomplete="off"
-                        min="0000"
-                        max="9999"
-                      />
-                    </div>
+            <!-- 郵便番号 -->
+            <div class="form-group row">
+              <label class="col-lg-6">郵便番号</label>
+              <div class="col-lg-6">
+                <div class="d-flex flex-row">
+                  <div class="col-4 px-0">
+                    <input
+                      type="number"
+                      step="1"
+                      id="postCode1"
+                      class="form-control"
+                      placeholder="000"
+                      v-model="postCode1"
+                      autocomplete="off"
+                      min="000"
+                      max="999"
+                    />
                   </div>
-                  <div class="text-danger small" v-show="postCodeMsg">{{ postCodeMsg }}</div>
+                  <label class="pt-2 col-2 px-0 text-center">ー</label>
+                  <div class="col-6 px-0">
+                    <input
+                      type="number"
+                      step="1"
+                      id="postCode2"
+                      class="form-control"
+                      placeholder="0000"
+                      v-model="postCode2"
+                      autocomplete="off"
+                      min="0000"
+                      max="9999"
+                    />
+                  </div>
                 </div>
-              </div>
-
-              <!-- 住所１ -->
-              <div class="form-group row">
-                <label class="col-lg-6">住所１</label>
-                <div class="col-lg-6">
-                  <input
-                    type="text"
-                    id="address1"
-                    class="form-control"
-                    placeholder="20字以内で入力してください"
-                    v-model="address1"
-                    autocomplete="off"
-                    maxlength="20"
-                  />
-                  <div class="text-danger small" v-show="address1Msg">{{ address1Msg }}</div>
-                </div>
-              </div>
-
-              <!-- 住所２ -->
-              <div class="form-group row">
-                <label class="col-lg-6">住所２</label>
-                <div class="col-lg-6">
-                  <input
-                    type="text"
-                    id="address2"
-                    class="form-control"
-                    placeholder="20字以内で入力してください"
-                    v-model="address2"
-                    autocomplete="off"
-                    maxlength="20"
-                  />
-                  <div class="text-danger small" v-show="address2Msg">{{ address2Msg }}</div>
-                </div>
-              </div>
-
-              <!-- 電話番号 -->
-              <div class="form-group row">
-                <label class="col-lg-6">電話番号</label>
-                <div class="col-lg-6">
-                  <input
-                    type="tel"
-                    id="telNo"
-                    class="form-control"
-                    placeholder="20字以内で入力してください"
-                    v-model="telNo"
-                    autocomplete="off"
-                    maxlength="20"
-                  />
-                  <div class="text-danger small" v-show="telNoMsg">{{ telNoMsg }}</div>
-                </div>
+                <div class="text-danger small" v-show="postCodeMsg">{{ postCodeMsg }}</div>
               </div>
             </div>
 
-            <!-- 修正・キャンセルボタン -->
-            <div class="form-group justify-content-center row">
-              <div class="mb-3 col-lg-4">
-                <input class="btn btn-info btn-lg btn-block" type="submit" value="修正" />
-              </div>
-              <div class="col-lg-4">
-                <CancelButton />
+            <!-- 住所１ -->
+            <div class="form-group row">
+              <label class="col-lg-6">住所１</label>
+              <div class="col-lg-6">
+                <input
+                  type="text"
+                  id="address1"
+                  class="form-control"
+                  placeholder="20字以内で入力してください"
+                  v-model="address1"
+                  autocomplete="off"
+                  maxlength="20"
+                />
+                <div class="text-danger small" v-show="address1Msg">{{ address1Msg }}</div>
               </div>
             </div>
-          </form>
+
+            <!-- 住所２ -->
+            <div class="form-group row">
+              <label class="col-lg-6">住所２</label>
+              <div class="col-lg-6">
+                <input
+                  type="text"
+                  id="address2"
+                  class="form-control"
+                  placeholder="20字以内で入力してください"
+                  v-model="address2"
+                  autocomplete="off"
+                  maxlength="20"
+                />
+                <div class="text-danger small" v-show="address2Msg">{{ address2Msg }}</div>
+              </div>
+            </div>
+
+            <!-- 電話番号 -->
+            <div class="form-group row">
+              <label class="col-lg-6">電話番号</label>
+              <div class="col-lg-6">
+                <input
+                  type="tel"
+                  id="telNo"
+                  class="form-control"
+                  placeholder="20字以内で入力してください"
+                  v-model="telNo"
+                  autocomplete="off"
+                  maxlength="20"
+                />
+                <div class="text-danger small" v-show="telNoMsg">{{ telNoMsg }}</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 修正・キャンセルボタン -->
+          <div class="form-group justify-content-center row">
+            <div class="mb-3 col-lg-4">
+              <btn class="btn btn-info btn-lg btn-block" v-on:click="clientsEdit()">修正</btn>
+            </div>
+            <div class="col-lg-4">
+              <CancelButton />
+            </div>
+          </div>
         </div>
       </div>
     </div>
