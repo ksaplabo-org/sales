@@ -123,3 +123,9 @@ export async function findByOrderDateYM(orderDateYM) {
     },
   });
 }
+
+// ユーザー情報全件取得処理
+export async function getUsers() {
+  const url = "/api/users";
+  return await axios.get(url);
+}

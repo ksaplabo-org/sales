@@ -337,3 +337,19 @@ app.delete("/api/orders/:orderNo", async function (req, res) {
     res.sendStatus(500);
   }
 });
+
+/**
+ * ユーザー情報全件取得API
+ */
+app.get("/api/users", async function (req, res) {
+  try {
+    const users = await UsersLogic.getAll(db);
+    res.send({
+      Items: JSON.stringify(users),
+    });
+  } catch (e) {
+    // 異常レスポンス
+    console.log("failed to get users.", e);
+    res.sendStatus(500);
+  }
+});
