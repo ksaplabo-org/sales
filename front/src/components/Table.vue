@@ -96,7 +96,7 @@ export default {
         row = selectedRow[0];
       }
 
-      // 親コンポーネントへ値(メソッドsendPk)を渡す
+      // 親コンポーネントへ値(メソッドsendRow)を渡す
       this.$emit("sendRow", row);
     },
   },
