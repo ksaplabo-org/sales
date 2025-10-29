@@ -335,10 +335,10 @@ app.delete("/api/products/:productCode", async function (req, res) {
     //異常レスポンス
     if (e.parent.errno == 1451) {
       //削除対象の商品が受注情報に登録されている場合
-      res.status(409).send("server error occur");
+      res.sendStatus(409);
     } else {
       console.log("failed to delete product", e);
-      res.status(500).send("server error occur");
+      res.sendStatus(500);
     }
   }
 });
