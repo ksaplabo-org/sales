@@ -337,3 +337,58 @@ app.delete("/api/orders/:orderNo", async function (req, res) {
     res.sendStatus(500);
   }
 });
+
+/**
+ * ユーザー情報検索API
+ */
+app.get("/api/users", async function (req, res) {
+  try {
+    const query = req.query;
+
+    // ユーザー情報をユーザーIDで検索
+    const user = await UsersLogic.findByUserId(db, query.userId);
+
+    res.send({
+      Items: JSON.stringify(user),
+    });
+  } catch (e) {
+    // 異常レスポンス
+    console.log("failed to get orders.", e);
+    res.sendStatus(500);
+  }
+});
+
+/**
+ * ユーザー情報登録API
+ */
+app.post("/api/users", async function (req, res) {
+  // リクエストボディ取得
+  const reqBody = req.body;
+
+  try {
+    // 登録用に、最新の管理用id+1をした値を取得
+    const idToRegister = (await UsersLogic.getMaxId(db)) + 1;
+
+    // 上限を超えていないかを判定
+    if (String(idToRegister).length > 4) {
+      res.sendStatus(400);
+      return;
+    }
+
+    await UsersLogic.create(
+      db,
+      idToRegister,
+      reqBody.userId,
+      reqBody.userPass,
+      reqBody.userName,
+      reqBody.userRole,
+      reqBody.updateId,
+      reqBody.entryId
+    );
+    res.send();
+  } catch (e) {
+    // 異常レスポンス
+    console.log("failed to add user.", e);
+    res.sendStatus(500);
+  }
+});
