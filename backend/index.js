@@ -165,11 +165,21 @@ app.get("/api/clients/:clientNo", async function (req, res) {
 });
 
 /**
- * 受注情報全件取得API
+ * 受注情報の検索処理
  */
 app.get("/api/orders", async function (req, res) {
   try {
-    const orders = await OrdersLogic.getAll(db);
+    let orders;
+    const query = req.query;
+
+    if (query.orderDateYM) {
+      // 発注日について年月の範囲を指定し検索
+      orders = await OrdersLogic.findByOrderDateYM(db, query.orderDateYM);
+    } else {
+      // 全件検索処理
+      orders = await OrdersLogic.getAll(db);
+    }
+
     res.send({
       Items: JSON.stringify(orders),
     });
@@ -237,6 +247,49 @@ app.post("/api/orders", async function (req, res) {
 });
 
 /**
+ * 受注情報取得API(伝票番号と一致)
+ */
+app.get("/api/orders/:orderNo", async function (req, res) {
+  try {
+    const order = await OrdersLogic.findByOrderNo(db, req.params.orderNo);
+
+    //正常レスポンス
+    res.send({
+      Items: JSON.stringify(order),
+    });
+  } catch (e) {
+    //異常レスポンス
+    console.log("failed to get order.", e);
+    res.sendStatus(500);
+  }
+});
+
+/**
+ * 受注情報修正API
+ */
+app.put("/api/orders", async function (req, res) {
+  const reqBody = req.body;
+  try {
+    await OrdersLogic.edit(
+      db,
+      reqBody.orderNo,
+      reqBody.orderDate,
+      reqBody.shipDate,
+      reqBody.deliverDate,
+      reqBody.productCode,
+      reqBody.amount,
+      reqBody.updateId
+    );
+    //正常レスポンス
+    res.send();
+  } catch (e) {
+    //異常レスポンス
+    console.log("failed to edit order", e);
+    res.sendStatus(500);
+  }
+});
+
+/**
  * 商品情報全件取得API
  */
 app.get("/api/products", async function (req, res) {
@@ -266,6 +319,21 @@ app.get("/api/products/:productCode", async function (req, res) {
   } catch (e) {
     //異常レスポンス
     console.log("failed to get product.", e);
+    res.sendStatus(500);
+  }
+});
+
+/**
+ * 受注情報削除API
+ */
+app.delete("/api/orders/:orderNo", async function (req, res) {
+  try {
+    await OrdersLogic.delete(db, req.params.orderNo);
+    //正常レスポンス
+    res.send();
+  } catch (e) {
+    //異常レスポンス
+    console.log("failed to delete order", e);
     res.sendStatus(500);
   }
 });
