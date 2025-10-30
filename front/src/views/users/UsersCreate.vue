@@ -14,7 +14,7 @@
           <div class="col-lg-5 mx-auto center-block mt-4">
             <!-- ユーザーID -->
             <div class="form-group row">
-              <label class="col-lg-6">ユーザーID</label>
+              <label class="col-lg-6"><span class="text-danger">*</span>ユーザーID</label>
               <div class="col-lg-6">
                 <input autocomplete="new-password" v-model="userId" class="form-control h5" />
                 <!-- ユーザーIDエラーメッセージ -->
@@ -24,7 +24,7 @@
 
             <!--パスワード -->
             <div class="form-group row">
-              <label class="col-lg-6">パスワード</label>
+              <label class="col-lg-6"><span class="text-danger">*</span>パスワード</label>
               <div class="col-lg-6">
                 <input autocomplete="new-password" type="password" v-model="userPass" class="form-control h5" />
                 <!-- パスワードエラーメッセージ -->
@@ -34,7 +34,7 @@
 
             <!-- ユーザー名 -->
             <div class="form-group row">
-              <label class="col-lg-6">ユーザー名</label>
+              <label class="col-lg-6"><span class="text-danger">*</span>ユーザー名</label>
               <div class="col-lg-6">
                 <input v-model="userName" class="form-control h5" />
                 <!-- ユーザー名エラーメッセージ -->
