@@ -96,12 +96,10 @@ export default {
 
       //クエリストリングを取得
       const query = this.$route.query;
-      //削除対象の商品コードを設定する
-      this.productCode = query.productCode;
 
       try {
         // 商品コードから商品情報を取得
-        const response = await AjaxUtil.getProductsByProductCode(this.productCode);
+        const response = await AjaxUtil.getProductsByProductCode(query.productCode);
         const productData = JSON.parse(response.data.Items);
 
         // 商品情報を各項目にセット
