@@ -337,3 +337,65 @@ app.delete("/api/orders/:orderNo", async function (req, res) {
     res.sendStatus(500);
   }
 });
+
+/**
+ * ユーザー情報検索API
+ */
+app.get("/api/users", async function (req, res) {
+  try {
+    const query = req.query;
+
+    // ユーザー情報をユーザーIDで検索
+    const user = await UsersLogic.findByUserId(db, query.userId);
+
+    res.send({
+      Items: JSON.stringify(user),
+    });
+  } catch (e) {
+    // 異常レスポンス
+    console.log("failed to get orders.", e);
+    res.sendStatus(500);
+  }
+});
+
+/**
+ * 管理用IDでユーザー情報取得API
+ */
+app.get("/api/users/:id", async function (req, res) {
+  try {
+    const users = await UsersLogic.findById(db, req.params.id);
+
+    //正常レスポンス
+    res.send({
+      Items: JSON.stringify(users),
+    });
+  } catch (e) {
+    //異常レスポンス
+    console.log("failed to get user.", e);
+    res.sendStatus(500);
+  }
+});
+
+/**
+ * ユーザー情報修正API
+ */
+app.put("/api/users", async function (req, res) {
+  const reqBody = req.body;
+  try {
+    await UsersLogic.edit(
+      db,
+      reqBody.id,
+      reqBody.userId,
+      reqBody.userPass,
+      reqBody.userName,
+      reqBody.userRole,
+      reqBody.updateId
+    );
+    //正常レスポンス
+    res.send();
+  } catch (e) {
+    //異常レスポンス
+    console.log("failed to edit user", e);
+    res.sendStatus(500);
+  }
+});
