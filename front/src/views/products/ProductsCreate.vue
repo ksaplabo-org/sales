@@ -164,6 +164,7 @@ export default {
       } catch (e) {
         if (e.response.status === 400) {
           alert("商品情報の登録上限を超えています。");
+          this.$router.push({ name: "productsList" });
         } else {
           alert("商品情報登録に失敗しました。");
         }
