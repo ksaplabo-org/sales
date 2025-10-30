@@ -11,7 +11,7 @@
           <p class="text-danger" v-show="errMsg">{{ errMsg }}</p>
 
           <!-- コンテンツStart -->
-          <div class="mt-4"style="width: 90%; margin: auto">
+          <div class="mt-4" style="width: 90%; margin: auto">
             <!-- インポートしたテーブル -->
             <Table :items="items" :fields="fields" empDataMsg="ユーザー情報がありません" @sendRow="setSelectedRow" />
 
@@ -53,15 +53,12 @@
 </template>
 
 <script>
-// コンポーネント関連
 import Header from "@/components/Header.vue";
 import Loading from "@/components/Loading.vue";
 import Table from "@/components/Table.vue";
-
-// util関連
 import * as AjaxUtil from "@/utils/AjaxUtil";
 import * as UserUtil from "@/utils/UserUtil";
-
+import UserConst from "@/utils/const/UserConst";
 export default {
   components: { Header, Loading, Table },
   data() {
@@ -109,9 +106,9 @@ export default {
 
         // 役職を値に応じてマッピングするための配列
         const roleMap = {
-          0: "一般",
-          1: "管理者",
-          2: "役職",
+          [UserConst.UserRole.general]: "一般",
+          [UserConst.UserRole.admin]: "管理者",
+          [UserConst.UserRole.post]: "役職",
         };
 
         // 取得したデータの役職を値に応じてマッピングし、テーブルへ代入
