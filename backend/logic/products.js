@@ -1,4 +1,5 @@
 const ProductsRepository = require("../db/products");
+const sequelize = require("sequelize");
 
 /**
  * 商品情報の全件検索処理
@@ -51,9 +52,9 @@ module.exports.create = async function (db, productCode, productName, price, upd
       product_name: productName,
       price: price,
       update_id: updateId,
-      update_date: fn("now"),
+      update_date: sequelize.fn("now"),
       entry_id: entryId,
-      entry_date: fn("now"),
+      entry_date: sequelize.fn("now"),
     });
   } catch (e) {
     throw e;
