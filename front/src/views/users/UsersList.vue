@@ -66,6 +66,14 @@ export default {
       errMsg: "",
       isLoading: false,
       selectedRow: null,
+
+      // 役職を値に応じてマッピングするための配列
+      roleMap: {
+        [UserConst.UserRole.general]: "一般",
+        [UserConst.UserRole.admin]: "管理者",
+        [UserConst.UserRole.post]: "役職",
+      },
+      
       //テーブル定義
       items: [],
       fields: [
@@ -104,20 +112,13 @@ export default {
         const response = await AjaxUtil.getUsers();
         const users = JSON.parse(response.data.Items);
 
-        // 役職を値に応じてマッピングするための配列
-        const roleMap = {
-          [UserConst.UserRole.general]: "一般",
-          [UserConst.UserRole.admin]: "管理者",
-          [UserConst.UserRole.post]: "役職",
-        };
-
         // 取得したデータの役職を値に応じてマッピングし、テーブルへ代入
         this.items = users.map((user) => {
           return {
             id: user.id,
             user_id: user.user_id,
             user_name: user.user_name,
-            user_role: roleMap[user.user_role],
+            user_role: this.roleMap[user.user_role],
           };
         });
       } catch (e) {
