@@ -198,7 +198,7 @@ export default {
       } catch (e) {
         if (e.response.status === 400) {
           alert("ユーザー情報の登録上限を超えています。");
-          this.$router.push({ name: "usersCreate" });
+          this.$router.push({ name: "usersList" });
         } else {
           alert("ユーザー情報登録処理に失敗しました。");
         }
