@@ -335,7 +335,7 @@ app.delete("/api/products/:productCode", async function (req, res) {
     //異常レスポンス
     //削除対象の商品が受注情報に登録されている場合
     if (e.parent.errno == DbUtil.ErrorCode.foreignKeyConstraint) {
-      res.sendStatus(409);
+      res.sendStatus(422);
     } else {
       console.log("failed to delete product", e);
       res.sendStatus(500);

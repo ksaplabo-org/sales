@@ -130,7 +130,7 @@ export default {
           this.$router.push({ name: "productsList" });
         }
       } catch (e) {
-        if (e.response.status === 409) {
+        if (e.response.status === 422) {
           window.alert("受注情報に登録されている商品のため、削除できません。");
         } else {
           window.alert("商品情報削除処理に失敗しました。");
