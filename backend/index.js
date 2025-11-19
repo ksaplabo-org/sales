@@ -324,6 +324,26 @@ app.get("/api/products/:productCode", async function (req, res) {
 });
 
 /**
+ * 商品情報削除API
+ */
+app.delete("/api/products/:productCode", async function (req, res) {
+  try {
+    await ProductsLogic.delete(db, req.params.productCode);
+    //正常レスポンス
+    res.send();
+  } catch (e) {
+    //異常レスポンス
+    //削除対象の商品が受注情報に登録されている場合
+    if (e.parent.errno == DbUtil.ErrorCode.foreignKeyConstraint) {
+      res.sendStatus(422);
+    } else {
+      console.log("failed to delete product", e);
+      res.sendStatus(500);
+    }
+  }
+});
+
+/**
  * 受注情報削除API
  */
 app.delete("/api/orders/:orderNo", async function (req, res) {
