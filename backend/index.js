@@ -359,17 +359,17 @@ app.delete("/api/orders/:orderNo", async function (req, res) {
 });
 
 /**
- * 商品情報全件取得API
+ * ユーザー情報全件取得API
  */
-app.get("/api/products", async function (req, res) {
+app.get("/api/users", async function (req, res) {
   try {
-    const products = await ProductsLogic.getAll(db);
+    const users = await UsersLogic.getAll(db);
     res.send({
-      Items: JSON.stringify(products),
+      Items: JSON.stringify(users),
     });
   } catch (e) {
     // 異常レスポンス
-    console.log("failed to get products.", e);
+    console.log("failed to get users.", e);
     res.sendStatus(500);
   }
 });
