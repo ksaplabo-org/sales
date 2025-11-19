@@ -337,3 +337,19 @@ app.delete("/api/orders/:orderNo", async function (req, res) {
     res.sendStatus(500);
   }
 });
+
+/**
+ * 商品情報全件取得API
+ */
+app.get("/api/products", async function (req, res) {
+  try {
+    const products = await ProductsLogic.getAll(db);
+    res.send({
+      Items: JSON.stringify(products),
+    });
+  } catch (e) {
+    // 異常レスポンス
+    console.log("failed to get products.", e);
+    res.sendStatus(500);
+  }
+});
