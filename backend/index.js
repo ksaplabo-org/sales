@@ -312,7 +312,7 @@ app.get("/api/products/:productCode", async function (req, res) {
   try {
     const product = await ProductsLogic.findByProductCode(db, req.params.productCode);
 
-    //正常レスポンスProductsLogic
+    //正常レスポンス
     res.send({
       Items: JSON.stringify(product),
     });
@@ -459,6 +459,23 @@ app.post("/api/users", async function (req, res) {
   } catch (e) {
     // 異常レスポンス
     console.log("failed to add user.", e);
+    res.sendStatus(500);
+  }
+});
+
+
+/**
+ * 商品情報修正API
+ */
+app.put("/api/products", async function (req, res) {
+  const reqBody = req.body;
+  try {
+    await ProductsLogic.edit(db, reqBody.productCode, reqBody.productName, reqBody.price, reqBody.updateId);
+    //正常レスポンス
+    res.send();
+  } catch (e) {
+    //異常レスポンス
+    console.log("failed to edit product", e);
     res.sendStatus(500);
   }
 });

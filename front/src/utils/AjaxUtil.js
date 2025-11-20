@@ -127,6 +127,18 @@ export async function postProducts(productModel) {
   });
 }
 
+
+//商品情報修正
+export async function putProducts(productsModel) {
+  const url = "/api/products";
+  return await axios.put(url, {
+    productCode: productsModel.productCode,
+    productName: productsModel.productName,
+    price: productsModel.price,
+    updateId: UserUtil.currentUserInfo().id,
+  });
+}
+
 //受注情報削除
 export async function deleteOrders(orderNo) {
   const url = "/api/orders/" + orderNo;
