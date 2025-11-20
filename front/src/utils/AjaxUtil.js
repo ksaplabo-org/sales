@@ -108,6 +108,37 @@ export async function getProductsByProductCode(productCode) {
   return await axios.get(url);
 }
 
+
+//商品情報削除
+export async function deleteProducts(productCode) {
+  const url = "/api/products/" + productCode;
+  return await axios.delete(url);
+}
+
+// 商品情報登録
+export async function postProducts(productModel) {
+  const url = "/api/products";
+  const id = UserUtil.currentUserInfo().id;
+  return await axios.post(url, {
+    productName: productModel.productName,
+    price: productModel.price,
+    updateId: id,
+    entryId: id,
+  });
+}
+
+
+//商品情報修正
+export async function putProducts(productsModel) {
+  const url = "/api/products";
+  return await axios.put(url, {
+    productCode: productsModel.productCode,
+    productName: productsModel.productName,
+    price: productsModel.price,
+    updateId: UserUtil.currentUserInfo().id,
+  });
+}
+
 //受注情報削除
 export async function deleteOrders(orderNo) {
   const url = "/api/orders/" + orderNo;
@@ -121,6 +152,36 @@ export async function findByOrderDateYM(orderDateYM) {
     params: {
       orderDateYM: orderDateYM,
     },
+  });
+}
+
+// ユーザー情報全件取得処理
+export async function getUsers() {
+  const url = "/api/users";
+  return await axios.get(url);
+}
+
+//ユーザー情報をユーザーIDで検索
+export async function getUsersByUserId(userId) {
+  const url = "/api/users";
+  return await axios.get(url, {
+    params: {
+      userId: userId,
+    },
+  });
+}
+
+// ユーザー情報登録
+export async function postUsers(usersModel) {
+  const url = "/api/users";
+  const currentId = UserUtil.currentUserInfo().id;
+  return await axios.post(url, {
+    userId: usersModel.userId,
+    userPass: usersModel.userPass,
+    userName: usersModel.userName,
+    userRole: usersModel.userRole,
+    updateId: currentId,
+    entryId: currentId,
   });
 }
 
