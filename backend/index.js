@@ -324,6 +324,60 @@ app.get("/api/products/:productCode", async function (req, res) {
 });
 
 /**
+ * 商品情報登録API
+ */
+app.post("/api/products", async function (req, res) {
+  // リクエストボディ取得
+  const reqBody = req.body;
+  try {
+    // 登録用に最新の商品コードに+1をした値を取得
+    const productCodeToRegister = (await ProductsLogic.getLatestProductCode(db)) + 1;
+
+    // 上限(7桁)を超えていないかのチェック
+    if (String(productCodeToRegister).length > 7) {
+      res.sendStatus(400);
+      return;
+    }
+
+    //  商品情報登録処理
+    await ProductsLogic.create(
+      db,
+      productCodeToRegister,
+      reqBody.productName,
+      reqBody.price,
+      reqBody.updateId,
+      reqBody.entryId
+    );
+
+    res.send();
+  } catch (e) {
+    // 異常レスポンス
+    console.log("failed to add product.", e);
+    res.sendStatus(500);
+  }
+});
+
+/**
+ * 商品情報削除API
+ */
+app.delete("/api/products/:productCode", async function (req, res) {
+  try {
+    await ProductsLogic.delete(db, req.params.productCode);
+    //正常レスポンス
+    res.send();
+  } catch (e) {
+    //異常レスポンス
+    //削除対象の商品が受注情報に登録されている場合
+    if (e.parent.errno == DbUtil.ErrorCode.foreignKeyConstraint) {
+      res.sendStatus(422);
+    } else {
+      console.log("failed to delete product", e);
+      res.sendStatus(500);
+    }
+  }
+});
+
+/**
  * 受注情報削除API
  */
 app.delete("/api/orders/:orderNo", async function (req, res) {
@@ -334,6 +388,77 @@ app.delete("/api/orders/:orderNo", async function (req, res) {
   } catch (e) {
     //異常レスポンス
     console.log("failed to delete order", e);
+    res.sendStatus(500);
+  }
+});
+
+/**
+ * ユーザー情報全件取得API
+ */
+app.get("/api/users", async function (req, res) {
+  try {
+    const users = await UsersLogic.getAll(db);
+    res.send({
+      Items: JSON.stringify(users),
+    });
+  } catch (e) {
+    // 異常レスポンス
+    console.log("failed to get users.", e);
+    res.sendStatus(500);
+  }
+});
+
+/**
+ * ユーザー情報検索API
+ */
+app.get("/api/users", async function (req, res) {
+  try {
+    const query = req.query;
+
+    // ユーザー情報をユーザーIDで検索
+    const user = await UsersLogic.findByUserId(db, query.userId);
+
+    res.send({
+      Items: JSON.stringify(user),
+    });
+  } catch (e) {
+    // 異常レスポンス
+    console.log("failed to get orders.", e);
+    res.sendStatus(500);
+  }
+});
+
+/**
+ * ユーザー情報登録API
+ */
+app.post("/api/users", async function (req, res) {
+  // リクエストボディ取得
+  const reqBody = req.body;
+
+  try {
+    // 登録用に、最新の管理用id+1をした値を取得
+    const idToRegister = (await UsersLogic.getMaxId(db)) + 1;
+
+    // 上限を超えていないかを判定
+    if (String(idToRegister).length > 4) {
+      res.sendStatus(400);
+      return;
+    }
+
+    await UsersLogic.create(
+      db,
+      idToRegister,
+      reqBody.userId,
+      reqBody.userPass,
+      reqBody.userName,
+      reqBody.userRole,
+      reqBody.updateId,
+      reqBody.entryId
+    );
+    res.send();
+  } catch (e) {
+    // 異常レスポンス
+    console.log("failed to add user.", e);
     res.sendStatus(500);
   }
 });
