@@ -136,3 +136,27 @@ export async function getUsers() {
   const url = "/api/users";
   return await axios.get(url);
 }
+
+//ユーザー情報をユーザーIDで検索
+export async function getUsersByUserId(userId) {
+  const url = "/api/users";
+  return await axios.get(url, {
+    params: {
+      userId: userId,
+    },
+  });
+}
+
+// ユーザー情報登録
+export async function postUsers(usersModel) {
+  const url = "/api/users";
+  const currentId = UserUtil.currentUserInfo().id;
+  return await axios.post(url, {
+    userId: usersModel.userId,
+    userPass: usersModel.userPass,
+    userName: usersModel.userName,
+    userRole: usersModel.userRole,
+    updateId: currentId,
+    entryId: currentId,
+  });
+}
