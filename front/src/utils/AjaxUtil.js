@@ -108,6 +108,13 @@ export async function getProductsByProductCode(productCode) {
   return await axios.get(url);
 }
 
+
+//商品情報削除
+export async function deleteProducts(productCode) {
+  const url = "/api/products/" + productCode;
+  return await axios.delete(url);
+}
+
 //受注情報削除
 export async function deleteOrders(orderNo) {
   const url = "/api/orders/" + orderNo;
@@ -122,6 +129,12 @@ export async function findByOrderDateYM(orderDateYM) {
       orderDateYM: orderDateYM,
     },
   });
+}
+
+// ユーザー情報全件取得処理
+export async function getUsers() {
+  const url = "/api/users";
+  return await axios.get(url);
 }
 
 //ユーザー情報をユーザーIDで検索
