@@ -1,5 +1,5 @@
-const ProductsRepository = require("../db/products");
 const sequelize = require("sequelize");
+const ProductsRepository = require("../db/products");
 
 /**
  * 商品情報の全件検索処理
@@ -35,6 +35,23 @@ module.exports.findByProductCode = async function (db, productCode) {
 
   try {
     return await productsModel.findByPk(productCode);
+  } catch (e) {
+    throw e;
+  }
+};
+
+
+/**
+ * 商品情報削除
+ */
+module.exports.delete = async function (db, productCode) {
+  const productsModel = ProductsRepository.getProductsModel(db);
+  try {
+    await productsModel.destroy({
+      where: {
+        product_code: productCode,
+      },
+    });
   } catch (e) {
     throw e;
   }

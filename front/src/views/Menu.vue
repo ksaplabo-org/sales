@@ -6,7 +6,6 @@
         <div class="container-fluid">
           <h1 class="border-bottom">メニュー</h1>
         </div>
-        <p class="text-danger mb-4" v-show="errMsg">{{ errMsg }}</p>
 
         <div class="row row-cols-auto justify-content-center" style="margin: 15px auto">
           <div class="col-lg-4 mb-4">
@@ -135,7 +134,6 @@ export default {
       outputYM: "",
 
       // エラーメッセージ
-      errMsg: "",
       outputYMErrMsg: "",
     };
   },
@@ -273,7 +271,7 @@ export default {
         link.download = `${outputYMForDisplay}売上一覧.xlsx`;
         link.click();
       } catch {
-        this.errMsg = "Excelファイル出力処理に失敗しました";
+        window.alert("Excelファイル出力処理に失敗しました。");
       } finally {
         this.isLoading = false;
       }
