@@ -27,38 +27,36 @@ module.exports.findByUserId = async function (db, userId) {
 };
 
 /**
- * 最新の管理用IDを取得
+ * ユーザー情報を取得
+ *
+ * [検索条件]
+ * 管理用IDの完全一致
+ *
+ * @param {*} db
+ * @param {*} id
+ * @returns {Promise<Object>}
  */
-module.exports.getMaxId = async function (db) {
+module.exports.findById = async function (db, id) {
+  //顧客情報の定義を取得
   const usersModel = UsersRepository.getUsersModel(db);
+
   try {
-    return await usersModel.max("id");
+    return await usersModel.findByPk(id);
   } catch (e) {
     throw e;
   }
 };
 
 /**
- * ユーザー情報を登録
+ * ユーザー情報削除
  */
-module.exports.create = async function (db, id, userId, userPass, userName, userRole, updateId, entryId) {
+module.exports.delete = async function (db, id) {
   const usersModel = UsersRepository.getUsersModel(db);
-
   try {
-    // 登録・更新日
-    const timestamp = sequelize.fn("now");
-
-    // ユーザー情報登録
-    return await usersModel.create({
-      id: id,
-      user_id: userId,
-      user_name: userName,
-      user_pass: userPass,
-      user_role: userRole,
-      update_id: updateId,
-      update_date: timestamp,
-      entry_id: entryId,
-      entry_date: timestamp,
+    await usersModel.destroy({
+      where: {
+        id: id,
+      },
     });
   } catch (e) {
     throw e;

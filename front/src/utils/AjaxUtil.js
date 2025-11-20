@@ -185,6 +185,18 @@ export async function postUsers(usersModel) {
   });
 }
 
+// ユーザー情報を管理用IDで検索
+export async function getUsersById(id) {
+  const url = "/api/users/" + id;
+  return await axios.get(url);
+}
+
+//ユーザー情報削除
+export async function deleteUsers(id) {
+  const url = "/api/users/" + id;
+  return await axios.delete(url);
+}
+
 //ユーザー情報をユーザーIDで検索
 export async function getUsersByUserId(userId) {
   const url = "/api/users";
