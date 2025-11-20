@@ -184,3 +184,32 @@ export async function postUsers(usersModel) {
     entryId: currentId,
   });
 }
+
+//ユーザー情報をユーザーIDで検索
+export async function getUsersByUserId(userId) {
+  const url = "/api/users";
+  return await axios.get(url, {
+    params: {
+      userId: userId,
+    },
+  });
+}
+
+//ユーザー情報を管理用IDで検索
+export async function getUsersById(id) {
+  const url = "/api/users/" + id;
+  return await axios.get(url);
+}
+
+//ユーザー情報修正
+export async function putUsers(usersModel) {
+  const url = "/api/users";
+  return await axios.put(url, {
+    id: usersModel.id,
+    userId: usersModel.userId,
+    userPass: usersModel.userPass,
+    userName: usersModel.userName,
+    userRole: usersModel.userRole,
+    updateId: UserUtil.currentUserInfo().id,
+  });
+}
