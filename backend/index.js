@@ -324,6 +324,40 @@ app.get("/api/products/:productCode", async function (req, res) {
 });
 
 /**
+ * 商品情報登録API
+ */
+app.post("/api/products", async function (req, res) {
+  // リクエストボディ取得
+  const reqBody = req.body;
+  try {
+    // 登録用に最新の商品コードに+1をした値を取得
+    const productCodeToRegister = (await ProductsLogic.getLatestProductCode(db)) + 1;
+
+    // 上限(7桁)を超えていないかのチェック
+    if (String(productCodeToRegister).length > 7) {
+      res.sendStatus(400);
+      return;
+    }
+
+    //  商品情報登録処理
+    await ProductsLogic.create(
+      db,
+      productCodeToRegister,
+      reqBody.productName,
+      reqBody.price,
+      reqBody.updateId,
+      reqBody.entryId
+    );
+
+    res.send();
+  } catch (e) {
+    // 異常レスポンス
+    console.log("failed to add product.", e);
+    res.sendStatus(500);
+  }
+});
+
+/**
  * 商品情報削除API
  */
 app.delete("/api/products/:productCode", async function (req, res) {

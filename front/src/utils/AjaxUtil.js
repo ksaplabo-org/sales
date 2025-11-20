@@ -115,6 +115,18 @@ export async function deleteProducts(productCode) {
   return await axios.delete(url);
 }
 
+// 商品情報登録
+export async function postProducts(productModel) {
+  const url = "/api/products";
+  const id = UserUtil.currentUserInfo().id;
+  return await axios.post(url, {
+    productName: productModel.productName,
+    price: productModel.price,
+    updateId: id,
+    entryId: id,
+  });
+}
+
 //受注情報削除
 export async function deleteOrders(orderNo) {
   const url = "/api/orders/" + orderNo;

@@ -1,5 +1,6 @@
 const sequelize = require("sequelize");
 const ProductsRepository = require("../db/products");
+
 /**
  * 商品情報の全件検索処理
  *
@@ -51,6 +52,41 @@ module.exports.delete = async function (db, productCode) {
         product_code: productCode,
       },
     });
+  } catch (e) {
+    throw e;
+  }
+};
+
+/**
+ * 商品情報を登録
+ */
+module.exports.create = async function (db, productCode, productName, price, updateId, entryId) {
+  const productsModel = ProductsRepository.getProductsModel(db);
+
+  try {
+    return await productsModel.create({
+      product_code: productCode,
+      product_name: productName,
+      price: price,
+      update_id: updateId,
+      update_date: sequelize.fn("now"),
+      entry_id: entryId,
+      entry_date: sequelize.fn("now"),
+    });
+  } catch (e) {
+    throw e;
+  }
+};
+
+/**
+ * 商品コードの最新の値を検索
+ */
+module.exports.getLatestProductCode = async function (db) {
+  const productsModel = ProductsRepository.getProductsModel(db);
+
+  try {
+    // 商品コードの最大値を取得
+    return await productsModel.max("product_code");
   } catch (e) {
     throw e;
   }
