@@ -1,3 +1,4 @@
+/*
 import Vue from "vue";
 
 // import JQuery(for Bootstrap etc)
@@ -15,24 +16,29 @@ import "bootstrap/dist/js/bootstrap.bundle";
 // import fortawesome(for https://startbootstrap.com/ template this is licenced by MIT)
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import "datatables.net-bs4/css/dataTables.bootstrap4.css";
-import "../public/css/sb-admin.min.css";
 
 // import b-table
 import BootstrapVue from "bootstrap-vue";
+*/
 
-// import Loading Image Style
-import "../public/css/common.css";
+import "@/utils/sb-admin";
+import "@/css/common.css";
+import "@/css/sb-admin.min.css";
+
+import "@fortawesome/fontawesome-free/css/all.min.css";
 
 import App from "./App.vue";
 import router from "./router";
-import "./utils/sb-admin";
+import { createApp } from "vue";
 
-Vue.config.silent = false;
-Vue.config.productionTip = false;
+import 'bootstrap'
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 
-Vue.use(BootstrapVue);
+import 'bootstrap-vue-next/dist/bootstrap-vue-next.css';
+import { createBootstrap } from 'bootstrap-vue-next'
 
-new Vue({
-  router,
-  render: (h) => h(App),
-}).$mount("#app");
+const app = createApp(App);
+app.use(router);
+app.use(createBootstrap());
+app.mount("#app");

@@ -1,6 +1,6 @@
 <template>
   <!-- Menu -->
-  <ul class="sidebar navbar-nav" ref="test">
+  <ul class="sidebar navbar-nav bg-dark" ref="test">
     <li class="nav-item active">
       <router-link tag="a" class="nav-link" :to="{ name: 'top' }">
         <i class="fas fa-fw fa-tachometer-alt"></i>
@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import * as UserUtil from "@/utils/UserUtil";
+import * as Auth from "@/utils/auth.js";
 
 export default {
   data() {
@@ -29,21 +29,22 @@ export default {
      *    onlyAdmin: true:管理者のみ/false:管理者、一般で使用可能
      */
     return {
-      menuList: [
-        //{ title: "ユーザー一覧", name: "userList", icon: "fas fa-fw fa-user", onlyAdmin: true },
-      ].filter((e) => (!UserUtil.isAdmin() ? !e.onlyAdmin : true)),
+      menuList: [{ title: "ユーザー一覧", name: "userList", icon: "fas fa-fw fa-user", onlyAdmin: true }],
+      //.filter((e) => (!Auth.isAdmin() ? !e.onlyAdmin : true)),
     };
   },
   async mounted() {
+    /*
     try {
-      if (UserUtil.isSignIn()) {
+      if (Auth.isLogin()) {
         this.msg = "";
       } else {
-        this.$router.push({ name: "signIn", params: { flashMsg: "サインインしてください" } });
+        this.$router.push({ name: "login", params: { flashMsg: "サインインしてください" } });
       }
     } catch (e) {
       this.errMsg = e.message;
     }
+      */
   },
 };
 </script>

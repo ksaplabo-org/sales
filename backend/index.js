@@ -24,6 +24,7 @@ app.post("/api/sign-in", async function (req, res) {
 
   let resBody = null;
   let status = 200;
+  console.log(reqBody);
   try {
     const user = await UserLogic.findById(db, reqBody.userId);
     if (user == null || user.password !== reqBody.password) {
