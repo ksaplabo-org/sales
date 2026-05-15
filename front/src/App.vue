@@ -10,11 +10,13 @@ import * as Auth from "@/utils/auth.js";
 <template>
   <!-- ログイン以外の画面 -->
   <div v-if="Auth.isLogin()">
-    <NaviMenu />
-    <div id="wrapper" class="bg-light">
+    <div id="wrapper" class="vh-100 overflow-hidden bg-light">
       <Menu />
-      <div id="content-wrapper" class="container-fluid">
-        <RouterView />
+      <div id="content-wrapper" class="container-fluid p-0">
+        <NaviMenu />
+        <div class="p-3">
+          <RouterView />
+        </div>
       </div>
     </div>
   </div>

@@ -1,11 +1,12 @@
 {
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.formatOnSave": false,
+  "editor.renderWhitespace": "all",
   "[vue]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "prettier.printWidth": 120,
   "prettier.semi": true,
   "prettier.tabWidth": 2,
-  "prettier.useTabs": false,
+  "prettier.useTabs": false
 }
