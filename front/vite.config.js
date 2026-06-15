@@ -28,20 +28,6 @@ export default defineConfig({
     }),
     */
   ],
-  pages: {
-    login: {
-      entry: "src/main.js",
-      template: "public/pages/index.html",
-      filename: "pages/login.html",
-      title: "ログイン",
-    },
-    top: {
-      entry: "src/main.js",
-      template: "public/pages/index.html",
-      filename: "pages/top.html",
-      title: "トップページ",
-    },
-  },
   server: {
     port: 8080,
     proxy: {

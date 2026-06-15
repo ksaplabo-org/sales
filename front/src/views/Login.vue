@@ -3,7 +3,7 @@
     <div class="d-flex justify-content-center align-items-start min-vh-100 pt-5">
       <!-- ログイン情報入力フォーム -->
       <BCard header="タイトル" class="custom-card">
-        <form @submit.stop.prevent="login" method="post">
+        <BForm @submit.prevent="login">
           <BCardText>
             <!-- ユーザーID -->
             <div class="form-floating mb-3">
@@ -18,7 +18,7 @@
             </div>
           </BCardText>
           <BButton type="submit" class="w-100" variant="primary">ログイン</BButton>
-        </form>
+        </BForm>
       </BCard>
     </div>
 

@@ -70,9 +70,9 @@ const menus = ref([
     open: true,
     menus: [
       {
-        title: "ユーザマスタ",
+        title: "ユーザーマスタ",
         icon: "fa-user",
-        to: "pages/users/list",
+        to: "/master/users",
       },
       {
         title: "商品マスタ",

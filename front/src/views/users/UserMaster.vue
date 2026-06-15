@@ -1,0 +1,234 @@
+<template>
+  <!-- タイトル -->
+  <BContainer fluid class="px-0 pb-2 mb-2">
+    <div class="d-flex justify-content-between align-items-center">
+      <h3 class="mb-0">ユーザーマスタ</h3>
+      <BBreadcrumb
+        :items="[
+          { text: 'トップページ', to: '/' },
+          { text: 'ユーザーマスタ', to: '/master/users', active: true },
+        ]"
+      />
+    </div>
+  </BContainer>
+
+  <!-- アラート -->
+  <BToast v-model="showSuccessToast" variant="success" no-progress no-close-button> 削除に成功しました </BToast>
+  <BToast v-model="showFailedToast" variant="danger" no-progress no-close-button> 削除に失敗しました </BToast>
+
+  <!-- 検索条件 -->
+  <BCard class="shadow-sm mb-3">
+    <template #header>
+      <strong>検索条件</strong>
+    </template>
+
+    <BForm @submit.prevent="search">
+      <BRow>
+        <BCol md="4">
+          <BFormGroup label="ユーザーID">
+            <BFormInput placeholder="ユーザーIDを入力" v-model="condition.userId" />
+          </BFormGroup>
+        </BCol>
+
+        <BCol md="4">
+          <BFormGroup label="ユーザー名">
+            <BFormInput placeholder="ユーザー名を入力" v-model="condition.userName" />
+          </BFormGroup>
+        </BCol>
+
+        <BCol md="4">
+          <BFormGroup label="権限">
+            <BFormSelect
+              v-model="condition.role"
+              :options="[
+                { value: '', text: 'すべて' },
+                { value: '1', text: '一般' },
+                { value: '2', text: '管理者' },
+              ]"
+            />
+          </BFormGroup>
+        </BCol>
+      </BRow>
+
+      <BRow class="mt-3">
+        <BCol>
+          <BFormCheckbox v-model="condition.includeDeleted"> 削除済みを含める </BFormCheckbox>
+        </BCol>
+        <BCol class="text-end">
+          <BButton variant="outline-secondary" class="me-2" @click="clearCondition">
+            <i class="fas fa-redo"></i>
+            クリア
+          </BButton>
+          <BButton type="submit" variant="primary">
+            <i class="fas fa-search"></i>
+            検索
+          </BButton>
+        </BCol>
+      </BRow>
+    </BForm>
+  </BCard>
+
+  <!-- 検索結果 -->
+  <BCard class="shadow-sm">
+    <template #header>
+      <div class="d-flex justify-content-between align-items-center">
+        <strong>検索結果 ( {{ totalCount }} 件 )</strong>
+
+        <BButton size="sm" variant="primary">
+          <i class="fas fa-plus"></i>
+          新規登録
+        </BButton>
+      </div>
+    </template>
+
+    <BTable head-variant="secondary" :items="items" :fields="fields" class="mb-0" show-empty responsive>
+      <!-- 権限 -->
+      <template #cell(role)="row">
+        {{ roleOptions.find((x) => x.value === row.value)?.text }}
+      </template>
+
+      <!-- 編集・削除ボタン -->
+      <template #cell(actions)="row">
+        <BContainer fluid class="d-flex justify-content-center gap-2 px-0">
+          <BButton size="sm" variant="outline-primary">
+            <i class="fas fa-pen"></i>
+            編集
+          </BButton>
+          <BButton size="sm" variant="outline-danger" @click="openDeleteModal(row.item)">
+            <i class="far fa-trash-alt"></i>
+            削除
+          </BButton>
+        </BContainer>
+      </template>
+
+      <!-- 検索結果なし -->
+      <template #empty>
+        <div class="text-center py-0">検索結果がありません</div>
+      </template>
+    </BTable>
+  </BCard>
+
+  <!-- 削除確認モーダル -->
+  <BModal
+    v-model="showDeleteModal"
+    title="削除確認"
+    ok-title="削除"
+    ok-variant="danger"
+    cancel-title="キャンセル"
+    @ok="deleteUser()"
+  >
+    <p>{{ targetRow?.userId }} を削除しますか？</p>
+  </BModal>
+
+  <!-- 削除成功モーダル -->
+  <BModal v-model="showDeleteSuccessModal" title="確認" ok-title="OK" ok-only>
+    <p>{{ targetRow?.userId }} の削除に成功しました</p>
+  </BModal>
+
+  <!-- スクロールトップボタン-->
+  <ScrollTop />
+
+  <!-- ローディングマスク -->
+  <Loading v-if="loading" />
+</template>
+
+<script setup>
+import { computed, ref, onMounted } from "vue";
+
+import * as userApi from "@/api/userApi.js";
+import { formatDatetime } from "@/utils/DateUtils.js";
+import Loading from "@/components/Loading.vue";
+import ScrollTop from "@/components/ScrollTop.vue";
+
+// 権限の一覧
+const roleOptions = [
+  { value: "1", text: "一般" },
+  { value: "2", text: "管理者" },
+];
+
+// 検索条件
+const condition = ref({
+  userId: "",
+  userName: "",
+  role: "",
+  includeDeleted: false,
+});
+
+// 検索結果
+const items = ref([]);
+// 検索結果の合計件数
+const totalCount = computed(() => items.value.length);
+// 一覧のカラム定義
+const fields = [
+  { key: "userId", label: "ユーザーID" },
+  { key: "userName", label: "ユーザー名" },
+  { key: "age", label: "年齢" },
+  { key: "role", label: "権限" },
+  {
+    key: "updatedAt",
+    label: "更新日時",
+    formatter: ({ value }) => {
+      return formatDatetime(value);
+    },
+  },
+  { key: "actions", label: "" },
+];
+
+// 読み込み中の表示制御
+const loading = ref(false);
+// 削除確認モーダルの表示制御
+const showDeleteModal = ref(false);
+// 削除成功モーダルの表示制御
+const showDeleteSuccessModal = ref(false);
+// 処理中のデータ
+const targetRow = ref(null);
+// アラートモーダルのタイトル
+const alertTitle = ref("");
+// アラートモーダルのメッセージ
+const alertMessage = ref("");
+const showDismissibleAlert = ref(false);
+const showSuccessToast = ref(0);
+const showFailedToast = ref(0);
+const countdown = ref(0);
+
+// 検索条件の初期化処理
+const clearCondition = () => {
+  condition.value = {
+    userId: "",
+    userName: "",
+    role: "",
+    includeDeleted: false,
+  };
+};
+
+// 検索処理
+const search = async () => {
+  loading.value = true;
+  console.log(condition.value);
+  const users = await userApi.findUsers(condition.value);
+  items.value = users.data;
+  loading.value = false;
+  showDismissibleAlert.value = true;
+};
+
+// 削除確認モーダル表示処理
+const openDeleteModal = (row) => {
+  targetRow.value = row;
+  showDeleteModal.value = true;
+};
+
+// ユーザー削除処理
+const deleteUser = async () => {
+  try {
+    await userApi.deleteUser(targetRow.value.userId);
+    await search();
+    showSuccessToast.value = 3000;
+  } catch (e) {
+    console.log(e);
+    showFailedToast.value = 3000;
+  }
+};
+
+// 初期表示時処理
+onMounted(async () => await search(condition.value));
+</script>
