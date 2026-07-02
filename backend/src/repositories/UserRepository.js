@@ -1,38 +1,51 @@
-import { literal, Op } from "sequelize";
+import { col, fn, literal, Op } from "sequelize";
 import UserModel from "../models/UserModel.js";
 
 class UserRepository {
   async find(condition) {
+    // 検索条件を作成
     const where = {};
     if (condition.userId) {
       where.user_id = { [Op.like]: "%" + condition.userId + "%" };
     }
     if (condition.userName) {
-      where.user_name = { [Op.like]: "%" + condition.userName + "%" };
+      where.last_name = { [Op.like]: "%" + condition.userName + "%" };
+      where.first_name = { [Op.like]: "%" + condition.userName + "%" };
     }
     if (condition.role) {
       where.role = condition.role;
     }
     if (!condition.includeDeleted) {
-      where.delete_flg = false;
+      where.del_flg = false;
     }
+
+    // 検索結果を返却
     return await UserModel.findAll({
       attributes: [
         ["user_id", "userId"],
-        ["user_name", "userName"],
+        ["last_name", "lastName"],
+        ["first_name", "firstName"],
+        [fn("CONCAT", col("last_name"), " ", col("first_name")), "fullName"],
         "password",
         "role",
-        "address",
         "birthday",
         [literal("TIMESTAMPDIFF(YEAR, birthday, CURDATE())"), "age"],
+        ["created_id", "createdId"],
         ["created_at", "createdAt"],
+        ["updated_id", "updatedId"],
         ["updated_at", "updatedAt"],
-        ["delete_flg", "deleteFlg"],
+        ["del_flg", "delFlg"],
       ],
       where: where,
     });
   }
 
+  /**
+   * ユーザーIDから検索
+   * 
+   * @param {*} id ユーザーID
+   * @returns ユーザー情報
+   */
   async findById(id) {
     return await UserModel.findByPk(id);
   }

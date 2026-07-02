@@ -15,11 +15,9 @@ export default defineConfig({
       dirs: [
         "src/components", // デフォルトで読み込まれるディレクトリ
         "src/pages", // コンポーネントが入っているパスを追加する
-        "src/**/*.vue"
+        "src/**/*.vue",
       ],
-      globs: [
-        "src/**/*.vue"
-      ],
+      globs: ["src/**/*.vue"],
       resolvers: [BootstrapVueNextResolver()],
     }),
     /*

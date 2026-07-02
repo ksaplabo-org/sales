@@ -1,36 +1,17 @@
 <template>
   <div>
     <nav class="navbar navbar-expand navbar-dark bg-white static-top shadow-sm">
-      <button class="btn btn-link text-dark order-1 order-sm-0 px-4" id="sidebarToggle" href="#">
-        <i class="fas fa-bars"></i>
-      </button>
-
-      <!-- Navbar -->
       <ul class="navbar-nav ms-auto">
         <li class="nav-item px-3">
           <BDropdown variant="link" strategy="fixed" no-caret>
-            <!-- アイコン（クリックで開く） -->
             <template #button-content>
               <i class="fas fa-user-circle text-black fs-5"></i>
             </template>
 
-            <!-- メニュー -->
-            <BDropdownItem>
-              <i class="bi bi-person me-2"></i>
-              プロフィール
-            </BDropdownItem>
-
-            <BDropdownItem>
-              <i class="bi bi-gear me-2"></i>
-              設定
-            </BDropdownItem>
-
+            <BDropdownHeader>{{ Auth.currentUserInfo().userId }} さん</BDropdownHeader>
             <BDropdownDivider />
-
-            <BDropdownItem>
-              <i class="bi bi-box-arrow-right me-2"></i>
-              ログアウト
-            </BDropdownItem>
+            <BDropdownItem @click="handleSelect('edit')">編集</BDropdownItem>
+            <BDropdownItem @click="handleSelect('logout')">ログアウト</BDropdownItem>
           </BDropdown>
         </li>
       </ul>
@@ -39,16 +20,20 @@
 </template>
 
 <script setup>
+import { useRouter } from "vue-router";
 import * as Auth from "@/utils/auth.js";
 
-async function logout() {
-  try {
-    await Auth.signOut();
-    this.$router.push({ name: "signIn", params: { flashMsg: "サインアウトしました" } });
-  } catch (e) {
-    this.isLoading = false;
-    this.msg = e.message;
-    this.$router.push({ name: "signIn", params: { flashErrMsg: "サインアウト中にエラーが発生しました" } });
+const router = useRouter();
+
+async function handleSelect(action) {
+  switch (action) {
+    case "edit":
+      console.log("編集処理");
+      break;
+    case "logout":
+      await Auth.logout();
+      router.push({ name: "login" });
+      break;
   }
 }
 </script>

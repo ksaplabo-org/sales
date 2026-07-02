@@ -12,9 +12,9 @@
     </div>
   </BContainer>
 
-  <!-- アラート -->
-  <BToast v-model="showSuccessToast" variant="success" no-progress no-close-button> 削除に成功しました </BToast>
-  <BToast v-model="showFailedToast" variant="danger" no-progress no-close-button> 削除に失敗しました </BToast>
+  <!-- トースト -->
+  <BToast v-model="showSuccessToast" variant="success" no-progress no-close-button>削除に成功しました</BToast>
+  <BToast v-model="showFailedToast" variant="danger" no-progress no-close-button>削除に失敗しました</BToast>
 
   <!-- 検索条件 -->
   <BCard class="shadow-sm mb-3">
@@ -74,14 +74,14 @@
       <div class="d-flex justify-content-between align-items-center">
         <strong>検索結果 ( {{ totalCount }} 件 )</strong>
 
-        <BButton size="sm" variant="primary">
+        <BButton size="sm" variant="primary" :to="{ name: 'user-form' }">
           <i class="fas fa-plus"></i>
           新規登録
         </BButton>
       </div>
     </template>
 
-    <BTable head-variant="secondary" :items="items" :fields="fields" class="mb-0" show-empty responsive>
+    <BTable head-variant="secondary" :items="items" :fields="fields" class="mb-0" show-empty responsive hover>
       <!-- 権限 -->
       <template #cell(role)="row">
         {{ roleOptions.find((x) => x.value === row.value)?.text }}
@@ -125,9 +125,6 @@
     <p>{{ targetRow?.userId }} の削除に成功しました</p>
   </BModal>
 
-  <!-- スクロールトップボタン-->
-  <ScrollTop />
-
   <!-- ローディングマスク -->
   <Loading v-if="loading" />
 </template>
@@ -136,9 +133,7 @@
 import { computed, ref, onMounted } from "vue";
 
 import * as userApi from "@/api/userApi.js";
-import { formatDatetime } from "@/utils/DateUtils.js";
 import Loading from "@/components/Loading.vue";
-import ScrollTop from "@/components/ScrollTop.vue";
 
 // 権限の一覧
 const roleOptions = [
@@ -160,17 +155,10 @@ const items = ref([]);
 const totalCount = computed(() => items.value.length);
 // 一覧のカラム定義
 const fields = [
-  { key: "userId", label: "ユーザーID" },
-  { key: "userName", label: "ユーザー名" },
+  { key: "userId", label: "ユーザーID", sortable: true },
+  { key: "fullName", label: "ユーザー名" },
   { key: "age", label: "年齢" },
   { key: "role", label: "権限" },
-  {
-    key: "updatedAt",
-    label: "更新日時",
-    formatter: ({ value }) => {
-      return formatDatetime(value);
-    },
-  },
   { key: "actions", label: "" },
 ];
 
@@ -182,16 +170,18 @@ const showDeleteModal = ref(false);
 const showDeleteSuccessModal = ref(false);
 // 処理中のデータ
 const targetRow = ref(null);
-// アラートモーダルのタイトル
-const alertTitle = ref("");
-// アラートモーダルのメッセージ
-const alertMessage = ref("");
-const showDismissibleAlert = ref(false);
+// 削除成功・失敗トーストの表示制御
 const showSuccessToast = ref(0);
 const showFailedToast = ref(0);
-const countdown = ref(0);
 
-// 検索条件の初期化処理
+/**
+ * 初期表示処理
+ */
+onMounted(async () => await search(condition.value));
+
+/**
+ * 検索条件の初期化処理
+ */
 const clearCondition = () => {
   condition.value = {
     userId: "",
@@ -201,23 +191,28 @@ const clearCondition = () => {
   };
 };
 
-// 検索処理
+/**
+ * 検索処理
+ */
 const search = async () => {
   loading.value = true;
-  console.log(condition.value);
   const users = await userApi.findUsers(condition.value);
   items.value = users.data;
+  console.log(users.data);
   loading.value = false;
-  showDismissibleAlert.value = true;
 };
 
-// 削除確認モーダル表示処理
+/**
+ * 削除確認モーダル表示処理
+ */
 const openDeleteModal = (row) => {
   targetRow.value = row;
   showDeleteModal.value = true;
 };
 
-// ユーザー削除処理
+/**
+ * ユーザー削除処理
+ */
 const deleteUser = async () => {
   try {
     await userApi.deleteUser(targetRow.value.userId);
@@ -228,7 +223,4 @@ const deleteUser = async () => {
     showFailedToast.value = 3000;
   }
 };
-
-// 初期表示時処理
-onMounted(async () => await search(condition.value));
 </script>

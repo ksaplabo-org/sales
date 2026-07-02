@@ -1,22 +1,4 @@
 <template>
-  <!-- Menu -->
-  <!--
-  <ul class="sidebar navbar-nav bg-dark" ref="test">
-    <li class="nav-item active">
-      <router-link tag="a" class="nav-link" :to="{ name: 'top' }">
-        <i class="fas fa-fw fa-tachometer-alt me-1"></i>
-        <span>トップページ</span>
-      </router-link>
-    </li>
-    <li v-for="(menu, i) in menuList" :key="`bad-sample_${i}`" class="nav-item active">
-      <router-link tag="a" class="nav-link" :to="{ name: menu.name }">
-        <i v-bind:class="menu.icon"></i>
-        <span>{{ menu.title }}</span>
-      </router-link>
-    </li>
-  </ul>
--->
-
   <div class="sidebar navbar-nav bg-dark text-white flex-shrink-0">
     <!-- ロゴ -->
     <div class="d-flex align-items-center px-3" style="height: 56px">
@@ -51,7 +33,6 @@
             active-class="bg-primary"
           >
             <i class="fas me-2" :class="menu.icon"></i>
-
             {{ menu.title }}
           </RouterLink>
         </BCollapse>

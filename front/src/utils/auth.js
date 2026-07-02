@@ -1,8 +1,8 @@
 import * as UserConst from "@/constants/users";
-import * as AjaxUtil from "@/utils/AjaxUtil";
+import * as authApi from "@/api/authApi.js";
 
 /**
- * SessionStorageに保持するログインユーザー情報 のキー
+ * セッションストレージに保持するキー
  */
 const AUTH_KEY = "loginKey";
 
@@ -14,8 +14,11 @@ const AUTH_KEY = "loginKey";
  */
 export async function login(userId, password) {
   try {
-    const response = await AjaxUtil.login(userId, password);
-    sessionStorage.setItem(AUTH_KEY, JSON.stringify(response.data));
+    // 認証
+    const response = await authApi.login(userId, password);
+
+    // 認証したユーザー情報をセッションストレージに保持することでログイン状態として扱う
+    sessionStorage.setItem(AUTH_KEY, JSON.stringify(response));
   } catch (e) {
     throw e;
   }
@@ -25,17 +28,17 @@ export async function login(userId, password) {
  * ログアウト
  */
 export function logout() {
-  // Sセッションストレージからログイン情報を削除する
+  // セッションストレージからログイン情報を削除することでログアウトとする
   sessionStorage.removeItem(AUTH_KEY);
 }
 
 /**
- * ユーザー情報取得
+ * ログインユーザー情報を取得
  *
- * @returns サインインユーザー情報
+ * @returns ログインうユーザー情報
  */
 export function currentUserInfo() {
-  // セッションストレージからログイン情報を取得する
+  // セッションストレージからログインユーザー情報を取得する
   const storageAuth = sessionStorage.getItem(AUTH_KEY);
   return storageAuth === null ? null : JSON.parse(storageAuth);
 }

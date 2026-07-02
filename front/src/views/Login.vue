@@ -51,7 +51,6 @@ import Loading from "@/components/Loading.vue";
 import router from "@/router/index.js";
 // ユーティリティ
 import * as Auth from "@/utils/auth.js";
-import * as Logger from "@/utils/Logger.js";
 
 // リアクティブ変数
 const userId = ref();
@@ -75,7 +74,6 @@ async function login() {
       errorMessage.value = `ログインに失敗しました。入力項目を確認してください。\n\nユーザーID=${userId.value}\nパスワード=${(userId.value, password.value)}`;
     } else {
       errorMessage.value = e.message;
-      Logger.error("システムエラーが発生しました。管理者にご連絡ください。", e);
     }
     visible.value = true;
   } finally {

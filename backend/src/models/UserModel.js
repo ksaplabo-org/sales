@@ -1,5 +1,5 @@
-import { DATE, DATEONLY, STRING, Model, BOOLEAN } from "sequelize";
-import sequelize from "#/config/database.js";
+import { DATE, DATEONLY, STRING, Model, BOOLEAN, INTEGER } from "sequelize";
+import sequelize from "../config/database.js";
 
 class UserModel extends Model {}
 
@@ -7,39 +7,44 @@ UserModel.init(
   {
     userId: {
       field: "user_id",
-      type: STRING(16),
+      type: STRING(6),
       primaryKey: true,
-      allowNull: false,
-    },
-    userName: {
-      field: "user_name",
-      type: STRING(100),
       allowNull: false,
     },
     password: {
       field: "password",
-      type: STRING(16),
+      type: STRING(20),
       allowNull: false,
     },
-    gender: {
-      field: "gender",
-      type: STRING(1),
+    lastName: {
+      field: "last_name",
+      type: STRING(10),
       allowNull: false,
     },
-    auth: {
-      field: "auth",
-      type: STRING(1),
+    firstName: {
+      field: "first_name",
+      type: STRING(10),
       allowNull: false,
+    },
+    birthday: {
+      field: "birthday",
+      type: DATEONLY,
+      allowNull: true,
     },
     role: {
       field: "role",
       type: STRING(150),
       allowNull: true,
     },
-    birthday: {
-      field: "birthday",
-      type: DATEONLY,
+    delFlg: {
+      field: "del_flg",
+      type: BOOLEAN,
       allowNull: true,
+    },
+    createdId: {
+      field: "created_id",
+      type: STRING(6),
+      allowNull: false,
     },
     createdAt: {
       field: "created_at",
@@ -51,10 +56,10 @@ UserModel.init(
       type: DATE,
       allowNull: true,
     },
-    deleteFlg: {
-      field: "delete_flg",
-      type: BOOLEAN,
-      allowNull: true,
+    updatedId: {
+      field: "updated_id",
+      type: STRING(6),
+      allowNull: false,
     },
   },
   {
