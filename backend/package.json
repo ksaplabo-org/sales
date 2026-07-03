@@ -1,10 +1,14 @@
 {
-  "name": "server",
+  "name": "backend",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/app.js",
+  "type": "module",
+  "imports": {
+    "#/*": "./src/*"
+  },
   "scripts": {
-    "start": "nodemon ./node_modules/nodemon/bin/nodemon.js --inspect index.js"
+    "start": "node src/app.js"
   },
   "author": "",
   "license": "ISC",

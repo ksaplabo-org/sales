@@ -1,36 +1,39 @@
 <template>
   <div>
-    <nav class="navbar navbar-expand navbar-dark bg-dark static-top">
-      <button class="btn btn-link btn-sm text-white order-1 order-sm-0" id="sidebarToggle" href="#">
-        <i class="fas fa-bars"></i>
-      </button>
+    <nav class="navbar navbar-expand navbar-dark bg-white static-top shadow-sm">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item px-3">
+          <BDropdown variant="link" strategy="fixed" no-caret>
+            <template #button-content>
+              <i class="fas fa-user-circle text-black fs-5"></i>
+            </template>
 
-      <!-- Navbar Search(なし) -->
-      <form class="d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0"></form>
-
-      <!-- Navbar -->
-      <ul class="navbar-nav ml-auto ml-md-0">
-        <li class="nav-item dropdown no-arrow">
-          <a
-            class="nav-link dropdown-toggle"
-            href="#"
-            id="userDropdown"
-            role="button"
-            data-toggle="dropdown"
-            aria-haspopup="true"
-            aria-expanded="false"
-          >
-            <i class="fas fa-user-circle fa-fw"></i>
-          </a>
-          <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
-            <div class="dropdown-divider"></div>
-            <router-link tag="a" class="dropdown-item" :to="{ name: 'signOut' }">
-              <span>サインアウト</span>
-            </router-link>
-            <div class="dropdown-divider"></div>
-          </div>
+            <BDropdownHeader>{{ Auth.currentUserInfo().userId }} さん</BDropdownHeader>
+            <BDropdownDivider />
+            <BDropdownItem @click="handleSelect('edit')">編集</BDropdownItem>
+            <BDropdownItem @click="handleSelect('logout')">ログアウト</BDropdownItem>
+          </BDropdown>
         </li>
       </ul>
     </nav>
   </div>
 </template>
+
+<script setup>
+import { useRouter } from "vue-router";
+import * as Auth from "@/utils/auth.js";
+
+const router = useRouter();
+
+async function handleSelect(action) {
+  switch (action) {
+    case "edit":
+      console.log("編集処理");
+      break;
+    case "logout":
+      await Auth.logout();
+      router.push({ name: "login" });
+      break;
+  }
+}
+</script>

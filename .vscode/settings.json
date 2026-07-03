@@ -1,6 +1,7 @@
 {
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.formatOnSave": false,
+  "editor.renderWhitespace": "all",
   "[vue]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
