@@ -73,9 +73,6 @@
     </BForm>
   </BContainer>
 
-  <!-- スクロールトップボタン-->
-  <ScrollTop />
-
   <!-- ローディングマスク -->
   <Loading v-if="loading" />
 </template>
@@ -84,9 +81,7 @@
 import { computed, ref, onMounted } from "vue";
 
 import * as userApi from "@/api/userApi.js";
-import { formatDatetime } from "@/utils/DateUtils.js";
 import Loading from "@/components/Loading.vue";
-import ScrollTop from "@/components/ScrollTop.vue";
 
 const form = ref({
   userId: "a",
