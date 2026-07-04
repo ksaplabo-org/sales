@@ -2,21 +2,29 @@ import { col, fn, literal, Op } from "sequelize";
 import UserModel from "../models/UserModel.js";
 
 class UserRepository {
+  /**
+   * ユーザー情報一覧取得
+   *
+   * @param {*} condition 検索条件
+   * @returns ユーザー情報一覧
+   */
   async find(condition) {
     // 検索条件を作成
     const where = {};
     if (condition.userId) {
-      where.user_id = { [Op.like]: "%" + condition.userId + "%" };
+      where.userId = { [Op.like]: "%" + condition.userId + "%" };
     }
     if (condition.userName) {
-      where.last_name = { [Op.like]: "%" + condition.userName + "%" };
-      where.first_name = { [Op.like]: "%" + condition.userName + "%" };
+      where[Op.or] = [
+        { lastName: { [Op.like]: "%" + condition.userName + "%" } },
+        { firstName: { [Op.like]: "%" + condition.userName + "%" } },
+      ];
     }
     if (condition.role) {
       where.role = condition.role;
     }
     if (!condition.includeDeleted) {
-      where.del_flg = false;
+      where.delFlg = false;
     }
 
     // 検索結果を返却
@@ -41,8 +49,8 @@ class UserRepository {
   }
 
   /**
-   * ユーザーIDから検索
-   * 
+   * ユーザー情報詳細取得
+   *
    * @param {*} id ユーザーID
    * @returns ユーザー情報
    */
@@ -51,16 +59,43 @@ class UserRepository {
   }
 
   /**
-   * ユーザー削除
+   * ユーザー情報登録
+   *
+   * @param {*} userInfo ユーザー情報
+   */
+  async insert(userInfo) {
+    userInfo.delFlg = false;
+    await UserModel.create(userInfo);
+  }
+
+  /**
+   * ユーザー情報更新
+   *
+   * @param {*} userId ユーザーID
+   * @param {*} userInfo ユーザー情報
+   */
+  async update(userId, userInfo) {
+    await UserModel.update(userInfo, {
+      where: {
+        userId: userId,
+      },
+    });
+  }
+
+  /**
+   * ユーザー情報論理削除
    *
    * @param {*} userId ユーザーID
    */
   async delete(userId) {
-    await UserModel.destroy({
-      where: {
-        user_id: userId,
+    await UserModel.update(
+      { delFlg: true },
+      {
+        where: {
+          userId: userId,
+        },
       },
-    });
+    );
   }
 }
 

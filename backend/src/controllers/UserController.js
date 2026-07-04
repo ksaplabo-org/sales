@@ -3,8 +3,15 @@ import UserService from "../services/UserService.js";
 class UserController {
   service = new UserService();
 
+  /**
+   * ユーザー情報一覧取得
+   *
+   * @param {*} req リクエスト情報
+   * @param {*} res レスポンス情報
+   */
   async find(req, res) {
     try {
+      // クエリパラメータから検索条件を作成
       const condition = {
         userId: req.query.userId,
         userName: req.query.userName,
@@ -12,73 +19,87 @@ class UserController {
         includeDeleted: req.query.includeDeleted === "true",
       };
 
+      // ユーザー情報一覧検索
       const users = await this.service.find(condition);
       res.json(users);
     } catch (e) {
       console.error(e);
-
-      res.status(500).json({
-        message: "Internal Server Error",
-      });
+      res.status(500).send();
     }
   }
 
+  /**
+   * ユーザー情報詳細取得
+   *
+   * @param {*} req リクエスト情報
+   * @param {*} res レスポンス情報
+   */
   async findById(req, res) {
     try {
-      const user = await this.service.findById(req.params.id);
+      const user = await this.service.findById(req.params.userId);
 
-      if (!user) {
-        return res.status(404).json({
-          message: "User not found",
-        });
+      // 検索結果なし または 論理削除されている場合は404応答
+      if (!user || user.delFlg) {
+        res.status(404).send();
+      } else {
+        res.json(user);
       }
-
-      res.json(user);
     } catch (err) {
       console.error(err);
-      res.status(500).json({ message: "Internal Server Error" });
+      res.status(500).send();
     }
   }
 
+  /**
+   * ユーザー情報登録
+   *
+   * @param {*} req リクエスト情報
+   * @param {*} res レスポンス情報
+   */
+  async insert(req, res) {
+    try {
+      // 各種チェック
+      await this.service.insert(req.body);
+      res.status(201).send();
+    } catch (e) {
+      console.log(e);
+      res.status(500).send();
+    }
+  }
+
+  /**
+   * ユーザー情報更新
+   *
+   * @param {*} req リクエスト情報
+   * @param {*} res レスポンス情報
+   */
+  async update(req, res) {
+    try {
+      // 各種チェック
+      await this.service.update(req.params.userId, req.body);
+      res.status(200).send();
+    } catch (e) {
+      console.log(e);
+      res.status(500).send();
+    }
+  }
+
+  /**
+   * ユーザー情報削除
+   *
+   * @param {*} req リクエスト情報
+   * @param {*} res レスポンス情報
+   */
   async delete(req, res) {
     try {
       // 必須チェック
-      console.log(req.params);
       const userId = req.params.userId;
       await this.service.delete(userId);
-      res.status(200).json();
+      res.status(200).send();
     } catch (e) {
       console.log(e);
-      res.status(500).json({ message: "Internal Server Error" });
+      res.status(500).send();
     }
-  }
-
-  async login(req, res) {
-    // リクエストボディ取得
-    const reqBody = req.body;
-
-    let resBody = null;
-    let status = 200;
-    console.log(reqBody);
-    try {
-      const user = await this.service.findById(reqBody.userId);
-      if (user == null || user.password !== reqBody.password) {
-        // 認証失敗として401エラーを設定
-        status = 401;
-      } else {
-        // 認証成功としてレスポンスボディを設定
-        resBody = {
-          userId: user.user_id,
-          userName: user.user_name,
-          auth: user.auth,
-        };
-      }
-    } catch (e) {
-      // 異常レスポンス
-      console.log("failed to verify user.", e);
-      status = 500;
-    }
-    res.status(status).send(resBody);
   }
 }
 

@@ -51,15 +51,15 @@ UserModel.init(
       type: DATE,
       allowNull: true,
     },
-    updatedAt: {
-      field: "updated_at",
-      type: DATE,
-      allowNull: true,
-    },
     updatedId: {
       field: "updated_id",
       type: STRING(6),
       allowNull: false,
+    },
+    updatedAt: {
+      field: "updated_at",
+      type: DATE,
+      allowNull: true,
     },
   },
   {

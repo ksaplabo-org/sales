@@ -14,12 +14,10 @@ const controller = new UserController();
  *   bindに渡したインスタンスをthisに固定するため、渡した関数のthisを強制できる。
  */
 userRoutes.get("/", controller.find.bind(controller));
-userRoutes.get("/:id", controller.findById.bind(controller));
+userRoutes.get("/:userId", controller.findById.bind(controller));
 
-//userRoutes.post("/", userController.create);
-
+userRoutes.post("/", controller.insert.bind(controller));
+userRoutes.put("/:userId", controller.update.bind(controller));
 userRoutes.delete("/:userId", controller.delete.bind(controller));
-
-userRoutes.post("/", controller.login.bind(controller));
 
 export default userRoutes;
