@@ -204,6 +204,10 @@ const showFailedToast = ref(0);
  * 初期表示処理
  */
 onMounted(async () => {
+  if (loginInfo.role != "2") {
+    router.push({ name: "top" });
+  }
+
   // 一覧検索
   await search(condition.value);
 
@@ -238,9 +242,10 @@ const search = async () => {
   try {
     const users = await userApi.findUsers(condition.value);
     items.value = users.data;
+    console.log(users);
   } catch (e) {
     console.log(e);
-    openFailedToast("検索に失敗しました");
+    openFailedToast(messages.MSGE001);
   } finally {
     loading.value = false;
   }

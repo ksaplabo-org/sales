@@ -2,7 +2,7 @@
   <div class="container">
     <div class="d-flex justify-content-center align-items-start min-vh-100 pt-5">
       <!-- ログイン情報入力フォーム -->
-      <BCard header="タイトル" class="custom-card">
+      <BCard class="custom-card">
         <BForm @submit.prevent="login">
           <BCardText>
             <!-- ユーザーID -->
