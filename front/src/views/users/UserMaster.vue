@@ -81,7 +81,16 @@
       </div>
     </template>
 
-    <BTable head-variant="secondary" :items="items" :fields="fields" class="mb-0" show-empty responsive hover>
+    <BTable
+      head-variant="secondary"
+      :items="items"
+      :fields="fields"
+      :tbody-tr-class="rowClass"
+      class="mb-0"
+      show-empty
+      responsive
+      hover
+    >
       <!-- 権限 -->
       <template #cell(role)="row">
         {{ roleOptions.find((role) => role.value === row.value)?.text }}
@@ -94,7 +103,12 @@
             <i class="fas fa-pen"></i>
             編集
           </BButton>
-          <BButton size="sm" variant="outline-danger" @click="openDeleteModal(row.item)">
+          <BButton
+            size="sm"
+            variant="outline-danger"
+            @click="openDeleteModal(row.item)"
+            v-if="!(row.item.userId === loginInfo.userId)"
+          >
             <i class="far fa-trash-alt"></i>
             削除
           </BButton>
@@ -103,7 +117,7 @@
 
       <!-- 検索結果なし -->
       <template #empty>
-        <div class="text-center py-0">検索結果がありません</div>
+        <div class="text-center py-0">{{ messages.MSGI002 }}</div>
       </template>
     </BTable>
   </BCard>
@@ -122,7 +136,7 @@
 
   <!-- 削除成功モーダル -->
   <BModal v-model="showDeleteSuccessModal" title="確認" ok-title="OK" ok-only>
-    <p>{{ targetRow?.userId }} の削除に成功しました</p>
+    <p>{{ formatMessage(messages.MSGI005, targetRow?.userId) }}</p>
   </BModal>
 
   <!-- ローディングマスク -->
@@ -134,7 +148,10 @@ import { computed, ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 
 import * as userApi from "@/api/userApi.js";
+import messages from "@/constants/messages.js";
 import Loading from "@/components/Loading.vue";
+import { currentUserInfo } from "@/utils/auth.js";
+import { formatMessage } from "@/utils/messageUtil.js";
 
 // Router操作
 const router = useRouter();
@@ -152,6 +169,9 @@ const condition = ref({
   role: "",
   includeDeleted: false,
 });
+
+// ログイン情報
+const loginInfo = currentUserInfo();
 
 // 検索結果
 const items = ref([]);
@@ -265,10 +285,26 @@ const deleteUser = async () => {
   try {
     await userApi.deleteUser(targetRow.value.userId);
     await search();
-    openSuccessToast("削除に成功しました");
+    openSuccessToast(messages.MSGI006);
   } catch (e) {
     console.log(e);
-    openFailedToast("削除に失敗しました");
+    openFailedToast(messages.MSGE007);
   }
 };
+
+/**
+ * 一覧行スタイル制御
+ *
+ * @param item 行データ
+ */
+const rowClass = (item) => {
+  if (!item) return "";
+  return item.delFlg ? "table-disabled" : "";
+};
 </script>
+
+<style scoped>
+:deep(.table-disabled td) {
+  background-color: #f2f2f2 !important;
+}
+</style>

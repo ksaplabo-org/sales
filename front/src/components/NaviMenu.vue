@@ -10,8 +10,10 @@
 
             <BDropdownHeader>{{ loginInfo.userId }} さん</BDropdownHeader>
             <BDropdownDivider />
-            <BDropdownItem @click="handleSelect('edit')">編集</BDropdownItem>
-            <BDropdownItem @click="handleSelect('logout')">ログアウト</BDropdownItem>
+            <BDropdownItem @click="handleSelect('edit')"><i class="fas fa-user"></i> 編集</BDropdownItem>
+            <BDropdownItem @click="handleSelect('logout')"
+              ><i class="fas fa-sign-out-alt"></i> ログアウト</BDropdownItem
+            >
           </BDropdown>
         </li>
       </ul>
@@ -30,7 +32,7 @@ const loginInfo = Auth.currentUserInfo();
 async function handleSelect(action) {
   switch (action) {
     case "edit":
-      router.push({ name: "userEdit", params: { id: loginInfo.userId } });
+      router.push({ name: "userEdit", params: { id: loginInfo.userId }, query: { from: "profile" } });
       break;
     case "logout":
       await Auth.logout();

@@ -7,7 +7,7 @@
 
     <!-- メニュー -->
     <div class="py-2">
-      <div v-for="(group, index) in menus" :key="group.group" class="mb-1">
+      <div v-for="(group, index) in displayMenus" :key="group.group" class="mb-1">
         <div
           class="d-flex justify-content-between align-items-center px-3 py-2 cursor-pointer user-select-none"
           @click="toggleMenu(index)"
@@ -38,7 +38,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { computed, ref, onMounted } from "vue";
 import * as Auth from "@/utils/auth.js";
 
 // メニューに表示する一覧
@@ -52,7 +52,7 @@ const menus = ref([
         title: "ユーザーマスタ",
         icon: "fa-user",
         to: "/master/users",
-        onlyAdmin: true,
+        roles: ["2"],
       },
     ],
   },
@@ -67,4 +67,14 @@ const menus = ref([
 const toggleMenu = (index) => {
   menus.value = menus.value[index].open = !menus.value[index].open;
 };
+
+// 表示するメニューを絞り込む
+const displayMenus = computed(() => {
+  return menus.value
+    .map((group) => ({
+      ...group,
+      menus: group.menus.filter((menu) => menu.roles.includes(Auth.currentUserInfo().role)),
+    }))
+    .filter((group) => group.menus.length > 0);
+});
 </script>

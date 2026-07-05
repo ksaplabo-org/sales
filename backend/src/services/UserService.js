@@ -1,3 +1,5 @@
+import UniqueConstraintError from "../errors/UniqueConstraintError.js";
+import NotFoundError from "../errors/NotFoundError.js";
 import UserRepository from "../repositories/UserRepository.js";
 
 class UserService {
@@ -32,8 +34,14 @@ class UserService {
    *
    * @param {*} userInfo ユーザー情報
    */
-  async insert(userId) {
-    await this.repository.insert(userId);
+  async insert(userInfo) {
+    // 一意制約チェック
+    const user = await this.repository.findById(userInfo.userId);
+    if (user) {
+      throw new UniqueConstraintError();
+    }
+
+    await this.repository.insert(userInfo);
   }
 
   /**
@@ -43,6 +51,11 @@ class UserService {
    * @param {*} userInfo ユーザー情報
    */
   async update(userId, userInfo) {
+    // 構成データの存在チェック
+    const user = await this.repository.findById(userId);
+    if (!user) {
+      throw new NotFoundError();
+    }
     await this.repository.update(userId, userInfo);
   }
 
