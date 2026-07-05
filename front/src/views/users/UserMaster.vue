@@ -6,15 +6,15 @@
       <BBreadcrumb
         :items="[
           { text: 'トップページ', to: '/' },
-          { text: 'ユーザーマスタ', to: '/master/users', active: true },
+          { text: 'ユーザーマスタ', active: true },
         ]"
       />
     </div>
   </BContainer>
 
   <!-- トースト -->
-  <BToast v-model="showSuccessToast" variant="success" no-progress no-close-button>削除に成功しました</BToast>
-  <BToast v-model="showFailedToast" variant="danger" no-progress no-close-button>削除に失敗しました</BToast>
+  <BToast class="w-100" v-model="showSuccessToast" variant="success" no-progress>{{ successToastText }}</BToast>
+  <BToast class="w-100" v-model="showFailedToast" variant="danger" no-progress>{{ failedToastText }}</BToast>
 
   <!-- 検索条件 -->
   <BCard class="shadow-sm mb-3">
@@ -74,27 +74,41 @@
       <div class="d-flex justify-content-between align-items-center">
         <strong>検索結果 ( {{ totalCount }} 件 )</strong>
 
-        <BButton size="sm" variant="primary" :to="{ name: 'user-form' }">
+        <BButton size="sm" variant="primary" :to="{ name: 'userCreate' }">
           <i class="fas fa-plus"></i>
           新規登録
         </BButton>
       </div>
     </template>
 
-    <BTable head-variant="secondary" :items="items" :fields="fields" class="mb-0" show-empty responsive hover>
+    <BTable
+      head-variant="secondary"
+      :items="items"
+      :fields="fields"
+      :tbody-tr-class="rowClass"
+      class="mb-0"
+      show-empty
+      responsive
+      hover
+    >
       <!-- 権限 -->
       <template #cell(role)="row">
-        {{ roleOptions.find((x) => x.value === row.value)?.text }}
+        {{ roleOptions.find((role) => role.value === row.value)?.text }}
       </template>
 
       <!-- 編集・削除ボタン -->
       <template #cell(actions)="row">
-        <BContainer fluid class="d-flex justify-content-center gap-2 px-0">
-          <BButton size="sm" variant="outline-primary">
+        <BContainer fluid class="d-flex justify-content-center gap-2 px-0" v-if="!row.item.delFlg">
+          <BButton size="sm" variant="outline-primary" @click="moveUserEdit(row.item)">
             <i class="fas fa-pen"></i>
             編集
           </BButton>
-          <BButton size="sm" variant="outline-danger" @click="openDeleteModal(row.item)">
+          <BButton
+            size="sm"
+            variant="outline-danger"
+            @click="openDeleteModal(row.item)"
+            v-if="!(row.item.userId === loginInfo.userId)"
+          >
             <i class="far fa-trash-alt"></i>
             削除
           </BButton>
@@ -103,7 +117,7 @@
 
       <!-- 検索結果なし -->
       <template #empty>
-        <div class="text-center py-0">検索結果がありません</div>
+        <div class="text-center py-0">{{ messages.MSGI002 }}</div>
       </template>
     </BTable>
   </BCard>
@@ -122,7 +136,7 @@
 
   <!-- 削除成功モーダル -->
   <BModal v-model="showDeleteSuccessModal" title="確認" ok-title="OK" ok-only>
-    <p>{{ targetRow?.userId }} の削除に成功しました</p>
+    <p>{{ formatMessage(messages.MSGI005, targetRow?.userId) }}</p>
   </BModal>
 
   <!-- ローディングマスク -->
@@ -131,9 +145,16 @@
 
 <script setup>
 import { computed, ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
 
 import * as userApi from "@/api/userApi.js";
+import messages from "@/constants/messages.js";
 import Loading from "@/components/Loading.vue";
+import { currentUserInfo } from "@/utils/auth.js";
+import { formatMessage } from "@/utils/messageUtil.js";
+
+// Router操作
+const router = useRouter();
 
 // 権限の一覧
 const roleOptions = [
@@ -148,6 +169,9 @@ const condition = ref({
   role: "",
   includeDeleted: false,
 });
+
+// ログイン情報
+const loginInfo = currentUserInfo();
 
 // 検索結果
 const items = ref([]);
@@ -170,14 +194,29 @@ const showDeleteModal = ref(false);
 const showDeleteSuccessModal = ref(false);
 // 処理中のデータ
 const targetRow = ref(null);
-// 削除成功・失敗トーストの表示制御
+// 処理成功・失敗トーストの表示制御
+const successToastText = ref("");
+const failedToastText = ref("");
 const showSuccessToast = ref(0);
 const showFailedToast = ref(0);
 
 /**
  * 初期表示処理
  */
-onMounted(async () => await search(condition.value));
+onMounted(async () => {
+  // 一覧検索
+  await search(condition.value);
+
+  // 登録画面からの遷移の場合にメッセージを出力
+  const state = history.state;
+  if (state.result) {
+    // 成功メッセージ表示
+    openSuccessToast(state.message);
+
+    // 再表示の防止のためstateを初期化
+    history.replaceState({}, "");
+  }
+});
 
 /**
  * 検索条件の初期化処理
@@ -196,10 +235,22 @@ const clearCondition = () => {
  */
 const search = async () => {
   loading.value = true;
-  const users = await userApi.findUsers(condition.value);
-  items.value = users.data;
-  console.log(users.data);
-  loading.value = false;
+  try {
+    const users = await userApi.findUsers(condition.value);
+    items.value = users.data;
+  } catch (e) {
+    console.log(e);
+    openFailedToast("検索に失敗しました");
+  } finally {
+    loading.value = false;
+  }
+};
+
+/**
+ * 編集画面に遷移
+ */
+const moveUserEdit = (row) => {
+  router.push({ name: "userEdit", params: { id: row.userId } });
 };
 
 /**
@@ -211,16 +262,49 @@ const openDeleteModal = (row) => {
 };
 
 /**
+ * 成功時のトースト表示処理
+ */
+const openSuccessToast = (message) => {
+  successToastText.value = message;
+  showSuccessToast.value = 1500;
+};
+
+/**
+ * 失敗時のトースト表示処理
+ */
+const openFailedToast = (message) => {
+  failedToastText.value = message;
+  showFailedToast.value = 1500;
+};
+
+/**
  * ユーザー削除処理
  */
 const deleteUser = async () => {
+  loading.value = true;
   try {
     await userApi.deleteUser(targetRow.value.userId);
     await search();
-    showSuccessToast.value = 3000;
+    openSuccessToast(messages.MSGI006);
   } catch (e) {
     console.log(e);
-    showFailedToast.value = 3000;
+    openFailedToast(messages.MSGE007);
   }
 };
+
+/**
+ * 一覧行スタイル制御
+ *
+ * @param item 行データ
+ */
+const rowClass = (item) => {
+  if (!item) return "";
+  return item.delFlg ? "table-disabled" : "";
+};
 </script>
+
+<style scoped>
+:deep(.table-disabled td) {
+  background-color: #f2f2f2 !important;
+}
+</style>

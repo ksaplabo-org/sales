@@ -1,25 +1,21 @@
 <template>
   <div class="sidebar navbar-nav bg-dark text-white flex-shrink-0">
-    <!-- ロゴ -->
     <div class="d-flex align-items-center px-3" style="height: 56px">
       <i class="fas fa-layer-group me-2"></i>
-      <span class="fw-bold"> 販売管理システム </span>
+      <span class="fw-bold">販売管理システム</span>
     </div>
 
     <!-- メニュー -->
     <div class="py-2">
-      <div v-for="(group, index) in menus" :key="group.group" class="mb-1">
-        <!-- グループ -->
+      <div v-for="(group, index) in displayMenus" :key="group.group" class="mb-1">
         <div
           class="d-flex justify-content-between align-items-center px-3 py-2 cursor-pointer user-select-none"
           @click="toggleMenu(index)"
         >
           <div>
             <i class="fas me-2" :class="group.icon"></i>
-
             {{ group.group }}
           </div>
-
           <i class="fas" :class="group.open ? 'fa-chevron-down' : 'fa-chevron-right'"></i>
         </div>
 
@@ -42,8 +38,10 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { computed, ref, onMounted } from "vue";
+import * as Auth from "@/utils/auth.js";
 
+// メニューに表示する一覧
 const menus = ref([
   {
     group: "マスタ管理",
@@ -54,65 +52,29 @@ const menus = ref([
         title: "ユーザーマスタ",
         icon: "fa-user",
         to: "/master/users",
-      },
-      {
-        title: "商品マスタ",
-        icon: "fa-box",
-        to: "/master/item",
+        roles: ["2"],
       },
     ],
   },
   {
     group: "販売管理",
     icon: "fa-shopping-cart",
-    open: false,
-    menus: [
-      {
-        title: "受注一覧",
-        icon: "fa-file-alt",
-        to: "/sales/order",
-      },
-      {
-        title: "売上一覧",
-        icon: "fa-chart-line",
-        to: "/sales/result",
-      },
-    ],
+    open: true,
+    menus: [],
   },
 ]);
 
 const toggleMenu = (index) => {
-  menus.value[index].open = !menus.value[index].open;
+  menus.value = menus.value[index].open = !menus.value[index].open;
 };
 
-/*
-import * as Auth from "@/utils/auth.js";
-
-export default {
-  data() {
-    return {
-      menuList: [
-        { title: "ユーザーマスタ", name: "userList", icon: "fas fa-fw fa-user me-1", onlyAdmin: true },
-        { title: "商品マスタ", name: "userList", icon: "fas fa-fw fa-user me-1", onlyAdmin: true },
-        { title: "顧客マスタ", name: "userList", icon: "fas fa-fw fa-user me-1", onlyAdmin: true },
-        { title: "発注管理", name: "userList", icon: "fas fa-fw fa-user me-1", onlyAdmin: true },
-        { title: "納品管理", name: "userList", icon: "fas fa-fw fa-user me-1", onlyAdmin: true },
-        { title: "売上一覧", name: "userList", icon: "fas fa-fw fa-user me-1", onlyAdmin: true },
-      ],
-      //.filter((e) => (!Auth.isAdmin() ? !e.onlyAdmin : true)),
-    };
-  },
-  async mounted() {
-    try {
-      if (Auth.isLogin()) {
-        this.msg = "";
-      } else {
-        this.$router.push({ name: "login", params: { flashMsg: "サインインしてください" } });
-      }
-    } catch (e) {
-      this.errMsg = e.message;
-    }
-  },
-};
-*/
+// 表示するメニューを絞り込む
+const displayMenus = computed(() => {
+  return menus.value
+    .map((group) => ({
+      ...group,
+      menus: group.menus.filter((menu) => menu.roles.includes(Auth.currentUserInfo().role)),
+    }))
+    .filter((group) => group.menus.length > 0);
+});
 </script>
