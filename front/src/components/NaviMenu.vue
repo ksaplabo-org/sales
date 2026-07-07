@@ -27,7 +27,7 @@ import * as Auth from "@/utils/auth.js";
 
 const router = useRouter();
 
-const loginInfo = Auth.currentUserInfo();
+const loginInfo = Auth.getLoginInfo();
 
 async function handleSelect(action) {
   switch (action) {

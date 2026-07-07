@@ -65,7 +65,7 @@ const menus = ref([
 ]);
 
 const toggleMenu = (index) => {
-  menus.value = menus.value[index].open = !menus.value[index].open;
+  menus.value[index].open = !menus.value[index].open;
 };
 
 // 表示するメニューを絞り込む
@@ -73,7 +73,7 @@ const displayMenus = computed(() => {
   return menus.value
     .map((group) => ({
       ...group,
-      menus: group.menus.filter((menu) => menu.roles.includes(Auth.currentUserInfo().role)),
+      menus: group.menus.filter((menu) => menu.roles.includes(Auth.getLoginInfo().role)),
     }))
     .filter((group) => group.menus.length > 0);
 });

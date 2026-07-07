@@ -37,7 +37,7 @@ export function logout() {
  *
  * @returns ログインうユーザー情報
  */
-export function currentUserInfo() {
+export function getLoginInfo() {
   // セッションストレージからログインユーザー情報を取得する
   const storageAuth = sessionStorage.getItem(AUTH_KEY);
   return storageAuth === null ? null : JSON.parse(storageAuth);
@@ -49,7 +49,7 @@ export function currentUserInfo() {
  * @returns true:ログイン済 / false:未ログイン
  */
 export function isLogin() {
-  return currentUserInfo() !== null;
+  return getLoginInfo() !== null;
 }
 
 /**
@@ -58,6 +58,6 @@ export function isLogin() {
  * @returns 管理者かどうか (true:管理者 false:一般)
  */
 export function isAdmin() {
-  const userInfo = currentUserInfo();
+  const userInfo = getLoginInfo();
   return userInfo !== null && userInfo.auth === UserConst.Auth.admin;
 }

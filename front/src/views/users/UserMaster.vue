@@ -13,8 +13,8 @@
   </BContainer>
 
   <!-- トースト -->
-  <BToast class="w-100" v-model="showSuccessToast" variant="success" no-progress>{{ successToastText }}</BToast>
-  <BToast class="w-100" v-model="showFailedToast" variant="danger" no-progress>{{ failedToastText }}</BToast>
+  <BToast class="w-100" v-model="showSuccessToastMillSec" variant="success" no-progress>{{ successToastText }}</BToast>
+  <BToast class="w-100" v-model="showFailedToastMillSec" variant="danger" no-progress>{{ failedToastText }}</BToast>
 
   <!-- 検索条件 -->
   <BCard class="shadow-sm mb-3">
@@ -134,11 +134,6 @@
     <p>{{ targetRow?.userId }} を削除しますか？</p>
   </BModal>
 
-  <!-- 削除成功モーダル -->
-  <BModal v-model="showDeleteSuccessModal" title="確認" ok-title="OK" ok-only>
-    <p>{{ formatMessage(messages.MSGI005, targetRow?.userId) }}</p>
-  </BModal>
-
   <!-- ローディングマスク -->
   <Loading v-if="loading" />
 </template>
@@ -150,7 +145,7 @@ import { useRouter } from "vue-router";
 import * as userApi from "@/api/userApi.js";
 import messages from "@/constants/messages.js";
 import Loading from "@/components/Loading.vue";
-import { currentUserInfo } from "@/utils/auth.js";
+import { getLoginInfo } from "@/utils/auth.js";
 import { formatMessage } from "@/utils/messageUtil.js";
 
 // Router操作
@@ -161,17 +156,6 @@ const roleOptions = [
   { value: "1", text: "一般" },
   { value: "2", text: "管理者" },
 ];
-
-// 検索条件
-const condition = ref({
-  userId: "",
-  userName: "",
-  role: "",
-  includeDeleted: false,
-});
-
-// ログイン情報
-const loginInfo = currentUserInfo();
 
 // 検索結果
 const items = ref([]);
@@ -186,30 +170,47 @@ const fields = [
   { key: "actions", label: "" },
 ];
 
+// 検索条件
+const condition = ref({
+  userId: "",
+  userName: "",
+  role: "",
+  includeDeleted: false,
+});
+
 // 読み込み中の表示制御
 const loading = ref(false);
 // 削除確認モーダルの表示制御
 const showDeleteModal = ref(false);
-// 削除成功モーダルの表示制御
-const showDeleteSuccessModal = ref(false);
 // 処理中のデータ
 const targetRow = ref(null);
 // 処理成功・失敗トーストの表示制御
 const successToastText = ref("");
 const failedToastText = ref("");
-const showSuccessToast = ref(0);
-const showFailedToast = ref(0);
+const showSuccessToastMillSec = ref(0);
+const showFailedToastMillSec = ref(0);
+
+// ログイン情報
+const loginInfo = getLoginInfo();
+
+/**
+ * 一覧行スタイル制御
+ *
+ * @param item 行データ
+ */
+const rowClass = (item) => {
+  if (!item) return "";
+  return item.delFlg ? "table-disabled" : "";
+};
 
 /**
  * 初期表示処理
  */
 onMounted(async () => {
+  // 管理者以外のアクセスを拒否
   if (loginInfo.role != "2") {
     router.push({ name: "top" });
   }
-
-  // 一覧検索
-  await search(condition.value);
 
   // 登録画面からの遷移の場合にメッセージを出力
   const state = history.state;
@@ -220,6 +221,9 @@ onMounted(async () => {
     // 再表示の防止のためstateを初期化
     history.replaceState({}, "");
   }
+
+  // 一覧検索
+  await search(condition.value);
 });
 
 /**
@@ -271,7 +275,7 @@ const openDeleteModal = (row) => {
  */
 const openSuccessToast = (message) => {
   successToastText.value = message;
-  showSuccessToast.value = 1500;
+  showSuccessToastMillSec.value = 1500;
 };
 
 /**
@@ -279,7 +283,7 @@ const openSuccessToast = (message) => {
  */
 const openFailedToast = (message) => {
   failedToastText.value = message;
-  showFailedToast.value = 1500;
+  showFailedToastMillSec.value = 1500;
 };
 
 /**
@@ -295,16 +299,6 @@ const deleteUser = async () => {
     console.log(e);
     openFailedToast(messages.MSGE007);
   }
-};
-
-/**
- * 一覧行スタイル制御
- *
- * @param item 行データ
- */
-const rowClass = (item) => {
-  if (!item) return "";
-  return item.delFlg ? "table-disabled" : "";
 };
 </script>
 
