@@ -1,25 +1,26 @@
 import apiClient from "./axios";
 
 /**
- * ユーザー情報一覧検索
+ * ユーザー情報一覧取得API呼び出し
  *
- * @param {*} condition
+ * @param {*} condition 検索条件
  * @returns ユーザー情報一覧
  */
-export async function findUsers(condition) {
-  return await apiClient.get("/users", { params: condition });
+export async function getUsers(condition) {
+  const response = await apiClient.get("/users", { params: condition });
+  return response.data;
 }
 
 /**
- * ユーザー情報詳細検索
+ * ユーザー情報詳細取得API呼び出し
  *
  * @param {*} userId ユーザーID
  * @returns ユーザー情報
  */
-export const findByUserId = async (userId) => {
+export async function getUserByUserId(userId) {
   const response = await apiClient.get(`/users/${userId}`);
   return response.data;
-};
+}
 
 /**
  * ユーザー情報登録

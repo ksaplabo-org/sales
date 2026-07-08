@@ -13,8 +13,8 @@
   </BContainer>
 
   <!-- トースト -->
-  <BToast class="w-100" v-model="showSuccessToastMillSec" variant="success" no-progress>{{ successToastText }}</BToast>
-  <BToast class="w-100" v-model="showFailedToastMillSec" variant="danger" no-progress>{{ failedToastText }}</BToast>
+  <BToast class="w-100" v-model="showSuccessToastMs" variant="success" no-progress>{{ successToastText }}</BToast>
+  <BToast class="w-100" v-model="showFailedToastMs" variant="danger" no-progress>{{ failedToastText }}</BToast>
 
   <!-- 検索条件 -->
   <BCard class="shadow-sm mb-3">
@@ -22,7 +22,7 @@
       <strong>検索条件</strong>
     </template>
 
-    <BForm @submit.prevent="search">
+    <BForm @submit.prevent="searchUsers">
       <BRow>
         <BCol md="4">
           <BFormGroup label="ユーザーID">
@@ -85,7 +85,7 @@
       head-variant="secondary"
       :items="items"
       :fields="fields"
-      :tbody-tr-class="rowClass"
+      :tbody-tr-class="changeRowStyle"
       class="mb-0"
       show-empty
       responsive
@@ -184,24 +184,18 @@ const loading = ref(false);
 const showDeleteModal = ref(false);
 // 処理中のデータ
 const targetRow = ref(null);
+
+// トースト表示ミリ秒
+const TOAST_MS = 1500;
+
 // 処理成功・失敗トーストの表示制御
 const successToastText = ref("");
 const failedToastText = ref("");
-const showSuccessToastMillSec = ref(0);
-const showFailedToastMillSec = ref(0);
+const showSuccessToastMs = ref(0);
+const showFailedToastMs = ref(0);
 
 // ログイン情報
 const loginInfo = getLoginInfo();
-
-/**
- * 一覧行スタイル制御
- *
- * @param item 行データ
- */
-const rowClass = (item) => {
-  if (!item) return "";
-  return item.delFlg ? "table-disabled" : "";
-};
 
 /**
  * 初期表示処理
@@ -223,7 +217,7 @@ onMounted(async () => {
   }
 
   // 一覧検索
-  await search(condition.value);
+  await searchUsers(condition.value);
 });
 
 /**
@@ -239,14 +233,12 @@ const clearCondition = () => {
 };
 
 /**
- * 検索処理
+ * ユーザー情報一覧検索処理
  */
-const search = async () => {
+const searchUsers = async () => {
   loading.value = true;
   try {
-    const users = await userApi.findUsers(condition.value);
-    items.value = users.data;
-    console.log(users);
+    items.value = await userApi.findUsers(condition.value);
   } catch (e) {
     console.log(e);
     openFailedToast(messages.MSGE001);
@@ -256,10 +248,42 @@ const search = async () => {
 };
 
 /**
+ * 処理成功トースト表示処理
+ *
+ * @param message メッセージ
+ */
+const openSuccessToast = (message) => {
+  successToastText.value = message;
+  showSuccessToastMs.value = TOAST_MS;
+};
+
+/**
+ * 処理失敗トースト表示処理
+ *
+ * @param message メッセージ
+ */
+const openFailedToast = (message) => {
+  failedToastText.value = message;
+  showFailedToastMillSec.value = TOAST_MS;
+};
+
+/**
+ * 一覧行スタイル制御
+ *
+ * @param item 行データ
+ */
+const changeRowStyle = (item) => {
+  if (!item) return "";
+
+  // 論理削除行はグレーアウトにされるように背景色を変更
+  return item.delFlg ? "table-disabled" : "";
+};
+
+/**
  * 編集画面に遷移
  */
-const moveUserEdit = (row) => {
-  router.push({ name: "userEdit", params: { id: row.userId } });
+const moveUserEdit = (user) => {
+  router.push({ name: "userEdit", params: { id: user.userId } });
 };
 
 /**
@@ -271,33 +295,19 @@ const openDeleteModal = (row) => {
 };
 
 /**
- * 成功時のトースト表示処理
- */
-const openSuccessToast = (message) => {
-  successToastText.value = message;
-  showSuccessToastMillSec.value = 1500;
-};
-
-/**
- * 失敗時のトースト表示処理
- */
-const openFailedToast = (message) => {
-  failedToastText.value = message;
-  showFailedToastMillSec.value = 1500;
-};
-
-/**
  * ユーザー削除処理
  */
 const deleteUser = async () => {
   loading.value = true;
   try {
     await userApi.deleteUser(targetRow.value.userId);
-    await search();
+    await searchUsers();
     openSuccessToast(messages.MSGI006);
   } catch (e) {
     console.log(e);
     openFailedToast(messages.MSGE007);
+  } finally {
+    loading.value = false;
   }
 };
 </script>
