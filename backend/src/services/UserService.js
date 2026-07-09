@@ -1,18 +1,16 @@
 import UniqueConstraintError from "../errors/UniqueConstraintError.js";
 import NotFoundError from "../errors/NotFoundError.js";
-import UserRepository from "../repositories/UserRepository.js";
+import userRepository from "../repositories/UserRepository.js";
 
 class UserService {
-  repository = new UserRepository();
-
   /**
    * ユーザー情報一覧取得
    *
    * @param {*} condition 検索条件
    * @returns ユーザー情報一覧
    */
-  async find(condition) {
-    return await this.repository.find(condition);
+  async findAll(condition) {
+    return await userRepository.findAll(condition);
   }
 
   /**
@@ -22,9 +20,9 @@ class UserService {
    * @returns ユーザー情報詳細
    */
   async findById(id) {
-    const user = await this.repository.findById(id);
+    const user = await userRepository.findById(id);
     if (!user || user.delFlg) {
-      return null;
+      throw new NotFoundError();
     }
     return user;
   }
@@ -34,14 +32,14 @@ class UserService {
    *
    * @param {*} userInfo ユーザー情報
    */
-  async insert(userInfo) {
-    // 一意制約チェック
-    const user = await this.repository.findById(userInfo.userId);
+  async create(userInfo) {
+    // 一意性制約チェック
+    const user = await userRepository.findById(userInfo.userId);
     if (user) {
       throw new UniqueConstraintError();
     }
 
-    await this.repository.insert(userInfo);
+    await userRepository.create(userInfo);
   }
 
   /**
@@ -51,12 +49,12 @@ class UserService {
    * @param {*} userInfo ユーザー情報
    */
   async update(userId, userInfo) {
-    // 構成データの存在チェック
-    const user = await this.repository.findById(userId);
+    // 更新データの存在チェック
+    const user = await userRepository.findById(userId);
     if (!user) {
       throw new NotFoundError();
     }
-    await this.repository.update(userId, userInfo);
+    await userRepository.update(userId, userInfo);
   }
 
   /**
@@ -65,8 +63,14 @@ class UserService {
    * @param {*} userId ユーザーID
    */
   async delete(userId) {
-    await this.repository.delete(userId);
+    // 削除データの存在チェック
+    const user = await userRepository.findById(userId);
+    if (!user) {
+      throw new NotFoundError();
+    }
+
+    await userRepository.delete(userId);
   }
 }
 
-export default UserService;
+export default new UserService();

@@ -13,8 +13,8 @@
   </BContainer>
 
   <!-- トースト -->
-  <BToast class="w-100" v-model="showSuccessToast" variant="success" no-progress>{{ successToastText }}</BToast>
-  <BToast class="w-100" v-model="showFailedToast" variant="danger" no-progress>{{ failedToastText }}</BToast>
+  <BToast class="w-100" v-model="showSuccessToastMs" variant="success" no-progress>{{ successToastText }}</BToast>
+  <BToast class="w-100" v-model="showFailedToastMs" variant="danger" no-progress>{{ failedToastText }}</BToast>
 
   <!-- 検索条件 -->
   <BCard class="shadow-sm mb-3">
@@ -22,7 +22,7 @@
       <strong>検索条件</strong>
     </template>
 
-    <BForm @submit.prevent="search">
+    <BForm @submit.prevent="searchUsers">
       <BRow>
         <BCol md="4">
           <BFormGroup label="ユーザーID">
@@ -85,7 +85,7 @@
       head-variant="secondary"
       :items="items"
       :fields="fields"
-      :tbody-tr-class="rowClass"
+      :tbody-tr-class="changeRowStyle"
       class="mb-0"
       show-empty
       responsive
@@ -99,7 +99,11 @@
       <!-- 編集・削除ボタン -->
       <template #cell(actions)="row">
         <BContainer fluid class="d-flex justify-content-center gap-2 px-0" v-if="!row.item.delFlg">
-          <BButton size="sm" variant="outline-primary" @click="moveUserEdit(row.item)">
+          <BButton
+            size="sm"
+            variant="outline-primary"
+            @click="router.push({ name: 'userEdit', params: { id: row.item.userId } })"
+          >
             <i class="fas fa-pen"></i>
             編集
           </BButton>
@@ -107,7 +111,7 @@
             size="sm"
             variant="outline-danger"
             @click="openDeleteModal(row.item)"
-            v-if="!(row.item.userId === loginInfo.userId)"
+            v-if="row.item.userId !== loginInfo.userId"
           >
             <i class="far fa-trash-alt"></i>
             削除
@@ -134,11 +138,6 @@
     <p>{{ targetRow?.userId }} を削除しますか？</p>
   </BModal>
 
-  <!-- 削除成功モーダル -->
-  <BModal v-model="showDeleteSuccessModal" title="確認" ok-title="OK" ok-only>
-    <p>{{ formatMessage(messages.MSGI005, targetRow?.userId) }}</p>
-  </BModal>
-
   <!-- ローディングマスク -->
   <Loading v-if="loading" />
 </template>
@@ -150,7 +149,7 @@ import { useRouter } from "vue-router";
 import * as userApi from "@/api/userApi.js";
 import messages from "@/constants/messages.js";
 import Loading from "@/components/Loading.vue";
-import { currentUserInfo } from "@/utils/auth.js";
+import { getLoginInfo } from "@/utils/auth.js";
 import { formatMessage } from "@/utils/messageUtil.js";
 
 // Router操作
@@ -161,17 +160,6 @@ const roleOptions = [
   { value: "1", text: "一般" },
   { value: "2", text: "管理者" },
 ];
-
-// 検索条件
-const condition = ref({
-  userId: "",
-  userName: "",
-  role: "",
-  includeDeleted: false,
-});
-
-// ログイン情報
-const loginInfo = currentUserInfo();
 
 // 検索結果
 const items = ref([]);
@@ -186,30 +174,41 @@ const fields = [
   { key: "actions", label: "" },
 ];
 
+// 検索条件
+const condition = ref({
+  userId: "",
+  userName: "",
+  role: "",
+  includeDeleted: false,
+});
+
 // 読み込み中の表示制御
 const loading = ref(false);
 // 削除確認モーダルの表示制御
 const showDeleteModal = ref(false);
-// 削除成功モーダルの表示制御
-const showDeleteSuccessModal = ref(false);
 // 処理中のデータ
 const targetRow = ref(null);
+
+// トースト表示ミリ秒
+const TOAST_MS = 1500;
+
 // 処理成功・失敗トーストの表示制御
 const successToastText = ref("");
 const failedToastText = ref("");
-const showSuccessToast = ref(0);
-const showFailedToast = ref(0);
+const showSuccessToastMs = ref(0);
+const showFailedToastMs = ref(0);
+
+// ログイン情報
+const loginInfo = getLoginInfo();
 
 /**
  * 初期表示処理
  */
 onMounted(async () => {
+  // 管理者以外のアクセスを拒否
   if (loginInfo.role != "2") {
     router.push({ name: "top" });
   }
-
-  // 一覧検索
-  await search(condition.value);
 
   // 登録画面からの遷移の場合にメッセージを出力
   const state = history.state;
@@ -220,6 +219,9 @@ onMounted(async () => {
     // 再表示の防止のためstateを初期化
     history.replaceState({}, "");
   }
+
+  // 一覧検索
+  await searchUsers(condition.value);
 });
 
 /**
@@ -235,14 +237,12 @@ const clearCondition = () => {
 };
 
 /**
- * 検索処理
+ * ユーザー情報一覧検索処理
  */
-const search = async () => {
+const searchUsers = async () => {
   loading.value = true;
   try {
-    const users = await userApi.findUsers(condition.value);
-    items.value = users.data;
-    console.log(users);
+    items.value = await userApi.getUsers(condition.value);
   } catch (e) {
     console.log(e);
     openFailedToast(messages.MSGE001);
@@ -252,34 +252,45 @@ const search = async () => {
 };
 
 /**
- * 編集画面に遷移
+ * 処理成功トースト表示処理
+ *
+ * @param message メッセージ
  */
-const moveUserEdit = (row) => {
-  router.push({ name: "userEdit", params: { id: row.userId } });
+const openSuccessToast = (message) => {
+  successToastText.value = message;
+  showSuccessToastMs.value = TOAST_MS;
+};
+
+/**
+ * 処理失敗トースト表示処理
+ *
+ * @param message メッセージ
+ */
+const openFailedToast = (message) => {
+  failedToastText.value = message;
+  showFailedToastMs.value = TOAST_MS;
+};
+
+/**
+ * 一覧行スタイル制御
+ *
+ * @param row 一覧行データ
+ */
+const changeRowStyle = (row) => {
+  if (!row) return "";
+
+  // 論理削除行はグレーアウトにされるように背景色を変更
+  return row.delFlg ? "table-light" : "";
 };
 
 /**
  * 削除確認モーダル表示処理
+ * 
+ * @param row 一覧行データ
  */
 const openDeleteModal = (row) => {
   targetRow.value = row;
   showDeleteModal.value = true;
-};
-
-/**
- * 成功時のトースト表示処理
- */
-const openSuccessToast = (message) => {
-  successToastText.value = message;
-  showSuccessToast.value = 1500;
-};
-
-/**
- * 失敗時のトースト表示処理
- */
-const openFailedToast = (message) => {
-  failedToastText.value = message;
-  showFailedToast.value = 1500;
 };
 
 /**
@@ -289,27 +300,13 @@ const deleteUser = async () => {
   loading.value = true;
   try {
     await userApi.deleteUser(targetRow.value.userId);
-    await search();
+    await searchUsers();
     openSuccessToast(messages.MSGI006);
   } catch (e) {
     console.log(e);
     openFailedToast(messages.MSGE007);
+  } finally {
+    loading.value = false;
   }
 };
-
-/**
- * 一覧行スタイル制御
- *
- * @param item 行データ
- */
-const rowClass = (item) => {
-  if (!item) return "";
-  return item.delFlg ? "table-disabled" : "";
-};
 </script>
-
-<style scoped>
-:deep(.table-disabled td) {
-  background-color: #f2f2f2 !important;
-}
-</style>

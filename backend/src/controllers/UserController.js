@@ -1,17 +1,15 @@
 import UniqueConstraintError from "../errors/UniqueConstraintError.js";
 import NotFoundError from "../errors/NotFoundError.js";
-import UserService from "../services/UserService.js";
+import userService from "../services/UserService.js";
 
 class UserController {
-  service = new UserService();
-
   /**
    * ユーザー情報一覧取得
    *
    * @param {*} req リクエスト情報
    * @param {*} res レスポンス情報
    */
-  async find(req, res) {
+  async findAll(req, res) {
     try {
       // クエリパラメータから検索条件を作成
       const condition = {
@@ -22,7 +20,7 @@ class UserController {
       };
 
       // ユーザー情報一覧検索
-      const users = await this.service.find(condition);
+      const users = await userService.findAll(condition);
       res.json(users);
     } catch (e) {
       console.error(e);
@@ -38,17 +36,17 @@ class UserController {
    */
   async findById(req, res) {
     try {
-      const user = await this.service.findById(req.params.userId);
-
-      // 検索結果なし または 論理削除されている場合は404応答
-      if (!user || user.delFlg) {
-        res.status(404).send();
-      } else {
-        res.json(user);
-      }
+      const user = await userService.findById(req.params.userId);
+      res.json(user);
     } catch (err) {
       console.error(err);
-      res.status(500).send();
+
+      if (e instanceof NotFoundError) {
+        // 存在チェックエラー
+        res.status(NotFoundError.status).send();
+      } else {
+        res.status(500).send();
+      }
     }
   }
 
@@ -58,7 +56,7 @@ class UserController {
    * @param {*} req リクエスト情報
    * @param {*} res レスポンス情報
    */
-  async insert(req, res) {
+  async create(req, res) {
     try {
       const now = new Date().toISOString();
 
@@ -73,38 +71,44 @@ class UserController {
         createdAt: now,
         updatedId: req.body.createdId,
         updatedAt: now,
+        delFlg: false,
       };
 
       // 共通バリデーション
       const errors = this.validate(user);
 
+      // 権限
+      if (!user.role) {
+        errors.push({ field: "role", message: "権限が設定されていません" });
+      } else if (!["1", "2"].includes(user.role)) {
+        errors.push({ field: "role", message: "権限は'1'か'2'を設定してください" });
+      }
+
       // 登録者ID
       if (!user.createdId) {
-        errors.push({ field: "createdId", message: "登録者IDが未入力です" });
+        errors.push({ field: "createdId", message: "登録者IDが設定されていません" });
       } else if (user.createdId.length > 6) {
-        errors.push({ field: "createdId", message: "登録者IDは6桁以内で入力してください" });
+        errors.push({ field: "createdId", message: "登録者IDは6桁で設定してください" });
       } else if (!/^[A-Za-z0-9]+$/.test(user.createdId)) {
-        errors.push({ field: "createdId", message: "登録者IDは半角英数で入力してください" });
+        errors.push({ field: "createdId", message: "登録者IDは半角英数で設定してください" });
       }
 
       if (errors.length > 0) {
         // パラメータエラー
         res.status(400).json({ errors: errors });
       } else {
-        // 登録処理実行]
-        await this.service.insert(req.body);
+        // 登録処理実行
+        await userService.create(user);
         res.status(201).send();
       }
     } catch (e) {
       console.log(e);
 
-      // 一意制約エラー
       if (e instanceof UniqueConstraintError) {
         res.status(UniqueConstraintError.status).send();
+      } else {
+        res.status(500).send();
       }
-
-      // システムエラー
-      res.status(500).send();
     }
   }
 
@@ -125,7 +129,6 @@ class UserController {
         lastName: req.body.lastName,
         password: req.body.password,
         birthday: req.body.birthday,
-        role: req.body.role,
         updatedId: req.body.updatedId,
         updatedAt: now,
       };
@@ -135,29 +138,28 @@ class UserController {
 
       // 更新者ID
       if (!user.updatedId) {
-        errors.push({ field: "updatedId", message: "更新者IDが未入力です" });
+        errors.push({ field: "updatedId", message: "更新者IDが設定されていません" });
       } else if (user.updatedId.length > 6) {
-        errors.push({ field: "updatedId", message: "更新者IDは6桁以内で入力してください" });
+        errors.push({ field: "updatedId", message: "更新者IDは6桁で設定してください" });
       } else if (!/^[A-Za-z0-9]+$/.test(user.updatedId)) {
-        errors.push({ field: "updatedId", message: "更新者IDは半角英数で入力してください" });
+        errors.push({ field: "updatedId", message: "更新者IDは半角英数で設定してください" });
       }
 
       if (errors.length > 0) {
         // パラメータエラー
         res.status(400).json({ errors: errors });
       } else {
-        await this.service.update(req.params.userId, req.body);
-        res.status(200).send();
+        await userService.update(req.params.userId, req.body);
+        res.send();
       }
     } catch (e) {
       console.log(e);
 
-      // 存在チェックエラー
       if (e instanceof NotFoundError) {
         res.status(NotFoundError.status).send();
+      } else {
+        res.status(500).send();
       }
-
-      res.status(500).send();
     }
   }
 
@@ -169,13 +171,16 @@ class UserController {
    */
   async delete(req, res) {
     try {
-      // 必須チェック
-      const userId = req.params.userId;
-      await this.service.delete(userId);
-      res.status(200).send();
+      await userService.delete(req.params.userId);
+      res.send();
     } catch (e) {
       console.log(e);
-      res.status(500).send();
+
+      if (e instanceof NotFoundError) {
+        res.status(NotFoundError.status).send();
+      } else {
+        res.status(500).send();
+      }
     }
   }
 
@@ -190,43 +195,38 @@ class UserController {
 
     // ユーザーID
     if (!data.userId) {
-      errors.push({ field: "userId", message: "ユーザーIDが未入力です" });
-    } else if (data.userId.length > 6) {
-      errors.push({ field: "userId", message: "ユーザーIDは6桁以内で入力してください" });
+      errors.push({ field: "userId", message: "ユーザーIDが設定されていません" });
+    } else if (data.userId.length != 6) {
+      errors.push({ field: "userId", message: "ユーザーIDは6桁で設定してください" });
     } else if (!/^[A-Za-z0-9]+$/.test(data.userId)) {
-      errors.push({ field: "userId", message: "ユーザーIDは半角英数で入力してください" });
+      errors.push({ field: "userId", message: "ユーザーIDは半角英数で設定してください" });
     }
 
     // 姓
     if (!data.lastName) {
-      errors.push({ field: "lastName", message: "姓が未入力です" });
-    } else if (data.lastName.length > 6) {
-      errors.push({ field: "lastName", message: "姓は10桁以内で入力してください" });
+      errors.push({ field: "lastName", message: "姓が設定されていません" });
+    } else if (data.lastName.length > 10) {
+      errors.push({ field: "lastName", message: "姓は10桁以内で設定してください" });
     }
 
     // 名
     if (!data.firstName) {
-      errors.push({ field: "firstName", message: "名が未入力です" });
-    } else if (data.firstName.length > 6) {
-      errors.push({ field: "firstName", message: "名は10桁以内で入力してください" });
+      errors.push({ field: "firstName", message: "名が設定されていません" });
+    } else if (data.firstName.length > 10) {
+      errors.push({ field: "firstName", message: "名は10桁以内で設定してください" });
     }
 
     // パスワード
     if (!data.password) {
-      errors.push({ field: "password", message: "パスワードが未入力です" });
+      errors.push({ field: "password", message: "パスワードが設定されていません" });
     } else if (data.password.length > 20) {
-      errors.push({ field: "password", message: "パスワードは20桁以内で入力してください" });
-    }
-
-    // 権限
-    if (!data.role) {
-      errors.push({ field: "role", message: "権限が未入力です" });
-    } else if (!["1", "2"].includes(data.role)) {
-      errors.push({ field: "role", message: "権限は'1'か'2'を指定してください" });
+      errors.push({ field: "password", message: "パスワードは20桁以内で設定してください" });
+    } else if (!/^[A-Za-z0-9]+$/.test(data.password)) {
+      errors.push({ field: "password", message: "パスワードは半角英数で設定してください" });
     }
 
     return errors;
   }
 }
 
-export default UserController;
+export default new UserController();

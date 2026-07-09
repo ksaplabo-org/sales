@@ -7,7 +7,7 @@
     </div>
   </BContainer>
 
-  <!-- トースト -->
+  <!-- 処理失敗トースト -->
   <BToast class="w-100" v-model="showFailedToast" variant="danger" no-progress no-close-button>{{
     messages.MSGE004
   }}</BToast>
@@ -30,7 +30,9 @@
               maxlength="6"
               required
             />
-            <BFormInvalidFeedback>{{ formatMessage(messages.MSGE008, "ユーザーID", 6) }}</BFormInvalidFeedback>
+            <BFormInvalidFeedback v-if="form.userId">{{
+              formatMessage(messages.MSGE008, "ユーザーID", 6)
+            }}</BFormInvalidFeedback>
           </div>
           <div v-else class="form-control-plaintext">{{ form.userId }}</div>
         </BFormGroup>
@@ -127,7 +129,7 @@ const form = ref({
   password: "",
 });
 
-// 更新かどうか
+// 編集画面かどうか
 const isEdit = computed(() => !!route.params.id);
 // ログインユーザー編集からの遷移かどうか
 const fromProfile = computed(() => route.query.from === "profile");
@@ -160,14 +162,11 @@ const roleText = computed(() => roleOptions.find((option) => option.value === fo
 
 // 読み込み中の表示制御
 const loading = ref(false);
-// 処理中のデータ
-const targetRow = ref(null);
-// 削除成功・失敗トーストの表示制御
-const showSuccessToast = ref(0);
+// 処理失敗トーストの表示制御
 const showFailedToast = ref(0);
 
 // ログイン情報
-const loginInfo = Auth.currentUserInfo();
+const loginInfo = Auth.getLoginInfo();
 
 // パスワード入力欄のフォーマットエラー判定
 const isPasswordFormatError = computed(() => {
@@ -178,17 +177,27 @@ const isPasswordFormatError = computed(() => {
  * 初期表示時処理
  */
 onMounted(async () => {
+  // 一般の場合
+  if (loginInfo.role === "1") {
+    // 編集画面の場合
+    if (isEdit.value) {
+    } else {
+      // 一般の場合、登録画面はアクセス不可
+      router.push({ name: "top" });
+    }
+  }
+
+  // 編集画面の場合
   if (isEdit.value) {
+    // 一般の場合、自ユーザ情報のみ編集可
     if (loginInfo.role === "1" && route.params.id !== loginInfo.userId) {
-      // アクセス制御
-      // TODO: ログイン画面に戻すか、NotFoundにするか？
-      console.log(loginInfo);
+      router.push({ name: "top" });
     }
 
     // ユーザー詳細取得
     loading.value = true;
     try {
-      const userInfo = await userApi.findByUserId(route.params.id);
+      const userInfo = await userApi.getUserByUserId(route.params.id);
       Object.keys(form.value).forEach((key) => {
         if (key in userInfo) {
           form.value[key] = userInfo[key];
@@ -230,7 +239,7 @@ const save = async () => {
     // マスタ画面に遷移
     router.push({ name: "userMaster", state: { message: "登録に成功しました", result: true } });
   } catch (e) {
-    showFailedToast.value = 3000;
+    showFailedToast.value = 1500;
   } finally {
     loading.value = false;
   }
