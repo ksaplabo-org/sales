@@ -8,7 +8,7 @@ class UserRepository {
    * @param {*} condition 検索条件
    * @returns ユーザー情報一覧
    */
-  async find(condition) {
+  async findAll(condition) {
     // 検索条件を作成
     const where = {};
     if (condition.userId) {
@@ -58,8 +58,7 @@ class UserRepository {
    *
    * @param {*} userInfo ユーザー情報
    */
-  async insert(userInfo) {
-    userInfo.delFlg = false;
+  async create(userInfo) {
     await UserModel.create(userInfo);
   }
 
@@ -94,4 +93,4 @@ class UserRepository {
   }
 }
 
-export default UserRepository;
+export default new UserRepository();

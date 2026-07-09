@@ -99,7 +99,11 @@
       <!-- 編集・削除ボタン -->
       <template #cell(actions)="row">
         <BContainer fluid class="d-flex justify-content-center gap-2 px-0" v-if="!row.item.delFlg">
-          <BButton size="sm" variant="outline-primary" @click="moveUserEdit(row.item)">
+          <BButton
+            size="sm"
+            variant="outline-primary"
+            @click="router.push({ name: 'userEdit', params: { id: row.item.userId } })"
+          >
             <i class="fas fa-pen"></i>
             編集
           </BButton>
@@ -107,7 +111,7 @@
             size="sm"
             variant="outline-danger"
             @click="openDeleteModal(row.item)"
-            v-if="!(row.item.userId === loginInfo.userId)"
+            v-if="row.item.userId !== loginInfo.userId"
           >
             <i class="far fa-trash-alt"></i>
             削除
@@ -238,7 +242,7 @@ const clearCondition = () => {
 const searchUsers = async () => {
   loading.value = true;
   try {
-    items.value = await userApi.findUsers(condition.value);
+    items.value = await userApi.getUsers(condition.value);
   } catch (e) {
     console.log(e);
     openFailedToast(messages.MSGE001);
@@ -264,30 +268,25 @@ const openSuccessToast = (message) => {
  */
 const openFailedToast = (message) => {
   failedToastText.value = message;
-  showFailedToastMillSec.value = TOAST_MS;
+  showFailedToastMs.value = TOAST_MS;
 };
 
 /**
  * 一覧行スタイル制御
  *
- * @param item 行データ
+ * @param row 一覧行データ
  */
-const changeRowStyle = (item) => {
-  if (!item) return "";
+const changeRowStyle = (row) => {
+  if (!row) return "";
 
   // 論理削除行はグレーアウトにされるように背景色を変更
-  return item.delFlg ? "table-disabled" : "";
-};
-
-/**
- * 編集画面に遷移
- */
-const moveUserEdit = (user) => {
-  router.push({ name: "userEdit", params: { id: user.userId } });
+  return row.delFlg ? "table-light" : "";
 };
 
 /**
  * 削除確認モーダル表示処理
+ * 
+ * @param row 一覧行データ
  */
 const openDeleteModal = (row) => {
   targetRow.value = row;
@@ -311,9 +310,3 @@ const deleteUser = async () => {
   }
 };
 </script>
-
-<style scoped>
-:deep(.table-disabled td) {
-  background-color: #f2f2f2 !important;
-}
-</style>

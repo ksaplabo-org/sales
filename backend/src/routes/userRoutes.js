@@ -1,8 +1,7 @@
 import express from "express";
-import UserController from "../controllers/UserController.js";
+import userController from "../controllers/UserController.js";
 
 const userRoutes = express.Router();
-const controller = new UserController();
 
 /**
  * TODO
@@ -13,11 +12,11 @@ const controller = new UserController();
  * ② expressに渡すときにbindする
  *   bindに渡したインスタンスをthisに固定するため、渡した関数のthisを強制できる。
  */
-userRoutes.get("/", controller.find.bind(controller));
-userRoutes.get("/:userId", controller.findById.bind(controller));
+userRoutes.get("/", userController.findAll.bind(userController));
+userRoutes.get("/:userId", userController.findById.bind(userController));
 
-userRoutes.post("/", controller.insert.bind(controller));
-userRoutes.put("/:userId", controller.update.bind(controller));
-userRoutes.delete("/:userId", controller.delete.bind(controller));
+userRoutes.post("/", userController.create.bind(userController));
+userRoutes.put("/:userId", userController.update.bind(userController));
+userRoutes.delete("/:userId", userController.delete.bind(userController));
 
 export default userRoutes;
