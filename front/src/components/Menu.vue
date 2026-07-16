@@ -51,7 +51,7 @@ const menus = ref([
       {
         title: "ユーザーマスタ",
         icon: "fa-user",
-        to: "/master/users",
+        to: { name: "userMaster" },
         roles: ["2"],
       },
     ],

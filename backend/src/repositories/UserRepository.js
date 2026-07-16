@@ -8,7 +8,7 @@ class UserRepository {
    * @param {*} condition 検索条件
    * @returns ユーザー情報一覧
    */
-  async findAll(condition) {
+  findAll = async (condition) => {
     // 検索条件を作成
     const where = {};
     if (condition.userId) {
@@ -41,7 +41,7 @@ class UserRepository {
       ],
       where: where,
     });
-  }
+  };
 
   /**
    * ユーザー情報詳細取得
@@ -49,18 +49,18 @@ class UserRepository {
    * @param {*} id ユーザーID
    * @returns ユーザー情報
    */
-  async findById(id) {
+  findById = async (id) => {
     return await UserModel.findByPk(id);
-  }
+  };
 
   /**
    * ユーザー情報登録
    *
    * @param {*} userInfo ユーザー情報
    */
-  async create(userInfo) {
+  create = async (userInfo) => {
     await UserModel.create(userInfo);
-  }
+  };
 
   /**
    * ユーザー情報更新
@@ -68,20 +68,20 @@ class UserRepository {
    * @param {*} userId ユーザーID
    * @param {*} userInfo ユーザー情報
    */
-  async update(userId, userInfo) {
+  update = async (userId, userInfo) => {
     await UserModel.update(userInfo, {
       where: {
         userId: userId,
       },
     });
-  }
+  };
 
   /**
    * ユーザー情報論理削除
    *
    * @param {*} userId ユーザーID
    */
-  async delete(userId) {
+  delete = async (userId) => {
     await UserModel.update(
       { delFlg: true },
       {
@@ -90,7 +90,7 @@ class UserRepository {
         },
       },
     );
-  }
+  };
 }
 
 export default new UserRepository();

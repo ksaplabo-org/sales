@@ -9,9 +9,9 @@ class UserService {
    * @param {*} condition 検索条件
    * @returns ユーザー情報一覧
    */
-  async findAll(condition) {
+  findAll = async (condition) => {
     return await userRepository.findAll(condition);
-  }
+  };
 
   /**
    * ユーザー情報詳細取得
@@ -19,28 +19,34 @@ class UserService {
    * @param {*} id ユーザーID
    * @returns ユーザー情報詳細
    */
-  async findById(id) {
+  findById = async (id) => {
     const user = await userRepository.findById(id);
     if (!user || user.delFlg) {
       throw new NotFoundError();
     }
     return user;
-  }
+  };
 
   /**
    * ユーザー情報登録
    *
    * @param {*} userInfo ユーザー情報
    */
-  async create(userInfo) {
+  create = async (userInfo) => {
     // 一意性制約チェック
     const user = await userRepository.findById(userInfo.userId);
     if (user) {
       throw new UniqueConstraintError();
     }
 
+    // 共通登録情報の設定
+    const now = new Date().toISOString();
+    userInfo.createdAt = now;
+    userInfo.updatedAt = now;
+    userInfo.delFlg = false;
+
     await userRepository.create(userInfo);
-  }
+  };
 
   /**
    * ユーザー情報更新
@@ -48,21 +54,26 @@ class UserService {
    * @param {*} userId ユーザーID
    * @param {*} userInfo ユーザー情報
    */
-  async update(userId, userInfo) {
+  update = async (userId, userInfo) => {
     // 更新データの存在チェック
     const user = await userRepository.findById(userId);
     if (!user) {
       throw new NotFoundError();
     }
+
+    // 更新日時を設定
+    const now = new Date().toISOString();
+    userInfo.updatedAt = now;
+
     await userRepository.update(userId, userInfo);
-  }
+  };
 
   /**
    * ユーザー情報論理削除
    *
    * @param {*} userId ユーザーID
    */
-  async delete(userId) {
+  delete = async (userId) => {
     // 削除データの存在チェック
     const user = await userRepository.findById(userId);
     if (!user) {
@@ -70,7 +81,7 @@ class UserService {
     }
 
     await userRepository.delete(userId);
-  }
+  };
 }
 
 export default new UserService();

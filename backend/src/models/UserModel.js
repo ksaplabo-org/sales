@@ -1,4 +1,4 @@
-import { DATE, DATEONLY, STRING, Model, BOOLEAN, INTEGER } from "sequelize";
+import { BOOLEAN, CHAR, DATE, DATEONLY, STRING, Model } from "sequelize";
 import sequelize from "../config/database.js";
 
 class UserModel extends Model {}
@@ -7,7 +7,7 @@ UserModel.init(
   {
     userId: {
       field: "user_id",
-      type: STRING(6),
+      type: CHAR(6),
       primaryKey: true,
       allowNull: false,
     },
@@ -29,43 +29,43 @@ UserModel.init(
     birthday: {
       field: "birthday",
       type: DATEONLY,
-      allowNull: true,
+      allowNull: false,
     },
     role: {
       field: "role",
-      type: STRING(150),
-      allowNull: true,
+      type: CHAR(1),
+      allowNull: false,
     },
     delFlg: {
       field: "del_flg",
       type: BOOLEAN,
-      allowNull: true,
+      allowNull: false,
     },
     createdId: {
       field: "created_id",
-      type: STRING(6),
+      type: CHAR(6),
       allowNull: false,
     },
     createdAt: {
       field: "created_at",
       type: DATE,
-      allowNull: true,
+      allowNull: false,
     },
     updatedId: {
       field: "updated_id",
-      type: STRING(6),
+      type: CHAR(6),
       allowNull: false,
     },
     updatedAt: {
       field: "updated_at",
       type: DATE,
-      allowNull: true,
+      allowNull: false,
     },
   },
   {
-    sequelize,
-    tableName: "users",
-    timestamps: true,
+    sequelize, // 接続情報
+    tableName: "users", // 実際のテーブル名を指定
+    timestamps: false, // createdAt, updatedAtの自動管理
   },
 );
 

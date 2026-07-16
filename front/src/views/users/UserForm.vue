@@ -29,8 +29,10 @@
               :formatter="formatHalfWidthAlphaNumeric"
               maxlength="6"
               required
+              @focus="touched.userId = false"
+              @blur="touched.userId = true"
             />
-            <BFormInvalidFeedback v-if="form.userId">{{
+            <BFormInvalidFeedback v-if="form.userId && touched.userId">{{
               formatMessage(messages.MSGE008, "ユーザーID", 6)
             }}</BFormInvalidFeedback>
           </div>
@@ -65,10 +67,13 @@
             :state="form.password.length > 0 && /^[A-Za-z0-9]+$/.test(form.password)"
             maxlength="20"
             required
+            @focus="touched.password = false"
+            @blur="touched.password = true"
           />
-          <BFormInvalidFeedback v-if="form.password.length > 0 && !/^[A-Za-z0-9]+$/.test(form.password)">{{
-            formatMessage(messages.MSGE009, "パスワード")
-          }}</BFormInvalidFeedback>
+          <BFormInvalidFeedback
+            v-if="form.password.length > 0 && !/^[A-Za-z0-9]+$/.test(form.password) && touched.password"
+            >{{ formatMessage(messages.MSGE009, "パスワード") }}</BFormInvalidFeedback
+          >
         </BFormGroup>
       </BRow>
 
@@ -129,6 +134,11 @@ const form = ref({
   password: "",
 });
 
+const touched = ref({
+  userId: false,
+  password: false,
+});
+
 // 編集画面かどうか
 const isEdit = computed(() => !!route.params.id);
 // ログインユーザー編集からの遷移かどうか
@@ -139,13 +149,13 @@ const breadcrumbs = computed(() => {
   // メニューから遷移の場合
   if (route.query.from === "profile") {
     return [
-      { text: "トップページ", to: "/" },
+      { text: "トップページ", to: { name: "top" } },
       { text: "ユーザー登録", active: true },
     ];
   } else {
     // ユーザーマスタ画面から遷移の場合
     return [
-      { text: "トップページ", to: "/" },
+      { text: "トップページ", to: { name: "top" } },
       { text: "ユーザーマスタ", to: { name: "userMaster" } },
       { text: "ユーザー登録", active: true },
     ];
@@ -230,7 +240,7 @@ const save = async () => {
     const saveData = form.value;
     if (isEdit.value) {
       saveData.updatedId = loginInfo.userId;
-      await userApi.editUser(saveData);
+      await userApi.updateUser(saveData);
     } else {
       saveData.createdId = loginInfo.userId;
       await userApi.createUser(saveData);

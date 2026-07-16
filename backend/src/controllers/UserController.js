@@ -9,7 +9,7 @@ class UserController {
    * @param {*} req リクエスト情報
    * @param {*} res レスポンス情報
    */
-  async findAll(req, res) {
+  findAll = async (req, res) => {
     try {
       // クエリパラメータから検索条件を作成
       const condition = {
@@ -26,7 +26,7 @@ class UserController {
       console.error(e);
       res.status(500).send();
     }
-  }
+  };
 
   /**
    * ユーザー情報詳細取得
@@ -34,7 +34,7 @@ class UserController {
    * @param {*} req リクエスト情報
    * @param {*} res レスポンス情報
    */
-  async findById(req, res) {
+  findById = async (req, res) => {
     try {
       const user = await userService.findById(req.params.userId);
       res.json(user);
@@ -48,7 +48,7 @@ class UserController {
         res.status(500).send();
       }
     }
-  }
+  };
 
   /**
    * ユーザー情報登録
@@ -56,7 +56,7 @@ class UserController {
    * @param {*} req リクエスト情報
    * @param {*} res レスポンス情報
    */
-  async create(req, res) {
+  create = async (req, res) => {
     try {
       const now = new Date().toISOString();
 
@@ -68,10 +68,7 @@ class UserController {
         birthday: req.body.birthday,
         role: req.body.role,
         createdId: req.body.createdId,
-        createdAt: now,
         updatedId: req.body.createdId,
-        updatedAt: now,
-        delFlg: false,
       };
 
       // 共通バリデーション
@@ -110,7 +107,7 @@ class UserController {
         res.status(500).send();
       }
     }
-  }
+  };
 
   /**
    * ユーザー情報更新
@@ -118,10 +115,8 @@ class UserController {
    * @param {*} req リクエスト情報
    * @param {*} res レスポンス情報
    */
-  async update(req, res) {
+  update = async (req, res) => {
     try {
-      const now = new Date().toISOString();
-
       const userId = req.params.userId;
       const user = {
         userId: userId,
@@ -130,7 +125,6 @@ class UserController {
         password: req.body.password,
         birthday: req.body.birthday,
         updatedId: req.body.updatedId,
-        updatedAt: now,
       };
 
       // 共通バリデーション
@@ -149,7 +143,7 @@ class UserController {
         // パラメータエラー
         res.status(400).json({ errors: errors });
       } else {
-        await userService.update(req.params.userId, req.body);
+        await userService.update(userId, req.body);
         res.send();
       }
     } catch (e) {
@@ -161,7 +155,7 @@ class UserController {
         res.status(500).send();
       }
     }
-  }
+  };
 
   /**
    * ユーザー情報削除
@@ -169,7 +163,7 @@ class UserController {
    * @param {*} req リクエスト情報
    * @param {*} res レスポンス情報
    */
-  async delete(req, res) {
+  delete = async (req, res) => {
     try {
       await userService.delete(req.params.userId);
       res.send();
@@ -182,7 +176,7 @@ class UserController {
         res.status(500).send();
       }
     }
-  }
+  };
 
   /**
    * 登録・更新共通バリデーション
@@ -190,7 +184,7 @@ class UserController {
    * @param {*} data 登録データ
    * @returns エラー情報配列(空の場合はエラーなし)
    */
-  validate(data) {
+  validate = (data) => {
     const errors = [];
 
     // ユーザーID
@@ -224,9 +218,8 @@ class UserController {
     } else if (!/^[A-Za-z0-9]+$/.test(data.password)) {
       errors.push({ field: "password", message: "パスワードは半角英数で設定してください" });
     }
-
     return errors;
-  }
+  };
 }
 
 export default new UserController();

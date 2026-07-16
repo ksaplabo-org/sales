@@ -5,7 +5,7 @@
       <h3 class="mb-0">ユーザーマスタ</h3>
       <BBreadcrumb
         :items="[
-          { text: 'トップページ', to: '/' },
+          { text: 'トップページ', to: { name: 'top' } },
           { text: 'ユーザーマスタ', active: true },
         ]"
       />
@@ -135,7 +135,7 @@
     cancel-title="キャンセル"
     @ok="deleteUser()"
   >
-    <p>{{ targetRow?.userId }} を削除しますか？</p>
+    <p>{{ formatMessage(messages.MSGI005, `${targetRow?.userId} `) }}</p>
   </BModal>
 
   <!-- ローディングマスク -->
@@ -143,7 +143,7 @@
 </template>
 
 <script setup>
-import { computed, ref, onMounted } from "vue";
+import { computed, reactive, ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 
 import * as userApi from "@/api/userApi.js";
@@ -175,7 +175,7 @@ const fields = [
 ];
 
 // 検索条件
-const condition = ref({
+const condition = reactive({
   userId: "",
   userName: "",
   role: "",
@@ -221,19 +221,19 @@ onMounted(async () => {
   }
 
   // 一覧検索
-  await searchUsers(condition.value);
+  await searchUsers(condition);
 });
 
 /**
  * 検索条件の初期化処理
  */
 const clearCondition = () => {
-  condition.value = {
+  Object.assign(condition, {
     userId: "",
     userName: "",
     role: "",
     includeDeleted: false,
-  };
+  });
 };
 
 /**
@@ -242,7 +242,7 @@ const clearCondition = () => {
 const searchUsers = async () => {
   loading.value = true;
   try {
-    items.value = await userApi.getUsers(condition.value);
+    items.value = await userApi.getUsers(condition);
   } catch (e) {
     console.log(e);
     openFailedToast(messages.MSGE001);
@@ -285,7 +285,7 @@ const changeRowStyle = (row) => {
 
 /**
  * 削除確認モーダル表示処理
- * 
+ *
  * @param row 一覧行データ
  */
 const openDeleteModal = (row) => {
