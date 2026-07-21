@@ -8,7 +8,7 @@
     "#/*": "./src/*"
   },
   "scripts": {
-    "start": "node src/app.js"
+    "start": "node --inspect src/app.js"
   },
   "author": "",
   "license": "ISC",
