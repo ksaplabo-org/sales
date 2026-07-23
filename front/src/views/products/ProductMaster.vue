@@ -2,11 +2,11 @@
   <!-- タイトル -->
   <BContainer fluid class="px-0 pb-2 mb-2">
     <div class="d-flex justify-content-between align-items-center">
-      <h3 class="mb-0">ユーザーマスタ</h3>
+      <h3 class="mb-0">商品マスタ</h3>
       <BBreadcrumb
         :items="[
           { text: 'トップページ', to: '/' },
-          { text: 'ユーザーマスタ', active: true },
+          { text: '商品マスタ', active: true },
         ]"
       />
     </div>
@@ -26,13 +26,13 @@
       <BRow>
         <BCol md="4">
           <BFormGroup label="商品コード">
-            <BFormInput placeholder="商品コードを入力" v-model="condition.userId" />
+            <BFormInput placeholder="商品コードを入力" v-model="condition.productId" />
           </BFormGroup>
         </BCol>
 
         <BCol md="4">
           <BFormGroup label="商品名">
-            <BFormInput placeholder="商品名を入力" v-model="condition.userName" />
+            <BFormInput placeholder="商品名を入力" v-model="condition.productName" />
           </BFormGroup>
         </BCol>
 
@@ -146,7 +146,7 @@
 import { computed, ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 
-import * as userApi from "@/api/productApi.js";
+//import * as userApi from "@/api/productApi.js";
 import messages from "@/constants/messages.js";
 import Loading from "@/components/Loading.vue";
 import { getLoginInfo } from "@/utils/auth.js";
