@@ -74,10 +74,10 @@
       <div class="d-flex justify-content-between align-items-center">
         <strong>検索結果 ( {{ totalCount }} 件 )</strong>
 
-        <BButton size="sm" variant="primary" :to="{ name: 'productCreate' }">
+        <!-- <BButton size="sm" variant="primary" :to="{ name: 'productCreate' }">
           <i class="fas fa-plus"></i>
           新規登録
-        </BButton>
+        </BButton> -->
       </div>
     </template>
 
@@ -99,7 +99,7 @@
       <!-- 編集・削除ボタン -->
       <template #cell(actions)="row">
         <BContainer fluid class="d-flex justify-content-center gap-2 px-0" v-if="!row.item.delFlg">
-          <BButton
+          <!-- <BButton
             size="sm"
             variant="outline-primary"
             @click="router.push({ name: 'userEdit', params: { id: row.item.userId } })"
@@ -115,7 +115,7 @@
           >
             <i class="far fa-trash-alt"></i>
             削除
-          </BButton>
+          </BButton> -->
         </BContainer>
       </template>
 
