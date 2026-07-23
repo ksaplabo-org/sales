@@ -76,7 +76,7 @@ CREATE TABLE IF NOT EXISTS clients
     post_code char(7),
     address1 varchar(20),
     address2 varchar(20),
-    tel_namber char(13),
+    tel_number char(13),
     created_id char(6) NOT NULL,
     created_at datetime NOT NULL,
     updated_id char(6) NOT NULL,
