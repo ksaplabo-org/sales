@@ -135,7 +135,7 @@
     cancel-title="キャンセル"
     @ok="deleteUser()"
   >
-    <p>{{ targetRow?.productId }} を削除しますか？</p>
+    <p>{{ targetRow?.productCode }} を削除しますか？</p>
   </BModal>
 
   <!-- ローディングマスク -->
@@ -146,14 +146,14 @@
 import { computed, ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 
-//import * as userApi from "@/api/productApi.js";
+import * as productApi from "@/api/productApi.js";
 import messages from "@/constants/messages.js";
 import Loading from "@/components/Loading.vue";
 import { getLoginInfo } from "@/utils/auth.js";
 import { formatMessage } from "@/utils/messageUtil.js";
 
 // Router操作
-const router = productRouter();
+const router = useRouter();
 
 // 権限の一覧
 const roleOptions = [
@@ -167,7 +167,7 @@ const items = ref([]);
 const totalCount = computed(() => items.value.length);
 // 一覧のカラム定義
 const fields = [
-  { key: "procuctId", label: "商品コード", sortable: true },
+  { key: "procuctCode", label: "商品コード", sortable: true },
   { key: "productName", label: "商品名" },
   { key: "orderKbn", label: "受発注区分" },
   { key: "orderClientCode", label: "発注先コード" },
@@ -177,7 +177,7 @@ const fields = [
 
 // 検索条件
 const condition = ref({
-  productId: "",
+  productCode: "",
   productName: "",
   orderKbn: "",
   orderClientCode: "",
