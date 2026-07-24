@@ -5,9 +5,9 @@
       <h3 class="mb-0">取引先登録</h3>
       <BBreadcrumb
         :items="[
-          { text: "トップページ", to: "/" },
-          { text: "取引先マスタ", to: { name: "clientMaster" } },
-          { text: "取引先登録", active: true },
+          { text: 'トップページ', to: '/' },
+          { text: '取引先マスタ', to: { name: 'clientMaster' } },
+          { text: '取引先登録', active: true },
         ]"
       />
     </div>
