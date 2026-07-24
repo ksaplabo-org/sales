@@ -88,7 +88,6 @@ ClientMaster
       head-variant="secondary"
       :items="items"
       :fields="fields"
-      :tbody-tr-class="changeRowStyle"
       class="mb-0"
       show-empty
       responsive
@@ -266,15 +265,6 @@ const openSuccessToast = (message) => {
 const openFailedToast = (message) => {
   failedToastText.value = message;
   showFailedToastMs.value = TOAST_MS;
-};
-
-/**
- * 一覧行スタイル制御
- *
- * @param row 一覧行データ
- */
-const changeRowStyle = (row) => {
-  if (!row) return "";
 };
 
 /**
