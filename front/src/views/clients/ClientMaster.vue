@@ -243,13 +243,4 @@ const openFailedToast = (message) => {
   failedToastText.value = message;
   showFailedToastMs.value = TOAST_MS;
 };
-
-/**
- * 一覧行スタイル制御
- *
- * @param row 一覧行データ
- */
-const changeRowStyle = (row) => {
-  if (!row) return "";
-};
 </script>
