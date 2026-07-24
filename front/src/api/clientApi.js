@@ -30,3 +30,12 @@ export async function getClientByClientCode(clientCode) {
 export async function createClient(clientInfo) {
   await apiClient.post("/clients/", clientInfo);
 }
+
+/**
+ * 取引先情報更新
+ *
+ * @param {*} clientInfo 取引先情報
+ */
+export async function updateClient(clientInfo) {
+  await apiClient.put(`/clients/${clientInfo.clientCode}`, clientInfo);
+}
