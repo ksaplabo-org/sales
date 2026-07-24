@@ -25,7 +25,7 @@ class ClientRepository {
     return await ClientModel.findAll({
       attributes: [
         ["client_code", "clientCode"],
-        "orderKbn",
+        ["order_kbn", "orderKbn"],
         ["client_name", "clientName"],
         ["post_code", "postCode"],
         ["address1", "address1"],
