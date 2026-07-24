@@ -58,7 +58,7 @@
             :required
           />
           <span v-else>
-            {{ form.orderKbn === "1" ? "受注":"発注"}}
+            {{ form.orderKbn === "1" ? "受注" : "発注" }}
           </span>
         </BFormGroup>
       </BRow>
@@ -146,7 +146,7 @@ const form = ref({
 });
 
 // 編集画面かどうか
-//const isEdit = computed(() => !!route.params.productCode);
+const isEdit = computed(() => !!route.params.productCode);
 
 // パンくずリスト
 const breadcrumbs = computed(() => {
@@ -171,11 +171,11 @@ const loginInfo = Auth.getLoginInfo();
 onMounted(async () => {
   // 一般の場合
   if (loginInfo.role === "1") {
-      router.push({ name: "top" });
+    router.push({ name: "top" });
   }
 
   // 編集画面の場合
-  /*
+
   if (isEdit.value) {
     // 商品情報詳細取得
     loading.value = true;
@@ -193,7 +193,6 @@ onMounted(async () => {
       return;
     }
   }
-  */
 
   //取引先情報一覧取得
   const getClientList = async () => {
@@ -213,14 +212,11 @@ onMounted(async () => {
         }));
 
       //フォームの初期化(編集画面にて必要)
-      /*
       Object.keys(form.value).forEach((key) => {
         if (key in productInfo) {
           form.value[key] = productInfo[key];
         }
       });
-      */
-
     } catch (e) {
       console.log(e);
       openFailedToast(messages.MSGE001);
@@ -247,16 +243,13 @@ const save = async () => {
   try {
     // 登録データを作成
     const saveData = form.value;
-    /*
     if (isEdit.value) {
       saveData.updatedId = loginInfo.userId;
       await productApi.editProduct(saveData);
     } else {
-      */
       saveData.createdId = loginInfo.userId;
       await productApi.createProduct(saveData);
-
-    /*}*/
+    }
 
     // マスタ画面に遷移
     router.push({
