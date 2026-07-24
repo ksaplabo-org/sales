@@ -17,7 +17,7 @@ export async function getClients(condition) {
  * @param {*} clientCode 取引先コード
  * @returns 取引先情報
  */
-export async function getClientByCode(clientCode) {
+export async function getClientByClientCode(clientCode) {
   const response = await apiClient.get(`/clients/${clientCode}`);
   return response.data;
 }
