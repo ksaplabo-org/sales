@@ -26,7 +26,7 @@
       <BRow>
         <BCol md="4">
           <BFormGroup label="商品コード">
-            <BFormInput placeholder="商品コードを入力" v-model="condition.productId" />
+            <BFormInput placeholder="商品コードを入力" v-model="condition.productCode" />
           </BFormGroup>
         </BCol>
 
@@ -37,23 +37,35 @@
         </BCol>
 
         <BCol md="4">
-          <BFormGroup label="権限">
+          <BFormGroup label="受発注区分">
             <BFormSelect
-              v-model="condition.role"
+              v-model="condition.orderKbn"
               :options="[
                 { value: '', text: 'すべて' },
-                { value: '1', text: '一般' },
-                { value: '2', text: '管理者' },
+                { value: '1', text: '受注' },
+                { value: '2', text: '発注' },
               ]"
             />
           </BFormGroup>
         </BCol>
       </BRow>
+      <BRow>
+       <BCol md="2">
+          <BFormGroup label="単価">
+            <BFormInput placeholder="下限" v-model="condition.productName" />
+          </BFormGroup>
+        </BCol>
+         <BCol md="1">
+          <BFormGroup label="   ">
+            <BFormInput placeholder="上限" v-model="condition.productName" />
+          </BFormGroup>
+        </BCol>
+      </BRow>
 
       <BRow class="mt-3">
-        <BCol>
+        <!-- <BCol>
           <BFormCheckbox v-model="condition.includeDeleted"> 削除済みを含める </BFormCheckbox>
-        </BCol>
+        </BCol> -->
         <BCol class="text-end">
           <BButton variant="outline-secondary" class="me-2" @click="clearCondition">
             <i class="fas fa-redo"></i>
@@ -85,16 +97,24 @@
       head-variant="secondary"
       :items="items"
       :fields="fields"
-      :tbody-tr-class="changeRowStyle"
       class="mb-0"
       show-empty
       responsive
       hover
-    >
-      <!-- 権限 -->
+      >
+         <template #cell(orderClientCode)="row">
+            {{ row.item.orderClientCode || '-' }} 
+        </template>
+        <template #cell(orderKbn)="row">
+          {{ row.item.orderKbn === '1' ? '受注' : row.item.orderKbn === '2' ? '発注' : '-' }}
+        </template>
+        <template #cell(productPrice)="row">
+          {{ Number(row.item.productPrice).toLocaleString() }}
+        </template>
+      <!-- 権限
       <template #cell(role)="row">
         {{ roleOptions.find((role) => role.value === row.value)?.text }}
-      </template>
+      </template> -->
 
       <!-- 編集・削除ボタン -->
       <template #cell(actions)="row">
@@ -167,7 +187,7 @@ const items = ref([]);
 const totalCount = computed(() => items.value.length);
 // 一覧のカラム定義
 const fields = [
-  { key: "procuctCode", label: "商品コード", sortable: true },
+  { key: "productCode", label: "商品コード", sortable: true },
   { key: "productName", label: "商品名" },
   { key: "orderKbn", label: "受発注区分" },
   { key: "orderClientCode", label: "発注先コード" },
@@ -231,7 +251,7 @@ onMounted(async () => {
  */
 const clearCondition = () => {
   condition.value = {
-  productId: "",
+  productCode: "",
   productName: "",
   orderKbn: "",
   orderClientCode: "",
@@ -240,7 +260,7 @@ const clearCondition = () => {
 };
 
 /**
- * ユーザー情報一覧検索処理
+ * 商品情報一覧検索処理
  */
 const searchProducts = async () => {
   loading.value = true;
@@ -285,12 +305,12 @@ const openDeleteModal = (row) => {
 };
 
 /**
- * ユーザー削除処理
+ * 商品情報削除処理
  */
 const deleteProduct = async () => {
   loading.value = true;
   try {
-    await productApi.deleteProduct(targetRow.value.productId);
+    await productApi.deleteProduct(targetRow.value.productCode);
     await searchproducts();
     openSuccessToast(messages.MSGI006);
   } catch (e) {
