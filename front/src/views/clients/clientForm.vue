@@ -238,7 +238,7 @@ const save = async () => {
     const saveData = form.value;
     if (isEdit.value) {
       saveData.updatedId = loginInfo.userId;
-      await clientApi.editClient(saveData);
+      await clientApi.updateClient(saveData);
     } else {
       saveData.createdId = loginInfo.userId;
       await clientApi.createClient(saveData);
