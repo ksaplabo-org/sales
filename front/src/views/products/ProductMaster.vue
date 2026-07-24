@@ -41,27 +41,25 @@
             <BFormSelect
               v-model="condition.orderKbn"
               :options="[
-                { value: '', text: 'すべて' },
-                { value: '1', text: '受注' },
-                { value: '2', text: '発注' },
+                { value: '', text: 'すべて表示' },
+                { value: '1', text: '受注のみ表示' },
+                { value: '2', text: '発注のみ表示' },
               ]"
             />
           </BFormGroup>
         </BCol>
       </BRow>
       <BRow>
-       <BCol md="2">
+        <BCol md="4">
           <BFormGroup label="単価">
-            <BFormInput placeholder="下限" v-model="condition.productName" />
-          </BFormGroup>
-        </BCol>
-         <BCol md="1">
-          <BFormGroup label="   ">
-            <BFormInput placeholder="上限" v-model="condition.productName" />
+            <div class="d-flex align-items-center">
+              <BFormInput placeholder="下限" v-model="condition.productPriceLow" />
+              <span class="mx-2">～</span>
+              <BFormInput placeholder="上限" v-model="condition.productPriceHigh" />
+            </div>
           </BFormGroup>
         </BCol>
       </BRow>
-
       <BRow class="mt-3">
         <!-- <BCol>
           <BFormCheckbox v-model="condition.includeDeleted"> 削除済みを含める </BFormCheckbox>
@@ -93,28 +91,16 @@
       </div>
     </template>
 
-    <BTable
-      head-variant="secondary"
-      :items="items"
-      :fields="fields"
-      class="mb-0"
-      show-empty
-      responsive
-      hover
-      >
-         <template #cell(orderClientCode)="row">
-            {{ row.item.orderClientCode || '-' }} 
-        </template>
-        <template #cell(orderKbn)="row">
-          {{ row.item.orderKbn === '1' ? '受注' : row.item.orderKbn === '2' ? '発注' : '-' }}
-        </template>
-        <template #cell(productPrice)="row">
-          {{ Number(row.item.productPrice).toLocaleString() }}
-        </template>
-      <!-- 権限
-      <template #cell(role)="row">
-        {{ roleOptions.find((role) => role.value === row.value)?.text }}
-      </template> -->
+    <BTable head-variant="secondary" :items="items" :fields="fields" class="mb-0" show-empty responsive hover>
+      <template #cell(orderClientCode)="row">
+        {{ row.item.orderClientCode || "-" }}
+      </template>
+      <template #cell(orderKbn)="row">
+        {{ row.item.orderKbn === "1" ? "受注" : row.item.orderKbn === "2" ? "発注" : "-" }}
+      </template>
+      <template #cell(productPrice)="row">
+        {{ Number(row.item.productPrice).toLocaleString() }}
+      </template>
 
       <!-- 編集・削除ボタン -->
       <template #cell(actions)="row">
@@ -191,7 +177,7 @@ const fields = [
   { key: "productName", label: "商品名" },
   { key: "orderKbn", label: "受発注区分" },
   { key: "orderClientCode", label: "発注先コード" },
-  { key: "productPrice", label: "単価"},
+  { key: "productPrice", label: "単価" },
   { key: "actions", label: "" },
 ];
 
@@ -251,11 +237,12 @@ onMounted(async () => {
  */
 const clearCondition = () => {
   condition.value = {
-  productCode: "",
-  productName: "",
-  orderKbn: "",
-  orderClientCode: "",
-  productPrice: "",
+    productCode: "",
+    productName: "",
+    orderKbn: "",
+    orderClientCode: "",
+    productPriceLow: "",
+    productPriceHigh: "",
   };
 };
 
@@ -296,7 +283,7 @@ const openFailedToast = (message) => {
 
 /**
  * 削除確認モーダル表示処理
- * 
+ *
  * @param row 一覧行データ
  */
 const openDeleteModal = (row) => {
