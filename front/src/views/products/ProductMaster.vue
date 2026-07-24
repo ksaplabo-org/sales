@@ -108,7 +108,7 @@
           <BButton
             size="sm"
             variant="outline-primary"
-            @click="router.push({ name: 'productEdit', params: { id: row.item.productCode } })"
+            @click="router.push({ name: 'productEdit', params: { code: row.item.productCode } })"
           >
             <i class="fas fa-pen"></i>
             編集

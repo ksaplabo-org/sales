@@ -8,13 +8,12 @@
   </BContainer>
 
   <!-- 処理失敗トースト -->
-  <BToast
-    class="w-100"
-    v-model="showFailedToast"
+  <BToast class="w-100"
+    v-model="showFailedToastMs"
     variant="danger"
     no-progress
     no-close-button
-    >{{ messages.MSGE004 }}</BToast
+    >{{ failedToastText }}</BToast
   >
 
   <!-- 登録情報 -->
@@ -146,7 +145,7 @@ const form = ref({
 });
 
 // 編集画面かどうか
-const isEdit = computed(() => !!route.params.productCode);
+const isEdit = computed(() => !!route.params.code);
 
 // パンくずリスト
 const breadcrumbs = computed(() => {
@@ -160,8 +159,13 @@ const breadcrumbs = computed(() => {
 
 // 読み込み中の表示制御
 const loading = ref(false);
+
+//トースト表示ミリ秒
+const TOAST_MS = 1500;
+
 // 処理失敗トーストの表示制御
-const showFailedToast = ref(0);
+const failedToastText = ref("");
+const showFailedToastMs = ref(0);
 
 // ログイン情報
 const loginInfo = Auth.getLoginInfo();
@@ -184,7 +188,7 @@ onMounted(async () => {
 
     try {
       const productInfo = await productApi.getProductByProductCode(
-        route.params.productCode,
+        route.params.code,
       );
     } catch (e) {
       console.log(e);
@@ -257,9 +261,20 @@ const save = async () => {
       state: { message: "登録に成功しました", result: true },
     });
   } catch (e) {
-    showFailedToast.value = 1500;
+    openFailedToast(messages.MSGE001);
   } finally {
     loading.value = false;
   }
 };
+
+/**
+ * 処理失敗トースト表示処理
+ *
+ * @param message メッセージ
+ */
+const openFailedToast = (message) => {
+  failedToastText.value = message;
+  showFailedToastMs.value = TOAST_MS;
+};
+
 </script>
