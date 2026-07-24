@@ -41,12 +41,32 @@ ClientModel.init(
       type: STRING(13),
       allowNull: true,
     },
+    createdId: {
+      field: "created_id",
+      type: STRING(6),
+      allowNull: false,
+    },
+    createdAt: {
+      field: "created_at",
+      type: DATE,
+      allowNull: true,
+    },
+    updatedId: {
+      field: "updated_id",
+      type: STRING(6),
+      allowNull: false,
+    },
+    updatedAt: {
+      field: "updated_at",
+      type: DATE,
+      allowNull: true,
+    },
   },
   {
     sequelize,
     tableName: "clients",
     timestamps: true,
-  },
+  }
 );
 
 export default ClientModel;
