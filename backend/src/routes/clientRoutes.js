@@ -3,6 +3,5 @@ import clientController from "../controllers/ClientController.js";
 
 const clientRoutes = express.Router();
 
-clientRoutes.get("/", clientController.findAll.bind(clientController));
-
+clientRoutes.post("/", clientController.create.bind(clientController));
 export default clientRoutes;
