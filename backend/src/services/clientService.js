@@ -29,20 +29,6 @@ class ClientService {
   }
 
   /**
-   * 取引先情報詳細取得
-   *
-   * @param {*} id 取引先コード
-   * @returns 取引先情報詳細
-   */
-  async findByCode(code) {
-    const client = await clientRepository.findByCode(code);
-    if (!client) {
-      throw new NotFoundError();
-    }
-    return client;
-  }
-
-  /**
    * 取引先情報登録
    *
    * @param {*} clientInfo 取引先情報
