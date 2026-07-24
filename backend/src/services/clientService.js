@@ -21,11 +21,11 @@ class ClientService {
    */
   async delete(clientCode) {
     // 削除データの存在チェック
-    const client = await clientRepository.findByCode(clientCode);
-    //const used = await orderRepository.findByAll(clientCode);
-    if (!client) {
-      throw new NotFoundError();
-    }
+    // const client = await clientRepository.findByCode(clientCode);
+    // //const used = await orderRepository.findByAll(clientCode);
+    // if (!client) {
+    //   throw new NotFoundError();
+    // }
     // 削除データの外部参照チェック
     //if (used) {
     //throw new UniqueConstraintError();
