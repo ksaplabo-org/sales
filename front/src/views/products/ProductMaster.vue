@@ -105,15 +105,15 @@
       <!-- 編集・削除ボタン -->
       <template #cell(actions)="row">
         <BContainer fluid class="d-flex justify-content-center gap-2 px-0" v-if="!row.item.delFlg">
-          <!-- <BButton
+          <BButton
             size="sm"
             variant="outline-primary"
-            @click="router.push({ name: 'userEdit', params: { id: row.item.userId } })"
+            @click="router.push({ name: 'productEdit', params: { id: row.item.productCode } })"
           >
             <i class="fas fa-pen"></i>
             編集
           </BButton>
-          <BButton
+          <!-- <BButton 
             size="sm"
             variant="outline-danger"
             @click="openDeleteModal(row.item)"
