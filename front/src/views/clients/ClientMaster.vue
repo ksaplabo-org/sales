@@ -86,7 +86,6 @@
       head-variant="secondary"
       :items="items"
       :fields="fields"
-      :tbody-tr-class="changeRowStyle"
       class="mb-0"
       show-empty
       responsive
