@@ -40,7 +40,7 @@ class ProductController {
 
     if (!req.params.productCode) {
       errors.push({ field: "productCode", message: "商品コードが設定されていません" });
-    } else if (req.params.productCode != 7) {
+    } else if (req.params.productCode.length != 7) {
       errors.push({ field: "productCode", message: "商品コードは7桁で設定してください" });
     } else if (!/^[A-Za-z0-9]+$/.test(req.params.productCode)) {
       errors.push({ field: "productCode", message: "商品コードは半角英数で設定してください" });
@@ -48,6 +48,7 @@ class ProductController {
 
     if (errors.length > 0) {
       // パラメータエラー
+      console.error(errors);
       res.status(400).json({ errors: errors });
 
       try {
@@ -98,7 +99,7 @@ class ProductController {
       if (product.orderKbn == 2) {
         if (!product.orderClientCode) {
           errors.push({ field: "orderClientCode", message: "発注先コードが設定されていません" });
-        } else if (product.orderClientCode != 8) {
+        } else if (product.orderClientCode.length != 8) {
           errors.push({ field: "orderClientCode", message: "発注先コードは8桁で設定してください" });
         } else if (!/^[A-Za-z0-9]+$/.test(product.orderClientCode)) {
           errors.push({ field: "orderClientCode", message: "発注先コードは半角英数で設定してください" });
