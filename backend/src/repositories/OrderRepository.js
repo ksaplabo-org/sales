@@ -31,9 +31,6 @@ class OrderRepository {
       where.amountTaxIncluded = { ...where.amountTaxIncluded,
         [Op.lte]: condition.amountTaxIncludedHigh, };
     }
-    if (!condition.includeDeleted) {
-      where.delFlg = false;
-    }
 
     // 検索結果を返却
     return await OrderModel.findAll({

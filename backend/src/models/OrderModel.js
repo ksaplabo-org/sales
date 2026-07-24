@@ -1,7 +1,7 @@
 import { DATE, DATEONLY, STRING, Model, BOOLEAN, INTEGER } from "sequelize";
 import sequelize from "../config/database.js";
 
-class UserModel extends Model {}
+class OrderModel extends Model {}
 
 OrderModel.init(
   {
@@ -94,4 +94,4 @@ OrderModel.init(
   }
 );
 
-export default UserModel;
+export default OrderModel;
