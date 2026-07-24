@@ -1,3 +1,5 @@
+ClientMaster
+
 <template>
   <!-- タイトル -->
   <BContainer fluid class="px-0 pb-2 mb-2">
@@ -75,10 +77,10 @@
       <div class="d-flex justify-content-between align-items-center">
         <strong>検索結果 ( {{ totalCount }} 件 )</strong>
 
-        <BButton size="sm" variant="primary" :to="{ name: 'clientCreate' }" v-if="loginInfo.role == 2">
+        <!-- <BButton size="sm" variant="primary" :to="{ name: 'clientCreate' }" v-if="loginInfo.role == 2">
           <i class="fas fa-plus"></i>
           新規登録
-        </BButton>
+        </BButton> -->
       </div>
     </template>
 
@@ -97,12 +99,48 @@
         {{ orderKbnOptions.find((orderKbn) => orderKbn.value === row.value)?.text }}
       </template>
 
+      <!-- 編集・削除ボタン -->
+      <template #cell(actions)="row">
+        <BContainer fluid class="d-flex justify-content-center gap-2 px-0">
+          <BButton
+            size="sm"
+            variant="outline-primary"
+            @click="router.push({ name: 'clientEdit', params: { code: row.item.clientCode } })"
+            v-if="loginInfo.role == 2"
+          >
+            <i class="fas fa-pen"></i>
+            編集
+          </BButton>
+          <BButton
+            size="sm"
+            variant="outline-danger"
+            @click="openDeleteModal(row.item)"
+            v-if="loginInfo.role == 2 && !row.item.usedFlg"
+          >
+            <i class="far fa-trash-alt"></i>
+            削除
+          </BButton>
+        </BContainer>
+      </template>
+
       <!-- 検索結果なし -->
       <template #empty>
         <div class="text-center py-0">{{ messages.MSGI002 }}</div>
       </template>
     </BTable>
   </BCard>
+
+  <!-- 削除確認モーダル -->
+  <BModal
+    v-model="showDeleteModal"
+    title="削除確認"
+    ok-title="削除"
+    ok-variant="danger"
+    cancel-title="キャンセル"
+    @ok="deleteClient()"
+  >
+    <p>{{ targetRow?.clientCode }} を削除しますか？</p>
+  </BModal>
 
   <!-- ローディングマスク -->
   <Loading v-if="loading" />
@@ -151,6 +189,8 @@ const condition = ref({
 
 // 読み込み中の表示制御
 const loading = ref(false);
+// 削除確認モーダルの表示制御
+const showDeleteModal = ref(false);
 // 処理中のデータ
 const targetRow = ref(null);
 
@@ -218,7 +258,6 @@ const openSuccessToast = (message) => {
   successToastText.value = message;
   showSuccessToastMs.value = TOAST_MS;
 };
-
 /**
  * 処理失敗トースト表示処理
  *
@@ -236,5 +275,32 @@ const openFailedToast = (message) => {
  */
 const changeRowStyle = (row) => {
   if (!row) return "";
+};
+
+/**
+ * 削除確認モーダル表示処理
+ *
+ * @param row 一覧行データ
+ */
+const openDeleteModal = (row) => {
+  targetRow.value = row;
+  showDeleteModal.value = true;
+};
+
+/**
+ * 取引先削除処理
+ */
+const deleteClient = async () => {
+  loading.value = true;
+  try {
+    await clientApi.deleteClient(targetRow.value.clientCode);
+    await searchClients();
+    openSuccessToast(messages.MSGI006);
+  } catch (e) {
+    console.log(e);
+    openFailedToast(messages.MSGE007);
+  } finally {
+    loading.value = false;
+  }
 };
 </script>
