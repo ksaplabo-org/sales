@@ -97,6 +97,21 @@
         {{ orderKbnOptions.find((orderKbn) => orderKbn.value === row.value)?.text }}
       </template>
 
+      <!-- 編集ボタン -->
+      <template #cell(actions)="row">
+        <BContainer fluid class="d-flex justify-content-center gap-2 px-0">
+          <BButton
+            size="sm"
+            variant="outline-primary"
+            @click="router.push({ name: 'clientEdit', params: { code: row.item.clientCode } })"
+            v-if="loginInfo.role == 2"
+          >
+            <i class="fas fa-pen"></i>
+            編集
+          </BButton>
+        </BContainer>
+      </template>
+
       <!-- 検索結果なし -->
       <template #empty>
         <div class="text-center py-0">{{ messages.MSGI002 }}</div>
