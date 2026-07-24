@@ -100,10 +100,10 @@
         <BFormGroup label="単価" label-for="productPrice" label-cols="3">
           <BFormInput
             id="productPrice"
-            type="int"
+            type="number"
             v-model="form.productPrice"
             :state="
-              form.productPrice.length > 0 && /^[0-9]+$/.test(form.productCode)
+              form.productPrice.length > 0 && /^[0-9]+$/.test(form.productPrice)
             "
             required
           />
@@ -125,7 +125,7 @@
 
 <script setup>
 import { computed, ref, onMounted } from "vue";
-import { productRoute, productRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 
 import * as productApi from "@/api/productApi.js";
 import messages from "@/constants/messages.js";
@@ -133,8 +133,8 @@ import Loading from "@/components/Loading.vue";
 import * as Auth from "@/utils/auth.js";
 import { formatMessage } from "@/utils/messageUtil.js";
 
-const route = productRoute();
-const router = productRouter();
+const route = useRoute();
+const router = useRouter();
 
 // 入力情報
 const form = ref({
@@ -153,7 +153,7 @@ const breadcrumbs = computed(() => {
   // 商品マスタ画面から遷移
   return [
     { text: "トップページ", to: "/" },
-    { text: "商品マスタ", to: { name: "products" } },
+    { text: "商品マスタ", to: { name: "productMaster" } },
     { text: "商品登録", active: true },
   ];
 });
