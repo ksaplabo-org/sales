@@ -13,6 +13,25 @@ class ClientService {
   async findAll(condition) {
     return await clientRepository.findAll(condition);
   }
+
+  /**
+   * 取引先情報物理削除
+   *
+   * @param {*} clientCode 取引先コード
+   */
+  async delete(clientCode) {
+    // 削除データの存在チェック
+    const client = await clientRepository.findByCode(clientCode);
+    //const used = await orderRepository.findByAll(clientCode);
+    if (!client) {
+      throw new NotFoundError();
+    }
+    // 削除データの外部参照チェック
+    //if (used) {
+    //throw new UniqueConstraintError();
+    //}
+    await clientRepository.delete(clientCode);
+  }
 }
 
 export default new ClientService();
