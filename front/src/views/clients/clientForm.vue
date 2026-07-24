@@ -187,7 +187,7 @@ onMounted(async () => {
     // 取引先詳細取得
     loading.value = true;
     try {
-      const clientDetail = await clientApi.findByCode(route.params.code);
+      const clientDetail = await clientApi.getClientByClientCode(route.params.code);
       Object.keys(form.value).forEach((key) => {
         if (key in clientDetail) {
           form.value[key] = clientDetail[key];
