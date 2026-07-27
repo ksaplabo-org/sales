@@ -61,6 +61,20 @@ class ProductRepository {
   async create(productInfo) {
     await ProductModel.create(productInfo);
   }
+
+  /**
+   * 商品情報更新
+   *
+   * @param {*} productCode 商品コード
+   * @param {*} productInfo 商品情報
+   */
+  async update(productCode, productInfo) {
+    await ProductModel.update(productInfo, {
+      where: {
+        productCode: productCode,
+      },
+    });
+  }
 }
 
 export default new ProductRepository();
