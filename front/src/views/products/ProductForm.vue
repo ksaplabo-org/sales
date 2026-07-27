@@ -8,13 +8,9 @@
   </BContainer>
 
   <!-- 処理失敗トースト -->
-  <BToast class="w-100"
-    v-model="showFailedToastMs"
-    variant="danger"
-    no-progress
-    no-close-button
-    >{{ failedToastText }}</BToast
-  >
+  <BToast class="w-100" v-model="showFailedToastMs" variant="danger" no-progress no-close-button>{{
+    failedToastText
+  }}</BToast>
 
   <!-- 登録情報 -->
   <BCard class="shadow-sm mb-3">
@@ -63,15 +59,11 @@
       </BRow>
 
       <BRow class="mb-3">
-        <BFormGroup
-          label="発注先コード"
-          label-for="orderClientCode"
-          label-cols="3"
-        >
+        <BFormGroup label="発注先コード" label-for="orderClientCode" label-cols="3">
           <B-form-select
             v-if="!showClientMessage"
             v-model="form.orderClientCode"
-            :options="orderClientOptions"
+            :options="clientList"
             :disabled="form.orderKbn === '1'"
           />
           <div v-else class="text-danger">
@@ -86,9 +78,7 @@
             id="productName"
             type="productName"
             v-model="form.productName"
-            :state="
-              form.productName.length > 0 && form.productName.length <= 20
-            "
+            :state="form.productName.length > 0 && form.productName.length <= 20"
             maxlength="20"
             required
           />
@@ -101,9 +91,7 @@
             id="productPrice"
             type="number"
             v-model="form.productPrice"
-            :state="
-              form.productPrice.length > 0 && /^[0-9]+$/.test(form.productPrice)
-            "
+            :state="form.productPrice > 0 && /^[0-9]+$/.test(form.productPrice)"
             required
           />
         </BFormGroup>
@@ -184,39 +172,10 @@ onMounted(async () => {
     // 商品情報詳細取得
     loading.value = true;
 
-    let productInfo;
-
     try {
-      productInfo = await productApi.getProductByProductCode(
-        route.params.code
-      );
-    } catch (e) {
-      console.log(e);
-      console.log("productInfo",productInfo);
-      openFailedToast(messages.MSGE001);
-      loading.value = false;
-      return;
-    }
-  }
+      const productInfo = await productApi.getProductByProductCode(route.params.code);
 
-  //取引先情報一覧取得
-  const getClientList = async () => {
-    try {
-      const clientList = await clientApi.getClients("2");
-      //0件チェック
-      if (clientList.length === 0) {
-        showClientMessage.value = formatMessage(MSGE018, "発注先コード");
-        return;
-      }
-      orderClientOptions.value = clientList
-        .filter((client) => client.orderKbn === "2")
-        .sort((a, b) => a.clientCode.localeCompare(b.clientCode))
-        .map((client) => ({
-          value: client.clientCode,
-          text: client.clientName,
-        }));
-
-      //フォームの初期化(編集画面にて必要)
+      console.log(productInfo);
       Object.keys(form.value).forEach((key) => {
         if (key in productInfo) {
           form.value[key] = productInfo[key];
@@ -224,11 +183,54 @@ onMounted(async () => {
       });
     } catch (e) {
       console.log(e);
+      console.log("productInfo", productInfo);
       openFailedToast(messages.MSGE001);
-    } finally {
       loading.value = false;
+      return;
     }
-  };
+  }
+
+  //取引先情報一覧取得
+  //getClientList = async () => {
+  try {
+    /*
+      const clientList = await clientApi.getClients("2");
+      //0件チェック
+      if (clientList.length === 0) {
+        showClientMessage.value = formatMessage(MSGE018, "発注先コード");
+        return;
+      }
+      */
+
+    const selectedClient = ref("");
+    const clientList = ref([
+      { clientcode: "aaa00001", clientName: "あああ", orderKbn: "1" },
+      { clientcode: "aaa00002", clientName: "いいい", orderKbn: "2" },
+    ]);
+    console.log(clientList);
+
+    /*
+    orderClientOptions.value = clientList
+      .filter((client) => client.orderKbn === "2")
+      .sort((a, b) => a.clientCode.localeCompare(b.clientCode))
+      .map((client) => ({
+        value: client.clientCode,
+        text: client.clientName,
+      }));
+    */
+    //フォームの初期化(編集画面にて必要)
+    /*
+      Object.keys(form.value).forEach((key) => {
+        if (key in productInfo) {
+          form.value[key] = productInfo[key];
+        }
+      });*/
+  } catch (e) {
+    console.log(e);
+    openFailedToast(messages.MSGE001);
+  } finally {
+    loading.value = false;
+  }
 });
 
 /**
@@ -262,7 +264,7 @@ const save = async () => {
       state: { message: "登録に成功しました", result: true },
     });
   } catch (e) {
-    openFailedToast(messages.MSGE001);
+    openFailedToast(messages.MSGE004);
   } finally {
     loading.value = false;
   }
@@ -277,5 +279,4 @@ const openFailedToast = (message) => {
   failedToastText.value = message;
   showFailedToastMs.value = TOAST_MS;
 };
-
 </script>
