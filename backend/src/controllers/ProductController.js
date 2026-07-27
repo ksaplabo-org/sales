@@ -36,6 +36,8 @@ class ProductController {
    * @param {*} res レスポンス情報
    */
   async findByCode(req, res) {
+    console.log(req.params.productCode);
+    
     const errors = [];
 
     if (!req.params.productCode) {
@@ -50,22 +52,24 @@ class ProductController {
       // パラメータエラー
       console.error(errors);
       res.status(400).json({ errors: errors });
+    }
+    
 
-      try {
-        const product = await productService.findByCode(req.params.productCode);
-        res.json(product);
-      } catch (e) {
-        console.error(e);
-
-        if (e instanceof NotFoundError) {
-          // 存在チェックエラー
-          res.status(NotFoundError.status).send();
-        } else {
-          res.status(500).send();
-        }
+    try {
+      const product = await productService.findByCode(req.params.productCode);
+      console.log(product.productName);
+      res.json(product);
+    } catch (e) {
+      console.error(e);
+      if (e instanceof NotFoundError) {
+        // 存在チェックエラー
+        res.status(NotFoundError.status).send();
+      } else {
+        res.status(500).send();
       }
     }
   }
+
 
   /**
    * 商品情報登録
