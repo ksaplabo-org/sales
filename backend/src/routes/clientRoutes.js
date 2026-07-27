@@ -4,6 +4,7 @@ import clientController from "../controllers/ClientController.js";
 const clientRoutes = express.Router();
 
 clientRoutes.get("/", clientController.findAll.bind(clientController));
+clientRoutes.get("/:clientCode", clientController.findByCode.bind(clientController));
 clientRoutes.delete("/:clientCode", clientController.delete.bind(clientController));
 
 export default clientRoutes;
