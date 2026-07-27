@@ -37,11 +37,22 @@ class ClientRepository {
       where: where,
     });
   }
+
+  /**
+   * 取引先情報詳細取得
+   *
+   * @param {*} code 取引先コード
+   * @returns 取引先情報
+   */
+  async findByCode(code) {
+    return await ClientModel.findByPk(code);
+  }
+
   /**
    * 取引先情報物理削除
    *
    * @param {*} clientCode 取引先コード
-   * 
+   *
    */
   async delete(clientCode) {
     await ClientModel.destroy({
@@ -49,6 +60,6 @@ class ClientRepository {
         client_code: clientCode,
       },
     });
-  }  
+  }
 }
 export default new ClientRepository();
