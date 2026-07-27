@@ -145,6 +145,55 @@ class ProductController {
     }
   }
 
+   /**
+   * 商品情報更新
+   *
+   * @param {*} req リクエスト情報
+   * @param {*} res レスポンス情報
+   */
+  async update(req, res) {
+    try {
+      const productCode = req.params.productCode;
+      const product = {
+        productCode: productCode,
+        productName: req.body.productName,
+        orderClientCode: req.body.orderClientCode,
+        productPrice: req.body.productPrice,
+        updatedId: req.body.updatedId,
+      };
+
+      // 共通バリデーション
+      const errors = this.validate(product);
+
+      // 更新者ID
+      if (!product.updatedId) {
+        errors.push({ field: "updatedId", message: "更新者IDが設定されていません" });
+      } else if (product.updatedId.length != 6) {
+        errors.push({ field: "updatedId", message: "更新者IDは6桁で設定してください" });
+      } else if (!/^[A-Za-z0-9]+$/.test(product.updatedId)) {
+        errors.push({ field: "updatedId", message: "更新者IDは半角英数で設定してください" });
+      }
+
+      if (errors.length > 0) {
+        // パラメータエラー
+        res.status(400).json({ errors: errors });
+      } else {
+        await productService.update(req.params.productCode, req.body);
+        res.send();
+      }
+    } catch (e) {
+      console.log(e);
+      
+      if (e instanceof NotFoundError) {
+        res.status(NotFoundError.status).send();
+      } else if (e.status == 400) {
+        res.status(400).json({ errors: e.errors });
+      } else {
+        res.status(500).send();
+      }
+    }
+  }
+
   /**
    * 登録・更新共通バリデーション
    *
