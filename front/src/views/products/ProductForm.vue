@@ -27,7 +27,7 @@
         <BFormGroup label="商品コード" label-for="productCode" label-cols="3">
           <div v-if="!isEdit">
             <BFormInput
-              code="productCode"
+              id="productCode"
               v-model="form.productCode"
               :state="form.productCode.length === 7"
               :formatter="formatHalfWidthAlphaNumeric"
@@ -187,11 +187,12 @@ onMounted(async () => {
     let productInfo;
 
     try {
-      const productInfo = await productApi.getProductByProductCode(
-        route.params.code,
+      productInfo = await productApi.getProductByProductCode(
+        route.params.code
       );
     } catch (e) {
       console.log(e);
+      console.log("productInfo",productInfo);
       openFailedToast(messages.MSGE001);
       loading.value = false;
       return;
