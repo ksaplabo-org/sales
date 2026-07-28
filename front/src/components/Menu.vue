@@ -60,7 +60,14 @@ const menus = ref([
     group: "販売管理",
     icon: "fa-shopping-cart",
     open: true,
-    menus: [],
+    menus: [
+      {
+        title: "受発注情報一覧",
+        icon: "fa-user",
+        to: "/sales/orders",
+        roles: ["1","2"],
+      },
+    ],
   },
 ]);
 
