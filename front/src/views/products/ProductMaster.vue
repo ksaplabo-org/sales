@@ -81,10 +81,10 @@
       <div class="d-flex justify-content-between align-items-center">
         <strong>検索結果 ( {{ totalCount }} 件 )</strong>
 
-        <!-- <BButton size="sm" variant="primary" :to="{ name: 'productCreate' }">
+        <BButton size="sm" variant="primary" :to="{ name: 'productCreate' }">
           <i class="fas fa-plus"></i>
           新規登録
-        </BButton> -->
+        </BButton>
       </div>
     </template>
 
