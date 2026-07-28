@@ -15,7 +15,7 @@ class ProductController {
       const condition = {
         orderKbn: req.query.orderKbn,
         productCode: req.query.productCode,
-        productName: req.query.ProductName,
+        productName: req.query.productName,
         productPriceLow: req.query.productPriceLow,
         productPriceHigh: req.query.productPriceHigh,
       };
