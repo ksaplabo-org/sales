@@ -103,7 +103,7 @@
       <template #cell(actions)="row">
         <BContainer fluid class="d-flex justify-content-center gap-2 px-0" >
           <BButton
-            v-if="loginInfo.role === 2"
+            v-if="loginInfo.role == 2"
             size="sm"
             variant="outline-primary"
             @click="router.push({ name: 'productEdit', params: { code: row.item.productCode } })"
@@ -115,7 +115,7 @@
             size="sm"
             variant="outline-danger"
             @click="openDeleteModal(row.item)"
-            v-if="row.item.orderKbn !== '1' && loginInfo.role === 2"
+            v-if="!row.item.usedFlg && loginInfo.role == 2"
           >
             <i class="far fa-trash-alt"></i>
             削除
@@ -176,6 +176,7 @@ const fields = [
   { key: "orderKbn", label: "受発注区分" },
   { key: "orderClientCode", label: "発注先コード" },
   { key: "productPrice", label: "単価" },
+  { key: "productPrice", label: "単価"},
   { key: "actions", label: "" },
 ];
 
