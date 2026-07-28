@@ -61,9 +61,6 @@
         </BCol>
       </BRow>
       <BRow class="mt-3">
-        <!-- <BCol>
-          <BFormCheckbox v-model="condition.includeDeleted"> 削除済みを含める </BFormCheckbox>
-        </BCol> -->
         <BCol class="text-end">
           <BButton variant="outline-secondary" class="me-2" @click="clearCondition">
             <i class="fas fa-redo"></i>
@@ -104,8 +101,9 @@
 
       <!-- 編集・削除ボタン -->
       <template #cell(actions)="row">
-        <BContainer fluid class="d-flex justify-content-center gap-2 px-0" v-if="!row.item.delFlg">
+        <BContainer fluid class="d-flex justify-content-center gap-2 px-0" >
           <BButton
+            v-if="loginInfo.role === 2"
             size="sm"
             variant="outline-primary"
             @click="router.push({ name: 'productEdit', params: { code: row.item.productCode } })"
@@ -113,15 +111,15 @@
             <i class="fas fa-pen"></i>
             編集
           </BButton>
-          <!-- <BButton 
+          <BButton 
             size="sm"
             variant="outline-danger"
             @click="openDeleteModal(row.item)"
-            v-if="row.item.userId !== loginInfo.userId"
+            v-if="row.item.orderKbn !== '1' && loginInfo.role === 2"
           >
             <i class="far fa-trash-alt"></i>
             削除
-          </BButton> -->
+          </BButton>
         </BContainer>
       </template>
 
@@ -139,7 +137,7 @@
     ok-title="削除"
     ok-variant="danger"
     cancel-title="キャンセル"
-    @ok="deleteUser()"
+    @ok="deleteProduct()"
   >
     <p>{{ targetRow?.productCode }} を削除しますか？</p>
   </BModal>
@@ -213,10 +211,6 @@ const loginInfo = getLoginInfo();
  * 初期表示処理
  */
 onMounted(async () => {
-  // 管理者以外のアクセスを拒否
-  if (loginInfo.role != "2") {
-    router.push({ name: "top" });
-  }
 
   // 登録画面からの遷移の場合にメッセージを出力
   const state = history.state;
@@ -307,4 +301,5 @@ const deleteProduct = async () => {
     loading.value = false;
   }
 };
+console.log(loginInfo);
 </script>
