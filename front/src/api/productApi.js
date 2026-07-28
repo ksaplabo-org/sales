@@ -4,7 +4,7 @@ import apiClient from "./axios";
  * 商品情報一覧取得API呼び出し
  *
  * @param {*} condition 検索条件
- * @returns ユーザー情報一覧
+ * @returns 商品情報一覧
  */
 export async function getProducts(condition) {
   const response = await apiClient.get("/products", { params: condition });
@@ -14,7 +14,7 @@ export async function getProducts(condition) {
 /**
  * 商品情報詳細取得API呼び出し
  *
- * @param {*} productCode ユーザーID
+ * @param {*} productCode 商品コード
  * @returns 商品情報
  */
 export async function getProductByProductId(productCode) {
@@ -43,8 +43,8 @@ export async function editProduct(productInfo) {
 /**
  * 商品情報削除
  *
- * @param {*} productId ユーザーID
+ * @param {*} productCode 商品コード
  */
-export async function deleteUser(productCode) {
+export async function deleteProduct(productCode) {
   await apiClient.delete(`/products/${productCode}`);
 }
