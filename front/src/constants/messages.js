@@ -11,6 +11,7 @@ const messages = Object.freeze({
   MSGE007: "削除に失敗しました",
   MSGE008: "{0}は{1}桁で入力してください",
   MSGE009: "{0}は半角英数で入力してください",
+  MSGE018: "{0}が存在しません",
 });
 
 export default messages;
