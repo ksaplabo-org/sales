@@ -45,6 +45,29 @@ class ProductRepository {
       where: where,
     });
   }
+
+  /**
+   * 商品情報詳細取得
+   *
+   * @param {*} productCode 商品コード
+   * @returns 商品情報
+   */
+  async findByCode(productCode) {
+    return await ProductModel.findByPk(productCode);
+  }
+
+  /**
+   * 商品情報削除
+   *
+   * @param {*} productCode 商品コード
+   */
+  async delete(productCode) {
+    await ProductModel.destroy({
+        where: {
+          productCode: productCode,
+        },
+      });
+  }
 }
 
 export default new ProductRepository();
