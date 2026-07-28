@@ -24,12 +24,10 @@ class OrderRepository {
       where.productCode = { [Op.like]: "%" + condition.productCode + "%" };
     }
     if (condition.amountTaxIncludedLow) {
-      where.amountTaxIncluded = { ...where.amountTaxIncluded,
-        [Op.gte]: condition.amountTaxIncludedLow, };
+      where.amountTaxIncluded = { ...where.amountTaxIncluded, [Op.gte]: condition.amountTaxIncludedLow };
     }
     if (condition.amountTaxIncludedHigh) {
-      where.amountTaxIncluded = { ...where.amountTaxIncluded,
-        [Op.lte]: condition.amountTaxIncludedHigh, };
+      where.amountTaxIncluded = { ...where.amountTaxIncluded, [Op.lte]: condition.amountTaxIncludedHigh };
     }
 
     // 検索結果を返却
@@ -92,7 +90,7 @@ class OrderRepository {
         where: {
           orderNo: orderNo,
         },
-      },
+      }
     );
   }
 }
