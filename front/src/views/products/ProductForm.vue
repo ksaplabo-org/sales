@@ -142,13 +142,27 @@ const form = ref({
   productPrice: "",
 });
 
+//登録画面の判定
+const isCreateMode = computed(() => {
+return route.path.includes("/create");
+});
+
+//ラジオボタンの変更監視
 watch(
   () => form.value.orderKbn,
   (newValue) => {
     if (newValue === "1") {
       form.value.orderClientCode = "";
+      showClientMessage.value = "";
     }
-  }
+    if (
+      newValue === "2" &&
+      isCreateMode.value &&
+      orderClientOptions.value.length === 0
+    ) {
+      showClientMessage.value = formatMessage(messages.MSGE018, "発注先コード");
+    }
+  },
 );
 
 // 編集画面かどうか
@@ -173,6 +187,8 @@ const TOAST_MS = 1500;
 // 処理失敗トーストの表示制御
 const failedToastText = ref("");
 const showFailedToastMs = ref(0);
+
+const showClientMessage = ref("");
 
 // ログイン情報
 const loginInfo = Auth.getLoginInfo();
@@ -229,10 +245,19 @@ onMounted(async () => {
 
 // 取引先コードの一覧検索結果
 const clientList = ref([
-  { clientcode: "a0000001", clientName: "あああ", orderKbn: "1" },
-  { clientcode: "a0000002", clientName: "キッコーマン", orderKbn: "2" },
-  { clientcode: "a0000003", clientName: "富士通", orderKbn: "2" },
-]);
+  { cientcode: "C000001", clientName: "あああ", orderKbn: "1" },
+  { clientcode: "C000002", clientName: "キッコーマン", orderKbn: "2" },
+  { clientcode: "C000003", clientName: "富士通", orderKbn: "2" },
+  ]);
+/*
+if (clientList.value.length === 0) {
+  console.log("0件");
+  console.log("MSGE018=", messages.MSGE018);
+  showClientMessage.value = formatMessage(messages.MSGE018, "発注先コード");
+
+  console.log(showClientMessage.value);
+}
+*/
 
 // 発注先コードの選択肢作成
 const orderClientOptions = computed(() =>
