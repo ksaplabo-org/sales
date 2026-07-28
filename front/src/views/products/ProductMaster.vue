@@ -104,24 +104,25 @@
 
       <!-- 編集・削除ボタン -->
       <template #cell(actions)="row">
-        <BContainer fluid class="d-flex justify-content-center gap-2 px-0" v-if="!row.item.delFlg">
-          <!-- <BButton
+        <BContainer fluid class="d-flex justify-content-center gap-2 px-0" >
+          <BButton
+            v-if="loginInfo.role == 2"
             size="sm"
             variant="outline-primary"
-            @click="router.push({ name: 'userEdit', params: { id: row.item.userId } })"
+            @click="router.push({ name: 'productEdit', params: { code: row.item.productCode } })"
           >
             <i class="fas fa-pen"></i>
             編集
           </BButton>
-          <BButton
+          <BButton 
             size="sm"
             variant="outline-danger"
             @click="openDeleteModal(row.item)"
-            v-if="row.item.userId !== loginInfo.userId"
+            v-if="!row.item.usedFlg && loginInfo.role == 2"
           >
             <i class="far fa-trash-alt"></i>
             削除
-          </BButton> -->
+          </BButton>
         </BContainer>
       </template>
 
