@@ -2,7 +2,7 @@ import UniqueConstraintError from "../errors/UniqueConstraintError.js";
 import NotFoundError from "../errors/NotFoundError.js";
 import clientRepository from "../repositories/ClientRepository.js";
 //import orderRepository from "../repositories/OrderRepository.js";
-
+ 
 class ClientService {
   /**
    * 取引先情報一覧取得
@@ -13,7 +13,7 @@ class ClientService {
   async findAll(condition) {
     return await clientRepository.findAll(condition);
   }
-
+ 
   /**
    * 取引先情報詳細取得
    *
@@ -27,7 +27,7 @@ class ClientService {
     }
     return client;
   }
-
+ 
   /**
    * 取引先情報物理削除
    *
@@ -47,5 +47,5 @@ class ClientService {
     await clientRepository.delete(clientCode);
   }
 }
-
+ 
 export default new ClientService();
