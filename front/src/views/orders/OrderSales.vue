@@ -58,9 +58,9 @@
         <BCol md="4">
           <BFormGroup label="合計金額">
             <div class="d-flex align-items-center">
-            <BFormInput placeholder="下限" v-model="condition.amountTaxIncludedLow" />
-            <span class="mx-2">～</span>
-            <BFormInput placeholder="上限" v-model="condition.amountTaxIncludedHigh" />
+              <BFormInput placeholder="下限" v-model="condition.amountTaxIncludedLow" />
+              <span class="mx-2">～</span>
+              <BFormInput placeholder="上限" v-model="condition.amountTaxIncludedHigh" />
             </div>
           </BFormGroup>
         </BCol>
@@ -81,25 +81,32 @@
     </BForm>
   </BCard>
 
-  
-
   <!-- 検索結果 -->
   <BCard class="shadow-sm">
     <template #header>
       <div class="d-flex justify-content-between align-items-center">
         <strong>検索結果 ( {{ totalCount }} 件 )</strong>
-        
-        <BButton v-if="loginInfo.role == 1" size="sm" variant="primary" :to="{ name: 'orderReceiveCreate' }">
-          <i class="fas fa-plus"></i>
+
+        <div class="d-flex gap-2">
+        <BButton v-if="loginInfo.role == 1" size="sm" :to="{ name: 'userCreate' }" style="background-color: hsl(35,98%,50%); border-color: hsl(35,98%,50%)">
+          <div class="d-inline-flex flex-column align-items-center me-1">
+         <i class="fas fa-arrow-down fa-xs" aria-hidden="true"></i>
+         <i class="fas fa-box fa-xs" aria-hidden="true"></i>
+          </div>
           受注登録
         </BButton>
 
-        <BButton v-if="loginInfo.role == 1" size="sm" variant="primary" :to="{ name: 'orderSaleCreate' }">
-          <i class="fas fa-plus"></i>
+        <BButton v-if="loginInfo.role == 1" size="sm" :to="{ name: 'userCreate' }" style="background-color: hsl(140,98%,43%); border-color: hsl(140,98%,43%)">
+          <div class="d-inline-flex flex-column align-items-center me-1">
+         <i class="fas fa-arrow-up fa-xs" aria-hidden="true"></i>
+         <i class="fas fa-box fa-xs" aria-hidden="true"></i>
+          </div>
           発注登録
         </BButton>
       </div>
+      </div>
     </template>
+
 
     <BTable
       head-variant="secondary"
@@ -115,6 +122,16 @@
       <template #cell(orderKbn)="row">
         {{ orderKbnOptions.find((orderKbn) => orderKbn.value === row.value)?.text }}
       </template>
+
+      <!-- 確定日 -->
+      <template #cell(confirmedDate)="row">
+        {{ row.item.confirmedDate ?? "-" }}
+      </template>
+
+      <!-- 合計金額 -->
+       <template #cell(amountTaxIncluded)="row">
+        {{ row.item.amountTaxIncluded?.toLocaleString()}}
+       </template>
 
       <!-- 編集・削除ボタン -->
       <template #cell(actions)="row">
@@ -132,7 +149,7 @@
             size="sm"
             variant="outline-danger"
             @click="openDeleteModal(row.item)"
-            v-if="row.item.confirmedDate == null"
+            v-if="loginInfo.role == 1 && row.item.confirmedDate == null"
           >
             <i class="far fa-trash-alt"></i>
             削除
@@ -194,7 +211,7 @@ const fields = [
   { key: "productCode", label: "商品コード" },
   { key: "orderDate", label: "受発注日" },
   { key: "confirmedDate", label: "確定日" },
-  { key: "amountTaxIncluded", label: "合計金額"},
+  { key: "amountTaxIncluded", label: "合計金額" },
   { key: "actions", label: "" },
 ];
 
@@ -231,7 +248,6 @@ const loginInfo = getLoginInfo();
  * 初期表示処理
  */
 onMounted(async () => {
-
   // 登録画面からの遷移の場合にメッセージを出力
   const state = history.state;
   if (state.result) {
@@ -306,7 +322,7 @@ const changeRowStyle = (row) => {
 
 /**
  * 削除確認モーダル表示処理
- * 
+ *
  * @param row 一覧行データ
  */
 const openDeleteModal = (row) => {
