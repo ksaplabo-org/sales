@@ -8,9 +8,14 @@
   </BContainer>
 
   <!-- 処理失敗トースト -->
-  <BToast class="w-100" v-model="showFailedToastMs" variant="danger" no-progress no-close-button>{{
-    failedToastText
-  }}</BToast>
+  <BToast
+    class="w-100"
+    v-model="showFailedToastMs"
+    variant="danger"
+    no-progress
+    no-close-button
+    >{{ failedToastText }}</BToast
+  >
 
   <!-- 登録情報 -->
   <BCard class="shadow-sm mb-3">
@@ -59,11 +64,15 @@
       </BRow>
 
       <BRow class="mb-3">
-        <BFormGroup label="発注先コード" label-for="orderClientCode" label-cols="3">
-          <B-form-select
+        <BFormGroup
+          label="発注先コード"
+          label-for="orderClientCode"
+          label-cols="3"
+        >
+          <BFormSelect
             v-if="!showClientMessage"
             v-model="form.orderClientCode"
-            :options="clientList"
+            :options="orderClientOptions"
             :disabled="form.orderKbn === '1'"
           />
           <div v-else class="text-danger">
@@ -71,14 +80,15 @@
           </div>
         </BFormGroup>
       </BRow>
-
       <BRow class="mb-3">
         <BFormGroup label="商品名" label-for="productName" label-cols="3">
           <BFormInput
             id="productName"
-            type="productName"
+            type="text"
             v-model="form.productName"
-            :state="form.productName.length > 0 && form.productName.length <= 20"
+            :state="
+              form.productName.length > 0 && form.productName.length <= 20
+            "
             maxlength="20"
             required
           />
@@ -111,7 +121,7 @@
 </template>
 
 <script setup>
-import { computed, ref, onMounted } from "vue";
+import { computed, watch, ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 import * as productApi from "@/api/productApi.js";
@@ -131,6 +141,15 @@ const form = ref({
   productName: "",
   productPrice: "",
 });
+
+watch(
+  () => form.value.orderKbn,
+  (newValue) => {
+    if (newValue === "1") {
+      form.value.orderClientCode = "";
+    }
+  }
+);
 
 // 編集画面かどうか
 const isEdit = computed(() => !!route.params.code);
@@ -173,65 +192,58 @@ onMounted(async () => {
     loading.value = true;
 
     try {
-      const productInfo = await productApi.getProductByProductCode(route.params.code);
-
-      console.log(productInfo);
+      const productInfo = await productApi.getProductByProductCode(
+        route.params.code,
+      );
       Object.keys(form.value).forEach((key) => {
         if (key in productInfo) {
           form.value[key] = productInfo[key];
         }
       });
+
+      //取引先情報一覧取得
+      /*getClientList = async () => {
+      try {
+        const clientList = await clientApi.getClients();
+        //0件チェック
+        if (clientList.length === 0) {
+          showClientMessage.value = formatMessage(MSGE018, "発注先コード");
+        return;
+      }
+  } catch (e) {
+    console.log(e);
+    openFailedToast(messages.MSGE001);
+  }
+*/
     } catch (e) {
       console.log(e);
       console.log("productInfo", productInfo);
       openFailedToast(messages.MSGE001);
       loading.value = false;
       return;
+    } finally {
+      loading.value = false;
     }
   }
-
-  //取引先情報一覧取得
-  //getClientList = async () => {
-  try {
-    /*
-      const clientList = await clientApi.getClients("2");
-      //0件チェック
-      if (clientList.length === 0) {
-        showClientMessage.value = formatMessage(MSGE018, "発注先コード");
-        return;
-      }
-      */
-
-    const selectedClient = ref("");
-    const clientList = ref([
-      { clientcode: "aaa00001", clientName: "あああ", orderKbn: "1" },
-      { clientcode: "aaa00002", clientName: "いいい", orderKbn: "2" },
-    ]);
-    console.log(clientList);
-
-    /*
-    orderClientOptions.value = clientList
-      .filter((client) => client.orderKbn === "2")
-      .sort((a, b) => a.clientCode.localeCompare(b.clientCode))
-      .map((client) => ({
-        value: client.clientCode,
-        text: client.clientName,
-      }));
-    */
-    //フォームの初期化(編集画面にて必要)
-    /*
-      Object.keys(form.value).forEach((key) => {
-        if (key in productInfo) {
-          form.value[key] = productInfo[key];
-        }
-      });*/
-  } catch (e) {
-    console.log(e);
-    openFailedToast(messages.MSGE001);
-  } finally {
-    loading.value = false;
-  }
 });
+
+// 取引先コードの一覧検索結果
+const clientList = ref([
+  { clientcode: "a0000001", clientName: "あああ", orderKbn: "1" },
+  { clientcode: "a0000002", clientName: "キッコーマン", orderKbn: "2" },
+  { clientcode: "a0000003", clientName: "富士通", orderKbn: "2" },
+]);
+
+// 発注先コードの選択肢作成
+const orderClientOptions = computed(() =>
+  clientList.value
+    .filter((client) => client.orderKbn === "2")
+    .sort((a, b) => a.clientcode.localeCompare(b.clientcode))
+    .map((client) => ({
+      value: client.clientcode,
+      text: `${client.clientcode} : ${client.clientName}`,
+    })),
+);
 
 /**
  * 半角英数のみに置換する
