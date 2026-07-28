@@ -140,7 +140,7 @@
     ok-title="削除"
     ok-variant="danger"
     cancel-title="キャンセル"
-    @ok="deleteUser()"
+    @ok="deleteProduct()"
   >
     <p>{{ targetRow?.productCode }} を削除しますか？</p>
   </BModal>
