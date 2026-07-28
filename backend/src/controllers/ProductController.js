@@ -92,11 +92,11 @@ class ProductController {
       const errors = this.validate(product);
 
       // 商品コード
-    if (!data.productCode) {
+    if (!product.productCode) {
       errors.push({ field: "productCode", message: "商品コードが設定されていません" });
-    } else if (data.productCode.length != 7) {
+    } else if (product.productCode.length != 7) {
       errors.push({ field: "productCode", message: "商品コードは7桁で設定してください" });
-    } else if (!/^[A-Za-z0-9]+$/.test(data.productCode)) {
+    } else if (!/^[A-Za-z0-9]+$/.test(product.productCode)) {
       errors.push({ field: "productCode", message: "商品コードは半角英数で設定してください" });
     }
 
