@@ -12,6 +12,44 @@ class ProductService {
   async findAll(condition) {
     return await productRepository.findAll(condition);
   }
+
+  /**
+   * 商品情報詳細取得
+   *
+   * @param {*} productCode 商品コード
+   * @returns 商品情報詳細
+   */
+  async findByCode(productCode) {
+    const product = await productRepository.findByCode(productCode);
+    if (!product) {
+      throw new NotFoundError();
+    }
+    return product;
+  }
+
+  /**
+   * 商品情報削除
+   *
+   * @param {*} productCode 商品コード
+   */
+  async delete(productCode) {
+
+    // 削除データの存在チェック
+    const product = await productRepository.findByCode(productCode);
+    if (!product) {
+      throw new NotFoundError();
+    }
+    
+    //削除データの外部参照チェック
+    /*
+    const product = await orderRepository.findAll({ productCode : productCode })
+    if(product) {
+      throw new ReferenceConstraintError();
+    }
+    */
+
+    await productRepository.delete(productCode);
+  }
 }
 
 export default new ProductService();
