@@ -28,16 +28,19 @@
           <BFormGroup label="商品コード">
             <BFormInput
               placeholder="商品コードを入力"
+              maxlength="7"
               type="text"
               v-model="condition.productCode"
-              @update:modelValue="condition.productCode = $event.replace(/[^A-Za-z0-9]/g, '')"
+              @update:modelValue="condition.productCode = $event.replace(/[^A-Za-z0-9]/g, '').slice(0, 7)"
             />
           </BFormGroup>
         </BCol>
 
         <BCol md="4">
           <BFormGroup label="商品名">
-            <BFormInput placeholder="商品名を入力" v-model="condition.productName" />
+            <BFormInput placeholder="商品名を入力" v-model="condition.productName"
+            maxlength="20
+            " />
           </BFormGroup>
         </BCol>
 
