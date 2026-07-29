@@ -13,8 +13,20 @@
   </BContainer>
 
   <!-- トースト -->
-  <BToast class="w-100" v-model="showSuccessToastMs" variant="success" no-progress>{{ successToastText }}</BToast>
-  <BToast class="w-100" v-model="showFailedToastMs" variant="danger" no-progress>{{ failedToastText }}</BToast>
+  <BToast
+    class="w-100"
+    v-model="showSuccessToastMs"
+    variant="success"
+    no-progress
+    >{{ successToastText }}</BToast
+  >
+  <BToast
+    class="w-100"
+    v-model="showFailedToastMs"
+    variant="danger"
+    no-progress
+    >{{ failedToastText }}</BToast
+  >
 
   <!-- 検索条件 -->
   <BCard class="shadow-sm mb-3">
@@ -26,13 +38,19 @@
       <BRow>
         <BCol md="4">
           <BFormGroup label="商品コード">
-            <BFormInput placeholder="商品コードを入力" v-model="condition.productCode" />
+            <BFormInput
+              placeholder="商品コードを入力"
+              v-model="condition.productCode"
+            />
           </BFormGroup>
         </BCol>
 
         <BCol md="4">
           <BFormGroup label="商品名">
-            <BFormInput placeholder="商品名を入力" v-model="condition.productName" />
+            <BFormInput
+              placeholder="商品名を入力"
+              v-model="condition.productName"
+            />
           </BFormGroup>
         </BCol>
 
@@ -53,9 +71,15 @@
         <BCol md="4">
           <BFormGroup label="単価">
             <div class="d-flex align-items-center">
-              <BFormInput placeholder="下限" v-model="condition.productPriceLow" />
+              <BFormInput
+                placeholder="下限"
+                v-model="condition.productPriceLow"
+              />
               <span class="mx-2">～</span>
-              <BFormInput placeholder="上限" v-model="condition.productPriceHigh" />
+              <BFormInput
+                placeholder="上限"
+                v-model="condition.productPriceHigh"
+              />
             </div>
           </BFormGroup>
         </BCol>
@@ -65,7 +89,11 @@
           <BFormCheckbox v-model="condition.includeDeleted"> 削除済みを含める </BFormCheckbox>
         </BCol> -->
         <BCol class="text-end">
-          <BButton variant="outline-secondary" class="me-2" @click="clearCondition">
+          <BButton
+            variant="outline-secondary"
+            class="me-2"
+            @click="clearCondition"
+          >
             <i class="fas fa-redo"></i>
             クリア
           </BButton>
@@ -91,12 +119,26 @@
       </div>
     </template>
 
-    <BTable head-variant="secondary" :items="items" :fields="fields" class="mb-0" show-empty responsive hover>
+    <BTable
+      head-variant="secondary"
+      :items="items"
+      :fields="fields"
+      class="mb-0"
+      show-empty
+      responsive
+      hover
+    >
       <template #cell(orderClientCode)="row">
         {{ row.item.orderClientCode || "-" }}
       </template>
       <template #cell(orderKbn)="row">
-        {{ row.item.orderKbn === "1" ? "受注" : row.item.orderKbn === "2" ? "発注" : "-" }}
+        {{
+          row.item.orderKbn === "1"
+            ? "受注"
+            : row.item.orderKbn === "2"
+              ? "発注"
+              : "-"
+        }}
       </template>
       <template #cell(productPrice)="row">
         {{ Number(row.item.productPrice).toLocaleString() }}
@@ -104,17 +146,22 @@
 
       <!-- 編集・削除ボタン -->
       <template #cell(actions)="row">
-        <BContainer fluid class="d-flex justify-content-center gap-2 px-0" >
+        <BContainer fluid class="d-flex justify-content-center gap-2 px-0">
           <BButton
             v-if="loginInfo.role == 2"
             size="sm"
             variant="outline-primary"
-            @click="router.push({ name: 'productEdit', params: { code: row.item.productCode } })"
+            @click="
+              router.push({
+                name: 'productEdit',
+                params: { code: row.item.productCode },
+              })
+            "
           >
             <i class="fas fa-pen"></i>
             編集
           </BButton>
-          <BButton 
+          <BButton
             size="sm"
             variant="outline-danger"
             @click="openDeleteModal(row.item)"
@@ -299,7 +346,7 @@ const deleteProduct = async () => {
   loading.value = true;
   try {
     await productApi.deleteProduct(targetRow.value.productCode);
-    await searchproducts();
+    await searchProducts();
     openSuccessToast(messages.MSGI006);
   } catch (e) {
     console.log(e);
