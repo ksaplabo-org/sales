@@ -235,9 +235,11 @@ class ProductController {
     // 単価
     if (!data.productPrice) {
       errors.push({ field: "productPrice", message: "単価が設定されていません" });
+    } else if (data.productPrice <= 0) {
+      errors.push({ field: "productPrice", message: "単価は1以上で設定してください" });
     } else if (!/^[0-9]+$/.test(data.productPrice)) {
       errors.push({ field: "productPrice", message: "単価は半角数字で設定してください" });
-    }
+    } 
 
     return errors;
   }
