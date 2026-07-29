@@ -88,25 +88,34 @@
         <strong>検索結果 ( {{ totalCount }} 件 )</strong>
 
         <div class="d-flex gap-2">
-        <BButton v-if="loginInfo.role == 1" size="sm" :to="{ name: 'userCreate' }" style="background-color: hsl(35,98%,50%); border-color: hsl(35,98%,50%)">
-          <div class="d-inline-flex flex-column align-items-center me-1">
-         <i class="fas fa-arrow-down fa-xs" aria-hidden="true"></i>
-         <i class="fas fa-box fa-xs" aria-hidden="true"></i>
-          </div>
-          受注登録
-        </BButton>
+          <BButton
+            v-if="loginInfo.role == 1"
+            size="sm"
+            :to="{ name: 'orderReceiveCreate' }"
+            style="background-color: hsl(35, 98%, 50%); border-color: hsl(35, 98%, 50%)"
+          >
+            <div class="d-inline-flex flex-column align-items-center me-1">
+              <i class="fas fa-arrow-down fa-xs" aria-hidden="true"></i>
+              <i class="fas fa-box fa-xs" aria-hidden="true"></i>
+            </div>
+            受注登録
+          </BButton>
 
-        <BButton v-if="loginInfo.role == 1" size="sm" :to="{ name: 'userCreate' }" style="background-color: hsl(140,98%,43%); border-color: hsl(140,98%,43%)">
-          <div class="d-inline-flex flex-column align-items-center me-1">
-         <i class="fas fa-arrow-up fa-xs" aria-hidden="true"></i>
-         <i class="fas fa-box fa-xs" aria-hidden="true"></i>
-          </div>
-          発注登録
-        </BButton>
-      </div>
+          <BButton
+            v-if="loginInfo.role == 1"
+            size="sm"
+            :to="{ name: 'orderSaleCreate' }"
+            style="background-color: hsl(140, 98%, 43%); border-color: hsl(140, 98%, 43%)"
+          >
+            <div class="d-inline-flex flex-column align-items-center me-1">
+              <i class="fas fa-arrow-up fa-xs" aria-hidden="true"></i>
+              <i class="fas fa-box fa-xs" aria-hidden="true"></i>
+            </div>
+            発注登録
+          </BButton>
+        </div>
       </div>
     </template>
-
 
     <BTable
       head-variant="secondary"
@@ -129,19 +138,14 @@
       </template>
 
       <!-- 合計金額 -->
-       <template #cell(amountTaxIncluded)="row">
-        {{ row.item.amountTaxIncluded?.toLocaleString()}}
-       </template>
+      <template #cell(amountTaxIncluded)="row">
+        {{ row.item.amountTaxIncluded?.toLocaleString() }}
+      </template>
 
       <!-- 編集・削除ボタン -->
       <template #cell(actions)="row">
         <BContainer fluid class="d-flex justify-content-center gap-2 px-0">
-          <BButton
-            size="sm"
-            variant="outline-primary"
-            @click="router.push({ name: 'orderEdit', params: { id: row.item.orderNo } })"
-            v-if="loginInfo.role == 1"
-          >
+          <BButton size="sm" variant="outline-primary" @click="moveEdit(row.item)" v-if="loginInfo.role == 1">
             <i class="fas fa-pen"></i>
             編集
           </BButton>
@@ -192,6 +196,24 @@ import { formatMessage } from "@/utils/messageUtil.js";
 
 // Router操作
 const router = useRouter();
+
+const moveEdit = (row) => {
+  if (row.orderKbn === "1") {
+    router.push({
+      name: "orderReceiveEdit",
+      params: {
+        id: row.orderNo,
+      },
+    });
+  } else {
+    router.push({
+      name: "orderSaleEdit",
+      params: {
+        id: row.orderNo,
+      },
+    });
+  }
+};
 
 // 受発注区分の一覧
 const orderKbnOptions = [

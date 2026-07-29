@@ -37,12 +37,12 @@ class OrderController {
    */
   async findById(req, res) {
     try {
-      const order = await orderService.findByOrderNo(req.params.orderNo);
+      const order = await orderService.findById(req.params.orderNo);
       res.json(order);
     } catch (err) {
       console.error(err);
 
-      if (e instanceof NotFoundError) {
+      if (err instanceof NotFoundError) {
         // 存在チェックエラー
         res.status(NotFoundError.status).send();
       } else {
@@ -165,11 +165,11 @@ class OrderController {
    */
   async update(req, res) {
     try {
-      const now = new Date().toISOString();
 
       const orderNo = req.params.orderNo;
       const order = {
         orderNo: orderNo,
+        orderDate: req.body.orderDate,
         confirmedDate: req.body.confirmedDate,
         shipDate: req.body.shipDate,
         deliverDate: req.body.deliverDate,
@@ -223,7 +223,10 @@ class OrderController {
   async delete(req, res) {
     try {
       // 共通バリデーション
-      const errors = this.validate(order);
+      const orderNo = req.params.orderNo;
+
+      const errors = [];
+
 
       // 受発注番号が未入力の場合
       if (!order.orderNo) {
@@ -244,6 +247,11 @@ class OrderController {
       res.send();
     } catch (e) {
       console.log(e);
+
+      if (errors.length > 0) {
+        // パラメータエラー
+        res.status(400).json({ errors: errors });
+      } 
 
       if (e instanceof NotFoundError) {
         res.status(NotFoundError.status).send();

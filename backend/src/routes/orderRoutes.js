@@ -13,7 +13,7 @@ const orderRoutes = express.Router();
  *   bindに渡したインスタンスをthisに固定するため、渡した関数のthisを強制できる。
  */
 orderRoutes.get("/", orderController.findAll.bind(orderController));
-orderRoutes.get("/:orderNo", orderController.findByNo.bind(orderController));
+orderRoutes.get("/:orderNo", orderController.findById.bind(orderController));
 
 orderRoutes.post("/", orderController.create.bind(orderController));
 orderRoutes.put("/:orderNo", orderController.update.bind(orderController));
