@@ -199,6 +199,16 @@ const orderClientOptions = computed(() =>
     })),
 );
 
+watch(
+  () => form.value.orderKbn,
+  (newValue) => {
+    if (newValue === "1") {
+      form.value.orderClientCode = "";
+    }
+  }
+);
+
+
 /**
  * 初期表示時処理
  */
