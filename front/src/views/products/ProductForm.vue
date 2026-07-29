@@ -102,8 +102,9 @@
           <BFormInput
             id="productPrice"
             type="number"
+            min="1"
             v-model="form.productPrice"
-            :state="form.productPrice > 0 && /^[0-9]+$/.test(form.productPrice)"
+            :state="form.productPrice > 0 && form.productPrice < 2147483648"
             required
           />
         </BFormGroup>
@@ -144,29 +145,6 @@ const form = ref({
   productPrice: "",
 });
 
-//登録画面の判定
-const isCreateMode = computed(() => {
-  return route.path.includes("/create");
-});
-
-//ラジオボタンの変更監視
-watch(
-  () => form.value.orderKbn,
-  (newValue) => {
-    if (newValue === "1") {
-      form.value.orderClientCode = "";
-      /*showClientMessage.value = "";*/
-    }
-    if (
-      newValue === "2" &&
-      isCreateMode.value &&
-      orderClientOptions.value.length === 0
-    ) {
-      /*showClientMessage.value = formatMessage(messages.MSGE018, "発注先コード");*/
-    }
-  },
-);
-
 // 編集画面かどうか
 const isEdit = computed(() => !!route.params.code);
 
@@ -195,11 +173,11 @@ const showClientMessage = ref("");
 // ログイン情報
 const loginInfo = Auth.getLoginInfo();
 
-// 取引先コードの一覧検索結果(例)
+// 取引先コードの一覧検索結果(本来はorderClientOptionsの取得時に取引先一覧APIでorderKbnを"2"(発注)にして取得するが、今回は固定値で対応)
 const clientList = ref([
-  { cientcode: "a0000001", clientName: "あああ", orderKbn: "1" },
+  /*{ cientcode: "a0000001", clientName: "あああ", orderKbn: "1" },
   { clientcode: "a0000002", clientName: "キッコーマン", orderKbn: "2" },
-  { clientcode: "a0000003", clientName: "富士通", orderKbn: "2" },
+  { clientcode: "a0000003", clientName: "富士通", orderKbn: "2" },*/
 ]);
 
 // 発注先コードの選択肢作成
@@ -209,7 +187,7 @@ const orderClientOptions = computed(() =>
     .sort((a, b) => a.clientcode.localeCompare(b.clientcode))
     .map((client) => ({
       value: client.clientcode,
-      text: `${client.clientcode} : ${client.clientName}`,
+      text: `${client.clientcode} : ${client.clientName}`
     })),
 );
 
@@ -239,13 +217,14 @@ onMounted(async () => {
       });
 
       //取引先情報一覧取得
-      /*getClientList = async () => {
-      try {
-        const clientList = await clientApi.getClients({ orderKbn: "2" });
-        //0件チェック
-        if (clientList.length === 0) {
-          showClientMessage.value = formatMessage(MSGE018, "発注先コード");
-        return;
+      /*try {
+        orderClientOptions.value = await clientApi.getClients({ orderKbn: "2" }).data
+        .filter((client) => client.orderKbn === "2")
+        .sort((a, b) => a.clientcode.localeCompare(b.clientcode))
+        .map((client) => ({
+          value: client.clientcode,
+          text: `${client.clientcode} : ${client.clientName}`
+        }));
       }
   } catch (e) {
     console.log(e);
