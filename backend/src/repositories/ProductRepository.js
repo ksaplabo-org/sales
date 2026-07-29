@@ -21,12 +21,15 @@ class ProductRepository {
       where.productName = { [Op.like]: "%" + condition.productName + "%" };
     }
     if (condition.productPriceLow || condition.productPriceHigh) {
-      if (condition.productPriceLow && !condition.productPriceHigh) {
-        where.productPrice = { [Op.gte]: condition.productPriceLow };
-      } else if (!condition.productPriceLow && condition.productPriceHigh) {
-        where.productPrice = { [Op.lte]: condition.productPriceHigh };
+      where.productPrice = {};
+
+      if (condition.productPriceLow) {
+        where.productPrice[Op.gte] = condition.productPriceLow;
       }
-      where.productPrice = { [Op.gte]: condition.productPriceLow, [Op.lte]: condition.productPriceHigh };
+
+      if (condition.productPriceHigh) {
+        where.productPrice[Op.lte] = condition.productPriceHigh;
+      }
     }
 
     // 検索結果を返却
