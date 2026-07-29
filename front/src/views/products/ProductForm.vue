@@ -3,7 +3,13 @@
   <BContainer fluid class="px-0 pb-2 mb-2">
     <div class="d-flex justify-content-between align-items-center">
       <h3 class="mb-0">商品登録</h3>
-      <BBreadcrumb :items="breadcrumbs" />
+      <BBreadcrumb
+        :items="[
+          { text: 'トップページ', to: '/' },
+          { text: '商品マスタ', to: { name: 'productMaster' } },
+          { text: '商品登録', active: true },
+        ]"
+      />
     </div>
   </BContainer>
 
@@ -149,7 +155,7 @@ const form = ref({
 const isEdit = computed(() => !!route.params.code);
 
 // パンくずリスト
-const breadcrumbs = computed(() => {
+/*const breadcrumbs = computed(() => {
   // 商品マスタ画面から遷移
   return [
     { text: "トップページ", to: "/" },
@@ -157,6 +163,7 @@ const breadcrumbs = computed(() => {
     { text: "商品登録", active: true },
   ];
 });
+*/
 
 // 読み込み中の表示制御
 const loading = ref(false);
@@ -168,28 +175,27 @@ const TOAST_MS = 1500;
 const failedToastText = ref("");
 const showFailedToastMs = ref(0);
 
-const showClientMessage = ref("");
-
 // ログイン情報
 const loginInfo = Auth.getLoginInfo();
 
 // 取引先コードの一覧検索結果(本来はorderClientOptionsの取得時に取引先一覧APIでorderKbnを"2"(発注)にして取得するが、今回は固定値で対応)
 const clientList = ref([
-  /*{ cientcode: "a0000001", clientName: "あああ", orderKbn: "1" },
+  { cientcode: "a0000001", clientName: "あああ", orderKbn: "1" },
   { clientcode: "a0000002", clientName: "キッコーマン", orderKbn: "2" },
-  { clientcode: "a0000003", clientName: "富士通", orderKbn: "2" },*/
+  { clientcode: "a0000003", clientName: "富士通", orderKbn: "2" },
 ]);
 
-//const orderClientOptions =ref([]);
+//取引先一覧APIの呼び出しが可能になれば以下の宣言が必要
+// const orderClientOptions =ref([]);
 
-// 発注先コードの選択肢作成
+// 発注先コードの選択肢作成(取引先一覧APIの呼び出しが可能になれば不要)
 const orderClientOptions = computed(() =>
   clientList.value
     .filter((client) => client.orderKbn === "2")
     .sort((a, b) => a.clientcode.localeCompare(b.clientcode))
     .map((client) => ({
       value: client.clientcode,
-      text: `${client.clientcode} : ${client.clientName}`
+      text: `${client.clientcode} : ${client.clientName}`,
     })),
 );
 
@@ -203,7 +209,6 @@ onMounted(async () => {
   }
 
   // 編集画面の場合
-
   if (isEdit.value) {
     // 商品情報詳細取得
     loading.value = true;
@@ -217,22 +222,6 @@ onMounted(async () => {
           form.value[key] = productInfo[key];
         }
       });
-
-      //取引先情報一覧取得
-      /*try {
-        orderClientOptions.value = await clientApi.getClients({ orderKbn: "2" }).data
-        .filter((client) => client.orderKbn === "2")
-        .sort((a, b) => a.clientcode.localeCompare(b.clientcode))
-        .map((client) => ({
-          value: client.clientcode,
-          text: `${client.clientcode} : ${client.clientName}`
-        }));
-      }
-  } catch (e) {
-    console.log(e);
-    openFailedToast(messages.MSGE001);
-  }
-*/
     } catch (e) {
       console.log(e);
       console.log("productInfo", productInfo);
@@ -243,6 +232,20 @@ onMounted(async () => {
       loading.value = false;
     }
   }
+
+  //取引先情報一覧取得
+  /*try {
+    orderClientOptions.value = await clientApi
+      .getClients({ orderKbn: "2" })
+      .data.sort((a, b) => a.clientcode.localeCompare(b.clientcode))
+      .map((client) => ({
+        value: client.clientcode,
+        text: `${client.clientcode} : ${client.clientName}`,
+      }));
+  } catch (e) {
+    console.log(e);
+    openFailedToast(messages.MSGE001);
+  }*/
 });
 
 /**
