@@ -84,18 +84,15 @@ ClientMaster
       </div>
     </template>
 
-    <BTable
-      head-variant="secondary"
-      :items="items"
-      :fields="fields"
-      class="mb-0"
-      show-empty
-      responsive
-      hover
-    >
+    <BTable head-variant="secondary" :items="items" :fields="fields" class="mb-0" show-empty responsive hover>
       <!-- 受発注区分 -->
       <template #cell(orderKbn)="row">
         {{ orderKbnOptions.find((orderKbn) => orderKbn.value === row.value)?.text }}
+      </template>
+
+      <!-- 郵便番号 -->
+      <template #cell(postCode)="row">
+        {{ formatPostCode(row.item.postCode) }}
       </template>
 
       <!-- 編集・削除ボタン -->
@@ -247,6 +244,13 @@ const searchClients = async () => {
   } finally {
     loading.value = false;
   }
+};
+
+/**
+ * 郵便番号の形式変換
+ */
+const formatPostCode = (postCode) => {
+  return postCode.replace(/(\d{3})(\d{4})/, '$1-$2');
 };
 
 /**
