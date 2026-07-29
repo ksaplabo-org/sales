@@ -180,6 +180,8 @@ const clientList = ref([
   { clientcode: "a0000003", clientName: "富士通", orderKbn: "2" },*/
 ]);
 
+const orderClientOptions = ref([]);
+
 // 発注先コードの選択肢作成
 const orderClientOptions = computed(() =>
   clientList.value
