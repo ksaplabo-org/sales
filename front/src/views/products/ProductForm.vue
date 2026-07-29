@@ -70,13 +70,15 @@
           label-cols="3"
         >
           <BFormSelect
-            v-if="!showClientMessage"
+            v-if="
+              isEdit || form.orderKbn !== '2' || orderClientOptions.length > 0
+            "
             v-model="form.orderClientCode"
             :options="orderClientOptions"
             :disabled="form.orderKbn === '1'"
           />
           <div v-else class="text-danger">
-            {{ showClientMessage }}
+            {{ formatMessage(messages.MSGE018, "発注先コード") }}
           </div>
         </BFormGroup>
       </BRow>
@@ -144,7 +146,7 @@ const form = ref({
 
 //登録画面の判定
 const isCreateMode = computed(() => {
-return route.path.includes("/create");
+  return route.path.includes("/create");
 });
 
 //ラジオボタンの変更監視
@@ -153,14 +155,14 @@ watch(
   (newValue) => {
     if (newValue === "1") {
       form.value.orderClientCode = "";
-      showClientMessage.value = "";
+      /*showClientMessage.value = "";*/
     }
     if (
       newValue === "2" &&
       isCreateMode.value &&
       orderClientOptions.value.length === 0
     ) {
-      showClientMessage.value = formatMessage(messages.MSGE018, "発注先コード");
+      /*showClientMessage.value = formatMessage(messages.MSGE018, "発注先コード");*/
     }
   },
 );
@@ -192,6 +194,25 @@ const showClientMessage = ref("");
 
 // ログイン情報
 const loginInfo = Auth.getLoginInfo();
+
+// 取引先コードの一覧検索結果(例)
+const clientList = ref([
+  { cientcode: "a0000001", clientName: "あああ", orderKbn: "1" },
+  { clientcode: "a0000002", clientName: "キッコーマン", orderKbn: "2" },
+  { clientcode: "a0000003", clientName: "富士通", orderKbn: "2" },
+]);
+
+// 発注先コードの選択肢作成
+const orderClientOptions = computed(() =>
+  clientList.value
+    .filter((client) => client.orderKbn === "2")
+    .sort((a, b) => a.clientcode.localeCompare(b.clientcode))
+    .map((client) => ({
+      value: client.clientcode,
+      text: `${client.clientcode} : ${client.clientName}`,
+    })),
+);
+
 /**
  * 初期表示時処理
  */
@@ -220,7 +241,7 @@ onMounted(async () => {
       //取引先情報一覧取得
       /*getClientList = async () => {
       try {
-        const clientList = await clientApi.getClients();
+        const clientList = await clientApi.getClients({ orderKbn: "2" });
         //0件チェック
         if (clientList.length === 0) {
           showClientMessage.value = formatMessage(MSGE018, "発注先コード");
@@ -242,33 +263,6 @@ onMounted(async () => {
     }
   }
 });
-
-// 取引先コードの一覧検索結果
-const clientList = ref([
-  { cientcode: "C000001", clientName: "あああ", orderKbn: "1" },
-  { clientcode: "C000002", clientName: "キッコーマン", orderKbn: "2" },
-  { clientcode: "C000003", clientName: "富士通", orderKbn: "2" },
-  ]);
-/*
-if (clientList.value.length === 0) {
-  console.log("0件");
-  console.log("MSGE018=", messages.MSGE018);
-  showClientMessage.value = formatMessage(messages.MSGE018, "発注先コード");
-
-  console.log(showClientMessage.value);
-}
-*/
-
-// 発注先コードの選択肢作成
-const orderClientOptions = computed(() =>
-  clientList.value
-    .filter((client) => client.orderKbn === "2")
-    .sort((a, b) => a.clientcode.localeCompare(b.clientcode))
-    .map((client) => ({
-      value: client.clientcode,
-      text: `${client.clientcode} : ${client.clientName}`,
-    })),
-);
 
 /**
  * 半角英数のみに置換する
@@ -298,7 +292,7 @@ const save = async () => {
     // マスタ画面に遷移
     router.push({
       name: "productMaster",
-      state: { message: "登録に成功しました", result: true },
+      state: { message: messages.MSGI003, result: true },
     });
   } catch (e) {
     openFailedToast(messages.MSGE004);
