@@ -176,7 +176,6 @@ const fields = [
   { key: "orderKbn", label: "受発注区分" },
   { key: "orderClientCode", label: "発注先コード" },
   { key: "productPrice", label: "単価" },
-  { key: "productPrice", label: "単価"},
   { key: "actions", label: "" },
 ];
 
