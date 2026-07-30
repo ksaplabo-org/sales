@@ -21,12 +21,13 @@ class ClientController {
 
       // 取引先情報一覧検索
       const clients = await ClientService.findAll(condition);
-      res.json(clients);
+      return res.json(clients);
     } catch (e) {
       console.log(e);
-      res.status(500).send();
+      return res.status(500).send();
     }
   }
+
   /**
    * 取引先情報詳細取得
    *
@@ -51,7 +52,7 @@ class ClientController {
       }
 
       const client = await ClientService.findByCode(req.params.clientCode);
-      res.json(client);
+      return res.json(client);
     } catch (e) {
       console.log(e);
 
@@ -91,7 +92,7 @@ class ClientController {
 
       //取引先情報削除
       await ClientService.delete(req.params.clientCode);
-      res.send();
+      return res.send();
     } catch (e) {
       console.log(e);
 
