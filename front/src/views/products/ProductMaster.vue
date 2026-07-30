@@ -154,7 +154,7 @@
             @click="
               router.push({
                 name: 'productEdit',
-                params: { code: row.item.productCode },
+                params: { productCode: row.item.productCode },
               })
             "
           >
