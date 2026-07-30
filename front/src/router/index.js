@@ -55,7 +55,7 @@ const routes = [
         component: () => import("@/views/products/ProductForm.vue"),
       },
       {
-        path: "master/products/:code/edit",
+        path: "master/products/:productCode/edit",
         name: "productEdit",
         component: () => import("@/views/products/ProductForm.vue"),
       }
