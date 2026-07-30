@@ -1,8 +1,8 @@
-import UniqueConstraintError from "../errors/UniqueConstraintError.js";
+import ReferenceConstraintError from "../errors/ReferenceConstraintError.js";
 import NotFoundError from "../errors/NotFoundError.js";
-import clientRepository from "../repositories/ClientRepository.js";
-//import orderRepository from "../repositories/OrderRepository.js";
- 
+import ClientRepository from "../repositories/clientRepository.js";
+//import OrderRepository from "../repositories/orderRepository.js";
+
 class ClientService {
   /**
    * 取引先情報一覧取得
@@ -11,9 +11,9 @@ class ClientService {
    * @returns 取引先情報一覧
    */
   async findAll(condition) {
-    return await clientRepository.findAll(condition);
+    return await ClientRepository.findAll(condition);
   }
- 
+
   /**
    * 取引先情報詳細取得
    *
@@ -21,13 +21,13 @@ class ClientService {
    * @returns 取引先情報詳細
    */
   async findByCode(code) {
-    const client = await clientRepository.findByCode(code);
+    const client = await ClientRepository.findByCode(code);
     if (!client) {
       throw new NotFoundError();
     }
     return client;
   }
- 
+
   /**
    * 取引先情報物理削除
    *
@@ -35,17 +35,17 @@ class ClientService {
    */
   async delete(clientCode) {
     //削除データの存在チェック
-    const client = await clientRepository.findByCode(clientCode);
-    //const used = await orderRepository.findByAll(clientCode);
+    const client = await ClientRepository.findByCode(clientCode);
     if (!client) {
       throw new NotFoundError();
     }
     // 削除データの外部参照チェック
-    //if (used) {
-    //throw new UniqueConstraintError();
+    //const usedFlg = await OrderRepository.findByAll(clientCode);
+    //if (usedFlg) {
+    //throw new ReferenceConstraintError();
     //}
-    await clientRepository.delete(clientCode);
+    await ClientRepository.delete(clientCode);
   }
 }
- 
+
 export default new ClientService();

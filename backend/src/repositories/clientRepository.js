@@ -1,5 +1,5 @@
 import { col, fn, literal, Op } from "sequelize";
-import ClientModel from "../models/ClientModel.js";
+import ClientModel from "../models/clientModel.js";
 
 class ClientRepository {
   /**

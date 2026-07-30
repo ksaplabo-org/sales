@@ -1,10 +1,10 @@
 import express from "express";
-import clientController from "../controllers/ClientController.js";
+import ClientController from "../controllers/clientController.js";
 
 const clientRoutes = express.Router();
 
-clientRoutes.get("/", clientController.findAll.bind(clientController));
-clientRoutes.get("/:clientCode", clientController.findByCode.bind(clientController));
-clientRoutes.delete("/:clientCode", clientController.delete.bind(clientController));
+clientRoutes.get("/", ClientController.findAll.bind(ClientController));
+clientRoutes.get("/:clientCode", ClientController.findByCode.bind(ClientController));
+clientRoutes.delete("/:clientCode", ClientController.delete.bind(ClientController));
 
 export default clientRoutes;
