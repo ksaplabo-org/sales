@@ -207,7 +207,7 @@ const loginInfo = getLoginInfo();
  */
 onMounted(async () => {
   // 一覧検索
-  await searchClients(condition.value);
+  await searchClients();
   // 登録画面からの遷移の場合にメッセージを出力
   const state = history.state;
   if (state.result) {
