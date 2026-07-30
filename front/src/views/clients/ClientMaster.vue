@@ -101,7 +101,7 @@ ClientMaster
           <BButton
             size="sm"
             variant="outline-primary"
-            @click="router.push({ name: 'clientEdit', params: { code: row.item.clientCode } })"
+            @click="router.push({ name: 'clientEdit', params: { clientCode: row.item.clientCode } })"
             v-if="loginInfo.role == 2"
           >
             <i class="fas fa-pen"></i>
