@@ -183,6 +183,7 @@ const clientList = ref([
   { cientcode: "a0000001", clientName: "あああ", orderKbn: "1" },
   { clientcode: "a0000002", clientName: "キッコーマン", orderKbn: "2" },
   { clientcode: "a0000003", clientName: "富士通", orderKbn: "2" },
+  { clientcode: "a0000004", clientName: "NAMUCO", orderKbn: "2" },
 ]);
 
 //取引先一覧APIの呼び出しが可能になれば以下の宣言が必要
@@ -196,18 +197,21 @@ const orderClientOptions = computed(() =>
     .map((client) => ({
       value: client.clientcode,
       text: `${client.clientcode} : ${client.clientName}`,
-    })),
+    }))
 );
 
+//ラジオボタンが「受注」の場合、発注先コードを空にする
 watch(
   () => form.value.orderKbn,
   (newValue) => {
     if (newValue === "1") {
       form.value.orderClientCode = "";
     }
+    if (newValue === "2") {
+      form.value.orderClientCode = orderClientOptions.value[0].value;
+    }
   }
 );
-
 
 /**
  * 初期表示時処理
@@ -256,6 +260,7 @@ onMounted(async () => {
     console.log(e);
     openFailedToast(messages.MSGE001);
   }*/
+  form.orderClientCode = orderClientOptions.value[0].clientcode;
 });
 
 /**
