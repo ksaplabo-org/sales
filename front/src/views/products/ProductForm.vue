@@ -62,6 +62,7 @@
             ]"
             inline
             :required
+            @change="handleOrderKbnChange"
           />
           <span v-else>
             {{ form.orderKbn === "1" ? "受注" : "発注" }}
@@ -75,8 +76,9 @@
           label-for="orderClientCode"
           label-cols="3"
         >
+          <div v-if="form.orderKbn === '1' && isEdit">-</div>
           <BFormSelect
-            v-if="
+            v-else-if="
               isEdit || form.orderKbn !== '2' || orderClientOptions.length > 0
             "
             v-model="form.orderClientCode"
@@ -180,7 +182,7 @@ const loginInfo = Auth.getLoginInfo();
 
 // 取引先コードの一覧検索結果(本来はorderClientOptionsの取得時に取引先一覧APIでorderKbnを"2"(発注)にして取得するが、今回は固定値で対応)
 const clientList = ref([
-  { cientcode: "a0000001", clientName: "あああ", orderKbn: "1" },
+  { clientcode: "a0000001", clientName: "あああ", orderKbn: "1" },
   { clientcode: "a0000002", clientName: "キッコーマン", orderKbn: "2" },
   { clientcode: "a0000003", clientName: "富士通", orderKbn: "2" },
   { clientcode: "a0000004", clientName: "NAMUCO", orderKbn: "2" },
@@ -197,20 +199,7 @@ const orderClientOptions = computed(() =>
     .map((client) => ({
       value: client.clientcode,
       text: `${client.clientcode} : ${client.clientName}`,
-    }))
-);
-
-//ラジオボタンが「受注」の場合、発注先コードを空にする
-watch(
-  () => form.value.orderKbn,
-  (newValue) => {
-    if (newValue === "1") {
-      form.value.orderClientCode = "";
-    }
-    if (newValue === "2") {
-      form.value.orderClientCode = orderClientOptions.value[0].value;
-    }
-  }
+    })),
 );
 
 /**
@@ -270,6 +259,14 @@ onMounted(async () => {
  */
 const formatHalfWidthAlphaNumeric = (value) => {
   return value.replace(/[^A-Za-z0-9]/g, "");
+};
+
+const handleOrderKbnChange = (newOrderKbn) => {
+  if (newOrderKbn.target.value === "1") {
+    form.value.orderClientCode = "";
+  } else if (newOrderKbn.target.value === "2" && orderClientOptions.value.length > 0) {
+    form.value.orderClientCode = orderClientOptions.value[0].value;
+  }
 };
 
 /**
