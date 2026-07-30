@@ -41,11 +41,11 @@ class ClientRepository {
   /**
    * 取引先情報詳細取得
    *
-   * @param {*} code 取引先コード
+   * @param {*} clientCode 取引先コード
    * @returns 取引先情報
    */
-  async findByCode(code) {
-    return await ClientModel.findByPk(code);
+  async findByCode(clientCode) {
+    return await ClientModel.findByPk(clientCode);
   }
 
   /**
