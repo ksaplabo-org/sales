@@ -63,7 +63,7 @@ const menus = ref([
     menus: [
       {
         title: "受発注情報一覧",
-        icon: "fa-user",
+        icon: "fa-file-invoice-dollar",
         to: "/sales/orders",
         roles: ["1","2"],
       },

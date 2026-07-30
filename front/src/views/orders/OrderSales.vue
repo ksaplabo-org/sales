@@ -88,20 +88,24 @@
         <strong>検索結果 ( {{ totalCount }} 件 )</strong>
 
         <div class="d-flex gap-2">
-        <BButton v-if="loginInfo.role == 1" size="sm" :to="{ name: 'userCreate' }" style="background-color: hsl(35,98%,50%); border-color: hsl(35,98%,50%)">
-          <div class="d-inline-flex flex-column align-items-center me-1">
+        <BButton v-if="loginInfo.role == 1" class="btn-receive" size="sm" :to="{ name: 'orderSales' }">
+          <div class="d-flex align-items-center">
+          <div class="d-inline-flex flex-column align-items-center me-1 mb-1">
          <i class="fas fa-arrow-down fa-xs" aria-hidden="true"></i>
          <i class="fas fa-box fa-xs" aria-hidden="true"></i>
           </div>
           受注登録
+        </div>
         </BButton>
 
-        <BButton v-if="loginInfo.role == 1" size="sm" :to="{ name: 'userCreate' }" style="background-color: hsl(140,98%,43%); border-color: hsl(140,98%,43%)">
-          <div class="d-inline-flex flex-column align-items-center me-1">
+        <BButton v-if="loginInfo.role == 1" class="btn-sale" size="sm" :to="{ name: 'orderSales' }">
+          <div class="d-flex align-items-center">
+          <div class="d-inline-flex flex-column align-items-center me-1 mb-1">
          <i class="fas fa-arrow-up fa-xs" aria-hidden="true"></i>
          <i class="fas fa-box fa-xs" aria-hidden="true"></i>
           </div>
           発注登録
+        </div>
         </BButton>
       </div>
       </div>
@@ -123,9 +127,14 @@
         {{ orderKbnOptions.find((orderKbn) => orderKbn.value === row.value)?.text }}
       </template>
 
+      <!-- 受発注日 -->
+       <template #cell(orderDate)="row">
+        {{ row.item.orderDate?.replace(/-/g, "/") }}
+      </template>
+
       <!-- 確定日 -->
-      <template #cell(confirmedDate)="row">
-        {{ row.item.confirmedDate ?? "-" }}
+       <template #cell(confirmedDate)="row">
+        {{ row.item.confirmedDate?.replace(/-/g, "/") ?? "-" }}
       </template>
 
       <!-- 合計金額 -->
@@ -312,15 +321,6 @@ const openFailedToast = (message) => {
 };
 
 /**
- * 一覧行スタイル制御
- *
- * @param row 一覧行データ
- */
-const changeRowStyle = (row) => {
-  if (!row) return "";
-};
-
-/**
  * 削除確認モーダル表示処理
  *
  * @param row 一覧行データ
@@ -346,4 +346,42 @@ const deleteOrder = async () => {
     loading.value = false;
   }
 };
+
 </script>
+
+<style>
+.btn-receive {
+  background-color: #fc9503 !important;
+  border-color: #fc9503 !important;
+  color: #fff !important;
+}
+
+.btn-receive:hover {
+  background-color: #e68600 !important;
+  border-color: #e68600 !important;
+  color: #fff !important;
+}
+
+.btn-receive:focus,
+.btn-receive:focus-visible {
+  box-shadow: 0 0 0 0.25rem rgba(252, 149, 3, 0.25) !important;
+}
+
+.btn-sale {
+  background-color: #02D943 !important;
+  border-color: #02D943 !important;
+  color: #fff !important;
+}
+
+.btn-sale:hover {
+  background-color: #02BE3B !important;
+  border-color: #02BE3B !important;
+  color: #fff !important;
+}
+
+.btn-sale:focus,
+.btn-sale:focus-visible {
+  box-shadow: 0 0 0 0.25rem rgba(2, 217, 67, 0.25) !important;
+}
+
+</style>
