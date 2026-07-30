@@ -152,7 +152,7 @@ const form = ref({
 });
 
 // 編集画面かどうか
-const isEdit = computed(() => !!route.params.code);
+const isEdit = computed(() => !!route.params.productCode);
 
 // パンくずリスト
 /*const breadcrumbs = computed(() => {
@@ -229,7 +229,7 @@ onMounted(async () => {
 
     try {
       const productInfo = await productApi.getProductByProductCode(
-        route.params.code,
+        route.params.productCode,
       );
       Object.keys(form.value).forEach((key) => {
         if (key in productInfo) {
