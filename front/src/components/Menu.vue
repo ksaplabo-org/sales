@@ -54,6 +54,12 @@ const menus = ref([
         to: "/master/users",
         roles: ["2"],
       },
+      {
+        title: "取引先マスタ",
+        icon: "fa-money-bill-wave",
+        to: "/master/clients",
+        roles: ["1", "2"],
+      },
     ],
   },
   {
@@ -78,3 +84,4 @@ const displayMenus = computed(() => {
     .filter((group) => group.menus.length > 0);
 });
 </script>
+ 
