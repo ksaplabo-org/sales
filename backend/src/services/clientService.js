@@ -1,4 +1,4 @@
-import ReferenceConstraintError from "../errors/ReferenceConstraintError.js";
+//import ReferenceConstraintError from "../errors/ReferenceConstraintError.js";
 import NotFoundError from "../errors/NotFoundError.js";
 import ClientRepository from "../repositories/clientRepository.js";
 //import OrderRepository from "../repositories/orderRepository.js";
@@ -17,11 +17,11 @@ class ClientService {
   /**
    * 取引先情報詳細取得
    *
-   * @param {*} id 取引先コード
+   * @param {*} clientCode 取引先コード
    * @returns 取引先情報詳細
    */
-  async findByCode(code) {
-    const client = await ClientRepository.findByCode(code);
+  async findByCode(clientCode) {
+    const client = await ClientRepository.findByCode(clientCode);
     if (!client) {
       throw new NotFoundError();
     }
@@ -44,7 +44,7 @@ class ClientService {
     //if (usedFlg) {
     //throw new ReferenceConstraintError();
     //}
-    await ClientRepository.delete(clientCode);
+    return await ClientRepository.delete(clientCode);
   }
 }
 
