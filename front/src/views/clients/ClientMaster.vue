@@ -238,7 +238,6 @@ const searchClients = async () => {
   try {
     items.value = await clientApi.getClients(condition.value);
   } catch (e) {
-    loading.value = false;
     console.log(e);
     openFailedToast(messages.MSGE001);
   } finally {
@@ -292,7 +291,6 @@ const deleteClient = async () => {
     await searchClients();
     openSuccessToast(messages.MSGI006);
   } catch (e) {
-    loading.value = false;
     console.log(e);
     openFailedToast(messages.MSGE007);
   } finally {
