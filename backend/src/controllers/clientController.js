@@ -35,20 +35,20 @@ class ClientController {
    * @param {*} res レスポンス情報
    */
   async findByCode(req, res) {
+    const errors = [];
     try {
       // パスパラメータチェック
-      const pathErrors = [];
       if (!req.params.clientCode) {
-        pathErrors.push({ field: "clientCode", message: "取引先コードが設定されていません" });
+        errors.push({ field: "clientCode", message: "取引先コードが設定されていません" });
       } else if (req.params.clientCode.length !== 8) {
-        pathErrors.push({ field: "clientCode", message: "取引先コードは8桁で設定してください" });
+        errors.push({ field: "clientCode", message: "取引先コードは8桁で設定してください" });
       } else if (!/^[A-Za-z0-9]+$/.test(req.params.clientCode)) {
-        pathErrors.push({ field: "clientCode", message: "取引先コードは半角英数で設定してください" });
+        errors.push({ field: "clientCode", message: "取引先コードは半角英数で設定してください" });
       }
 
-      if (pathErrors.length > 0) {
-        console.log(pathErrors);
-        return res.status(400).json({ errors: pathErrors });
+      if (errors.length > 0) {
+        console.log(errors);
+        return res.status(400).json({ errors: errors });
       }
 
       const client = await ClientService.findByCode(req.params.clientCode);
@@ -58,9 +58,9 @@ class ClientController {
 
       if (e instanceof NotFoundError) {
         // 存在チェックエラー
-        const error = { field: "clientCode", message: "この取引先情報は存在しません" };
-        console.log(error);
-        return res.status(NotFoundError.status).json({ errors: error });
+        errors.push({ field: "clientCode", message: "この取引先情報は存在しません" });
+        console.log(errors);
+        return res.status(NotFoundError.status).json({ errors: errors });
       } else {
         return res.status(500).send();
       }
@@ -74,20 +74,20 @@ class ClientController {
    * @param {*} res レスポンス情報
    */
   async delete(req, res) {
+    const errors = [];
     try {
       // パスパラメータチェック
-      const pathErrors = [];
       if (!req.params.clientCode) {
-        pathErrors.push({ field: "clientCode", message: "取引先コードが設定されていません" });
+        errors.push({ field: "clientCode", message: "取引先コードが設定されていません" });
       } else if (req.params.clientCode.length !== 8) {
-        pathErrors.push({ field: "clientCode", message: "取引先コードは8桁で設定してください" });
+        errors.push({ field: "clientCode", message: "取引先コードは8桁で設定してください" });
       } else if (!/^[A-Za-z0-9]+$/.test(req.params.clientCode)) {
-        pathErrors.push({ field: "clientCode", message: "取引先コードは半角英数で設定してください" });
+        errors.push({ field: "clientCode", message: "取引先コードは半角英数で設定してください" });
       }
 
-      if (pathErrors.length > 0) {
-        console.log(pathErrors);
-        return res.status(400).json({ errors: pathErrors });
+      if (errors.length > 0) {
+        console.log(errors);
+        return res.status(400).json({ errors: errors });
       }
 
       //取引先情報削除
@@ -98,14 +98,14 @@ class ClientController {
 
       if (e instanceof NotFoundError) {
         // 存在チェックエラー
-        const error = { field: "clientCode", message: "この取引先情報は存在しません" };
-        console.log(error);
-        return res.status(NotFoundError.status).json({ errors: error });
+        errors.push({ field: "clientCode", message: "この取引先情報は存在しません" });
+        console.log(errors);
+        return res.status(NotFoundError.status).json({ errors: errors });
       } else if (e instanceof ReferenceConstraintError) {
         // 外部参照チェックエラー
-        const error = { field: "clientCode", message: "取引先コードが受発注情報で使用されているため削除できません" };
-        console.log(error);
-        return res.status(ReferenceConstraintError.status).json({ errors: error });
+        errors.push({ field: "clientCode", message: "取引先コードが受発注情報で使用されているため削除できません" });
+        console.log(errors);
+        return res.status(ReferenceConstraintError.status).json({ errors: errors });
       } else {
         return res.status(500).send();
       }
