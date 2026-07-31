@@ -136,6 +136,7 @@ import { computed, watch, ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 import * as productApi from "@/api/productApi.js";
+//import * as clientApi from "@/api/clientApi.js";
 import messages from "@/constants/messages.js";
 import Loading from "@/components/Loading.vue";
 import * as Auth from "@/utils/auth.js";
@@ -156,17 +157,6 @@ const form = ref({
 // 編集画面かどうか
 const isEdit = computed(() => !!route.params.productCode);
 
-// パンくずリスト
-/*const breadcrumbs = computed(() => {
-  // 商品マスタ画面から遷移
-  return [
-    { text: "トップページ", to: "/" },
-    { text: "商品マスタ", to: { name: "productMaster" } },
-    { text: "商品登録", active: true },
-  ];
-});
-*/
-
 // 読み込み中の表示制御
 const loading = ref(false);
 
@@ -180,16 +170,16 @@ const showFailedToastMs = ref(0);
 // ログイン情報
 const loginInfo = Auth.getLoginInfo();
 
-// 取引先コードの一覧検索結果(本来はorderClientOptionsの取得時に取引先一覧APIでorderKbnを"2"(発注)にして取得するが、今回は固定値で対応)
+//取引先一覧APIの呼び出しが可能になれば以下の宣言が必要
+// const orderClientOptions =ref([]);
+
+// 取引先コードの一覧検索結果(本来は取引先一覧APIでorderKbnを"2"(発注)にして取得するが、今回は固定値で対応)
 const clientList = ref([
   { clientcode: "a0000001", clientName: "あああ", orderKbn: "1" },
   { clientcode: "a0000002", clientName: "キッコーマン", orderKbn: "2" },
   { clientcode: "a0000003", clientName: "富士通", orderKbn: "2" },
   { clientcode: "a0000004", clientName: "NAMUCO", orderKbn: "2" },
 ]);
-
-//取引先一覧APIの呼び出しが可能になれば以下の宣言が必要
-// const orderClientOptions =ref([]);
 
 // 発注先コードの選択肢作成(取引先一覧APIの呼び出しが可能になれば不要)
 const orderClientOptions = computed(() =>
@@ -210,12 +200,10 @@ onMounted(async () => {
   if (loginInfo.role === "1") {
     router.push({ name: "top" });
   }
-
+  loading.value = true;
   // 編集画面の場合
   if (isEdit.value) {
     // 商品情報詳細取得
-    loading.value = true;
-
     try {
       const productInfo = await productApi.getProductByProductCode(
         route.params.productCode,
@@ -236,7 +224,7 @@ onMounted(async () => {
     }
   }
 
-  //取引先情報一覧取得
+  //取引先情報一覧取得(取引先一覧APIの呼び出しが可能になればこの処理を実施)
   /*try {
     orderClientOptions.value = await clientApi
       .getClients({ orderKbn: "2" })
@@ -249,25 +237,8 @@ onMounted(async () => {
     console.log(e);
     openFailedToast(messages.MSGE001);
   }*/
-  form.orderClientCode = orderClientOptions.value[0].clientcode;
+ loading.value = false;
 });
-
-/**
- * 半角英数のみに置換する
- *
- * @param value 検査値
- */
-const formatHalfWidthAlphaNumeric = (value) => {
-  return value.replace(/[^A-Za-z0-9]/g, "");
-};
-
-const handleOrderKbnChange = (newOrderKbn) => {
-  if (newOrderKbn.target.value === "1") {
-    form.value.orderClientCode = "";
-  } else if (newOrderKbn.target.value === "2" && orderClientOptions.value.length > 0) {
-    form.value.orderClientCode = orderClientOptions.value[0].value;
-  }
-};
 
 /**
  * 登録処理
@@ -306,4 +277,30 @@ const openFailedToast = (message) => {
   failedToastText.value = message;
   showFailedToastMs.value = TOAST_MS;
 };
+
+/**
+ * 半角英数のみに置換
+ *
+ * @param value 検査値
+ */
+const formatHalfWidthAlphaNumeric = (value) => {
+  return value.replace(/[^A-Za-z0-9]/g, "");
+};
+
+/**
+ * 受発注区分変更時の処理
+ *
+ * @param newOrderKbn 変更後の受発注区分
+ */
+const handleOrderKbnChange = (newOrderKbn) => {
+  if (newOrderKbn.target.value === "1") {
+    form.value.orderClientCode = "";
+  } else if (
+    newOrderKbn.target.value === "2" &&
+    orderClientOptions.value.length > 0
+  ) {
+    form.value.orderClientCode = orderClientOptions.value[0].value;
+  }
+};
+
 </script>
