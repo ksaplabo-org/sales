@@ -58,9 +58,9 @@
         <BCol md="4">
           <BFormGroup label="合計金額">
             <div class="d-flex align-items-center">
-            <BFormInput placeholder="下限" v-model="condition.amountTaxIncludedLow" />
-            <span class="mx-2">～</span>
-            <BFormInput placeholder="上限" v-model="condition.amountTaxIncludedHigh" />
+              <BFormInput placeholder="下限" v-model="condition.amountTaxIncludedLow" />
+              <span class="mx-2">～</span>
+              <BFormInput placeholder="上限" v-model="condition.amountTaxIncludedHigh" />
             </div>
           </BFormGroup>
         </BCol>
@@ -81,25 +81,36 @@
     </BForm>
   </BCard>
 
-  
-
   <!-- 検索結果 -->
   <BCard class="shadow-sm">
     <template #header>
       <div class="d-flex justify-content-between align-items-center">
         <strong>検索結果 ( {{ totalCount }} 件 )</strong>
-        
-        <BButton v-if="loginInfo.role == 1" size="sm" variant="primary" :to="{ name: 'orderReceiveCreate' }">
-          <i class="fas fa-plus"></i>
+
+        <div class="d-flex gap-2">
+        <BButton v-if="loginInfo.role == 1" class="btn-receive" size="sm" :to="{ name: 'orderSales' }">
+          <div class="d-flex align-items-center">
+          <div class="d-inline-flex flex-column align-items-center me-1 mb-1">
+         <i class="fas fa-arrow-down fa-xs" aria-hidden="true"></i>
+         <i class="fas fa-box fa-xs" aria-hidden="true"></i>
+          </div>
           受注登録
+        </div>
         </BButton>
 
-        <BButton v-if="loginInfo.role == 1" size="sm" variant="primary" :to="{ name: 'orderSaleCreate' }">
-          <i class="fas fa-plus"></i>
+        <BButton v-if="loginInfo.role == 1" class="btn-sale" size="sm" :to="{ name: 'orderSales' }">
+          <div class="d-flex align-items-center">
+          <div class="d-inline-flex flex-column align-items-center me-1 mb-1">
+         <i class="fas fa-arrow-up fa-xs" aria-hidden="true"></i>
+         <i class="fas fa-box fa-xs" aria-hidden="true"></i>
+          </div>
           発注登録
+        </div>
         </BButton>
       </div>
+      </div>
     </template>
+
 
     <BTable
       head-variant="secondary"
@@ -115,6 +126,21 @@
       <template #cell(orderKbn)="row">
         {{ orderKbnOptions.find((orderKbn) => orderKbn.value === row.value)?.text }}
       </template>
+
+      <!-- 受発注日 -->
+       <template #cell(orderDate)="row">
+        {{ row.item.orderDate?.replace(/-/g, "/") }}
+      </template>
+
+      <!-- 確定日 -->
+       <template #cell(confirmedDate)="row">
+        {{ row.item.confirmedDate?.replace(/-/g, "/") ?? "-" }}
+      </template>
+
+      <!-- 合計金額 -->
+       <template #cell(amountTaxIncluded)="row">
+        {{ row.item.amountTaxIncluded?.toLocaleString()}}
+       </template>
 
       <!-- 編集・削除ボタン -->
       <template #cell(actions)="row">
@@ -132,7 +158,7 @@
             size="sm"
             variant="outline-danger"
             @click="openDeleteModal(row.item)"
-            v-if="row.item.confirmedDate == null"
+            v-if="loginInfo.role == 1 && row.item.confirmedDate == null"
           >
             <i class="far fa-trash-alt"></i>
             削除
@@ -194,7 +220,7 @@ const fields = [
   { key: "productCode", label: "商品コード" },
   { key: "orderDate", label: "受発注日" },
   { key: "confirmedDate", label: "確定日" },
-  { key: "amountTaxIncluded", label: "合計金額"},
+  { key: "amountTaxIncluded", label: "合計金額" },
   { key: "actions", label: "" },
 ];
 
@@ -231,7 +257,6 @@ const loginInfo = getLoginInfo();
  * 初期表示処理
  */
 onMounted(async () => {
-
   // 登録画面からの遷移の場合にメッセージを出力
   const state = history.state;
   if (state.result) {
@@ -296,17 +321,8 @@ const openFailedToast = (message) => {
 };
 
 /**
- * 一覧行スタイル制御
- *
- * @param row 一覧行データ
- */
-const changeRowStyle = (row) => {
-  if (!row) return "";
-};
-
-/**
  * 削除確認モーダル表示処理
- * 
+ *
  * @param row 一覧行データ
  */
 const openDeleteModal = (row) => {
@@ -330,4 +346,42 @@ const deleteOrder = async () => {
     loading.value = false;
   }
 };
+
 </script>
+
+<style>
+.btn-receive {
+  background-color: #fc9503 !important;
+  border-color: #fc9503 !important;
+  color: #fff !important;
+}
+
+.btn-receive:hover {
+  background-color: #e68600 !important;
+  border-color: #e68600 !important;
+  color: #fff !important;
+}
+
+.btn-receive:focus,
+.btn-receive:focus-visible {
+  box-shadow: 0 0 0 0.25rem rgba(252, 149, 3, 0.25) !important;
+}
+
+.btn-sale {
+  background-color: #02D943 !important;
+  border-color: #02D943 !important;
+  color: #fff !important;
+}
+
+.btn-sale:hover {
+  background-color: #02BE3B !important;
+  border-color: #02BE3B !important;
+  color: #fff !important;
+}
+
+.btn-sale:focus,
+.btn-sale:focus-visible {
+  box-shadow: 0 0 0 0.25rem rgba(2, 217, 67, 0.25) !important;
+}
+
+</style>
