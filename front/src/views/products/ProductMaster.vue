@@ -13,8 +13,20 @@
   </BContainer>
 
   <!-- トースト -->
-  <BToast class="w-100" v-model="showSuccessToastMs" variant="success" no-progress>{{ successToastText }}</BToast>
-  <BToast class="w-100" v-model="showFailedToastMs" variant="danger" no-progress>{{ failedToastText }}</BToast>
+  <BToast
+    class="w-100"
+    v-model="showSuccessToastMs"
+    variant="success"
+    no-progress
+    >{{ successToastText }}</BToast
+  >
+  <BToast
+    class="w-100"
+    v-model="showFailedToastMs"
+    variant="danger"
+    no-progress
+    >{{ failedToastText }}</BToast
+  >
 
   <!-- 検索条件 -->
   <BCard class="shadow-sm mb-3">
@@ -24,18 +36,6 @@
 
     <BForm @submit.prevent="searchProducts">
       <BRow>
-        <BCol md="4">
-          <BFormGroup label="商品コード">
-            <BFormInput placeholder="商品コードを入力" v-model="condition.productCode" />
-          </BFormGroup>
-        </BCol>
-
-        <BCol md="4">
-          <BFormGroup label="商品名">
-            <BFormInput placeholder="商品名を入力" v-model="condition.productName" />
-          </BFormGroup>
-        </BCol>
-
         <BCol md="4">
           <BFormGroup label="受発注区分">
             <BFormSelect
@@ -48,21 +48,50 @@
             />
           </BFormGroup>
         </BCol>
+        
+        <BCol md="4">
+          <BFormGroup label="商品コード">
+            <BFormInput
+              placeholder="商品コードを入力"
+              v-model="condition.productCode"
+              :formatter="formatHalfWidthAlphaNumeric"
+            />
+          </BFormGroup>
+        </BCol>
+
+        <BCol md="4">
+          <BFormGroup label="商品名">
+            <BFormInput
+              placeholder="商品名を入力"
+              v-model="condition.productName"
+            />
+          </BFormGroup>
+        </BCol>
       </BRow>
       <BRow>
         <BCol md="4">
           <BFormGroup label="単価">
             <div class="d-flex align-items-center">
-              <BFormInput placeholder="下限" v-model="condition.productPriceLow" />
+              <BFormInput
+                placeholder="下限"
+                v-model="condition.productPriceLow"
+              />
               <span class="mx-2">～</span>
-              <BFormInput placeholder="上限" v-model="condition.productPriceHigh" />
+              <BFormInput
+                placeholder="上限"
+                v-model="condition.productPriceHigh"
+              />
             </div>
           </BFormGroup>
         </BCol>
       </BRow>
       <BRow class="mt-3">
         <BCol class="text-end">
-          <BButton variant="outline-secondary" class="me-2" @click="clearCondition">
+          <BButton
+            variant="outline-secondary"
+            class="me-2"
+            @click="clearCondition"
+          >
             <i class="fas fa-redo"></i>
             クリア
           </BButton>
@@ -88,12 +117,26 @@
       </div>
     </template>
 
-    <BTable head-variant="secondary" :items="items" :fields="fields" class="mb-0" show-empty responsive hover>
+    <BTable
+      head-variant="secondary"
+      :items="items"
+      :fields="fields"
+      class="mb-0"
+      show-empty
+      responsive
+      hover
+    >
       <template #cell(orderClientCode)="row">
         {{ row.item.orderClientCode || "-" }}
       </template>
       <template #cell(orderKbn)="row">
-        {{ row.item.orderKbn === "1" ? "受注" : row.item.orderKbn === "2" ? "発注" : "-" }}
+        {{
+          row.item.orderKbn === "1"
+            ? "受注"
+            : row.item.orderKbn === "2"
+              ? "発注"
+              : "-"
+        }}
       </template>
       <template #cell(productPrice)="row">
         {{ Number(row.item.productPrice).toLocaleString() }}
@@ -101,17 +144,22 @@
 
       <!-- 編集・削除ボタン -->
       <template #cell(actions)="row">
-        <BContainer fluid class="d-flex justify-content-center gap-2 px-0" >
+        <BContainer fluid class="d-flex justify-content-center gap-2 px-0">
           <BButton
             v-if="loginInfo.role == 2"
             size="sm"
             variant="outline-primary"
-            @click="router.push({ name: 'productEdit', params: { productCode: row.item.productCode } })"
+            @click="
+              router.push({
+                name: 'productEdit',
+                params: { productCode: row.item.productCode },
+              })
+            "
           >
             <i class="fas fa-pen"></i>
             編集
           </BButton>
-          <BButton 
+          <BButton
             size="sm"
             variant="outline-danger"
             @click="openDeleteModal(row.item)"
@@ -186,7 +234,7 @@ const condition = ref({
   orderKbn: "",
   orderClientCode: "",
   productPriceLow: "",
-    productPriceHigh: "",
+  productPriceHigh: "",
 });
 
 // 読み込み中の表示制御
@@ -212,7 +260,6 @@ const loginInfo = getLoginInfo();
  * 初期表示処理
  */
 onMounted(async () => {
-
   // 登録画面からの遷移の場合にメッセージを出力
   const state = history.state;
   if (state.result) {
@@ -302,5 +349,13 @@ const deleteProduct = async () => {
     loading.value = false;
   }
 };
-console.log(loginInfo);
+
+/**
+ * 半角英数のみに置換
+ *
+ * @param value 検査値
+ */
+const formatHalfWidthAlphaNumeric = (value) => {
+  return value.replace(/[^A-Za-z0-9]/g, "");
+};
 </script>
