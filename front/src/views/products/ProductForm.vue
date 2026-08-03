@@ -132,7 +132,7 @@
 </template>
 
 <script setup>
-import { computed, watch, ref, onMounted } from "vue";
+import { computed,  ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 import * as productApi from "@/api/productApi.js";
@@ -151,7 +151,7 @@ const form = ref({
   orderKbn: "1",
   orderClientCode: "",
   productName: "",
-  productPrice: "",
+  productPrice: null,
 });
 
 // 編集画面かどうか
@@ -189,7 +189,7 @@ const orderClientOptions = computed(() =>
     .map((client) => ({
       value: client.clientcode,
       text: `${client.clientcode} : ${client.clientName}`,
-    })),
+    }))
 );
 
 /**
@@ -197,7 +197,7 @@ const orderClientOptions = computed(() =>
  */
 onMounted(async () => {
   // 一般の場合
-  if (loginInfo.role === "1") {
+  if (loginInfo.role !== "2") {
     router.push({ name: "top" });
   }
   loading.value = true;
