@@ -88,7 +88,7 @@
         <strong>検索結果 ( {{ totalCount }} 件 )</strong>
 
         <div class="d-flex gap-2">
-        <BButton v-if="loginInfo.role == 1" class="btn-receive" size="sm" :to="{ name: 'orderList' }">
+        <BButton v-if="loginInfo.role == 1" class="btn-receive" size="sm" :to="{ name: 'orderReceiveCreate' }">
           <div class="d-flex align-items-center">
           <div class="d-inline-flex flex-column align-items-center me-1 mb-1">
          <i class="fas fa-arrow-down fa-xs" aria-hidden="true"></i>
@@ -98,7 +98,7 @@
         </div>
         </BButton>
 
-        <BButton v-if="loginInfo.role == 1" class="btn-sale" size="sm" :to="{ name: 'orderList' }">
+        <BButton v-if="loginInfo.role == 1" class="btn-sale" size="sm" :to="{ name: 'orderSaleCreate' }">
           <div class="d-flex align-items-center">
           <div class="d-inline-flex flex-column align-items-center me-1 mb-1">
          <i class="fas fa-arrow-up fa-xs" aria-hidden="true"></i>
