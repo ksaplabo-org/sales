@@ -41,7 +41,7 @@ class OrderRepository {
         ["product_code", "productCode"],
         ["order_date", "orderDate"],
         ["confirmed_date", "confirmedDate"],
-        ["amount_tax_included", "amountTaxIncluded"],
+        ["amount_tax_included", "amountTaxIncluded"]
       ],
       where: where,
     });

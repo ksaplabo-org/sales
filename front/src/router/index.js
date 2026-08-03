@@ -46,24 +46,9 @@ const routes = [
       },
       {
         path: "sales/orders",
-        name: "orderSales",
-        component: () => import("@/views/orders/OrderSales.vue"),
+        name: "orderList",
+        component: () => import("@/views/orders/OrderList.vue"),
       },
-      // {
-      //   path: "sales/orders/create",
-      //   name: "orderReceiveCreate",
-      //   component: () => import("@/views/orders/OrderForm.vue"),
-      // },
-      // {
-      //   path: "sales/orders/create",
-      //   name: "orderSaleCreate",
-      //   component: () => import("@/views/orders/OrderForm.vue"),
-      // },
-      // {
-      //   path: "sales/orders/:id/edit",
-      //   name: "orderEdit",
-      //   component: () => import("@/views/orders/OrderForm.vue"),
-      // },
     ],
   },
 ];
