@@ -25,6 +25,15 @@
     <BForm @submit.prevent="searchProducts">
       <BRow>
         <BCol md="4">
+          <BFormGroup label="受発注区分">
+            <BFormSelect
+              v-model="condition.orderKbn"
+              :options="orderKbnOptions"
+            />
+          </BFormGroup>
+        </BCol>
+
+        <BCol md="4">
           <BFormGroup label="商品コード">
             <BFormInput
               placeholder="商品コードを入力"
@@ -41,15 +50,6 @@
             <BFormInput placeholder="商品名を入力" v-model="condition.productName"
             maxlength="20
             " />
-          </BFormGroup>
-        </BCol>
-
-        <BCol md="4">
-          <BFormGroup label="受発注区分">
-            <BFormSelect
-              v-model="condition.orderKbn"
-              :options="orderKbnOptions"
-            />
           </BFormGroup>
         </BCol>
       </BRow>
@@ -188,7 +188,7 @@ const router = useRouter();
 
 // 権限の一覧
 const orderKbnOptions = [
-  { value: '', text: 'すべて表示' },
+  { value: '', text: '全て表示' },
   { value: '1', text: '受注のみ表示' },
   { value: '2', text: '発注のみ表示' },
 ];
