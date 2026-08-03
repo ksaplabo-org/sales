@@ -216,7 +216,8 @@ const condition = ref({
   productName: "",
   orderKbn: "",
   orderClientCode: "",
-  productPrice: "",
+  productPriceLow: "",
+  productPriceHigh: ""
 });
 
 // 読み込み中の表示制御
@@ -271,7 +272,7 @@ const clearCondition = () => {
     orderKbn: "",
     orderClientCode: "",
     productPriceLow: "",
-    productPriceHigh: "",
+    productPriceHigh: ""
   };
 };
 
