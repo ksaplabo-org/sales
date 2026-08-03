@@ -65,7 +65,6 @@
                   condition.productPriceLow =
                     $event.target.value.replace(/[^0-9]/g, '') === '0' ? '' : $event.target.value
                     .replace(/[^0-9]/g, '').replace(/^0+/, '')"
-                "
               />
               <span class="mx-2">～</span>
               <BFormInput
