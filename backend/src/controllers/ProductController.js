@@ -1,5 +1,6 @@
 import UniqueConstraintError from "../errors/UniqueConstraintError.js";
 import NotFoundError from "../errors/NotFoundError.js";
+import ReferenceConstraintError from "../errors/ReferenceConstraintError.js";
 import productService from "../services/ProductService.js";
 
 class ProductController {
@@ -22,10 +23,10 @@ class ProductController {
 
       // 商品情報一覧検索
       const products = await productService.findAll(condition);
-      res.json(products);
+      return res.json(products);
     } catch (e) {
-      console.error(e);
-      res.status(500).send();
+      console.log(e);
+      return res.status(500).send();
     }
   }
 
@@ -36,36 +37,42 @@ class ProductController {
    * @param {*} res レスポンス情報
    */
   async findByCode(req, res) {
-    //console.log(req.params.productCode);
-    
-    const errors = [];
-
-    if (!req.params.productCode) {
-      errors.push({ field: "productCode", message: "商品コードが設定されていません" });
-    } else if (req.params.productCode.length != 7) {
-      errors.push({ field: "productCode", message: "商品コードは7桁で設定してください" });
-    } else if (!/^[A-Za-z0-9]+$/.test(req.params.productCode)) {
-      errors.push({ field: "productCode", message: "商品コードは半角英数で設定してください" });
-    }
-
-    if (errors.length > 0) {
-      // パラメータエラー
-      console.error(errors);
-      res.status(400).json({ errors: errors });
-    }
-    
-
     try {
+      const errors = [];
+
+      if (!req.params.productCode) {
+        errors.push({
+          field: "productCode",
+          message: "商品コードが設定されていません",
+        });
+      } else if (req.params.productCode.length != 7) {
+        errors.push({
+          field: "productCode",
+          message: "商品コードは7桁で設定してください",
+        });
+      } else if (!/^[A-Za-z0-9]+$/.test(req.params.productCode)) {
+        errors.push({
+          field: "productCode",
+          message: "商品コードは半角英数で設定してください",
+        });
+      }
+
+      if (errors.length > 0) {
+        // パラメータエラー
+        console.log(errors);
+        return res.status(400).json({ errors: errors });
+      }
+
+      // 商品情報詳細取得
       const product = await productService.findByCode(req.params.productCode);
-      console.log(product.productName);
-      res.json(product);
+      return res.json(product);
     } catch (e) {
-      console.error(e);
+      console.log(e);
       if (e instanceof NotFoundError) {
         // 存在チェックエラー
-        res.status(NotFoundError.status).send();
+        return res.status(NotFoundError.status).send();
       } else {
-        res.status(500).send();
+        return res.status(500).send();
       }
     }
   }
@@ -78,17 +85,43 @@ class ProductController {
    */
   async delete(req, res) {
     try {
+      const errors = [];
+
+      if (!req.params.productCode) {
+        errors.push({
+          field: "productCode",
+          message: "商品コードが設定されていません",
+        });
+      } else if (req.params.productCode.length != 7) {
+        errors.push({
+          field: "productCode",
+          message: "商品コードは7桁で設定してください",
+        });
+      } else if (!/^[A-Za-z0-9]+$/.test(req.params.productCode)) {
+        errors.push({
+          field: "productCode",
+          message: "商品コードは半角英数で設定してください",
+        });
+      }
+
+      if (errors.length > 0) {
+        // パラメータエラー
+        console.log(errors);
+        return res.status(400).json({ errors: errors });
+      }
+
+      // 商品情報削除
       await productService.delete(req.params.productCode);
-      res.send();
+      return res.send();
     } catch (e) {
       console.log(e);
 
       if (e instanceof NotFoundError) {
-        res.status(NotFoundError.status).send();
+        return res.status(NotFoundError.status).send();
       } else if (e instanceof ReferenceConstraintError) {
-        res.status(ReferenceConstraintError.status).send();
+        return res.status(ReferenceConstraintError.status).send();
       } else {
-        res.status(500).send();
+        return res.status(500).send();
       }
     }
   }
