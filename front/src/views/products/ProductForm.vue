@@ -292,11 +292,11 @@ const formatHalfWidthAlphaNumeric = (value) => {
  *
  * @param newOrderKbn 変更後の受発注区分
  */
-const handleOrderKbnChange = (newOrderKbn) => {
-  if (newOrderKbn.target.value === "1") {
+const handleOrderKbnChange = () => {
+  if (form.value.orderKbn === "1") {
     form.value.orderClientCode = "";
   } else if (
-    newOrderKbn.target.value === "2" &&
+    form.value.orderKbn === "2" &&
     orderClientOptions.value.length > 0
   ) {
     form.value.orderClientCode = orderClientOptions.value[0].value;
