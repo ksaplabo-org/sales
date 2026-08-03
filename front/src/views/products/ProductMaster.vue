@@ -48,11 +48,7 @@
           <BFormGroup label="受発注区分">
             <BFormSelect
               v-model="condition.orderKbn"
-              :options="[
-                { value: '', text: 'すべて表示' },
-                { value: '1', text: '受注のみ表示' },
-                { value: '2', text: '発注のみ表示' },
-              ]"
+              :options="orderKbnOptions"
             />
           </BFormGroup>
         </BCol>
@@ -191,9 +187,10 @@ import { formatMessage } from "@/utils/messageUtil.js";
 const router = useRouter();
 
 // 権限の一覧
-const roleOptions = [
-  { value: "1", text: "一般" },
-  { value: "2", text: "管理者" },
+const orderKbnOptions = [
+  { value: '', text: 'すべて表示' },
+  { value: '1', text: '受注のみ表示' },
+  { value: '2', text: '発注のみ表示' },
 ];
 
 // 検索結果
@@ -216,8 +213,8 @@ const condition = ref({
   productName: "",
   orderKbn: "",
   orderClientCode: "",
-  productPriceLow: "",
-  productPriceHigh: ""
+  productPriceLow: null,
+  productPriceHigh: null
 });
 
 // 読み込み中の表示制御
@@ -243,11 +240,6 @@ const loginInfo = getLoginInfo();
  * 初期表示処理
  */
 onMounted(async () => {
-  // 管理者以外のアクセスを拒否
-  if (loginInfo.role != "2") {
-    router.push({ name: "top" });
-  }
-
   // 登録画面からの遷移の場合にメッセージを出力
   const state = history.state;
   if (state.result) {
@@ -271,8 +263,8 @@ const clearCondition = () => {
     productName: "",
     orderKbn: "",
     orderClientCode: "",
-    productPriceLow: "",
-    productPriceHigh: ""
+    productPriceLow: null,
+    productPriceHigh: null
   };
 };
 
