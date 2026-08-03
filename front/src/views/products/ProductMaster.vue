@@ -79,9 +79,6 @@
         </BCol>
       </BRow>
       <BRow class="mt-3">
-        <!-- <BCol>
-          <BFormCheckbox v-model="condition.includeDeleted"> 削除済みを含める </BFormCheckbox>
-        </BCol> -->
         <BCol class="text-end">
           <BButton variant="outline-secondary" class="me-2" @click="clearCondition">
             <i class="fas fa-redo"></i>
@@ -189,7 +186,7 @@ const router = useRouter();
 const orderKbnOptions = [
   { value: '', text: '全て表示' },
   { value: '1', text: '受注のみ表示' },
-  { value: '2', text: '発注のみ表示' },
+  { value: '2', text: '発注のみ表示' }
 ];
 
 // 検索結果
@@ -203,7 +200,7 @@ const fields = [
   { key: "orderKbn", label: "受発注区分" },
   { key: "orderClientCode", label: "発注先コード" },
   { key: "productPrice", label: "単価" },
-  { key: "actions", label: "" },
+  { key: "actions", label: "" }
 ];
 
 // 検索条件
