@@ -1,6 +1,6 @@
 import BaseError from "./BaseError.js";
 
-class NotFoundError extends Baserror {
+class NotFoundError extends BaseError {
   static status = 404;
 
   constructor(field, message) {
