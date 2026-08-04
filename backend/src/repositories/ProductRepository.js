@@ -12,7 +12,7 @@ class ProductRepository {
     // 検索条件を作成
     const where = {};
     if (condition.orderKbn) {
-      where.orderKbn = condition.orderKbn;
+      where.orderKbn = { [Op.eq]: condition.orderKbn };
     }
     if (condition.productCode) {
       where.productCode = { [Op.eq]: condition.productCode };
@@ -37,7 +37,7 @@ class ProductRepository {
       attributes: [
         ["product_code", "productCode"],
         ["product_name", "productName"],
-        "orderKbn",
+        ["order_kbn", "orderKbn"],
         ["order_client_code", "orderClientCode"],
         ["product_price", "productPrice"],
         [literal("EXISTS(SELECT 1 FROM orders o WHERE o.product_code = ProductModel.product_code)"), "usedFlg"],
