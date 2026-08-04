@@ -1,4 +1,5 @@
 import UniqueConstraintError from "../errors/UniqueConstraintError.js";
+import ValidationError from "../errors/ValidationError.js";
 import NotFoundError from "../errors/NotFoundError.js";
 import productService from "../services/ProductService.js";
 
@@ -22,10 +23,10 @@ class ProductController {
 
       // 商品情報一覧検索
       const products = await productService.findAll(condition);
-      res.json(products);
+      return res.json(products);
     } catch (e) {
-      console.error(e);
-      res.status(500).send();
+      console.log(e);
+      return res.status(500).send();
     }
   }
 
@@ -36,39 +37,42 @@ class ProductController {
    * @param {*} res レスポンス情報
    */
   async findByCode(req, res) {
-    
-    const errors = [];
-
-    if (!req.params.productCode) {
-      errors.push({ field: "productCode", message: "商品コードが設定されていません" });
-    } else if (req.params.productCode.length != 7) {
-      errors.push({ field: "productCode", message: "商品コードは7桁で設定してください" });
-    } else if (!/^[A-Za-z0-9]+$/.test(req.params.productCode)) {
-      errors.push({ field: "productCode", message: "商品コードは半角英数で設定してください" });
-    }
-
-    if (errors.length > 0) {
-      // パラメータエラー
-      console.error(errors);
-      res.status(400).json({ errors: errors });
-    }
-    
-
     try {
+      const errors = [];
+
+      if (!req.params.productCode) {
+        errors.push({ field: "productCode", message: "商品コードが設定されていません" });
+      } else if (req.params.productCode.length != 7) {
+        errors.push({ field: "productCode", message: "商品コードは7桁で設定してください" });
+      } else if (!/^[A-Za-z0-9]+$/.test(req.params.productCode)) {
+        errors.push({ field: "productCode", message: "商品コードは半角英数で設定してください" });
+      }
+
+      if (errors.length > 0) {
+        // パラメータエラー
+        console.log(errors);
+        return res.status(400).json({ errors: errors });
+      }
+      //商品情報詳細取得
       const product = await productService.findByCode(req.params.productCode);
-      console.log(product.productName);
-      res.json(product);
+      return res.json(product);
     } catch (e) {
-      console.error(e);
+      console.log(e);
       if (e instanceof NotFoundError) {
         // 存在チェックエラー
-        res.status(NotFoundError.status).send();
+        return res.status(NotFoundError.status).json({
+          errors: [
+            {
+              field: e.field,
+              message: e.message,
+            },
+          ],
+        });
       } else {
-        res.status(500).send();
+        return res.status(500).send();
       }
     }
   }
-
 
   /**
    * 商品情報登録
@@ -92,13 +96,13 @@ class ProductController {
       const errors = this.validate(product);
 
       // 商品コード
-    if (!product.productCode) {
-      errors.push({ field: "productCode", message: "商品コードが設定されていません" });
-    } else if (product.productCode.length != 7) {
-      errors.push({ field: "productCode", message: "商品コードは7桁で設定してください" });
-    } else if (!/^[A-Za-z0-9]+$/.test(product.productCode)) {
-      errors.push({ field: "productCode", message: "商品コードは半角英数で設定してください" });
-    }
+      if (!product.productCode) {
+        errors.push({ field: "productCode", message: "商品コードが設定されていません" });
+      } else if (product.productCode.length != 7) {
+        errors.push({ field: "productCode", message: "商品コードは7桁で設定してください" });
+      } else if (!/^[A-Za-z0-9]+$/.test(product.productCode)) {
+        errors.push({ field: "productCode", message: "商品コードは半角英数で設定してください" });
+      }
 
       //受発注区分
       if (!product.orderKbn) {
@@ -134,49 +138,63 @@ class ProductController {
       if (errors.length > 0) {
         // パラメータエラー
         console.log(errors);
-        res.status(400).json({ errors: errors });
+        return res.status(400).json({ errors: errors });
       } else {
         // 登録処理実行
         await productService.create(product);
-        res.status(201).send();
+        return res.status(201).send();
       }
     } catch (e) {
       console.log(e);
 
       if (e instanceof UniqueConstraintError) {
-        res.status(UniqueConstraintError.status).send();
+        return res.status(UniqueConstraintError.status).json({
+          errors: [
+            {
+              field: e.field,
+              message: e.message,
+            },
+          ],
+        });
       } else if (e instanceof NotFoundEror) {
-        res.status(NotFoundError.status).send();
+        return res.status(NotFoundError.status).json({
+          errors: [
+            {
+              field: e.field,
+              message: e.message,
+            },
+          ],
+        });
       } else {
-        res.status(500).send();
+        return res.status(500).send();
       }
     }
   }
 
-   /**
+  /**
    * 商品情報更新
    *
    * @param {*} req リクエスト情報
    * @param {*} res レスポンス情報
    */
   async update(req, res) {
-    const errors = [];
-
-    if (!req.params.productCode) {
-      errors.push({ field: "productCode", message: "商品コードが設定されていません" });
-    } else if (req.params.productCode.length != 7) {
-      errors.push({ field: "productCode", message: "商品コードは7桁で設定してください" });
-    } else if (!/^[A-Za-z0-9]+$/.test(req.params.productCode)) {
-      errors.push({ field: "productCode", message: "商品コードは半角英数で設定してください" });
-    }
-
-    if (errors.length > 0) {
-      // パラメータエラー
-      console.error(errors);
-      res.status(400).json({ errors: errors });
-    }
-
     try {
+      let errors = [];
+
+      if (!req.params.productCode) {
+        errors.push({ field: "productCode", message: "商品コードが設定されていません" });
+      } else if (req.params.productCode.length != 7) {
+        errors.push({ field: "productCode", message: "商品コードは7桁で設定してください" });
+      } else if (!/^[A-Za-z0-9]+$/.test(req.params.productCode)) {
+        errors.push({ field: "productCode", message: "商品コードは半角英数で設定してください" });
+      }
+
+      if (errors.length > 0) {
+        // パラメータエラー
+        console.error(errors);
+        return res.status(400).json({ errors: errors });
+      }
+
       const product = {
         productName: req.body.productName,
         orderClientCode: req.body.orderClientCode,
@@ -185,7 +203,7 @@ class ProductController {
       };
 
       // 共通バリデーション
-      const errors = this.validate(product);
+      errors = this.validate(product);
 
       // 更新者ID
       if (!product.updatedId) {
@@ -198,20 +216,27 @@ class ProductController {
 
       if (errors.length > 0) {
         // パラメータエラー
-        res.status(400).json({ errors: errors });
+        return res.status(400).json({ errors: errors });
       } else {
         await productService.update(req.params.productCode, product);
-        res.send();
+        return res.send();
       }
     } catch (e) {
       console.log(e);
-      
+
       if (e instanceof NotFoundError) {
-        res.status(NotFoundError.status).send();
-      } else if (e.status == 400) {
-        res.status(400).json({ errors: e.errors });
+        return res.status(NotFoundError.status).json({
+          errors: [
+            {
+              field: e.field,
+              message: e.message,
+            },
+          ],
+        });
+      } else if (e instanceof ValidationError) {
+        return res.status(ValidationError.status).json({errors: e.errors});
       } else {
-        res.status(500).send();
+        return res.status(500).send();
       }
     }
   }
@@ -239,8 +264,9 @@ class ProductController {
       errors.push({ field: "productPrice", message: "単価は1以上で設定してください" });
     } else if (!/^[0-9]+$/.test(data.productPrice)) {
       errors.push({ field: "productPrice", message: "単価は半角数字で設定してください" });
-    } 
+    }
 
+    console.log(errors);
     return errors;
   }
 }
