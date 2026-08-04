@@ -1,6 +1,6 @@
 import BaseError from "./BaseError.js";
 
-class ReferenceConstraintError extends Baserror {
+class ReferenceConstraintError extends BaseError {
   static status = 409;
 
   constructor(field, message) {
