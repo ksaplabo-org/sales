@@ -102,7 +102,7 @@ class UserController {
         res.status(201).send();
       }
     } catch (e) {
-      console.log(e);
+      console.error(e);
 
       if (e instanceof UniqueConstraintError) {
         res.status(UniqueConstraintError.status).send();
@@ -153,7 +153,7 @@ class UserController {
         res.send();
       }
     } catch (e) {
-      console.log(e);
+      console.error(e);
 
       if (e instanceof NotFoundError) {
         res.status(NotFoundError.status).send();
@@ -174,7 +174,7 @@ class UserController {
       await userService.delete(req.params.userId);
       res.send();
     } catch (e) {
-      console.log(e);
+      console.error(e);
 
       if (e instanceof NotFoundError) {
         res.status(NotFoundError.status).send();

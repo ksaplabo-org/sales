@@ -30,14 +30,14 @@ class UserRepository {
     // 検索結果を返却
     return await UserModel.findAll({
       attributes: [
-        ["user_id", "userId"],
-        ["last_name", "lastName"],
-        ["first_name", "firstName"],
+        "userId",
+        "lastName",
+        "firstName",
         [fn("CONCAT", col("last_name"), " ", col("first_name")), "fullName"],
         "role",
         "birthday",
         [literal("TIMESTAMPDIFF(YEAR, birthday, CURDATE())"), "age"],
-        ["del_flg", "delFlg"],
+        "delFlg",
       ],
       where: where,
     });
