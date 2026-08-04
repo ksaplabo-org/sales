@@ -1,6 +1,6 @@
 import UniqueConstraintError from "../errors/UniqueConstraintError.js";
 import NotFoundError from "../errors/NotFoundError.js";
-//import ReferenceConstraintError from "../errors/ReferenceConstraintError.js";
+import ReferenceConstraintError from "../errors/ReferenceConstraintError.js";
 import productService from "../services/ProductService.js";
 
 class ProductController {
@@ -59,7 +59,6 @@ class ProductController {
 
       if (errors.length > 0) {
         // パラメータエラー
-        console.log(errors);
         return res.status(400).json({ errors: errors });
       }
 
@@ -70,7 +69,14 @@ class ProductController {
       console.log(e);
       if (e instanceof NotFoundError) {
         // 存在チェックエラー
-        return res.status(NotFoundError.status).send();
+        return res.status(NotFoundError.status).json({
+          errors: [
+            {
+              field: e.field,
+              message: e.message,
+            },
+          ],
+        });
       } else {
         return res.status(500).send();
       }
@@ -106,7 +112,6 @@ class ProductController {
 
       if (errors.length > 0) {
         // パラメータエラー
-        console.log(errors);
         return res.status(400).json({ errors: errors });
       }
 
@@ -117,12 +122,24 @@ class ProductController {
       console.log(e);
 
       if (e instanceof NotFoundError) {
-        return res.status(NotFoundError.status).send();
-      } 
-      // else if (e instanceof ReferenceConstraintError) {
-      //   return res.status(ReferenceConstraintError.status).send();
-      // } 
-      else {
+        return res.status(NotFoundError.status).json({
+          errors: [
+            {
+              field: e.field,
+              message: e.message,
+            },
+          ],
+        });
+      } else if (e instanceof ReferenceConstraintError) {
+        return res.status(ReferenceConstraintError.status).json({
+          errors: [
+            {
+              field: e.field,
+              message: e.message,
+            },
+          ],
+        });
+      } else {
         return res.status(500).send();
       }
     }

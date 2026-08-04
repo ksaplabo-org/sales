@@ -23,7 +23,7 @@ class ProductService {
   async findByCode(productCode) {
     const product = await productRepository.findByCode(productCode);
     if (!product) {
-      throw new NotFoundError();
+      throw new NotFoundError("productCode", "この商品コードは存在していません");
     }
     return product;
   }
@@ -37,7 +37,7 @@ class ProductService {
     // 削除データの存在チェック
     const product = await productRepository.findByCode(productCode);
     if (!product) {
-      throw new NotFoundError();
+      throw new NotFoundError("productCode", "この商品コードは存在していません");
     }
 
     //削除データの外部参照チェック
@@ -45,7 +45,7 @@ class ProductService {
     /*
     const product = await orderRepository.findAll({ productCode : productCode })
     if(product) {
-      throw new ReferenceConstraintError();
+      throw new ReferenceConstraintError("productCode", "この商品コードは受発注情報で使用されているため削除できません");
     }
     */
 
