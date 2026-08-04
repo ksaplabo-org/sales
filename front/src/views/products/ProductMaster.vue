@@ -48,8 +48,8 @@
         <BCol md="4">
           <BFormGroup label="商品名">
             <BFormInput placeholder="商品名を入力" v-model="condition.productName"
-            maxlength="20
-            " />
+            maxlength="20"
+            />
           </BFormGroup>
         </BCol>
       </BRow>
