@@ -1,5 +1,6 @@
 import UniqueConstraintError from "../errors/UniqueConstraintError.js";
 import NotFoundError from "../errors/NotFoundError.js";
+import ValidationError from "../errors/ValidationError.js";
 import productRepository from "../repositories/ProductRepository.js";
 
 class ProductService {
@@ -22,7 +23,7 @@ class ProductService {
   async findByCode(productCode) {
     const product = await productRepository.findByCode(productCode);
     if (!product) {
-      throw new NotFoundError();
+      throw new NotFoundError("productCode", "この商品コードは存在していません");
     }
     return product;
   }
@@ -36,13 +37,14 @@ class ProductService {
     // 一意性制約チェック
     const product = await productRepository.findByCode(productInfo.productCode);
     if (product) {
-      throw new UniqueConstraintError();
+      throw new UniqueConstraintError("productCode", "この商品コードは既に登録されているため登録できません");
     }
 
     //発注先コード存在チェック
+
     // const productCode = await clientRepository.findByCode(productInfo.orderClientCode);
     // if (!productCode) {
-    //   throw new NotFoundError();
+    //   throw new NotFoundError("clientCode", "この発注先コードは存在していません");
     // }
 
     //現在日時を取得
@@ -63,52 +65,45 @@ class ProductService {
     // 更新データの存在チェック
     const product = await productRepository.findByCode(productCode);
     if (!product) {
-      throw new NotFoundError();
+      throw new NotFoundError("productCode", "この商品コードは存在していません");
     }
-    
-    const orderKbn = product.orderKbn;
-    
+
     const errors = [];
-    
+
     //発注先コード
     if (product.orderKbn == "2") {
-      if (!product.orderClientCode) {
+      if (!productInfo.orderClientCode) {
         errors.push({ field: "orderClientCode", message: "発注先コードが設定されていません" });
-      } else if (product.orderClientCode.length != 8) {
+      } else if (productInfo.orderClientCode.length != 8) {
         errors.push({ field: "orderClientCode", message: "発注先コードは8桁で設定してください" });
-      } else if (!/^[A-Za-z0-9]+$/.test(product.orderClientCode)) {
+      } else if (!/^[A-Za-z0-9]+$/.test(productInfo.orderClientCode)) {
         errors.push({ field: "orderClientCode", message: "発注先コードは半角英数で設定してください" });
       }
     } else if (product.orderKbn == "1") {
-      if (product.orderClientCode) {
+      if (productInfo.orderClientCode) {
         errors.push({ field: "orderClientCode", message: "発注先コードは設定できません" });
       }
     }
-    
-    if (errors.length > 0 ) {
-      console.log(errors);
-      console.log(product.orderKbn);
-      const error = new Error();
-      
+
+    if (errors.length > 0) {
+      const error = new ValidationError();
       error.errors = errors;
-      error.status = 400;
-      
       throw error;
     }
-    
+
     /*
     //発注先コードの存在チェック
     const orderClientCode = await clientRepository.findByCode(productInfo.orderClientCode);
     
     if (!orderClientCode) {
-      throw new NotFoundError();
+      throw new NotFoundError("clientCode", "この発注先コードは存在していません");
     }
     */
-   
+
     //現在日時を取得
-    const now = new Date().toISOString();;
+    const now = new Date().toISOString();
     productInfo.updatedAt = now;
-    
+
     await productRepository.update(productCode, productInfo);
   }
 }
