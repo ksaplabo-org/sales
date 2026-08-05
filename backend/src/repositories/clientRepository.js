@@ -55,7 +55,7 @@ class ClientRepository {
    *
    */
   async delete(clientCode) {
-    await ClientModel.destroy({
+    return await ClientModel.destroy({
       where: {
         client_code: clientCode,
       },
