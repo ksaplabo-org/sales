@@ -1,6 +1,6 @@
 import BaseError from "./BaseError.js";
 
-class UniqueConstraintError extends BaseError {
+class ReferenceConstraintError extends BaseError {
   static status = 409;
 
   constructor(field, message) {
@@ -8,4 +8,4 @@ class UniqueConstraintError extends BaseError {
   }
 }
 
-export default UniqueConstraintError;
+export default ReferenceConstraintError;
