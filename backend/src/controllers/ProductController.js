@@ -266,7 +266,6 @@ class ProductController {
       errors.push({ field: "productPrice", message: "単価は半角数字で設定してください" });
     }
 
-    console.log(errors);
     return errors;
   }
 }
