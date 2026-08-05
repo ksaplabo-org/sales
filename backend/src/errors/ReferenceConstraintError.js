@@ -1,5 +1,11 @@
-class ReferenceConstraint extends Error {
-  static status = 409;
+import BaseError from "./BaseError.js";
+
+class ReferenceConstraintError extends BaseError {
+  static status = 404;
+
+  constructor(field, message) {
+    super(field, message);
+  }
 }
 
-export default ReferenceConstraint;
+export default ReferenceConstraintError;
