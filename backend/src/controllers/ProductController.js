@@ -50,7 +50,6 @@ class ProductController {
 
       if (errors.length > 0) {
         // パラメータエラー
-        console.log(errors);
         return res.status(400).json({ errors: errors });
       }
       //商品情報詳細取得
@@ -137,7 +136,6 @@ class ProductController {
 
       if (errors.length > 0) {
         // パラメータエラー
-        console.log(errors);
         return res.status(400).json({ errors: errors });
       } else {
         // 登録処理実行
@@ -191,7 +189,6 @@ class ProductController {
 
       if (errors.length > 0) {
         // パラメータエラー
-        console.error(errors);
         return res.status(400).json({ errors: errors });
       }
 
