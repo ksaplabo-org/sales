@@ -53,8 +53,8 @@ class OrderRepository {
    * @param {*} no 受発注番号
    * @returns 受発注情報
    */
-  async findById(no) {
-    return await OrderModel.findByPk(no);
+  async findByNo(orderNo) {
+    return await OrderModel.findByPk(orderNo);
   }
 
   /**
@@ -86,8 +86,7 @@ class OrderRepository {
    * @param {*} orderNo 受発注番号
    */
   async delete(orderNo) {
-    await OrderModel.update(
-      { delFlg: true },
+    await OrderModel.destroy(
       {
         where: {
           orderNo: orderNo,

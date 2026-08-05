@@ -1,5 +1,6 @@
 import UniqueConstraintError from "../errors/UniqueConstraintError.js";
 import NotFoundError from "../errors/NotFoundError.js";
+import UnprocessableContentError from "../errors/UnprocessableContentError.js";
 import orderRepository from "../repositories/OrderRepository.js";
 
 class OrderService {
@@ -19,10 +20,10 @@ class OrderService {
    * @param {*} no 受発注番号
    * @returns 受発注情報詳細
    */
-  async findById(no) {
-    const order = await orderRepository.findById(no);
-    if (!order || order.delFlg) {
-      throw new NotFoundError();
+  async findById(orderNo) {
+    const order = await orderRepository.findByNo(orderNo);
+    if (!order) {
+      throw new NotFoundError("orderNo", "この受発注番号は存在しません");
     }
     return order;
   }
@@ -34,7 +35,7 @@ class OrderService {
    */
   async create(orderInfo) {
     // 一意性制約チェック
-    const order = await orderRepository.findById(orderInfo.orderNo);
+    const order = await orderRepository.findByNo(orderInfo.orderNo);
     if (order) {
       throw new UniqueConstraintError();
     }
@@ -50,7 +51,7 @@ class OrderService {
    */
   async update(orderNo, orderInfo) {
     // 更新データの存在チェック
-    const order = await orderRepository.findById(orderNo);
+    const order = await orderRepository.findByNo(orderNo);
     if (!order) {
       throw new NotFoundError();
     }
@@ -58,15 +59,18 @@ class OrderService {
   }
 
   /**
-   * 受発注情報論理削除
+   * 受発注情報物理削除
    *
    * @param {*} orderNo 受発注番号
    */
   async delete(orderNo) {
     // 削除データの存在チェック
-    const order = await orderRepository.findById(orderNo);
+    const order = await orderRepository.findByNo(orderNo);
     if (!order) {
-      throw new NotFoundError();
+      throw new NotFoundError("orderNo","この受発注番号は存在しません");
+    }
+    if (order.confirmedDate) {
+      throw new UnprocessableContentError("orderNo", "この受発注番号は確定日が登録されているため削除できません");
     }
 
     await orderRepository.delete(orderNo);
