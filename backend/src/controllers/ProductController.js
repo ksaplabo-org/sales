@@ -156,7 +156,7 @@ class ProductController {
             },
           ],
         });
-      } else if (e instanceof NotFoundEror) {
+      } else if (e instanceof NotFoundError) {
         return res.status(NotFoundError.status).json({
           errors: [
             {
