@@ -6,7 +6,6 @@ import productRepository from "../repositories/ProductRepository.js";
 class ProductService {
   /**
    * 商品情報一覧取得
-   *
    * 
    * @param {*} condition 検索条件
    * @returns 商品情報一覧
