@@ -36,15 +36,15 @@ export async function createProduct(productInfo) {
  *
  * @param {*} productInfo 商品情報
  */
-export async function editProduct(productInfo) {
+export async function updateProduct(productInfo) {
   await apiClient.put(`/products/${productInfo.productCode}`, productInfo);
 }
 
 /**
  * 商品情報削除
  *
- * @param {*} productId ユーザーID
+ * @param {*} productCode 商品コード
  */
-export async function deleteUser(productCode) {
+export async function deleteProduct(productCode) {
   await apiClient.delete(`/products/${productCode}`);
 }
