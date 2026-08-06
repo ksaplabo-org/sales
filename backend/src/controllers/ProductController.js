@@ -138,14 +138,14 @@ class ProductController {
         // パラメータエラー
         return res.status(400).json({ errors: errors });
       } else {
-        // 登録処理実行
+        // 登録処理
         await productService.create(product);
         return res.status(201).send();
       }
     } catch (e) {
       console.log(e);
-
       if (e instanceof UniqueConstraintError) {
+        //一意制約エラー
         return res.status(UniqueConstraintError.status).json({
           errors: [
             {
@@ -155,6 +155,7 @@ class ProductController {
           ],
         });
       } else if (e instanceof NotFoundError) {
+        //存在チェックエラー
         return res.status(NotFoundError.status).json({
           errors: [
             {
@@ -222,6 +223,7 @@ class ProductController {
       console.log(e);
 
       if (e instanceof NotFoundError) {
+        //存在チェックエラー
         return res.status(NotFoundError.status).json({
           errors: [
             {
@@ -231,6 +233,7 @@ class ProductController {
           ],
         });
       } else if (e instanceof ValidationError) {
+        //パラメータエラー
         return res.status(ValidationError.status).json({errors: e.errors});
       } else {
         return res.status(500).send();
