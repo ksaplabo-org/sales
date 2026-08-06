@@ -39,7 +39,7 @@ ProductModel.init(
     createdAt: {
       field: "created_at",
       type: DATE,
-      allowNull: true,
+      allowNull: false,
     },
     updatedId: {
       field: "updated_id",
@@ -49,13 +49,13 @@ ProductModel.init(
     updatedAt: {
       field: "updated_at",
       type: DATE,
-      allowNull: true,
+      allowNull: false,
     },
   },
   {
     sequelize,
     tableName: "products",
-    timestamp: true,
+    timestamp: false,
   },
 );
 
