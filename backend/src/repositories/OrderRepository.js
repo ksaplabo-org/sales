@@ -1,6 +1,6 @@
 import { col, fn, literal, Op } from "sequelize";
 import OrderModel from "../models/OrderModel.js";
- 
+
 class OrderRepository {
   /**
    * 受発注情報一覧取得
@@ -24,14 +24,12 @@ class OrderRepository {
       where.productCode = condition.productCode;
     }
     if (condition.amountTaxIncludedLow) {
-      where.amountTaxIncluded = { ...where.amountTaxIncluded,
-        [Op.gte]: condition.amountTaxIncludedLow, };
+      where.amountTaxIncluded = { [Op.gte]: condition.amountTaxIncludedLow };
     }
     if (condition.amountTaxIncludedHigh) {
-      where.amountTaxIncluded = { ...where.amountTaxIncluded,
-        [Op.lte]: condition.amountTaxIncludedHigh, };
+      where.amountTaxIncluded = { ...where.amountTaxIncluded, [Op.lte]: condition.amountTaxIncludedHigh };
     }
- 
+
     // 検索結果を返却
     return await OrderModel.findAll({
       attributes: [
@@ -41,12 +39,12 @@ class OrderRepository {
         ["product_code", "productCode"],
         ["order_date", "orderDate"],
         ["confirmed_date", "confirmedDate"],
-        ["amount_tax_included", "amountTaxIncluded"]
+        ["amount_tax_included", "amountTaxIncluded"],
       ],
       where: where,
     });
   }
- 
+
   /**
    * 受発注情報詳細取得
    *
@@ -56,21 +54,19 @@ class OrderRepository {
   async findByNo(orderNo) {
     return await OrderModel.findByPk(orderNo);
   }
- 
+
   /**
-   * 受発注情報論理削除
+   * 受発注情報物理削除
    *
    * @param {*} orderNo 受発注番号
    */
   async delete(orderNo) {
-    await OrderModel.destroy(
-      {
-        where: {
-          orderNo: orderNo,
-        },
+    await OrderModel.destroy({
+      where: {
+        orderNo: orderNo,
       },
-    );
+    });
   }
 }
- 
+
 export default new OrderRepository();

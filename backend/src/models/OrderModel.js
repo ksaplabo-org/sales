@@ -1,8 +1,8 @@
 import { DATE, DATEONLY, STRING, Model, BOOLEAN, INTEGER } from "sequelize";
 import sequelize from "../config/database.js";
- 
+
 class OrderModel extends Model {}
- 
+
 OrderModel.init(
   {
     orderNo: {
@@ -91,7 +91,7 @@ OrderModel.init(
     sequelize,
     tableName: "orders",
     timestamps: false,
-  }
+  },
 );
- 
+
 export default OrderModel;
