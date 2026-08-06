@@ -68,7 +68,7 @@ class ProductController {
     } catch (e) {
       console.log(e);
       if (e instanceof NotFoundError) {
-        // 存在チェックエラー
+        //存在チェックエラー
         return res.status(NotFoundError.status).json({
           errors: [
             {
@@ -120,8 +120,8 @@ class ProductController {
       return res.send();
     } catch (e) {
       console.log(e);
-
       if (e instanceof NotFoundError) {
+        //存在チェックエラー
         return res.status(NotFoundError.status).json({
           errors: [
             {
@@ -131,6 +131,7 @@ class ProductController {
           ],
         });
       } else if (e instanceof ReferenceConstraintError) {
+        //外部参照エラー
         return res.status(ReferenceConstraintError.status).json({
           errors: [
             {

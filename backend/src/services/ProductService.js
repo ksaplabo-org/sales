@@ -23,6 +23,7 @@ class ProductService {
   async findByCode(productCode) {
     const product = await productRepository.findByCode(productCode);
     if (!product) {
+      //商品コードの存在チェック
       throw new NotFoundError("productCode", "この商品コードは存在していません");
     }
     return product;
@@ -34,9 +35,9 @@ class ProductService {
    * @param {*} productCode 商品コード
    */
   async delete(productCode) {
-    // 削除データの存在チェック
     const product = await productRepository.findByCode(productCode);
     if (!product) {
+      // 削除データの存在チェック
       throw new NotFoundError("productCode", "この商品コードは存在していません");
     }
 
