@@ -36,7 +36,7 @@ export async function createUser(productInfo) {
  *
  * @param {*} productInfo 商品情報
  */
-export async function editProduct(productInfo) {
+export async function updateProduct(productInfo) {
   await apiClient.put(`/products/${productInfo.productCode}`, productInfo);
 }
 
