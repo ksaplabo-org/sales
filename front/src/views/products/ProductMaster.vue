@@ -316,8 +316,8 @@ const deleteProduct = async () => {
   loading.value = true;
   try {
     await productApi.deleteProduct(targetRow.value.productCode);
-    await searchProducts();
     openSuccessToast(messages.MSGI006);
+    await searchProducts();
   } catch (e) {
     console.log(e);
     openFailedToast(messages.MSGE007);
