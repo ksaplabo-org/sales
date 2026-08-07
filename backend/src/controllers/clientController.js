@@ -47,6 +47,7 @@ class ClientController {
 
       if (pathErrors.length > 0) {
         res.status(400).json({ errors: pathErrors });
+        return;
       }
 
       const client = await ClientService.findByCode(req.params.clientCode);
@@ -83,6 +84,7 @@ class ClientController {
 
       if (pathErrors.length > 0) {
         res.status(400).json({ errors: pathErrors });
+        return;
       }
 
       //取引先情報削除
