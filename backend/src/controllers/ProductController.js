@@ -144,9 +144,9 @@ class ProductController {
       }
     } catch (e) {
       console.log(e);
-      if (e instanceof UniqueConstraintError) {
-        //一意制約エラー
-        return res.status(UniqueConstraintError.status).json({
+      if (e instanceof NotFoundError) {
+        //存在チェックエラー
+        return res.status(NotFoundError.status).json({
           errors: [
             {
               field: e.field,
@@ -154,9 +154,9 @@ class ProductController {
             },
           ],
         });
-      } else if (e instanceof NotFoundError) {
-        //存在チェックエラー
-        return res.status(NotFoundError.status).json({
+      } else if (e instanceof UniqueConstraintError) {
+        //一意制約エラー
+        return res.status(UniqueConstraintError.status).json({
           errors: [
             {
               field: e.field,
@@ -221,7 +221,6 @@ class ProductController {
       }
     } catch (e) {
       console.log(e);
-
       if (e instanceof NotFoundError) {
         //存在チェックエラー
         return res.status(NotFoundError.status).json({
@@ -234,7 +233,7 @@ class ProductController {
         });
       } else if (e instanceof ValidationError) {
         //パラメータエラー
-        return res.status(ValidationError.status).json({errors: e.errors});
+        return res.status(ValidationError.status).json({ errors: e.errors });
       } else {
         return res.status(500).send();
       }
