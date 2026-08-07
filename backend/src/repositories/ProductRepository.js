@@ -1,5 +1,5 @@
-import { col, fn, literal, Op } from "sequelize";
-import ProductModel from "../models/ProductModel.js";
+import { literal, Op } from "sequelize";
+import ProductModel from "../models/productModel.js";
 
 class ProductRepository {
   /**
@@ -40,12 +40,7 @@ class ProductRepository {
         ["order_kbn", "orderKbn"],
         ["order_client_code", "orderClientCode"],
         ["product_price", "productPrice"],
-        [
-          literal(
-            "EXISTS(SELECT 1 FROM orders o WHERE o.product_code = ProductModel.product_code)",
-          ),
-          "usedFlg",
-        ],
+        [literal("EXISTS(SELECT 1 FROM orders o WHERE o.product_code = ProductModel.product_code)"), "usedFlg"],
       ],
       where: where,
     });
@@ -62,7 +57,7 @@ class ProductRepository {
   }
 
   /**
-   * 商品情報削除
+   * 商品情報物理削除
    *
    * @param {*} productCode 商品コード
    */
