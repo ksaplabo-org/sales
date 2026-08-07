@@ -25,7 +25,7 @@ export async function getOrderByOrderNo(orderNo) {
 /**
  * 受発注情報削除
  *
- * @param {*} OrderNo 受発注番号
+ * @param {*} orderNo 受発注番号
  */
 export async function deleteOrder(orderNo) {
   await apiClient.delete(`/orders/${orderNo}`);
