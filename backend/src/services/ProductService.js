@@ -1,12 +1,12 @@
 import UniqueConstraintError from "../errors/UniqueConstraintError.js";
 import NotFoundError from "../errors/NotFoundError.js";
 //import ReferenceConstraintError from "../errors/ReferenceConstraintError.js";
-import productRepository from "../repositories/ProductRepository.js";
+import productRepository from "../repositories/productRepository.js";
 
 class ProductService {
   /**
    * 商品情報一覧取得
-   * 
+   *
    * @param {*} condition 検索条件
    * @returns 商品情報一覧
    */
@@ -44,8 +44,8 @@ class ProductService {
     //削除データの外部参照チェック
     //orderRepositoryが存在しないため、コメントアウト
     /*
-    const product = await orderRepository.findAll({ productCode : productCode })
-    if(product) {
+    const products = await orderRepository.findAll({ productCode : productCode })
+    if(products) {
       throw new ReferenceConstraintError("productCode", "この商品コードは受発注情報で使用されているため削除できません");
     }
     */

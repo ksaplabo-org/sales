@@ -1,7 +1,7 @@
 import UniqueConstraintError from "../errors/UniqueConstraintError.js";
 import NotFoundError from "../errors/NotFoundError.js";
 import ReferenceConstraintError from "../errors/ReferenceConstraintError.js";
-import productService from "../services/ProductService.js";
+import productService from "../services/productService.js";
 
 class ProductController {
   /**

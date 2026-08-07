@@ -1,4 +1,4 @@
-import { DATE, DATEONLY, STRING, Model, BOOLEAN, INTEGER } from "sequelize";
+import { DATE, STRING, Model, INTEGER } from "sequelize";
 import sequelize from "../config/database.js";
 
 class ProductModel extends Model {}
