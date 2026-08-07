@@ -14,7 +14,7 @@ export async function getOrders(condition) {
 /**
  * 受発注情報詳細取得API呼び出し
  *
- * @param {*} OrderNo 受発注番号
+ * @param {*} orderNo 受発注番号
  * @returns 受発注情報
  */
 export async function getOrderByOrderNo(orderNo) {
