@@ -88,29 +88,28 @@
         <strong>検索結果 ( {{ totalCount }} 件 )</strong>
 
         <div class="d-flex gap-2">
-        <BButton v-if="loginInfo.role == 1" class="btn-receive" size="sm" :to="{ name: 'orderReceiveCreate' }">
-          <div class="d-flex align-items-center">
-          <div class="d-inline-flex flex-column align-items-center me-1 mb-1">
-         <i class="fas fa-arrow-down fa-xs" aria-hidden="true"></i>
-         <i class="fas fa-box fa-xs" aria-hidden="true"></i>
-          </div>
-          受注登録
-        </div>
-        </BButton>
+          <BButton v-if="loginInfo.role == 1" class="btn-receive" size="sm" :to="{ name: 'orderReceiveCreate' }">
+            <div class="d-flex align-items-center">
+              <div class="d-inline-flex flex-column align-items-center me-1 mb-1">
+                <i class="fas fa-arrow-down fa-xs" aria-hidden="true"></i>
+                <i class="fas fa-box fa-xs" aria-hidden="true"></i>
+              </div>
+              受注登録
+            </div>
+          </BButton>
 
-        <BButton v-if="loginInfo.role == 1" class="btn-sale" size="sm" :to="{ name: 'orderSaleCreate' }">
-          <div class="d-flex align-items-center">
-          <div class="d-inline-flex flex-column align-items-center me-1 mb-1">
-         <i class="fas fa-arrow-up fa-xs" aria-hidden="true"></i>
-         <i class="fas fa-box fa-xs" aria-hidden="true"></i>
-          </div>
-          発注登録
+          <BButton v-if="loginInfo.role == 1" class="btn-sale" size="sm" :to="{ name: 'orderSaleCreate' }">
+            <div class="d-flex align-items-center">
+              <div class="d-inline-flex flex-column align-items-center me-1 mb-1">
+                <i class="fas fa-arrow-up fa-xs" aria-hidden="true"></i>
+                <i class="fas fa-box fa-xs" aria-hidden="true"></i>
+              </div>
+              発注登録
+            </div>
+          </BButton>
         </div>
-        </BButton>
-      </div>
       </div>
     </template>
-
 
     <BTable
       head-variant="secondary"
@@ -128,19 +127,19 @@
       </template>
 
       <!-- 受発注日 -->
-       <template #cell(orderDate)="row">
+      <template #cell(orderDate)="row">
         {{ row.item.orderDate?.replace(/-/g, "/") }}
       </template>
 
       <!-- 確定日 -->
-       <template #cell(confirmedDate)="row">
+      <template #cell(confirmedDate)="row">
         {{ row.item.confirmedDate?.replace(/-/g, "/") ?? "-" }}
       </template>
 
       <!-- 合計金額 -->
-       <template #cell(amountTaxIncluded)="row">
-        {{ row.item.amountTaxIncluded?.toLocaleString()}}
-       </template>
+      <template #cell(amountTaxIncluded)="row">
+        {{ row.item.amountTaxIncluded?.toLocaleString() }}
+      </template>
 
       <!-- 編集・削除ボタン -->
       <template #cell(actions)="row">
@@ -346,7 +345,6 @@ const deleteOrder = async () => {
     loading.value = false;
   }
 };
-
 </script>
 
 <!-- 受発注ボタンレイアウト -->
@@ -369,14 +367,14 @@ const deleteOrder = async () => {
 }
 
 .btn-sale {
-  background-color: #02D943 !important;
-  border-color: #02D943 !important;
+  background-color: #02d943 !important;
+  border-color: #02d943 !important;
   color: #fff !important;
 }
 
 .btn-sale:hover {
-  background-color: #02BE3B !important;
-  border-color: #02BE3B !important;
+  background-color: #02be3b !important;
+  border-color: #02be3b !important;
   color: #fff !important;
 }
 
@@ -384,5 +382,4 @@ const deleteOrder = async () => {
 .btn-sale:focus-visible {
   box-shadow: 0 0 0 0.25rem rgba(2, 217, 67, 0.25) !important;
 }
-
 </style>
