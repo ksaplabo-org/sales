@@ -44,6 +44,26 @@ const routes = [
         name: "userEdit",
         component: () => import("@/views/users/UserForm.vue"),
       },
+      {
+        path: "sales/orders",
+        name: "orderList",
+        component: () => import("@/views/orders/OrderList.vue"),
+      },
+      {
+        path: "sales/orders/create",
+        name: "orderReceiveCreate",
+        component: () => import("@/views/orders/OrderList.vue"),
+      },
+      {
+        path: "sales/orders/create",
+        name: "orderSaleCreate",
+        component: () => import("@/views/orders/OrderList.vue"),
+      },
+      {
+        path: "sales/orders/:no/edit",
+        name: "orderEdit",
+        component: () => import("@/views/orders/OrderList.vue"),
+      },
     ],
   },
 ];
