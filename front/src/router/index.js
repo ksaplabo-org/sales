@@ -52,17 +52,14 @@ const routes = [
       {
         path: "sales/orders/create",
         name: "orderReceiveCreate",
-        component: () => import("@/views/orders/OrderList.vue"),
       },
       {
         path: "sales/orders/create",
         name: "orderSaleCreate",
-        component: () => import("@/views/orders/OrderList.vue"),
       },
       {
         path: "sales/orders/:orderNo/edit",
         name: "orderEdit",
-        component: () => import("@/views/orders/OrderList.vue"),
       },
     ],
   },

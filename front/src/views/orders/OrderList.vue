@@ -338,7 +338,7 @@ const deleteOrder = async () => {
 };
 </script>
 
-<!-- 受発注ボタンレイアウト -->
+<!-- 受発注登録ボタンレイアウト -->
 <style>
 .btn-receive {
   background-color: #fc9503 !important;
