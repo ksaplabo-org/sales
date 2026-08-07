@@ -49,6 +49,14 @@ const routes = [
         name: "clientMaster",
         component: () => import("@/views/clients/ClientMaster.vue"),
       },
+      {
+        path: "master/clients/create",
+        name: "clientCreate",
+      },
+      {
+        path: "master/clients/:clientCode/edit",
+        name: "clientEdit",
+      },
     ],
   },
 ];

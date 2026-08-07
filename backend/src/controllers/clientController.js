@@ -9,7 +9,6 @@ class ClientController {
    * @param {*} req リクエスト情報
    * @param {*} res レスポンス情報
    */
-
   async findAll(req, res) {
     try {
       // クエリパラメータから検索条件を作成
@@ -21,10 +20,10 @@ class ClientController {
 
       // 取引先情報一覧検索
       const clients = await ClientService.findAll(condition);
-      return res.json(clients);
+      res.json(clients);
     } catch (e) {
       console.log(e);
-      return res.status(500).send();
+      res.status(500).send();
     }
   }
 
@@ -47,20 +46,19 @@ class ClientController {
       }
 
       if (pathErrors.length > 0) {
-        console.log(pathErrors);
-        return res.status(400).json({ errors: pathErrors });
+        res.status(400).json({ errors: pathErrors });
       }
 
       const client = await ClientService.findByCode(req.params.clientCode);
-      return res.json(client);
+      res.json(client);
     } catch (e) {
       console.log(e);
 
       if (e instanceof NotFoundError) {
         // 存在チェックエラー
-        return res.status(NotFoundError.status).json({ errors: [{ field: e.field, message: e.message }] });
+        res.status(NotFoundError.status).json({ errors: [{ field: e.field, message: e.message }] });
       } else {
-        return res.status(500).send();
+        res.status(500).send();
       }
     }
   }
@@ -84,24 +82,23 @@ class ClientController {
       }
 
       if (pathErrors.length > 0) {
-        console.log(pathErrors);
-        return res.status(400).json({ errors: pathErrors });
+        res.status(400).json({ errors: pathErrors });
       }
 
       //取引先情報削除
       await ClientService.delete(req.params.clientCode);
-      return res.send();
+      res.send();
     } catch (e) {
       console.log(e);
 
       if (e instanceof NotFoundError) {
         // 存在チェックエラー
-        return res.status(NotFoundError.status).json({ errors: [{ field: e.field, message: e.message }] });
+        res.status(NotFoundError.status).json({ errors: [{ field: e.field, message: e.message }] });
       } else if (e instanceof ReferenceConstraintError) {
         // 外部参照チェックエラー
-        return res.status(ReferenceConstraintError.status).json({ errors: [{ field: e.field, message: e.message }] });
+        res.status(ReferenceConstraintError.status).json({ errors: [{ field: e.field, message: e.message }] });
       } else {
-        return res.status(500).send();
+        res.status(500).send();
       }
     }
   }

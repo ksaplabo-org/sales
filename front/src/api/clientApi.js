@@ -26,7 +26,6 @@ export async function getClientByClientCode(clientCode) {
  * 取引先情報削除API呼び出し
  *
  * @param {*} clientCode 取引先コード
- * @returns 取引先情報
  */
 export async function deleteClient(clientCode) {
   await apiClient.delete(`/clients/${clientCode}`);

@@ -1,4 +1,4 @@
-import { DATE, STRING, Model, NUMBER } from "sequelize";
+import { CHAR, DATE, STRING, Model } from "sequelize";
 import sequelize from "../config/database.js";
 
 class ClientModel extends Model {}
@@ -7,13 +7,13 @@ ClientModel.init(
   {
     clientCode: {
       field: "client_code",
-      type: STRING(8),
+      type: CHAR(8),
       primaryKey: true,
       allowNull: false,
     },
     orderKbn: {
       field: "order_kbn",
-      type: STRING(1),
+      type: CHAR(1),
       allowNull: false,
     },
     clientName: {
@@ -23,7 +23,7 @@ ClientModel.init(
     },
     postCode: {
       field: "post_code",
-      type: NUMBER(7),
+      type: CHAR(7),
       allowNull: true,
     },
     address1: {
@@ -38,34 +38,34 @@ ClientModel.init(
     },
     telNumber: {
       field: "tel_number",
-      type: STRING(13),
+      type: CHAR(13),
       allowNull: true,
     },
     createdId: {
       field: "created_id",
-      type: STRING(6),
+      type: CHAR(6),
       allowNull: false,
     },
     createdAt: {
       field: "created_at",
       type: DATE,
-      allowNull: true,
+      allowNull: false,
     },
     updatedId: {
       field: "updated_id",
-      type: STRING(6),
+      type: CHAR(6),
       allowNull: false,
     },
     updatedAt: {
       field: "updated_at",
       type: DATE,
-      allowNull: true,
+      allowNull: false,
     },
   },
   {
     sequelize,
     tableName: "clients",
-    timestamps: true,
+    timestamps: false,
   }
 );
 

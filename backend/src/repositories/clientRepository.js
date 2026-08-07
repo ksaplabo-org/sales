@@ -52,12 +52,11 @@ class ClientRepository {
    * 取引先情報物理削除
    *
    * @param {*} clientCode 取引先コード
-   *
    */
   async delete(clientCode) {
-    return await ClientModel.destroy({
+    await ClientModel.destroy({
       where: {
-        client_code: clientCode,
+        clientCode: clientCode,
       },
     });
   }

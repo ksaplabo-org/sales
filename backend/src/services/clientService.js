@@ -40,11 +40,11 @@ class ClientService {
       throw new NotFoundError("clientCode", "この取引先情報は存在しません");
     }
     // 削除データの外部参照チェック
-    const usedFlg = await OrderRepository.findByAll(clientCode);
-    if (usedFlg) {
-    throw new ReferenceConstraintError("clientCode","取引先コードが受発注情報で使用されているため削除できません");
+    const clients = await OrderRepository.findAll({ clientCode: clientCode });
+    if (clients) {
+      throw new ReferenceConstraintError("clientCode", "取引先コードが受発注情報で使用されているため削除できません");
     }
-    return await ClientRepository.delete(clientCode);
+    await ClientRepository.delete(clientCode);
   }
 }
 
