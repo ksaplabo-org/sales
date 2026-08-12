@@ -1,5 +1,5 @@
 import { col, fn, literal, Op } from "sequelize";
-import OrderModel from "../models/OrderModel.js";
+import orderModel from "../models/orderModel.js";
 
 class OrderRepository {
   /**
@@ -31,7 +31,7 @@ class OrderRepository {
     }
 
     // 検索結果を返却
-    return await OrderModel.findAll({
+    return await orderModel.findAll({
       attributes: [
         ["order_no", "orderNo"],
         ["order_kbn", "orderKbn"],
@@ -52,7 +52,7 @@ class OrderRepository {
    * @returns 受発注情報
    */
   async findByNo(orderNo) {
-    return await OrderModel.findByPk(orderNo);
+    return await orderModel.findByPk(orderNo);
   }
 
   /**
@@ -61,7 +61,7 @@ class OrderRepository {
    * @param {*} orderNo 受発注番号
    */
   async delete(orderNo) {
-    await OrderModel.destroy({
+    await orderModel.destroy({
       where: {
         orderNo: orderNo,
       },

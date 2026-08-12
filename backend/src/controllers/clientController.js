@@ -1,6 +1,6 @@
 import NotFoundError from "../errors/NotFoundError.js";
 import ReferenceConstraintError from "../errors/ReferenceConstraintError.js";
-import ClientService from "../services/clientService.js";
+import clientService from "../services/clientService.js";
 
 class ClientController {
   /**
@@ -19,7 +19,7 @@ class ClientController {
       };
 
       // 取引先情報一覧検索
-      const clients = await ClientService.findAll(condition);
+      const clients = await clientService.findAll(condition);
       res.json(clients);
     } catch (e) {
       console.log(e);
@@ -50,7 +50,7 @@ class ClientController {
         return;
       }
 
-      const client = await ClientService.findByCode(req.params.clientCode);
+      const client = await clientService.findByCode(req.params.clientCode);
       res.json(client);
     } catch (e) {
       console.log(e);
@@ -88,7 +88,7 @@ class ClientController {
       }
 
       //取引先情報削除
-      await ClientService.delete(req.params.clientCode);
+      await clientService.delete(req.params.clientCode);
       res.send();
     } catch (e) {
       console.log(e);

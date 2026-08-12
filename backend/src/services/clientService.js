@@ -1,7 +1,7 @@
 import ReferenceConstraintError from "../errors/ReferenceConstraintError.js";
 import NotFoundError from "../errors/NotFoundError.js";
-import ClientRepository from "../repositories/clientRepository.js";
-import OrderRepository from "../repositories/OrderRepository.js";
+import clientRepository from "../repositories/clientRepository.js";
+import orderRepository from "../repositories/orderRepository.js";
 
 class ClientService {
   /**
@@ -11,7 +11,7 @@ class ClientService {
    * @returns 取引先情報一覧
    */
   async findAll(condition) {
-    return await ClientRepository.findAll(condition);
+    return await clientRepository.findAll(condition);
   }
 
   /**
@@ -21,7 +21,7 @@ class ClientService {
    * @returns 取引先情報詳細
    */
   async findByCode(clientCode) {
-    const client = await ClientRepository.findByCode(clientCode);
+    const client = await clientRepository.findByCode(clientCode);
     if (!client) {
       throw new NotFoundError("clientCode", "この取引先情報は存在しません");
     }
@@ -35,16 +35,16 @@ class ClientService {
    */
   async delete(clientCode) {
     //削除データの存在チェック
-    const client = await ClientRepository.findByCode(clientCode);
+    const client = await clientRepository.findByCode(clientCode);
     if (!client) {
       throw new NotFoundError("clientCode", "この取引先情報は存在しません");
     }
     // 削除データの外部参照チェック
-    const clients = await OrderRepository.findAll({ clientCode: clientCode });
+    const clients = await orderRepository.findAll({ clientCode: clientCode });
     if (clients) {
       throw new ReferenceConstraintError("clientCode", "取引先コードが受発注情報で使用されているため削除できません");
     }
-    await ClientRepository.delete(clientCode);
+    await clientRepository.delete(clientCode);
   }
 }
 

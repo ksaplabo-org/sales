@@ -1,5 +1,5 @@
 import { col, fn, literal, Op } from "sequelize";
-import ClientModel from "../models/clientModel.js";
+import clientModel from "../models/clientModel.js";
 
 class ClientRepository {
   /**
@@ -22,7 +22,7 @@ class ClientRepository {
     }
 
     // 検索結果を返却
-    return await ClientModel.findAll({
+    return await clientModel.findAll({
       attributes: [
         ["client_code", "clientCode"],
         ["order_kbn", "orderKbn"],
@@ -32,7 +32,7 @@ class ClientRepository {
         ["address2", "address2"],
         [fn("CONCAT", col("address1"), col("address2")), "fullAddress"],
         ["tel_number", "telNumber"],
-        [literal("EXISTS(SELECT 1 FROM orders o WHERE o.client_code = ClientModel.client_code)"), "usedFlg"],
+        [literal("EXISTS(SELECT 1 FROM orders o WHERE o.client_code = clientModel.client_code)"), "usedFlg"],
       ],
       where: where,
     });
@@ -45,7 +45,7 @@ class ClientRepository {
    * @returns 取引先情報
    */
   async findByCode(clientCode) {
-    return await ClientModel.findByPk(clientCode);
+    return await clientModel.findByPk(clientCode);
   }
 
   /**
@@ -54,7 +54,7 @@ class ClientRepository {
    * @param {*} clientCode 取引先コード
    */
   async delete(clientCode) {
-    await ClientModel.destroy({
+    await clientModel.destroy({
       where: {
         clientCode: clientCode,
       },
