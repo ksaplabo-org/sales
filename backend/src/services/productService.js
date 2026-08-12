@@ -1,7 +1,8 @@
 import UniqueConstraintError from "../errors/UniqueConstraintError.js";
 import NotFoundError from "../errors/NotFoundError.js";
-//import ReferenceConstraintError from "../errors/ReferenceConstraintError.js";
+import ReferenceConstraintError from "../errors/ReferenceConstraintError.js";
 import productRepository from "../repositories/productRepository.js";
+import orderRepository from "../repositories/OrderRepository.js";
 
 class ProductService {
   /**
@@ -40,16 +41,11 @@ class ProductService {
       // 削除データの存在チェック
       throw new NotFoundError("productCode", "この商品コードは存在していません");
     }
-
     //削除データの外部参照チェック
-    //orderRepositoryが存在しないため、コメントアウト
-    /*
-    const products = await orderRepository.findAll({ productCode : productCode })
-    if(products) {
+    const products = await orderRepository.findAll({ productCode: productCode });
+    if (products.length != 0) {
       throw new ReferenceConstraintError("productCode", "この商品コードは受発注情報で使用されているため削除できません");
     }
-    */
-
     await productRepository.delete(productCode);
   }
 }

@@ -1,5 +1,5 @@
 import { literal, Op } from "sequelize";
-import ProductModel from "../models/productModel.js";
+import productModel from "../models/productModel.js";
 
 class ProductRepository {
   /**
@@ -31,9 +31,8 @@ class ProductRepository {
         where.productPrice[Op.lte] = condition.productPriceHigh;
       }
     }
-
     // 検索結果を返却
-    return await ProductModel.findAll({
+    return await productModel.findAll({
       attributes: [
         ["product_code", "productCode"],
         ["product_name", "productName"],
@@ -53,16 +52,15 @@ class ProductRepository {
    * @returns 商品情報
    */
   async findByCode(productCode) {
-    return await ProductModel.findByPk(productCode);
+    return await productModel.findByPk(productCode);
   }
-
   /**
    * 商品情報物理削除
    *
    * @param {*} productCode 商品コード
    */
   async delete(productCode) {
-    await ProductModel.destroy({
+    await productModel.destroy({
       where: {
         productCode: productCode,
       },
