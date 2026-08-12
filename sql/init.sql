@@ -1,6 +1,4 @@
--- Active: 1783312238720@@localhost@3306@sales
 USE sales;
-
 #------------------------------------------
 # ユーザーTBL 作成
 #------------------------------------------
@@ -21,7 +19,7 @@ CREATE TABLE IF NOT EXISTS users
 )
 CHARACTER SET utf8mb4
 COLLATE utf8mb4_0900_ai_ci;
-
+ 
 #------------------------------------------
 # ユーザーTBL 初期データ登録
 #------------------------------------------
@@ -30,10 +28,7 @@ INSERT INTO users values ("user01", "user01", "山田", "太郎","2", "1990/01/0
 INSERT INTO users values ("user02", "user02", "鈴木", "花子","1", "2000/01/01", false, "user01", now(), "user01", now());
 INSERT INTO users values ("user03", "user03", "佐々木", "次郎","2", "1995/01/01", false, "user01", now(), "user01", now());
 INSERT INTO users values ("user04", "user04", "森", "桜","1", "1993/01/01", false, "user01", now(), "user01", now());
-
-
-
-
+ 
 #------------------------------------------
 # 商品TBL 作成
 #------------------------------------------
@@ -52,7 +47,7 @@ CREATE TABLE IF NOT EXISTS products
 )
 CHARACTER SET utf8mb4
 COLLATE utf8mb4_0900_ai_ci;
-
+ 
 #------------------------------------------
 # 商品TBL 初期データ登録
 #------------------------------------------
@@ -61,10 +56,8 @@ INSERT INTO products values ("aa00001", "1", "", "りんご",150, "user01", now(
 INSERT INTO products values ("aa00002", "2", "a0000002", "搾りたて生醤油", 350, "user01", now(), "user01", now());
 INSERT INTO products values ("aa00003", "1", "", "お餅", 100, "user01", now(), "user01", now());
 INSERT INTO products values ("aa00004", "2", "a0000003", "PC", 360000, "user01", now(), "user01", now());
-
-
-
-
+INSERT INTO products values ("2222222", "2", "a0000003", "スピーカー", 10000, "user01", now(), "user01", now());
+ 
 #------------------------------------------
 # 取引先TBL 作成
 #------------------------------------------
@@ -94,10 +87,8 @@ INSERT INTO clients values ("a0000001", "1", "A商事", "0600001","A県B市C区1
 INSERT INTO clients values ("a0000002", "2", "B株式会社", "0600002","D府E市F区2条2丁目2-2Aビル 7階", "", "080-0000-0000", "user01", now(), "user01", now());
 INSERT INTO clients values ("a0000003", "2", "C有限会社", "0600003","G県H市I区3条3丁目3-3Bビル 6階", "", "070-0000-0000", "user01", now(), "user01", now());
 INSERT INTO clients values ("a0000004", "1", "D有限会社", "0600004","G県H市I区13条31丁目3-3Bビル", "28階", "060-0000-0000", "user01", now(), "user01", now());
-
-
-
-
+INSERT INTO clients values ("11111111", "1", "ABCD会社", "0600005","J県K市L区13条31丁目3-MMビル", "42階", "010-0000-0000", "user01", now(), "user01", now());
+ 
 #------------------------------------------
 # 受発注情報TBL 作成
 #------------------------------------------
@@ -128,7 +119,9 @@ COLLATE utf8mb4_0900_ai_ci;
 # 受発注情報TBL 初期データ登録
 #------------------------------------------
 DELETE FROM orders;
-INSERT INTO orders values ("o1000001", "1", "a0000001", "2026-07-21", NULL, "2026-07-28", "2026-08-04", "aa00001", "100", "15000", "1500", "16500", "user01", now(), "user01", now());
-INSERT INTO orders values ("o1000002", "2", "a0000002", "2026-07-21", NULL,  NULL, "2026-08-04", "aa00002", "200", "70000", "7000", "77000", "user01", now(), "user01", now());
-INSERT INTO orders values ("o1000003", "1", "a0000003", "2026-07-21", "2026-07-25",  "2026-07-28", "2026-08-04", "aa00003", "150", "15000", "1500", "16500", "user01", now(), "user01", now());
-INSERT INTO orders values ("o1000004", "2", "a0000004", "2026-07-21", "2026-07-25",  NULL, "2026-08-04", "aa00004", "10", "3600000", "36000", "396000", "user01", now(), "user01", now());
+INSERT INTO orders values ("o1000001", "1", "a0000001", "2026-07-21", NULL, "2026-07-28", "2026-08-04", "aa00001", "100", "15000", "1500", "16500", "user02", now(), "user02", now());
+INSERT INTO orders values ("o1000002", "2", "a0000002", "2026-07-21", NULL,  NULL, "2026-08-04", "aa00002", "200", "70000", "7000", "77000", "user02", now(), "user02", now());
+INSERT INTO orders values ("o1000003", "1", "a0000003", "2026-07-21", "2026-07-25",  "2026-07-28", "2026-08-04", "aa00003", "150", "15000", "1500", "16500", "user02", now(), "user02", now());
+INSERT INTO orders values ("o1000004", "2", "a0000004", "2026-07-21", "2026-07-25",  NULL, "2026-08-04", "aa00004", "10", "3600000", "36000", "396000", "user02", now(), "user02", now());
+ 
+ 
