@@ -10,7 +10,7 @@ class ClientService {
    * @returns 取引先情報一覧
    */
   async findAll(condition) {
-    return await ClientRepository.findAll(condition);
+    return await clientRepository.findAll(condition);
   }
 
   /**
@@ -34,7 +34,7 @@ class ClientService {
    */
   async create(clientInfo) {
     // 一意性制約チェック
-    const client = await ClientRepository.findByCode(clientInfo.clientCode);
+    const client = await clientRepository.findByCode(clientInfo.clientCode);
     if (client) {
       throw new UniqueConstraintError("clientCode", "この取引先コードは既に使用されています");
     }
@@ -43,7 +43,7 @@ class ClientService {
     clientInfo.cretedAt = now;
     clientInfo.updatedAt = now;
 
-    await ClientRepository.create(clientInfo);
+    await clientRepository.create(clientInfo);
   }
 
   /**
@@ -54,14 +54,14 @@ class ClientService {
    */
   async update(clientCode, clientInfo) {
     // 更新データの存在チェック
-    const client = await ClientRepository.findByCode(clientCode);
+    const client = await clientRepository.findByCode(clientCode);
     if (!client) {
       throw new NotFoundError("clientCode", "この取引先情報は存在しません");
     }
     const now = new Date().toISOString();
     clientInfo.updatedAt = now;
 
-    await ClientRepository.update(clientCode, clientInfo);
+    await clientRepository.update(clientCode, clientInfo);
   }
 }
 export default new ClientService();

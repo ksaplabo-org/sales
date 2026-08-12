@@ -19,7 +19,7 @@ class ClientController {
       };
 
       // 取引先情報一覧検索
-      const clients = await ClientService.findAll(condition);
+      const clients = await clientService.findAll(condition);
       res.json(clients);
     } catch (e) {
       console.log(e);
@@ -117,7 +117,7 @@ class ClientController {
         return;
       }
       // 登録処理実行
-      await ClientService.create(client);
+      await clientService.create(client);
       res.status(201).send();
     } catch (e) {
       console.log(e);
@@ -178,7 +178,7 @@ class ClientController {
         res.status(400).json({ errors: errors });
         return;
       }
-      await ClientService.update(req.params.clientCode, client);
+      await clientService.update(req.params.clientCode, client);
       res.send();
     } catch (e) {
       console.log(e);
