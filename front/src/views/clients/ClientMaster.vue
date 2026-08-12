@@ -82,7 +82,7 @@
       </div>
     </template>
 
-    <BTable head-variant="secondary" :items="items" :fields="fields" class="mb-0" show-empty responsive hover >
+    <BTable head-variant="secondary" :items="items" :fields="fields" class="mb-0" show-empty responsive hover>
       <!-- 受発注区分 -->
       <template #cell(orderKbn)="row">
         {{ orderKbnOptions.find((orderKbn) => orderKbn.value === row.value)?.text }}
@@ -224,7 +224,7 @@ const searchClients = async () => {
  * 郵便番号の形式変換
  */
 const formatPostCode = (postCode) => {
-  return postCode.replace(/(\d{3})(\d{4})/, '$1-$2');
+  return postCode.replace(/(\d{3})(\d{4})/, "$1-$2");
 };
 
 /**
