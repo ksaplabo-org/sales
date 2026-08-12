@@ -1,7 +1,6 @@
-import ReferenceConstraintError from "../errors/ReferenceConstraintError.js";
+import UniqueConstraintError from "../errors/UniqueConstraintError.js";
 import NotFoundError from "../errors/NotFoundError.js";
 import clientRepository from "../repositories/clientRepository.js";
-import orderRepository from "../repositories/orderRepository.js";
 
 class ClientService {
   /**
@@ -11,7 +10,7 @@ class ClientService {
    * @returns 取引先情報一覧
    */
   async findAll(condition) {
-    return await clientRepository.findAll(condition);
+    return await ClientRepository.findAll(condition);
   }
 
   /**
@@ -29,23 +28,40 @@ class ClientService {
   }
 
   /**
-   * 取引先情報物理削除
+   * 取引先情報登録
+   *
+   * @param {*} clientInfo 取引先情報
+   */
+  async create(clientInfo) {
+    // 一意性制約チェック
+    const client = await ClientRepository.findByCode(clientInfo.clientCode);
+    if (client) {
+      throw new UniqueConstraintError("clientCode", "この取引先コードは既に使用されています");
+    }
+
+    const now = new Date().toISOString();
+    clientInfo.cretedAt = now;
+    clientInfo.updatedAt = now;
+
+    await ClientRepository.create(clientInfo);
+  }
+
+  /**
+   * 取引先情報更新
    *
    * @param {*} clientCode 取引先コード
+   * @param {*} clientInfo 取引先情報
    */
-  async delete(clientCode) {
-    //削除データの存在チェック
-    const client = await clientRepository.findByCode(clientCode);
+  async update(clientCode, clientInfo) {
+    // 更新データの存在チェック
+    const client = await ClientRepository.findByCode(clientCode);
     if (!client) {
       throw new NotFoundError("clientCode", "この取引先情報は存在しません");
     }
-    // 削除データの外部参照チェック
-    const clients = await orderRepository.findAll({ clientCode: clientCode });
-    if (clients) {
-      throw new ReferenceConstraintError("clientCode", "取引先コードが受発注情報で使用されているため削除できません");
-    }
-    await clientRepository.delete(clientCode);
+    const now = new Date().toISOString();
+    clientInfo.updatedAt = now;
+
+    await ClientRepository.update(clientCode, clientInfo);
   }
 }
-
 export default new ClientService();
