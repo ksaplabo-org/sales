@@ -1,7 +1,7 @@
 import UniqueConstraintError from "../errors/UniqueConstraintError.js";
 import ValidationError from "../errors/ValidationError.js";
 import NotFoundError from "../errors/NotFoundError.js";
-import productService from "../services/ProductService.js";
+import productService from "../services/productService.js";
 
 class ProductController {
   /**
@@ -233,7 +233,14 @@ class ProductController {
         });
       } else if (e instanceof ValidationError) {
         //パラメータエラー
-        return res.status(ValidationError.status).json({ errors: e.errors });
+        return res.status(ValidationError.status).json({
+          errors: [
+            {
+              field: e.field,
+              message: e.message,
+            },
+          ],
+        });
       } else {
         return res.status(500).send();
       }

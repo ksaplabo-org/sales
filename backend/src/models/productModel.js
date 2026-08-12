@@ -1,4 +1,4 @@
-import { DATE, DATEONLY, STRING, Model, BOOLEAN, INTEGER } from "sequelize";
+import { DATE, STRING, Model, INTEGER, CHAR } from "sequelize";
 import sequelize from "../config/database.js";
 
 class ProductModel extends Model {}
@@ -7,18 +7,18 @@ ProductModel.init(
   {
     productCode: {
       field: "product_code",
-      type: STRING(7),
+      type: CHAR(7),
       primaryKey: true,
       allowNull: false,
     },
     orderKbn: {
       field: "order_kbn",
-      type: STRING(1),
+      type: CHAR(1),
       allowNull: false,
     },
     orderClientCode: {
       field: "order_client_code",
-      type: STRING(8),
+      type: CHAR(8),
       allowNull: true,
     },
     productName: {
@@ -33,7 +33,7 @@ ProductModel.init(
     },
     createdId: {
       field: "created_id",
-      type: STRING(6),
+      type: CHAR(6),
       allowNull: false,
     },
     createdAt: {
@@ -43,7 +43,7 @@ ProductModel.init(
     },
     updatedId: {
       field: "updated_id",
-      type: STRING(6),
+      type: CHAR(6),
       allowNull: false,
     },
     updatedAt: {

@@ -1,7 +1,7 @@
 import UniqueConstraintError from "../errors/UniqueConstraintError.js";
 import NotFoundError from "../errors/NotFoundError.js";
 import ValidationError from "../errors/ValidationError.js";
-import productRepository from "../repositories/ProductRepository.js";
+import productRepository from "../repositories/productRepository.js";
 
 class ProductService {
   /**
@@ -69,26 +69,30 @@ class ProductService {
     }
 
     //パラメータチェック
-    const errors = [];
+    const errors = {};
+
     //発注先コード
     if (product.orderKbn == "2") {
       if (!productInfo.orderClientCode) {
-        errors.push({ field: "orderClientCode", message: "発注先コードが設定されていません" });
+        errors.field = "orderClientCode";
+        errors.message = "発注先コードが設定されていません";
       } else if (productInfo.orderClientCode.length != 8) {
-        errors.push({ field: "orderClientCode", message: "発注先コードは8桁で設定してください" });
+        errors.field = "orderClientCode";
+        errors.message = "発注先コードは8桁で設定してください";
       } else if (!/^[A-Za-z0-9]+$/.test(productInfo.orderClientCode)) {
-        errors.push({ field: "orderClientCode", message: "発注先コードは半角英数で設定してください" });
+        errors.field = "orderClientCode";
+        errors.message = "発注先コードは半角英数で設定してください";
       }
     } else if (product.orderKbn == "1") {
       if (productInfo.orderClientCode) {
-        errors.push({ field: "orderClientCode", message: "発注先コードは設定できません" });
+        errors.field = "orderClientCode";
+        errors.message = "発注先コードは設定できません";
       }
     }
 
-    if (errors.length > 0) {
-      const error = new ValidationError();
-      error.errors = errors;
-      throw error;
+    //エラー情報オブジェクト要素がある場合
+    if (Object.keys(errors).length > 0) {
+      throw new ValidationError(errors.field, errors.message);
     }
 
     /*

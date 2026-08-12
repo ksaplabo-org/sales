@@ -1,5 +1,5 @@
 import { col, fn, literal, Op } from "sequelize";
-import ProductModel from "../models/ProductModel.js";
+import productModel from "../models/productModel.js";
 
 class ProductRepository {
   /**
@@ -33,14 +33,14 @@ class ProductRepository {
     }
 
     // 検索結果を返却
-    return await ProductModel.findAll({
+    return await productModel.findAll({
       attributes: [
         ["product_code", "productCode"],
         ["product_name", "productName"],
         ["order_kbn", "orderKbn"],
         ["order_client_code", "orderClientCode"],
         ["product_price", "productPrice"],
-        [literal("EXISTS(SELECT 1 FROM orders o WHERE o.product_code = ProductModel.product_code)"), "usedFlg"],
+        [literal("EXISTS(SELECT 1 FROM orders o WHERE o.product_code = productModel.product_code)"), "usedFlg"],
       ],
       where: where,
     });
@@ -53,7 +53,7 @@ class ProductRepository {
    * @returns 商品情報
    */
   async findByCode(productCode) {
-    return await ProductModel.findByPk(productCode);
+    return await productModel.findByPk(productCode);
   }
 
   /**
@@ -62,7 +62,7 @@ class ProductRepository {
    * @param {*} productInfo 商品情報
    */
   async create(productInfo) {
-    await ProductModel.create(productInfo);
+    await productModel.create(productInfo);
   }
 
   /**
@@ -72,7 +72,7 @@ class ProductRepository {
    * @param {*} productInfo 商品情報
    */
   async update(productCode, productInfo) {
-    await ProductModel.update(productInfo, {
+    await productModel.update(productInfo, {
       where: {
         productCode: productCode,
       },
