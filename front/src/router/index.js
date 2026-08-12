@@ -45,20 +45,18 @@ const routes = [
         component: () => import("@/views/users/UserForm.vue"),
       },
       {
-        path: "master/products",
-        name: "productMaster",
-        component: () => import("@/views/products/ProductMaster.vue"),
+        path: "master/clients",
+        name: "clientMaster",
+        component: () => import("@/views/clients/ClientMaster.vue"),
       },
       {
-        path: "master/products/create",
-        name: "productCreate",
-        component: () => import("@/views/products/ProductForm.vue"),
+        path: "master/clients/create",
+        name: "clientCreate",
       },
       {
-        path: "master/products/:productCode/edit",
-        name: "productEdit",
-        component: () => import("@/views/products/ProductForm.vue"),
-      }
+        path: "master/clients/:clientCode/edit",
+        name: "clientEdit",
+      },
     ],
   },
 ];
