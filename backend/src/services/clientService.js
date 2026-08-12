@@ -40,7 +40,7 @@ class ClientService {
     }
 
     const now = new Date().toISOString();
-    clientInfo.cretedAt = now;
+    clientInfo.createdAt = now;
     clientInfo.updatedAt = now;
 
     await clientRepository.create(clientInfo);
