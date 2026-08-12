@@ -39,7 +39,7 @@ class ProductRepository {
         ["order_kbn", "orderKbn"],
         ["order_client_code", "orderClientCode"],
         ["product_price", "productPrice"],
-        [literal("EXISTS(SELECT 1 FROM orders o WHERE o.product_code = ProductModel.product_code)"), "usedFlg"],
+        [literal("EXISTS(SELECT 1 FROM orders o WHERE o.product_code = productModel.product_code)"), "usedFlg"],
       ],
       where: where,
     });
