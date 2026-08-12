@@ -23,10 +23,19 @@ export async function getClientByClientCode(clientCode) {
 }
 
 /**
- * 取引先情報削除API呼び出し
+ * 取引先情報登録API呼び出し
  *
- * @param {*} clientCode 取引先コード
+ * @param {*} clientInfo 取引先情報
  */
-export async function deleteClient(clientCode) {
-  await apiClient.delete(`/clients/${clientCode}`);
+export async function createClient(clientInfo) {
+  await apiClient.post("/clients/", clientInfo);
+}
+
+/**
+ * 取引先情報更新
+ *
+ * @param {*} clientInfo 取引先情報
+ */
+export async function updateClient(clientInfo) {
+  await apiClient.put(`/clients/${clientInfo.clientCode}`, clientInfo);
 }

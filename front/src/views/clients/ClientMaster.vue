@@ -82,7 +82,7 @@
       </div>
     </template>
 
-    <BTable head-variant="secondary" :items="items" :fields="fields" class="mb-0" show-empty responsive hover>
+    <BTable head-variant="secondary" :items="items" :fields="fields" class="mb-0" show-empty responsive hover >
       <!-- 受発注区分 -->
       <template #cell(orderKbn)="row">
         {{ orderKbnOptions.find((orderKbn) => orderKbn.value === row.value)?.text }}
@@ -93,7 +93,7 @@
         {{ formatPostCode(row.item.postCode) }}
       </template>
 
-      <!-- 編集・削除ボタン -->
+      <!-- 編集ボタン -->
       <template #cell(actions)="row">
         <BContainer fluid class="d-flex justify-content-center gap-2 px-0">
           <BButton
@@ -105,15 +105,6 @@
             <i class="fas fa-pen"></i>
             編集
           </BButton>
-          <BButton
-            size="sm"
-            variant="outline-danger"
-            @click="openDeleteModal(row.item)"
-            v-if="loginInfo.role == 2 && !row.item.usedFlg"
-          >
-            <i class="far fa-trash-alt"></i>
-            削除
-          </BButton>
         </BContainer>
       </template>
 
@@ -123,18 +114,6 @@
       </template>
     </BTable>
   </BCard>
-
-  <!-- 削除確認モーダル -->
-  <BModal
-    v-model="showDeleteModal"
-    title="削除確認"
-    ok-title="削除"
-    ok-variant="danger"
-    cancel-title="キャンセル"
-    @ok="deleteClient()"
-  >
-    <p>{{ targetRow?.clientCode }} を削除しますか？</p>
-  </BModal>
 
   <!-- ローディングマスク -->
   <Loading v-if="loading" />
@@ -183,8 +162,6 @@ const condition = ref({
 
 // 読み込み中の表示制御
 const loading = ref(false);
-// 削除確認モーダルの表示制御
-const showDeleteModal = ref(false);
 // 処理中のデータ
 const targetRow = ref(null);
 
@@ -205,7 +182,7 @@ const loginInfo = getLoginInfo();
  */
 onMounted(async () => {
   // 一覧検索
-  await searchClients();
+  await searchClients(condition.value);
   // 登録画面からの遷移の場合にメッセージを出力
   const state = history.state;
   if (state.result) {
@@ -247,7 +224,7 @@ const searchClients = async () => {
  * 郵便番号の形式変換
  */
 const formatPostCode = (postCode) => {
-  return postCode.replace(/(\d{3})(\d{4})/, "$1-$2");
+  return postCode.replace(/(\d{3})(\d{4})/, '$1-$2');
 };
 
 /**
@@ -259,6 +236,7 @@ const openSuccessToast = (message) => {
   successToastText.value = message;
   showSuccessToastMs.value = TOAST_MS;
 };
+
 /**
  * 処理失敗トースト表示処理
  *
@@ -267,32 +245,5 @@ const openSuccessToast = (message) => {
 const openFailedToast = (message) => {
   failedToastText.value = message;
   showFailedToastMs.value = TOAST_MS;
-};
-
-/**
- * 削除確認モーダル表示処理
- *
- * @param row 一覧行データ
- */
-const openDeleteModal = (row) => {
-  targetRow.value = row;
-  showDeleteModal.value = true;
-};
-
-/**
- * 取引先削除処理
- */
-const deleteClient = async () => {
-  loading.value = true;
-  try {
-    await clientApi.deleteClient(targetRow.value.clientCode);
-    await searchClients();
-    openSuccessToast(messages.MSGI006);
-  } catch (e) {
-    console.log(e);
-    openFailedToast(messages.MSGE007);
-  } finally {
-    loading.value = false;
-  }
 };
 </script>
