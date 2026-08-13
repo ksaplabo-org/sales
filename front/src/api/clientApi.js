@@ -39,3 +39,12 @@ export async function createClient(clientInfo) {
 export async function updateClient(clientInfo) {
   await apiClient.put(`/clients/${clientInfo.clientCode}`, clientInfo);
 }
+
+/**
+ * 取引先情報削除API呼び出し
+ *
+ * @param {*} clientCode 取引先コード
+ */
+export async function deleteClient(clientCode) {
+  await apiClient.delete(`/clients/${clientCode}`);
+}

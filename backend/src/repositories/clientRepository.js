@@ -70,5 +70,18 @@ class ClientRepository {
       },
     });
   }
+
+  /**
+   * 取引先情報物理削除
+   *
+   * @param {*} clientCode 取引先コード
+   */
+  async delete(clientCode) {
+    await clientModel.destroy({
+      where: {
+        clientCode: clientCode,
+      },
+    });
+  }
 }
 export default new ClientRepository();
