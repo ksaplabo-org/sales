@@ -184,7 +184,7 @@ const router = useRouter();
 
 // 権限の一覧
 const orderKbnOptions = [
-  { value: '', text: '全て表示' },
+  { value: '', text: 'すべて表示' },
   { value: '1', text: '受注のみ表示' },
   { value: '2', text: '発注のみ表示' }
 ];
@@ -208,7 +208,6 @@ const condition = ref({
   productCode: "",
   productName: "",
   orderKbn: "",
-  orderClientCode: "",
   productPriceLow: null,
   productPriceHigh: null
 });
@@ -243,7 +242,7 @@ onMounted(async () => {
     openSuccessToast(state.message);
 
     // 再表示の防止のためstateを初期化
-    history.replaceState({}, "");
+    history.replaceStatement({}, "");
   }
 
   // 一覧検索
@@ -258,7 +257,6 @@ const clearCondition = () => {
     productCode: "",
     productName: "",
     orderKbn: "",
-    orderClientCode: "",
     productPriceLow: null,
     productPriceHigh: null
   };
