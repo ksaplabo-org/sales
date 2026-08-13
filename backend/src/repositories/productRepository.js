@@ -54,7 +54,7 @@ class ProductRepository {
   async findByCode(productCode) {
     return await productModel.findByPk(productCode);
   }
-  
+
   /**
    * 商品情報物理削除
    *

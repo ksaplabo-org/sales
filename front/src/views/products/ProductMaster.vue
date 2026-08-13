@@ -26,10 +26,7 @@
       <BRow>
         <BCol md="4">
           <BFormGroup label="受発注区分">
-            <BFormSelect
-              v-model="condition.orderKbn"
-              :options="orderKbnOptions"
-            />
+            <BFormSelect v-model="condition.orderKbn" :options="orderKbnOptions" />
           </BFormGroup>
         </BCol>
 
@@ -47,9 +44,7 @@
 
         <BCol md="4">
           <BFormGroup label="商品名">
-            <BFormInput placeholder="商品名を入力" v-model="condition.productName"
-            maxlength="20"
-            />
+            <BFormInput placeholder="商品名を入力" v-model="condition.productName" maxlength="20" />
           </BFormGroup>
         </BCol>
       </BRow>
@@ -63,16 +58,17 @@
                 :model-value="condition.productPriceLow"
                 @input="
                   condition.productPriceLow =
-                    $event.target.value.replace(/[^0-9]/g, '') === '0' ? '' : $event.target.value
-                    .replace(/[^0-9]/g, '').replace(/^0+/, '')"
+                    $event.target.value.replace(/[^0-9]/g, '') === '0'
+                      ? ''
+                      : $event.target.value.replace(/[^0-9]/g, '').replace(/^0+/, '')
+                "
               />
               <span class="mx-2">～</span>
               <BFormInput
                 placeholder="上限"
                 type="number"
                 :model-value="condition.productPriceHigh"
-                @input="condition.productPriceHigh = $event.target.value
-                .replace(/[^0-9]/g, '').replace(/^0+/, '')"
+                @input="condition.productPriceHigh = $event.target.value.replace(/[^0-9]/g, '').replace(/^0+/, '')"
               />
             </div>
           </BFormGroup>
@@ -184,9 +180,9 @@ const router = useRouter();
 
 // 権限の一覧
 const orderKbnOptions = [
-  { value: '', text: 'すべて表示' },
-  { value: '1', text: '受注のみ表示' },
-  { value: '2', text: '発注のみ表示' }
+  { value: "", text: "すべて表示" },
+  { value: "1", text: "受注のみ表示" },
+  { value: "2", text: "発注のみ表示" },
 ];
 
 // 検索結果
@@ -200,7 +196,7 @@ const fields = [
   { key: "orderKbn", label: "受発注区分" },
   { key: "orderClientCode", label: "発注先コード" },
   { key: "productPrice", label: "単価" },
-  { key: "actions", label: "" }
+  { key: "actions", label: "" },
 ];
 
 // 検索条件
@@ -209,7 +205,7 @@ const condition = ref({
   productName: "",
   orderKbn: "",
   productPriceLow: null,
-  productPriceHigh: null
+  productPriceHigh: null,
 });
 
 // 読み込み中の表示制御
@@ -258,7 +254,7 @@ const clearCondition = () => {
     productName: "",
     orderKbn: "",
     productPriceLow: null,
-    productPriceHigh: null
+    productPriceHigh: null,
   };
 };
 
