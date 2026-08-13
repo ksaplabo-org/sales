@@ -26,7 +26,12 @@
       <BRow>
         <BCol md="4">
           <BFormGroup label="受発注番号">
-            <BFormInput placeholder="受発注番号を入力" v-model="condition.orderNo" />
+            <BFormInput
+              placeholder="受発注番号を入力"
+              v-model="condition.orderNo"
+              maxlength="8"
+              :formatter="formatHalfWidthAlphaNumeric"
+            />
           </BFormGroup>
         </BCol>
 
@@ -45,22 +50,40 @@
 
         <BCol md="4">
           <BFormGroup label="取引先コード">
-            <BFormInput placeholder="取引先コードを入力" v-model="condition.clientCode" />
+            <BFormInput
+              placeholder="取引先コードを入力"
+              v-model="condition.clientCode"
+              maxlength="8"
+              :formatter="formatHalfWidthAlphaNumeric"
+            />
           </BFormGroup>
         </BCol>
 
         <BCol md="4">
           <BFormGroup label="商品コード">
-            <BFormInput placeholder="商品コードを入力" v-model="condition.productCode" />
+            <BFormInput
+              placeholder="商品コードを入力"
+              v-model="condition.productCode"
+              maxlength="7"
+              :formatter="formatHalfWidthAlphaNumeric"
+            />
           </BFormGroup>
         </BCol>
 
         <BCol md="4">
           <BFormGroup label="合計金額">
             <div class="d-flex align-items-center">
-              <BFormInput placeholder="下限" v-model="condition.amountTaxIncludedLow" />
+              <BFormInput
+                placeholder="下限"
+                v-model="condition.amountTaxIncludedLow"
+                :formatter="formatHalfWidthNumeric"
+              />
               <span class="mx-2">～</span>
-              <BFormInput placeholder="上限" v-model="condition.amountTaxIncludedHigh" />
+              <BFormInput
+                placeholder="上限"
+                v-model="condition.amountTaxIncludedHigh"
+                :formatter="formatHalfWidthNumeric"
+              />
             </div>
           </BFormGroup>
         </BCol>
@@ -188,7 +211,6 @@ import messages from "@/constants/messages.js";
 import Loading from "@/components/Loading.vue";
 import { getLoginInfo } from "@/utils/auth.js";
 import { formatMessage } from "@/utils/messageUtil.js";
-
 // Router操作
 const router = useRouter();
 
@@ -273,6 +295,24 @@ const clearCondition = () => {
     amountTaxIncludedLow: null,
     amountTaxIncludedHigh: null,
   };
+};
+
+/**
+ * 半角英数のみに置換する
+ *
+ * @param value 検査値
+ */
+const formatHalfWidthAlphaNumeric = (value) => {
+  return value.replace(/[^A-Za-z0-9]/g, "");
+};
+
+/**
+ * 半角数字のみに置換する
+ *
+ * @param value 検査値
+ */
+const formatHalfWidthNumeric = (value) => {
+  return value.replace(/[^0-9]/g, "");
 };
 
 /**
