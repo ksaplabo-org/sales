@@ -1,7 +1,7 @@
 import UniqueConstraintError from "../errors/UniqueConstraintError.js";
 import NotFoundError from "../errors/NotFoundError.js";
 import UnprocessableContentError from "../errors/UnprocessableContentError.js";
-import orderService from "../services/OrderService.js";
+import orderService from "../services/orderService.js";
 
 class OrderController {
   /**
@@ -44,9 +44,9 @@ class OrderController {
       if (!req.params.orderNo) {
         errors.push({ field: "orderNo", message: "受発注番号を入力してください" });
       } else if (req.params.orderNo.length != 8) {
-        errors.push({ field: "orderNo", message: "受発注番号は8桁で設定してください" });
+        errors.push({ field: "orderNo", message: "受発注番号は8桁で入力してください" });
       } else if (!/^[A-Za-z0-9]+$/.test(req.params.orderNo)) {
-        errors.push({ field: "orderNo", message: "受発注番号は半角英数で設定してください" });
+        errors.push({ field: "orderNo", message: "受発注番号は半角英数で入力してください" });
       }
 
       if (errors.length > 0) {

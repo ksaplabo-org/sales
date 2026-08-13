@@ -1,7 +1,7 @@
 import UniqueConstraintError from "../errors/UniqueConstraintError.js";
 import NotFoundError from "../errors/NotFoundError.js";
 import UnprocessableContentError from "../errors/UnprocessableContentError.js";
-import orderRepository from "../repositories/OrderRepository.js";
+import orderRepository from "../repositories/orderRepository.js";
 
 class OrderService {
   /**
@@ -12,20 +12,6 @@ class OrderService {
    */
   async findAll(condition) {
     return await orderRepository.findAll(condition);
-  }
-
-  /**
-   * 受発注情報詳細取得
-   *
-   * @param {*} orderNo 受発注番号
-   * @returns 受発注情報詳細
-   */
-  async findById(orderNo) {
-    const order = await orderRepository.findByNo(orderNo);
-    if (!order) {
-      throw new NotFoundError("orderNo", "この受発注番号は存在しません");
-    }
-    return order;
   }
 
   /**

@@ -12,17 +12,6 @@ export async function getOrders(condition) {
 }
 
 /**
- * 受発注情報詳細取得API呼び出し
- *
- * @param {*} orderNo 受発注番号
- * @returns 受発注情報
- */
-export async function getOrderByOrderNo(orderNo) {
-  const response = await apiClient.get(`/orders/${orderNo}`);
-  return response.data;
-}
-
-/**
  * 受発注情報削除
  *
  * @param {*} orderNo 受発注番号
