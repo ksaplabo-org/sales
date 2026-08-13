@@ -2,7 +2,7 @@ import UniqueConstraintError from "../errors/UniqueConstraintError.js";
 import NotFoundError from "../errors/NotFoundError.js";
 import ReferenceConstraintError from "../errors/ReferenceConstraintError.js";
 import productRepository from "../repositories/productRepository.js";
-import orderRepository from "../repositories/OrderRepository.js";
+import orderRepository from "../repositories/orderRepository.js";
 
 class ProductService {
   /**
