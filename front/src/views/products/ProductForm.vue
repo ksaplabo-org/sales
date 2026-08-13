@@ -215,7 +215,6 @@ onMounted(async () => {
       });
     } catch (e) {
       console.log(e);
-      console.log("productInfo", productInfo);
       openFailedToast(messages.MSGE001);
       loading.value = false;
       return;
