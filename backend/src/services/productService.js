@@ -2,6 +2,7 @@ import UniqueConstraintError from "../errors/UniqueConstraintError.js";
 import NotFoundError from "../errors/NotFoundError.js";
 import ValidationError from "../errors/ValidationError.js";
 import productRepository from "../repositories/productRepository.js";
+import clientRepository from "../repositories/clientRepository.js";
 
 class ProductService {
   /**
@@ -42,10 +43,10 @@ class ProductService {
     }
 
     //発注先コード存在チェック
-    // const productCode = await clientRepository.findByCode(productInfo.orderClientCode);
-    // if (!productCode) {
-    //   throw new NotFoundError("clientCode", "この発注先コードは存在していません");
-    // }
+    const productCode = await clientRepository.findByCode(productInfo.orderClientCode);
+    if (!productCode) {
+      throw new NotFoundError("clientCode", "この発注先コードは存在していません");
+    }
 
     //現在日時を取得
     const now = new Date().toISOString();
@@ -95,13 +96,11 @@ class ProductService {
       throw new ValidationError(errors.field, errors.message);
     }
 
-    /*
     //発注先コードの存在チェック
     const orderClientCode = await clientRepository.findByCode(productInfo.orderClientCode);
     if (!orderClientCode) {
       throw new NotFoundError("clientCode", "この発注先コードは存在していません");
     }
-    */
 
     //現在日時を取得
     const now = new Date().toISOString();

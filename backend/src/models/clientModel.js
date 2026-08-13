@@ -66,7 +66,7 @@ ClientModel.init(
     sequelize,
     tableName: "clients",
     timestamps: false,
-  }
+  },
 );
 
 export default ClientModel;

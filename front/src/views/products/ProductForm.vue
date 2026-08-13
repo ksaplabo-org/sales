@@ -136,7 +136,7 @@ import { computed,  ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 import * as productApi from "@/api/productApi.js";
-//import * as clientApi from "@/api/clientApi.js";
+import * as clientApi from "@/api/clientApi.js";
 import messages from "@/constants/messages.js";
 import Loading from "@/components/Loading.vue";
 import * as Auth from "@/utils/auth.js";
@@ -171,26 +171,26 @@ const showFailedToastMs = ref(0);
 const loginInfo = Auth.getLoginInfo();
 
 //取引先一覧APIの呼び出しが可能になれば以下の宣言が必要
-// const orderClientOptions =ref([]);
+const orderClientOptions =ref([]);
 
 // 取引先コードの一覧検索結果(本来は取引先一覧APIでorderKbnを"2"(発注)にして取得するが、今回は固定値で対応)
-const clientList = ref([
-  { clientcode: "a0000001", clientName: "あああ", orderKbn: "1" },
-  { clientcode: "a0000002", clientName: "キッコーマン", orderKbn: "2" },
-  { clientcode: "a0000003", clientName: "富士通", orderKbn: "2" },
-  { clientcode: "a0000004", clientName: "NAMUCO", orderKbn: "2" },
-]);
+// const clientList = ref([
+//   { clientcode: "a0000001", clientName: "あああ", orderKbn: "1" },
+//   { clientcode: "a0000002", clientName: "キッコーマン", orderKbn: "2" },
+//   { clientcode: "a0000003", clientName: "富士通", orderKbn: "2" },
+//   { clientcode: "a0000004", clientName: "NAMUCO", orderKbn: "2" },
+// ]);
 
 // 発注先コードの選択肢作成(取引先一覧APIの呼び出しが可能になれば不要)
-const orderClientOptions = computed(() =>
-  clientList.value
-    .filter((client) => client.orderKbn === "2")
-    .sort((a, b) => a.clientcode.localeCompare(b.clientcode))
-    .map((client) => ({
-      value: client.clientcode,
-      text: `${client.clientcode} : ${client.clientName}`,
-    }))
-);
+// const orderClientOptions = computed(() =>
+//   clientList.value
+//     .filter((client) => client.orderKbn === "2")
+//     .sort((a, b) => a.clientcode.localeCompare(b.clientcode))
+//     .map((client) => ({
+//       value: client.clientcode,
+//       text: `${client.clientcode} : ${client.clientName}`,
+//     }))
+// );
 
 /**
  * 初期表示時処理
@@ -225,18 +225,19 @@ onMounted(async () => {
   }
 
   //取引先情報一覧取得(取引先一覧APIの呼び出しが可能になればこの処理を実施)
-  /*try {
-    orderClientOptions.value = await clientApi
-      .getClients({ orderKbn: "2" })
-      .data.sort((a, b) => a.clientcode.localeCompare(b.clientcode))
+  try {
+    const clients = await clientApi.getClients({ orderKbn: "2" });
+
+    orderClientOptions.value = clients
+      .sort((a, b) => a.clientCode.localeCompare(b.clientCode))
       .map((client) => ({
-        value: client.clientcode,
-        text: `${client.clientcode} : ${client.clientName}`,
+        value: client.clientCode,
+        text: `${client.clientCode} : ${client.clientName}`,
       }));
   } catch (e) {
     console.log(e);
     openFailedToast(messages.MSGE001);
-  }*/
+  }
  loading.value = false;
 });
 

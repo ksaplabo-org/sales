@@ -57,6 +57,21 @@ const routes = [
         path: "master/clients/:clientCode/edit",
         name: "clientEdit",
       },
+      {
+        path: "master/products",
+        name: "productMaster",
+        component: () => import("@/views/products/ProductMaster.vue"),
+      },
+      {
+        path: "master/products/create",
+        name: "productCreate",
+        component: () => import("@/views/products/ProductForm.vue"),
+      },
+      {
+        path: "master/products/:productCode/edit",
+        name: "productEdit",
+        component: () => import("@/views/products/ProductForm.vue"),
+      },
     ],
   },
 ];
