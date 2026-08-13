@@ -242,7 +242,7 @@ onMounted(async () => {
   }
 
   // 一覧検索
-  await searchProducts(condition.value);
+  await searchProducts();
 });
 
 /**
