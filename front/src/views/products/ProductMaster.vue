@@ -41,7 +41,7 @@
             <BFormSelect
               v-model="condition.orderKbn"
               :options="[
-                { value: '', text: 'すべて表示' },
+                { value: '', text: '全て表示' },
                 { value: '1', text: '受注のみ表示' },
                 { value: '2', text: '発注のみ表示' },
               ]"

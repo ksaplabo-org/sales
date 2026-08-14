@@ -45,9 +45,9 @@ class ProductService {
     //受発注区分が発注のみチェック
     if (productInfo.orderKbn == "2") {
       //発注先コード存在チェック
-      const productCode = await clientRepository.findByCode(productInfo.orderClientCode);
-      if (!productCode) {
-        throw new NotFoundError("clientCode", "この発注先コードは存在していません");
+      const orderClientCode = await clientRepository.findByCode(productInfo.orderClientCode);
+      if (!orderClientCode) {
+        throw new NotFoundError("orderClientCode", "この発注先コードは存在していません");
       }
     }
 
@@ -104,7 +104,7 @@ class ProductService {
       //発注先コードの存在チェック
       const orderClientCode = await clientRepository.findByCode(productInfo.orderClientCode);
       if (!orderClientCode) {
-        throw new NotFoundError("clientCode", "この発注先コードは存在していません");
+        throw new NotFoundError("orderClientCode", "この発注先コードは存在していません");
       }
     }
 
