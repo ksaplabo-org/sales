@@ -36,14 +36,14 @@ class ProductService {
    * @param {*} productCode 商品コード
    */
   async delete(productCode) {
+    // 削除データの存在チェック
     const product = await productRepository.findByCode(productCode);
     if (!product) {
-      // 削除データの存在チェック
       throw new NotFoundError("productCode", "この商品コードは存在していません");
     }
     //削除データの外部参照チェック
-    const products = await orderRepository.findAll({ productCode: productCode });
-    if (products.length != 0) {
+    const orders = await orderRepository.findAll({ productCode: productCode });
+    if (orders.length != 0) {
       throw new ReferenceConstraintError("productCode", "この商品コードは受発注情報で使用されているため削除できません");
     }
     await productRepository.delete(productCode);

@@ -56,12 +56,7 @@
                 type="number"
                 placeholder="下限"
                 :model-value="condition.productPriceLow"
-                @input="
-                  condition.productPriceLow =
-                    $event.target.value.replace(/[^0-9]/g, '') === '0'
-                      ? ''
-                      : $event.target.value.replace(/[^0-9]/g, '').replace(/^0+/, '')
-                "
+                @input="condition.productPriceLow = $event.target.value.replace(/[^0-9]/g, '').replace(/^0+(\d)/, '$1')"
               />
               <span class="mx-2">～</span>
               <BFormInput
@@ -107,10 +102,10 @@
         {{ row.item.orderClientCode || "-" }}
       </template>
       <template #cell(orderKbn)="row">
-        {{ row.item.orderKbn === "1" ? "受注" : row.item.orderKbn === "2" ? "発注" : "-" }}
+        {{ row.item.orderKbn === "1" ? "受注" : "発注" }}
       </template>
       <template #cell(productPrice)="row">
-        {{ Number(row.item.productPrice).toLocaleString() }}
+        {{ Number(row.item.productPrice).toLocaleString('ja-JP') }}
       </template>
 
       <!-- 編集・削除ボタン -->
