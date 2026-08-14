@@ -28,7 +28,7 @@ export async function getProductByProductCode(productCode) {
  * @param {*} productInfo 商品情報
  */
 export async function createProduct(productInfo) {
-  await apiClient.post("/products/", productInfo);
+  await apiClient.post("/products", productInfo);
 }
 
 /**

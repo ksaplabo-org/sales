@@ -42,10 +42,13 @@ class ProductService {
       throw new UniqueConstraintError("productCode", "この商品コードは既に登録されているため登録できません");
     }
 
-    //発注先コード存在チェック
-    const productCode = await clientRepository.findByCode(productInfo.orderClientCode);
-    if (!productCode) {
-      throw new NotFoundError("clientCode", "この発注先コードは存在していません");
+    //受発注区分が発注のみチェック
+    if (productInfo.orderKbn == "2") {
+      //発注先コード存在チェック
+      const productCode = await clientRepository.findByCode(productInfo.orderClientCode);
+      if (!productCode) {
+        throw new NotFoundError("clientCode", "この発注先コードは存在していません");
+      }
     }
 
     //現在日時を取得
@@ -96,10 +99,13 @@ class ProductService {
       throw new ValidationError(errors.field, errors.message);
     }
 
-    //発注先コードの存在チェック
-    const orderClientCode = await clientRepository.findByCode(productInfo.orderClientCode);
-    if (!orderClientCode) {
-      throw new NotFoundError("clientCode", "この発注先コードは存在していません");
+    //受発注区分が発注の場合のみチェック
+    if (product.orderKbn == "2") {
+      //発注先コードの存在チェック
+      const orderClientCode = await clientRepository.findByCode(productInfo.orderClientCode);
+      if (!orderClientCode) {
+        throw new NotFoundError("clientCode", "この発注先コードは存在していません");
+      }
     }
 
     //現在日時を取得
