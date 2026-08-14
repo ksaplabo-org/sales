@@ -1,7 +1,7 @@
 import { col, fn, literal, Op } from "sequelize";
 import orderModel from "../models/orderModel.js";
 
-class orderRepository {
+class OrderRepository {
   /**
    * 受発注情報一覧取得
    *
@@ -69,4 +69,4 @@ class orderRepository {
   }
 }
 
-export default new orderRepository();
+export default new OrderRepository();
