@@ -152,7 +152,7 @@
 
       <!-- 合計金額 -->
       <template #cell(amountTaxIncluded)="row">
-        {{ row.item.amountTaxIncluded?.toLocaleString() }}
+        {{ row.item.amountTaxIncluded?.toLocaleString("ja-JP") }}
       </template>
 
       <!-- 編集・削除ボタン -->
@@ -276,11 +276,11 @@ onMounted(async () => {
     openSuccessToast(state.message);
 
     // 再表示の防止のためstateを初期化
-    history.replaceState({}, "");
+    history.replaceStatement({}, "");
   }
 
   // 一覧検索
-  await searchOrders(condition.value);
+  await searchOrders();
 });
 
 /**

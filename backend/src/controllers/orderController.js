@@ -26,7 +26,7 @@ class OrderController {
       const orders = await orderService.findAll(condition);
       res.json(orders);
     } catch (e) {
-      console.error(e);
+      console.log(e);
       res.status(500).send();
     }
   }
