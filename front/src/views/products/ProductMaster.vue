@@ -63,7 +63,7 @@
                 placeholder="上限"
                 type="number"
                 :model-value="condition.productPriceHigh"
-                @input="condition.productPriceHigh = $event.target.value.replace(/[^0-9]/g, '').replace(/^0+/, '')"
+                @input="condition.productPriceHigh = $event.target.value.replace(/[^0-9]/g, '').replace(/^0+(\d)/, '$1')"
               />
             </div>
           </BFormGroup>
