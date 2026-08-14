@@ -55,10 +55,16 @@ const menus = ref([
         roles: ["2"],
       },
       {
+        title: "取引先マスタ",
+        icon: "fa-money-bill-wave",
+        to: "/master/clients",
+        roles: ["1","2"],
+      },
+      {
         title: "商品マスタ",
-        icon: "fa-user",
+        icon: "fa-solid fa-barcode",
         to: "/master/products",
-        roles: ["2"],
+        roles: ["1","2"],
       },
     ],
   },
