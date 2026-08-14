@@ -2,7 +2,7 @@ import UniqueConstraintError from "../errors/UniqueConstraintError.js";
 import NotFoundError from "../errors/NotFoundError.js";
 import ReferenceConstraintError from "../errors/ReferenceConstraintError.js";
 import clientRepository from "../repositories/clientRepository.js";
-import orderRepository from "../repositories/orderRepository.js"
+import orderRepository from "../repositories/orderRepository.js";
 
 class ClientService {
   /**
@@ -85,4 +85,5 @@ class ClientService {
     await clientRepository.delete(clientCode);
   }
 }
+
 export default new ClientService();

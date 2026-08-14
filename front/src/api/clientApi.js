@@ -28,7 +28,7 @@ export async function getClientByClientCode(clientCode) {
  * @param {*} clientInfo 取引先情報
  */
 export async function createClient(clientInfo) {
-  await apiClient.post("/clients/", clientInfo);
+  await apiClient.post("/clients", clientInfo);
 }
 
 /**
