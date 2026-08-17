@@ -20,14 +20,17 @@ class ProductRepository {
     if (condition.productName) {
       where.productName = { [Op.like]: "%" + condition.productName + "%" };
     }
-    if (condition.productPriceLow || condition.productPriceHigh) {
+    if (
+      (condition.productPriceLow != null && condition.productPriceLow !== "") ||
+      (condition.productPriceHigh != null && condition.productPriceHigh !== "")
+    ) {
       where.productPrice = {};
 
-      if (condition.productPriceLow) {
+      if (condition.productPriceLow != null && condition.productPriceLow !== "") {
         where.productPrice[Op.gte] = condition.productPriceLow;
       }
 
-      if (condition.productPriceHigh) {
+      if (condition.productPriceHigh != null && condition.productPriceHigh !== "") {
         where.productPrice[Op.lte] = condition.productPriceHigh;
       }
     }

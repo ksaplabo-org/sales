@@ -102,7 +102,7 @@
         {{ row.item.orderClientCode || "-" }}
       </template>
       <template #cell(orderKbn)="row">
-        {{ row.item.orderKbn === "1" ? "受注" : "発注" }}
+        {{ showOrderKbnOptions.find((orderKbn) => orderKbn.value === row.value)?.text }}
       </template>
       <template #cell(productPrice)="row">
         {{ Number(row.item.productPrice).toLocaleString('ja-JP') }}
@@ -178,6 +178,12 @@ const orderKbnOptions = [
   { value: "", text: "全て表示" },
   { value: "1", text: "受注のみ表示" },
   { value: "2", text: "発注のみ表示" },
+];
+
+// 受発注区分表示の一覧
+const showOrderKbnOptions = [
+  { value: "1", text: "受注" },
+  { value: "2", text: "発注" },
 ];
 
 // 検索結果
