@@ -52,10 +52,12 @@ const routes = [
       {
         path: "master/clients/create",
         name: "clientCreate",
+        component: () => import("@/views/clients/ClientForm.vue"),
       },
       {
         path: "master/clients/:clientCode/edit",
         name: "clientEdit",
+        component: () => import("@/views/clients/ClientForm.vue"),
       },
     ],
   },
