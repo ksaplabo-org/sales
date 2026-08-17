@@ -56,16 +56,13 @@
           <BFormRadioGroup
             v-if="!isEdit"
             v-model="form.orderKbn"
-            :options="[
-              { value: '1', text: '受注' },
-              { value: '2', text: '発注' }
-            ]"
+            :options="orderKbnOptions"
             inline
             :required
             @change="handleOrderKbnChange"
           />
           <span v-else>
-            {{ form.orderKbn === "1" ? "受注" : "発注" }}
+            {{ orderKbnOptions.find(option => option.value === form.orderKbn)?.text }}
           </span>
         </BFormGroup>
       </BRow>
@@ -76,10 +73,16 @@
           label-for="orderClientCode"
           label-cols="3"
         >
-          <div v-if="form.orderKbn === '1' && isEdit">-</div>
+          <!--
+            ・編集時の受注は発注先コードを保持しないため「-」を表示
+            ・新規登録時の受注は発注先コード欄を非活性表示
+            ・発注の場合は発注先候補が存在する場合のみ選択可能
+          -->
+          <div v-if="form.orderKbn === '1' && isEdit">-
+          </div>
           <BFormSelect
             v-else-if="
-              isEdit || form.orderKbn !== '2' || orderClientOptions.length > 0
+              isEdit || form.orderKbn === '1' || orderClientOptions.length > 0
             "
             v-model="form.orderClientCode"
             :options="orderClientOptions"
@@ -90,6 +93,7 @@
           </div>
         </BFormGroup>
       </BRow>
+
       <BRow class="mb-3">
         <BFormGroup label="商品名" label-for="productName" label-cols="3">
           <BFormInput
@@ -170,27 +174,12 @@ const showFailedToastMs = ref(0);
 // ログイン情報
 const loginInfo = Auth.getLoginInfo();
 
-//取引先一覧APIの呼び出しが可能になれば以下の宣言が必要
+const orderKbnOptions = [
+  { value: "1", text: "受注" },
+  { value: "2", text: "発注" }
+];
+
 const orderClientOptions =ref([]);
-
-// 取引先コードの一覧検索結果(本来は取引先一覧APIでorderKbnを"2"(発注)にして取得するが、今回は固定値で対応)
-// const clientList = ref([
-//   { clientcode: "a0000001", clientName: "あああ", orderKbn: "1" },
-//   { clientcode: "a0000002", clientName: "キッコーマン", orderKbn: "2" },
-//   { clientcode: "a0000003", clientName: "富士通", orderKbn: "2" },
-//   { clientcode: "a0000004", clientName: "NAMUCO", orderKbn: "2" },
-// ]);
-
-// 発注先コードの選択肢作成(取引先一覧APIの呼び出しが可能になれば不要)
-// const orderClientOptions = computed(() =>
-//   clientList.value
-//     .filter((client) => client.orderKbn === "2")
-//     .sort((a, b) => a.clientcode.localeCompare(b.clientcode))
-//     .map((client) => ({
-//       value: client.clientcode,
-//       text: `${client.clientcode} : ${client.clientName}`,
-//     }))
-// );
 
 /**
  * 初期表示時処理
@@ -223,7 +212,7 @@ onMounted(async () => {
     }
   }
 
-  //取引先情報一覧取得(取引先一覧APIの呼び出しが可能になればこの処理を実施)
+  //取引先情報一覧取得
   try {
     const clients = await clientApi.getClients({ orderKbn: "2" });
 
