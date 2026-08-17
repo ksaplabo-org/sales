@@ -256,17 +256,17 @@ class ClientController {
     }
 
     // 住所1
-    if (data.address1.length > 20 && data.address1) {
+    if (data.address1 && data.address1.length > 20) {
       errors.push({ field: "address1", message: "住所1は20文字以内で設定してください" });
     }
 
     // 住所2
-    if (data.address2.length > 20 && data.address2) {
+    if (data.address2 && data.address2.length > 20) {
       errors.push({ field: "address2", message: "住所2は20文字以内で設定してください" });
     }
 
     // 電話番号
-    if (!/^\d{3}-\d{4}-\d{4}$/.test(data.telNumber) && data.telNumber) {
+    if (!/^\d{3}-\d{4}-\d{4}$/.test(data.telNumber) && data.telNumber > 0) {
       errors.push({ field: "telNumber", message: "電話番号はxxx-xxxx-xxxxで設定してください" });
     }
     return errors;
