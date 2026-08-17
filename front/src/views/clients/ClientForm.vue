@@ -60,10 +60,7 @@
         <BFormGroup label="受発注区分" label-for="orderKbn" label-cols="3">
           <BFormSelect
             v-model="form.orderKbn"
-            :options="[
-              { value: '1', text: '受注' },
-              { value: '2', text: '発注' },
-            ]"
+            :options="orderKbnOptions"
             required
             v-if="!isEdit"
           />
@@ -236,7 +233,7 @@ const formatTelNumber = (telNumber) => {
 /**
  * 登録処理
  */
-const clientCreateUpdate = async () => {
+const saveClientInfo = async () => {
   loading.value = true;
   try {
     // 登録データを作成

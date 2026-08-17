@@ -60,6 +60,7 @@ class ClientService {
     if (!client) {
       throw new NotFoundError("clientCode", "この取引先情報は存在しません");
     }
+    
     const now = new Date().toISOString();
     clientInfo.updatedAt = now;
 

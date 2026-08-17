@@ -32,7 +32,7 @@ export async function createClient(clientInfo) {
 }
 
 /**
- * 取引先情報更新
+ * 取引先情報更新API呼び出し
  *
  * @param {*} clientInfo 取引先情報
  */
