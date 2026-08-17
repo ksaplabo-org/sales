@@ -37,7 +37,7 @@
               maxlength="7"
               type="text"
               v-model="condition.productCode"
-              @update:modelValue="condition.productCode = $event.replace(/[^A-Za-z0-9]/g, '').slice(0, 7)"
+              :formatter="formatHalfWidthAlphaNumeric"
             />
           </BFormGroup>
         </BCol>
@@ -52,19 +52,9 @@
         <BCol md="4">
           <BFormGroup label="単価">
             <div class="d-flex align-items-center">
-              <BFormInput
-                type="number"
-                placeholder="下限"
-                :model-value="condition.productPriceLow"
-                @input="condition.productPriceLow = $event.target.value.replace(/[^0-9]/g, '').replace(/^0+(\d)/, '$1')"
-              />
+              <BFormInput placeholder="下限" v-model="condition.clientCode" :formatter="formatHalfWidthNumeric" />
               <span class="mx-2">～</span>
-              <BFormInput
-                placeholder="上限"
-                type="number"
-                :model-value="condition.productPriceHigh"
-                @input="condition.productPriceHigh = $event.target.value.replace(/[^0-9]/g, '').replace(/^0+(\d)/, '$1')"
-              />
+              <BFormInput placeholder="上限" v-model="condition.clientCode" :formatter="formatHalfWidthNumeric" />
             </div>
           </BFormGroup>
         </BCol>
@@ -105,7 +95,7 @@
         {{ showOrderKbnOptions.find((orderKbn) => orderKbn.value === row.value)?.text }}
       </template>
       <template #cell(productPrice)="row">
-        {{ Number(row.item.productPrice).toLocaleString('ja-JP') }}
+        {{ Number(row.item.productPrice).toLocaleString("ja-JP") }}
       </template>
 
       <!-- 編集・削除ボタン -->
@@ -319,5 +309,24 @@ const deleteProduct = async () => {
   } finally {
     loading.value = false;
   }
+};
+
+/**
+ * 半角英数のみに置換する
+ *
+ * @param value 検査値
+ */
+const formatHalfWidthAlphaNumeric = (value) => {
+  return value.replace(/[^A-Za-z0-9]/g, "");
+};
+
+/**
+ * 半角数字のみに置換する
+ *
+ * @param value 検査値
+ */
+const formatHalfWidthNumeric = (value) => {
+  const result = value.replace(/[^0-9]/g, "");
+  return result === "" ? "" : Number(result);
 };
 </script>
