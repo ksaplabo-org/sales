@@ -110,8 +110,8 @@
       <div class="d-flex justify-content-between align-items-center">
         <strong>検索結果 ( {{ totalCount }} 件 )</strong>
 
-        <div class="d-flex gap-2">
-          <BButton v-if="loginInfo.role == 1" class="btn-receive" size="sm" :to="{ name: 'orderReceiveCreate' }">
+        <div class="d-flex gap-2" v-if="loginInfo.role == 1">
+          <BButton class="btn-receive" size="sm" :to="{ name: 'orderReceiveCreate' }">
             <div class="d-flex align-items-center">
               <div class="d-inline-flex flex-column align-items-center me-1 mb-1">
                 <i class="fas fa-arrow-down fa-xs" aria-hidden="true"></i>
@@ -121,7 +121,7 @@
             </div>
           </BButton>
 
-          <BButton v-if="loginInfo.role == 1" class="btn-sale" size="sm" :to="{ name: 'orderSaleCreate' }">
+          <BButton class="btn-sale" size="sm" :to="{ name: 'orderSaleCreate' }">
             <div class="d-flex align-items-center">
               <div class="d-inline-flex flex-column align-items-center me-1 mb-1">
                 <i class="fas fa-arrow-up fa-xs" aria-hidden="true"></i>
@@ -312,7 +312,10 @@ const formatHalfWidthAlphaNumeric = (value) => {
  * @param value 検査値
  */
 const formatHalfWidthNumeric = (value) => {
-  return value.replace(/[^0-9]/g, "");
+  let result = value.replace(/[^0-9]/g, "");
+  result = result.replace(/^0+$/, "0");
+  result = result.replace(/^0+([1-9]\d*)$/, "$1");
+  return result;
 };
 
 /**

@@ -3,7 +3,7 @@ import { jest } from "@jest/globals";
 import UniqueConstraintError from "../../src/errors/UniqueConstraintError.js";
 import NotFoundError from "../../src/errors/NotFoundError.js";
 import userService from "../../src/services/UserService.js";
-import userRepository from "../../src/repositories/UserRepository.js";
+import userRepository from "../../src/repositories/userRepository.js";
 
 describe("UserService", () => {
   // 全テストケース実行後に行う処理

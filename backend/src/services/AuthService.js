@@ -1,4 +1,4 @@
-import userRepository from "../repositories/UserRepository.js";
+import userRepository from "../repositories/userRepository.js";
 
 class AuthService {
   async login(userId, password) {

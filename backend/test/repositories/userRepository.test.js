@@ -2,9 +2,9 @@ import { jest } from "@jest/globals";
 import { col, fn, literal, Op } from "sequelize";
 
 import UserModel from "../../src/models/UserModel.js";
-import userRepository from "../../src/repositories/UserRepository.js";
+import userRepository from "../../src/repositories/userRepository.js";
 
-describe("UserRepository", () => {
+describe("userRepository", () => {
   // 全テストケース実行後に行う処理
   afterEach(() => {
     // Mockをすべて初期化
