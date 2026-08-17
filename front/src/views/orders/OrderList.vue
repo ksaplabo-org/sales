@@ -312,10 +312,8 @@ const formatHalfWidthAlphaNumeric = (value) => {
  * @param value 検査値
  */
 const formatHalfWidthNumeric = (value) => {
-  let result = value.replace(/[^0-9]/g, "");
-  result = result.replace(/^0+$/, "0");
-  result = result.replace(/^0+([1-9]\d*)$/, "$1");
-  return result;
+  const result = value.replace(/[^0-9]/g, "");
+  return result === "" ? "" : Number(result);
 };
 
 /**
