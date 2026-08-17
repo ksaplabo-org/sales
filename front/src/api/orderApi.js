@@ -1,0 +1,21 @@
+import apiClient from "./axios";
+
+/**
+ * 受発注情報一覧取得API呼び出し
+ *
+ * @param {*} condition 検索条件
+ * @returns 受発注情報一覧
+ */
+export async function getOrders(condition) {
+  const response = await apiClient.get("/orders", { params: condition });
+  return response.data;
+}
+
+/**
+ * 受発注情報削除
+ *
+ * @param {*} orderNo 受発注番号
+ */
+export async function deleteOrder(orderNo) {
+  await apiClient.delete(`/orders/${orderNo}`);
+}
