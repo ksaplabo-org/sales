@@ -116,7 +116,7 @@
             type="number"
             min="1"
             v-model="form.productPrice"
-            :state="form.productPrice > 0 && form.productPrice < 2147483648"
+            :state="form.productPrice > 0"
             required
           />
         </BFormGroup>
