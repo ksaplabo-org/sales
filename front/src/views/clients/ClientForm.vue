@@ -24,7 +24,7 @@
       <strong>登録情報</strong>
     </template>
 
-    <BForm @submit.prevent="clientCreateUpdate">
+    <BForm @submit.prevent="saveClientInfo">
       <BRow class="mb-3">
         <BFormGroup label="取引先コード" label-for="clientCode" label-cols="3">
           <div v-if="!isEdit">
