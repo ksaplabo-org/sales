@@ -249,10 +249,12 @@ class ClientController {
     }
 
     // 郵便番号
-    if (data.postCode.length !== 7 && data.postCode.length > 0) {
-      errors.push({ field: "postCode", message: "郵便番号は7桁で設定してください" });
-    } else if (!/^[0-9]+$/.test(data.postCode) && data.postCode.length > 0) {
-      errors.push({ field: "postCode", message: "郵便番号は半角数字で設定してください" });
+    if (data.postCode) {
+      if (data.postCode.length !== 7) {
+        errors.push({ field: "postCode", message: "郵便番号は7桁で設定してください" });
+      } else if (!/^[0-9]+$/.test(data.postCode)) {
+        errors.push({ field: "postCode", message: "郵便番号は半角数字で設定してください" });
+      }
     }
 
     // 住所1
@@ -266,7 +268,7 @@ class ClientController {
     }
 
     // 電話番号
-    if (!/^\d{3}-\d{4}-\d{4}$/.test(data.telNumber) && data.telNumber > 0) {
+    if (!/^\d{3}-\d{4}-\d{4}$/.test(data.telNumber)) {
       errors.push({ field: "telNumber", message: "電話番号はxxx-xxxx-xxxxで設定してください" });
     }
     return errors;
