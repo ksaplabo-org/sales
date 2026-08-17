@@ -20,17 +20,15 @@ class ProductRepository {
     if (condition.productName) {
       where.productName = { [Op.like]: "%" + condition.productName + "%" };
     }
-    if (
-      (condition.productPriceLow != null && condition.productPriceLow !== "") ||
-      (condition.productPriceHigh != null && condition.productPriceHigh !== "")
-    ) {
+    const hasProductPriceLow = condition.productPriceLow != null && condition.productPriceLow !== "";
+    const hasProductPriceHigh = condition.productPriceHigh != null && condition.productPriceHigh !== "";
+    if (hasProductPriceLow || hasProductPriceHigh) {
       where.productPrice = {};
-
-      if (condition.productPriceLow != null && condition.productPriceLow !== "") {
+      if (hasProductPriceLow) {
         where.productPrice[Op.gte] = condition.productPriceLow;
       }
 
-      if (condition.productPriceHigh != null && condition.productPriceHigh !== "") {
+      if (hasProductPriceHigh) {
         where.productPrice[Op.lte] = condition.productPriceHigh;
       }
     }
