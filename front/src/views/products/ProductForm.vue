@@ -7,7 +7,7 @@
         :items="[
           { text: 'トップページ', to: '/' },
           { text: '商品マスタ', to: { name: 'productMaster' } },
-          { text: '商品登録', active: true },
+          { text: '商品登録', active: true }
         ]"
       />
     </div>
@@ -58,7 +58,7 @@
             v-model="form.orderKbn"
             :options="[
               { value: '1', text: '受注' },
-              { value: '2', text: '発注' },
+              { value: '2', text: '発注' }
             ]"
             inline
             :required
@@ -151,7 +151,7 @@ const form = ref({
   orderKbn: "1",
   orderClientCode: "",
   productName: "",
-  productPrice: null,
+  productPrice: null
 });
 
 // 編集画面かどうか
@@ -206,7 +206,7 @@ onMounted(async () => {
     // 商品情報詳細取得
     try {
       const productInfo = await productApi.getProductByProductCode(
-        route.params.productCode,
+        route.params.productCode
       );
       Object.keys(form.value).forEach((key) => {
         if (key in productInfo) {
@@ -215,7 +215,7 @@ onMounted(async () => {
       });
     } catch (e) {
       console.log(e);
-      openFailedToast(messages.MSGE001);
+      showFailedToast(messages.MSGE001);
       loading.value = false;
       return;
     } finally {
@@ -231,11 +231,11 @@ onMounted(async () => {
       .sort((a, b) => a.clientCode.localeCompare(b.clientCode))
       .map((client) => ({
         value: client.clientCode,
-        text: `${client.clientCode} : ${client.clientName}`,
+        text: `${client.clientCode} : ${client.clientName}`
       }));
   } catch (e) {
     console.log(e);
-    openFailedToast(messages.MSGE001);
+    showFailedToast(messages.MSGE001);
   }
  loading.value = false;
 });
@@ -259,10 +259,10 @@ const save = async () => {
     // マスタ画面に遷移
     router.push({
       name: "productMaster",
-      state: { message: messages.MSGI003, result: true },
+      state: { message: messages.MSGI003, result: true }
     });
   } catch (e) {
-    openFailedToast(messages.MSGE004);
+    showFailedToast(messages.MSGE004);
   } finally {
     loading.value = false;
   }
@@ -273,7 +273,7 @@ const save = async () => {
  *
  * @param message メッセージ
  */
-const openFailedToast = (message) => {
+const showFailedToast = (message) => {
   failedToastText.value = message;
   showFailedToastMs.value = TOAST_MS;
 };
