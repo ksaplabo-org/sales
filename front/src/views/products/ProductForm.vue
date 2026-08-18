@@ -117,6 +117,7 @@
             min="1"
             v-model="form.productPrice"
             :state="form.productPrice > 0"
+            :formatter="formatHalfWidthNumeric"
             required
           />
         </BFormGroup>
@@ -274,6 +275,16 @@ const showFailedToast = (message) => {
  */
 const formatHalfWidthAlphaNumeric = (value) => {
   return value.replace(/[^A-Za-z0-9]/g, "");
+};
+
+/**
+ * 半角数字のみに置換する
+ *
+ * @param value 検査値
+ */
+const formatHalfWidthNumeric = (value) => {
+  const result = value.replace(/[^0-9]/g, "");
+  return result === "" ? "" : Number(result);
 };
 
 /**
