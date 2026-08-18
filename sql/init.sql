@@ -78,7 +78,7 @@ CREATE TABLE IF NOT EXISTS clients
 )
 CHARACTER SET utf8mb4
 COLLATE utf8mb4_0900_ai_ci;
- 
+
 #------------------------------------------
 # 取引先TBL 初期データ登録
 #------------------------------------------
@@ -114,7 +114,7 @@ CREATE TABLE IF NOT EXISTS orders
 )
 CHARACTER SET utf8mb4
 COLLATE utf8mb4_0900_ai_ci;
- 
+
 #------------------------------------------
 # 受発注情報TBL 初期データ登録
 #------------------------------------------
