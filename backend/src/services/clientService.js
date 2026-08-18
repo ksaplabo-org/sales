@@ -80,7 +80,7 @@ class ClientService {
     }
     // 削除データの外部参照チェック
     const clients = await orderRepository.findAll({ clientCode: clientCode });
-    if (clients) {
+    if (clients.length > 0) {
       throw new ReferenceConstraintError("clientCode", "取引先コードが受発注情報で使用されているため削除できません");
     }
     await clientRepository.delete(clientCode);
