@@ -62,7 +62,8 @@ class ProductController {
         // パラメータエラー
         return res.status(400).json({ errors: errors });
       }
-      //商品情報詳細取得
+
+      // 商品情報詳細取得
       const product = await productService.findByCode(req.params.productCode);
       return res.json(product);
     } catch (e) {

@@ -23,6 +23,24 @@ export async function getClientByClientCode(clientCode) {
 }
 
 /**
+ * 取引先情報登録API呼び出し
+ *
+ * @param {*} clientInfo 取引先情報
+ */
+export async function createClient(clientInfo) {
+  await apiClient.post("/clients", clientInfo);
+}
+
+/**
+ * 取引先情報更新API呼び出し
+ *
+ * @param {*} clientInfo 取引先情報
+ */
+export async function updateClient(clientInfo) {
+  await apiClient.put(`/clients/${clientInfo.clientCode}`, clientInfo);
+}
+
+/**
  * 取引先情報削除API呼び出し
  *
  * @param {*} clientCode 取引先コード

@@ -53,6 +53,8 @@
           <BFormGroup label="商品コード">
             <BFormInput
               placeholder="商品コードを入力"
+              maxlength="7"
+              type="text"
               v-model="condition.productCode"
               :formatter="formatHalfWidthAlphaNumeric"
             />
@@ -61,10 +63,7 @@
 
         <BCol md="4">
           <BFormGroup label="商品名">
-            <BFormInput
-              placeholder="商品名を入力"
-              v-model="condition.productName"
-            />
+            <BFormInput placeholder="商品名を入力" v-model="condition.productName" maxlength="20" />
           </BFormGroup>
         </BCol>
       </BRow>
@@ -72,15 +71,9 @@
         <BCol md="4">
           <BFormGroup label="単価">
             <div class="d-flex align-items-center">
-              <BFormInput
-                placeholder="下限"
-                v-model="condition.productPriceLow"
-              />
+              <BFormInput placeholder="下限" v-model="condition.productPriceLow" :formatter="formatHalfWidthNumeric" />
               <span class="mx-2">～</span>
-              <BFormInput
-                placeholder="上限"
-                v-model="condition.productPriceHigh"
-              />
+              <BFormInput placeholder="上限" v-model="condition.productPriceHigh" :formatter="formatHalfWidthNumeric" />
             </div>
           </BFormGroup>
         </BCol>
@@ -130,16 +123,10 @@
         {{ row.item.orderClientCode || "-" }}
       </template>
       <template #cell(orderKbn)="row">
-        {{
-          row.item.orderKbn === "1"
-            ? "受注"
-            : row.item.orderKbn === "2"
-              ? "発注"
-              : "-"
-        }}
+        {{ showOrderKbnOptions.find((orderKbn) => orderKbn.value === row.value)?.text }}
       </template>
       <template #cell(productPrice)="row">
-        {{ Number(row.item.productPrice).toLocaleString() }}
+        {{ Number(row.item.productPrice).toLocaleString("ja-JP") }}
       </template>
 
       <!-- 編集・削除ボタン -->
@@ -208,9 +195,16 @@ import { formatMessage } from "@/utils/messageUtil.js";
 const router = useRouter();
 
 // 権限の一覧
-const roleOptions = [
-  { value: "1", text: "一般" },
-  { value: "2", text: "管理者" },
+const orderKbnOptions = [
+  { value: "", text: "全て表示" },
+  { value: "1", text: "受注のみ表示" },
+  { value: "2", text: "発注のみ表示" },
+];
+
+// 受発注区分表示の一覧
+const showOrderKbnOptions = [
+  { value: "1", text: "受注" },
+  { value: "2", text: "発注" },
 ];
 
 // 検索結果
@@ -232,9 +226,8 @@ const condition = ref({
   productCode: "",
   productName: "",
   orderKbn: "",
-  orderClientCode: "",
-  productPriceLow: "",
-  productPriceHigh: "",
+  productPriceLow: null,
+  productPriceHigh: null,
 });
 
 // 読み込み中の表示制御
@@ -267,11 +260,11 @@ onMounted(async () => {
     openSuccessToast(state.message);
 
     // 再表示の防止のためstateを初期化
-    history.replaceState({}, "");
+    history.replaceStatement({}, "");
   }
 
   // 一覧検索
-  await searchProducts(condition.value);
+  await searchProducts();
 });
 
 /**
@@ -282,9 +275,8 @@ const clearCondition = () => {
     productCode: "",
     productName: "",
     orderKbn: "",
-    orderClientCode: "",
-    productPriceLow: "",
-    productPriceHigh: "",
+    productPriceLow: null,
+    productPriceHigh: null,
   };
 };
 
@@ -340,8 +332,8 @@ const deleteProduct = async () => {
   loading.value = true;
   try {
     await productApi.deleteProduct(targetRow.value.productCode);
-    await searchproducts();
     openSuccessToast(messages.MSGI006);
+    await searchProducts();
   } catch (e) {
     console.log(e);
     openFailedToast(messages.MSGE007);
@@ -351,11 +343,21 @@ const deleteProduct = async () => {
 };
 
 /**
- * 半角英数のみに置換
+ * 半角英数のみに置換する
  *
  * @param value 検査値
  */
 const formatHalfWidthAlphaNumeric = (value) => {
   return value.replace(/[^A-Za-z0-9]/g, "");
+};
+
+/**
+ * 半角数字のみに置換する
+ *
+ * @param value 検査値
+ */
+const formatHalfWidthNumeric = (value) => {
+  const result = value.replace(/[^0-9]/g, "");
+  return result === "" ? "" : Number(result);
 };
 </script>
