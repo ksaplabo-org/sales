@@ -1,0 +1,12 @@
+import express from "express";
+import clientController from "../controllers/clientController.js";
+
+const clientRoutes = express.Router();
+
+clientRoutes.get("/", clientController.findAll.bind(clientController));
+clientRoutes.get("/:clientCode", clientController.findByCode.bind(clientController));
+clientRoutes.post("/", clientController.create.bind(clientController));
+clientRoutes.put("/:clientCode", clientController.update.bind(clientController));
+clientRoutes.delete("/:clientCode", clientController.delete.bind(clientController));
+
+export default clientRoutes;

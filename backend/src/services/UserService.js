@@ -1,6 +1,6 @@
 import UniqueConstraintError from "../errors/UniqueConstraintError.js";
 import NotFoundError from "../errors/NotFoundError.js";
-import userRepository from "../repositories/UserRepository.js";
+import userRepository from "../repositories/userRepository.js";
 
 class UserService {
   /**

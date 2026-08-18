@@ -2,11 +2,11 @@
   <!-- タイトル -->
   <BContainer fluid class="px-0 pb-2 mb-2">
     <div class="d-flex justify-content-between align-items-center">
-      <h3 class="mb-0">受発注情報一覧</h3>
+      <h3 class="mb-0">商品マスタ</h3>
       <BBreadcrumb
         :items="[
           { text: 'トップページ', to: '/' },
-          { text: '受発注情報一覧', active: true },
+          { text: '商品マスタ', active: true },
         ]"
       />
     </div>
@@ -22,40 +22,11 @@
       <strong>検索条件</strong>
     </template>
 
-    <BForm @submit.prevent="searchOrders">
+    <BForm @submit.prevent="searchProducts">
       <BRow>
         <BCol md="4">
-          <BFormGroup label="受発注番号">
-            <BFormInput
-              placeholder="受発注番号を入力"
-              v-model="condition.orderNo"
-              maxlength="8"
-              :formatter="formatHalfWidthAlphaNumeric"
-            />
-          </BFormGroup>
-        </BCol>
-
-        <BCol md="4">
           <BFormGroup label="受発注区分">
-            <BFormSelect
-              v-model="condition.orderKbn"
-              :options="[
-                { value: '', text: '全て表示' },
-                { value: '1', text: '受注のみ表示' },
-                { value: '2', text: '発注のみ表示' },
-              ]"
-            />
-          </BFormGroup>
-        </BCol>
-
-        <BCol md="4">
-          <BFormGroup label="取引先コード">
-            <BFormInput
-              placeholder="取引先コードを入力"
-              v-model="condition.clientCode"
-              maxlength="8"
-              :formatter="formatHalfWidthAlphaNumeric"
-            />
+            <BFormSelect v-model="condition.orderKbn" :options="orderKbnOptions" />
           </BFormGroup>
         </BCol>
 
@@ -63,32 +34,31 @@
           <BFormGroup label="商品コード">
             <BFormInput
               placeholder="商品コードを入力"
-              v-model="condition.productCode"
               maxlength="7"
+              type="text"
+              v-model="condition.productCode"
               :formatter="formatHalfWidthAlphaNumeric"
             />
           </BFormGroup>
         </BCol>
 
         <BCol md="4">
-          <BFormGroup label="合計金額">
+          <BFormGroup label="商品名">
+            <BFormInput placeholder="商品名を入力" v-model="condition.productName" maxlength="20" />
+          </BFormGroup>
+        </BCol>
+      </BRow>
+      <BRow>
+        <BCol md="4">
+          <BFormGroup label="単価">
             <div class="d-flex align-items-center">
-              <BFormInput
-                placeholder="下限"
-                v-model="condition.amountTaxIncludedLow"
-                :formatter="formatHalfWidthNumeric"
-              />
+              <BFormInput placeholder="下限" v-model="condition.productPriceLow" :formatter="formatHalfWidthNumeric" />
               <span class="mx-2">～</span>
-              <BFormInput
-                placeholder="上限"
-                v-model="condition.amountTaxIncludedHigh"
-                :formatter="formatHalfWidthNumeric"
-              />
+              <BFormInput placeholder="上限" v-model="condition.productPriceHigh" :formatter="formatHalfWidthNumeric" />
             </div>
           </BFormGroup>
         </BCol>
       </BRow>
-
       <BRow class="mt-3">
         <BCol class="text-end">
           <BButton variant="outline-secondary" class="me-2" @click="clearCondition">
@@ -110,59 +80,37 @@
       <div class="d-flex justify-content-between align-items-center">
         <strong>検索結果 ( {{ totalCount }} 件 )</strong>
 
-        <div class="d-flex gap-2" v-if="loginInfo.role == 1">
-          <BButton class="btn-receive" size="sm" :to="{ name: 'orderReceiveCreate' }">
-            <div class="d-flex align-items-center">
-              <div class="d-inline-flex flex-column align-items-center me-1 mb-1">
-                <i class="fas fa-arrow-down fa-xs" aria-hidden="true"></i>
-                <i class="fas fa-box fa-xs" aria-hidden="true"></i>
-              </div>
-              受注登録
-            </div>
-          </BButton>
-
-          <BButton class="btn-sale" size="sm" :to="{ name: 'orderSaleCreate' }">
-            <div class="d-flex align-items-center">
-              <div class="d-inline-flex flex-column align-items-center me-1 mb-1">
-                <i class="fas fa-arrow-up fa-xs" aria-hidden="true"></i>
-                <i class="fas fa-box fa-xs" aria-hidden="true"></i>
-              </div>
-              発注登録
-            </div>
-          </BButton>
-        </div>
+        <BButton size="sm" variant="primary" :to="{ name: 'productCreate' }">
+          <i class="fas fa-plus"></i>
+          新規登録
+        </BButton>
       </div>
     </template>
 
     <BTable head-variant="secondary" :items="items" :fields="fields" class="mb-0" show-empty responsive hover>
-      <!-- 受発注区分 -->
+      <template #cell(orderClientCode)="row">
+        {{ row.item.orderClientCode || "-" }}
+      </template>
       <template #cell(orderKbn)="row">
-        {{ orderKbnOptions.find((orderKbn) => orderKbn.value === row.value)?.text }}
+        {{ showOrderKbnOptions.find((orderKbn) => orderKbn.value === row.value)?.text }}
       </template>
-
-      <!-- 受発注日 -->
-      <template #cell(orderDate)="row">
-        {{ row.item.orderDate?.replace(/-/g, "/") }}
-      </template>
-
-      <!-- 確定日 -->
-      <template #cell(confirmedDate)="row">
-        {{ row.item.confirmedDate?.replace(/-/g, "/") ?? "-" }}
-      </template>
-
-      <!-- 合計金額 -->
-      <template #cell(amountTaxIncluded)="row">
-        {{ row.item.amountTaxIncluded?.toLocaleString("ja-JP") }}
+      <template #cell(productPrice)="row">
+        {{ Number(row.item.productPrice).toLocaleString("ja-JP") }}
       </template>
 
       <!-- 編集・削除ボタン -->
       <template #cell(actions)="row">
         <BContainer fluid class="d-flex justify-content-center gap-2 px-0">
           <BButton
+            v-if="loginInfo.role == 2"
             size="sm"
             variant="outline-primary"
-            @click="router.push({ name: 'orderEdit', params: { id: row.item.orderNo } })"
-            v-if="loginInfo.role == 1"
+            @click="
+              router.push({
+                name: 'productEdit',
+                params: { productCode: row.item.productCode },
+              })
+            "
           >
             <i class="fas fa-pen"></i>
             編集
@@ -171,7 +119,7 @@
             size="sm"
             variant="outline-danger"
             @click="openDeleteModal(row.item)"
-            v-if="loginInfo.role == 1 && row.item.confirmedDate == null"
+            v-if="!row.item.usedFlg && loginInfo.role == 2"
           >
             <i class="far fa-trash-alt"></i>
             削除
@@ -193,9 +141,9 @@
     ok-title="削除"
     ok-variant="danger"
     cancel-title="キャンセル"
-    @ok="deleteOrder()"
+    @ok="deleteProduct()"
   >
-    <p>{{ targetRow?.orderNo }} を削除しますか？</p>
+    <p>{{ targetRow?.productCode }} を削除しますか？</p>
   </BModal>
 
   <!-- ローディングマスク -->
@@ -206,16 +154,24 @@
 import { computed, ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 
-import * as orderApi from "@/api/orderApi.js";
+import * as productApi from "@/api/productApi.js";
 import messages from "@/constants/messages.js";
 import Loading from "@/components/Loading.vue";
 import { getLoginInfo } from "@/utils/auth.js";
 import { formatMessage } from "@/utils/messageUtil.js";
+
 // Router操作
 const router = useRouter();
 
-// 受発注区分の一覧
+// 権限の一覧
 const orderKbnOptions = [
+  { value: "", text: "全て表示" },
+  { value: "1", text: "受注のみ表示" },
+  { value: "2", text: "発注のみ表示" },
+];
+
+// 受発注区分表示の一覧
+const showOrderKbnOptions = [
   { value: "1", text: "受注" },
   { value: "2", text: "発注" },
 ];
@@ -226,24 +182,21 @@ const items = ref([]);
 const totalCount = computed(() => items.value.length);
 // 一覧のカラム定義
 const fields = [
-  { key: "orderNo", label: "受発注番号", sortable: true },
+  { key: "productCode", label: "商品コード", sortable: true },
+  { key: "productName", label: "商品名" },
   { key: "orderKbn", label: "受発注区分" },
-  { key: "clientCode", label: "取引先コード" },
-  { key: "productCode", label: "商品コード" },
-  { key: "orderDate", label: "受発注日" },
-  { key: "confirmedDate", label: "確定日" },
-  { key: "amountTaxIncluded", label: "合計金額" },
+  { key: "orderClientCode", label: "発注先コード" },
+  { key: "productPrice", label: "単価" },
   { key: "actions", label: "" },
 ];
 
 // 検索条件
 const condition = ref({
-  orderNo: "",
-  orderKbn: "",
-  clientCode: "",
   productCode: "",
-  amountTaxIncludedLow: null,
-  amountTaxIncludedHigh: null,
+  productName: "",
+  orderKbn: "",
+  productPriceLow: null,
+  productPriceHigh: null,
 });
 
 // 読み込み中の表示制御
@@ -280,7 +233,7 @@ onMounted(async () => {
   }
 
   // 一覧検索
-  await searchOrders();
+  await searchProducts();
 });
 
 /**
@@ -288,41 +241,21 @@ onMounted(async () => {
  */
 const clearCondition = () => {
   condition.value = {
-    orderNo: "",
-    orderKbn: "",
-    clientCode: "",
     productCode: "",
-    amountTaxIncludedLow: null,
-    amountTaxIncludedHigh: null,
+    productName: "",
+    orderKbn: "",
+    productPriceLow: null,
+    productPriceHigh: null,
   };
 };
 
 /**
- * 半角英数のみに置換する
- *
- * @param value 検査値
+ * 商品情報一覧検索処理
  */
-const formatHalfWidthAlphaNumeric = (value) => {
-  return value.replace(/[^A-Za-z0-9]/g, "");
-};
-
-/**
- * 半角数字のみに置換する
- *
- * @param value 検査値
- */
-const formatHalfWidthNumeric = (value) => {
-  const result = value.replace(/[^0-9]/g, "");
-  return result === "" ? "" : Number(result);
-};
-
-/**
- * 受発注情報一覧検索処理
- */
-const searchOrders = async () => {
+const searchProducts = async () => {
   loading.value = true;
   try {
-    items.value = await orderApi.getOrders(condition.value);
+    items.value = await productApi.getProducts(condition.value);
   } catch (e) {
     console.log(e);
     openFailedToast(messages.MSGE001);
@@ -362,14 +295,14 @@ const openDeleteModal = (row) => {
 };
 
 /**
- * 受発注情報削除処理
+ * 商品情報削除処理
  */
-const deleteOrder = async () => {
+const deleteProduct = async () => {
   loading.value = true;
   try {
-    await orderApi.deleteOrder(targetRow.value.orderNo);
-    await searchOrders();
+    await productApi.deleteProduct(targetRow.value.productCode);
     openSuccessToast(messages.MSGI006);
+    await searchProducts();
   } catch (e) {
     console.log(e);
     openFailedToast(messages.MSGE007);
@@ -377,41 +310,23 @@ const deleteOrder = async () => {
     loading.value = false;
   }
 };
+
+/**
+ * 半角英数のみに置換する
+ *
+ * @param value 検査値
+ */
+const formatHalfWidthAlphaNumeric = (value) => {
+  return value.replace(/[^A-Za-z0-9]/g, "");
+};
+
+/**
+ * 半角数字のみに置換する
+ *
+ * @param value 検査値
+ */
+const formatHalfWidthNumeric = (value) => {
+  const result = value.replace(/[^0-9]/g, "");
+  return result === "" ? "" : Number(result);
+};
 </script>
-
-<!-- 受発注登録ボタンレイアウト -->
-<style>
-.btn-receive {
-  background-color: #fc9503 !important;
-  border-color: #fc9503 !important;
-  color: #fff !important;
-}
-
-.btn-receive:hover {
-  background-color: #e68600 !important;
-  border-color: #e68600 !important;
-  color: #fff !important;
-}
-
-.btn-receive:focus,
-.btn-receive:focus-visible {
-  box-shadow: 0 0 0 0.25rem rgba(252, 149, 3, 0.25) !important;
-}
-
-.btn-sale {
-  background-color: #02d943 !important;
-  border-color: #02d943 !important;
-  color: #fff !important;
-}
-
-.btn-sale:hover {
-  background-color: #02be3b !important;
-  border-color: #02be3b !important;
-  color: #fff !important;
-}
-
-.btn-sale:focus,
-.btn-sale:focus-visible {
-  box-shadow: 0 0 0 0.25rem rgba(2, 217, 67, 0.25) !important;
-}
-</style>

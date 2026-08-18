@@ -1,4 +1,5 @@
 import express from "express";
+<<<<<<< HEAD
 import orderController from "../controllers/OrderController.js";
 
 const orderRoutes = express.Router();
@@ -18,5 +19,13 @@ orderRoutes.get("/", orderController.findAll.bind(orderController));
 // orderRoutes.post("/", orderController.create.bind(orderController));
 // orderRoutes.put("/:orderNo", orderController.update.bind(orderController));
 // orderRoutes.delete("/:orderNo", orderController.delete.bind(orderController));
+=======
+import orderController from "../controllers/orderController.js";
+
+const orderRoutes = express.Router();
+
+orderRoutes.get("/", orderController.findAll.bind(orderController));
+orderRoutes.delete("/:orderNo", orderController.delete.bind(orderController));
+>>>>>>> origin/2026
 
 export default orderRoutes;
