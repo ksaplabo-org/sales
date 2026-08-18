@@ -125,7 +125,7 @@ describe("clientRepository", () => {
       const result = { clientCode: "test0001", clientName: "Aテスト会社", orderKbn: "1" };
 
       // Mock設定
-      const spy = jest.spyOn(clientModel, "findByPk").mockResolvedValue(result);
+      const spy = jest.spyOn(clientModel, "findByPk").mockResolvedValueOnce(result);
 
       // テスト対象関数実行
       const actual = await clientRepository.findByCode(clientCode);
@@ -143,7 +143,7 @@ describe("clientRepository", () => {
 
       const spy = jest.spyOn(clientModel, "create").mockResolvedValue(clientInfo);
 
-      const actual = await clientRepository.create(clientInfo);
+      await clientRepository.create(clientInfo);
 
       expect(spy).toHaveBeenCalledTimes(1);
       expect(spy).toHaveBeenCalledWith(clientInfo);
@@ -168,31 +168,31 @@ describe("clientRepository", () => {
         },
       });
     });
+  });
 
-    describe("delete 取引先情報削除", () => {
-      test("[正常系] 取引先情報削除", async () => {
-        // 検索条件
-        const clientCode = "test0011";
+  describe("delete 取引先情報削除", () => {
+    test("[正常系] 取引先情報削除", async () => {
+      // 検索条件
+      const clientCode = "test0011";
 
-        // 期待動作
-        const expectedResult = undefined;
+      // 期待動作
+      const expectedResult = undefined;
 
-        // Mock設定
-        const spy = jest.spyOn(clientModel, "destroy").mockResolvedValue(expectedResult);
+      // Mock設定
+      const spy = jest.spyOn(clientModel, "destroy").mockResolvedValue(expectedResult);
 
-        // テスト対象実行
-        const actual = await clientRepository.delete(clientCode);
+      // テスト対象実行
+      const actual = await clientRepository.delete(clientCode);
 
-        // 検証
-        expect(spy).toHaveBeenCalledTimes(1); // 呼び出し回数の検証
-        expect(spy).toHaveBeenCalledWith({
-          // 引数の検証
-          where: {
-            clientCode: clientCode,
-          },
-        });
-        expect(actual).toEqual(expectedResult); // 実行結果と期待結果が一致するかの検証
+      // 検証
+      expect(spy).toHaveBeenCalledTimes(1); // 呼び出し回数の検証
+      expect(spy).toHaveBeenCalledWith({
+        // 引数の検証
+        where: {
+          clientCode: clientCode,
+        },
       });
+      expect(actual).toEqual(expectedResult); // 実行結果と期待結果が一致するかの検証
     });
   });
 });

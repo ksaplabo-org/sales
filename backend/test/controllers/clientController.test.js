@@ -278,7 +278,7 @@ describe("clientController", () => {
       const spyConsole = jest.spyOn(console, "log").mockResolvedValue();
 
       // テスト対象関数の呼び出し
-      const actual = await clientController.findByCode(req, res);
+      await clientController.findByCode(req, res);
 
       // Serviceの呼び出しを検証
       expect(spyFindByCode).toHaveBeenCalledTimes(1);
@@ -739,7 +739,7 @@ describe("clientController", () => {
       const spyConsole = jest.spyOn(console, "log").mockResolvedValue();
 
       // テスト対象関数の呼び出し
-      const actual = await clientController.update(req, res);
+      await clientController.update(req, res);
 
       // Serviceの呼び出しを検証
       expect(spyUpdate).toHaveBeenCalledTimes(1);
@@ -784,7 +784,7 @@ describe("clientController", () => {
       const spyConsole = jest.spyOn(console, "log").mockResolvedValue();
 
       // テスト対象関数の呼び出し
-      const actual = await clientController.update(req, res);
+      await clientController.update(req, res);
 
       // Serviceの呼び出しを検証
       expect(spyUpdate).toHaveBeenCalledTimes(1);
@@ -1165,7 +1165,7 @@ describe("clientController", () => {
           message: "電話番号はxxx-xxxx-xxxxで設定してください",
         },
       },
-    ])("[異常系] 電話番号が$name場合、エラーとなること", ({ _, telNumber, errors }) => {
+    ])("[異常系] 電話番号が$name場合、エラーとなること", ({ telNumber, errors }) => {
       const result = clientController.validate({
         telNumber,
       });

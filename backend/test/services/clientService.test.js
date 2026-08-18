@@ -84,7 +84,7 @@ describe("clientService", () => {
   describe("create 取引先情報登録", () => {
     test("[正常系] 存在しない取引先コードを指定した場合 => 正常終了すること", async () => {
       const clientCode = "a0000003";
-      const clientInfo = { clientCode: clientCode, clientName: "C商社", orderKbn: 2 };
+      const clientInfo = { clientCode: clientCode, clientName: "C商社", orderKbn: "2" };
 
       // Mock設定
       const spyFindByCode = jest.spyOn(clientRepository, "findByCode").mockResolvedValueOnce(null);
@@ -183,7 +183,9 @@ describe("clientService", () => {
       const expectedResult = undefined;
 
       // Mock設定
-      const spyFindByCode = jest.spyOn(clientRepository, "findByCode").mockResolvedValueOnce(clientCode);
+      const spyFindByCode = jest
+        .spyOn(clientRepository, "findByCode")
+        .mockResolvedValueOnce({ clientCode: "test0011" });
       const spyFindAll = jest.spyOn(orderRepository, "findAll").mockResolvedValueOnce(clients);
       const spyDelete = jest.spyOn(clientRepository, "delete").mockResolvedValueOnce(expectedResult);
 
@@ -222,10 +224,12 @@ describe("clientService", () => {
       const clientCode = "test0001";
 
       // 前提条件
-      const clients = [{clientCode : "test0001"}];
+      const clients = [{ clientCode: "test0001" }];
 
       // Mock設定
-      const spyFindByCode = jest.spyOn(clientRepository, "findByCode").mockResolvedValueOnce(clientCode);
+      const spyFindByCode = jest
+        .spyOn(clientRepository, "findByCode")
+        .mockResolvedValueOnce({ clientCode: "test0001" });
       const spyFindAll = jest.spyOn(orderRepository, "findAll").mockResolvedValueOnce(clients);
       const spyDelete = jest.spyOn(clientRepository, "delete").mockResolvedValueOnce();
 
