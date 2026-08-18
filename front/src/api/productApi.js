@@ -4,7 +4,7 @@ import apiClient from "./axios";
  * 商品情報一覧取得API呼び出し
  *
  * @param {*} condition 検索条件
- * @returns  商品情報一覧
+ * @returns 商品情報一覧
  */
 export async function getProducts(condition) {
   const response = await apiClient.get("/products", { params: condition });
