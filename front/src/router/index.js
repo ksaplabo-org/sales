@@ -59,6 +59,23 @@ const routes = [
         name: "clientEdit",
         component: () => import("@/views/clients/ClientForm.vue"),
       },
+      {
+        path: "sales/orders",
+        name: "orderList",
+        component: () => import("@/views/orders/OrderList.vue"),
+      },
+      {
+        path: "sales/orders/create",
+        name: "orderReceiveCreate",
+      },
+      {
+        path: "sales/orders/create",
+        name: "orderSaleCreate",
+      },
+      {
+        path: "sales/orders/:orderNo/edit",
+        name: "orderEdit",
+      },
     ],
   },
 ];
