@@ -1,6 +1,7 @@
 import UniqueConstraintError from "../errors/UniqueConstraintError.js";
 import NotFoundError from "../errors/NotFoundError.js";
 import orderService from "../services/OrderService.js";
+import UnprocessableContentError from "../errors/UnprocessableContentError.js";
 
 class OrderController {
   /**
@@ -35,9 +36,9 @@ class OrderController {
    * @param {*} req リクエスト情報
    * @param {*} res レスポンス情報
    */
-  async findById(req, res) {
+  async findByNo(req, res) {
     try {
-      const order = await orderService.findById(req.params.orderNo);
+      const order = await orderService.findByNo(req.params.orderNo);
       res.json(order);
     } catch (err) {
       console.error(err);
@@ -59,29 +60,37 @@ class OrderController {
    */
   async create(req, res) {
     try {
-      const now = new Date().toISOString();
-
       const order = {
         orderNo: req.body.orderNo,
         orderKbn: req.body.orderKbn,
         clientCode: req.body.clientCode,
         orderDate: req.body.orderDate,
-        confirmedDate: req.body.confirmedDate,
-        shipDate: req.body.shipDate,
+        confirmedDate: req.body.confirmedDate || null,
+        shipDate: req.body.shipDate || null,
         deliverDate: req.body.deliverDate,
         productCode: req.body.productCode,
         quantity: req.body.quantity,
-        amount: req.body.amount,
-        tax: req.body.tax,
-        amountTaxIncluded: req.body.amountTaxIncluded,
         createdId: req.body.createdId,
-        createdAt: now,
         updatedId: req.body.createdId,
-        updatedAt: now,
       };
 
       // 共通バリデーション
       const errors = this.validate(order);
+
+      // 受発注番号が未入力の場合
+      if (!order.orderNo) {
+        errors.push({ field: "orderNo", message: "受発注番号を入力してください" });
+      }
+
+      //受発注番号が8桁以外で入力された場合
+      else if (order.orderNo.length != 8) {
+        errors.push({ field: "orderNo", message: "受発注番号は8桁で入力してください" });
+      }
+
+      //受発注番号が半角英数以外で入力された場合
+      else if (!/^[A-Za-z0-9]+$/.test(order.orderNo)) {
+        errors.push({ field: "orderNo", message: "受発注番号は半角英数で設定してください" });
+      }
 
       // 受発注区分が未入力の場合
       if (!order.orderKbn) {
@@ -150,7 +159,23 @@ class OrderController {
       console.log(e);
 
       if (e instanceof UniqueConstraintError) {
-        res.status(UniqueConstraintError.status).send();
+        res.status(UniqueConstraintError.status).json({
+          errors: [
+            {
+              field: e.field,
+              message: e.message,
+            },
+          ],
+        });
+      } else if (e instanceof NotFoundError) {
+        res.status(NotFoundError.status).json({
+          errors: [
+            {
+              field: e.field,
+              message: e.message,
+            },
+          ],
+        });
       } else {
         res.status(500).send();
       }
@@ -165,21 +190,37 @@ class OrderController {
    */
   async update(req, res) {
     try {
+      let errors = [];
 
-      const orderNo = req.params.orderNo;
+      if (!req.params.orderNo) {
+        errors.push({ field: "orderNo", message: "受発注番号を入力してください" });
+      }
+
+      //受発注番号が8桁以外で入力された場合
+      else if (req.params.orderNo.length != 8) {
+        errors.push({ field: "orderNo", message: "受発注番号は8桁で入力してください" });
+      }
+
+      //受発注番号が半角英数以外で入力された場合
+      else if (!/^[A-Za-z0-9]+$/.test(req.params.orderNo)) {
+        errors.push({ field: "orderNo", message: "受発注番号は半角英数で設定してください" });
+      }
+
+      if (errors.length > 0) {
+        return res.status(400).json({ errors: errors });
+      }
+
       const order = {
-        orderNo: orderNo,
-        orderDate: req.body.orderDate,
-        confirmedDate: req.body.confirmedDate,
-        shipDate: req.body.shipDate,
-        deliverDate: req.body.deliverDate,
+        confirmedDate: req.body.confirmedDate || null,
+        shipDate: req.body.shipDate || null,
+        deliverDate: req.body.deliverDate || null,
         productCode: req.body.productCode,
         quantity: req.body.quantity,
         updatedId: req.body.updatedId,
       };
 
       // 共通バリデーション
-      const errors = this.validate(order);
+      errors = this.validate(order);
 
       // 更新者IDが未入力の場合
       if (!order.updatedId) {
@@ -200,14 +241,21 @@ class OrderController {
         // パラメータエラー
         res.status(400).json({ errors: errors });
       } else {
-        await orderService.update(req.params.orderNo, req.body);
+        await orderService.update(req.params.orderNo, order);
         res.send();
       }
     } catch (e) {
       console.log(e);
 
       if (e instanceof NotFoundError) {
-        res.status(NotFoundError.status).send();
+        res.status(NotFoundError.status).json({
+          errors: [
+            {
+              field: e.field,
+              message: e.message,
+            },
+          ],
+        });
       } else {
         res.status(500).send();
       }
@@ -222,19 +270,17 @@ class OrderController {
    */
   async delete(req, res) {
     try {
-      // 共通バリデーション
       const orderNo = req.params.orderNo;
 
       const errors = [];
 
-
       // 受発注番号が未入力の場合
-      if (!order.orderNo) {
+      if (!orderNo) {
         errors.push({ field: "orderNo", message: "受発注番号を入力してください" });
       }
 
       //受発注番号が8桁以外で入力された場合
-      else if (order.orderNo.length != 8) {
+      else if (orderNo.length != 8) {
         errors.push({ field: "orderNo", message: "受発注番号は8桁で入力してください" });
       }
 
@@ -243,18 +289,33 @@ class OrderController {
         errors.push({ field: "orderNo", message: "受発注番号は半角英数で入力してください" });
       }
 
+      if (errors.length > 0) {
+        return res.status(400).json({ errors: errors });
+      }
+
       await orderService.delete(req.params.orderNo);
       res.send();
     } catch (e) {
       console.log(e);
 
-      if (errors.length > 0) {
-        // パラメータエラー
-        res.status(400).json({ errors: errors });
-      } 
-
       if (e instanceof NotFoundError) {
-        res.status(NotFoundError.status).send();
+        res.status(NotFoundError.status).json({
+          errors: [
+            {
+              field: e.field,
+              message: e.message,
+            },
+          ],
+        });
+      } else if (e instanceof UnprocessableContentError) {
+        res.status(UnprocessableContentError.status).json({
+          errors: [
+            {
+              field: e.field,
+              message: e.message,
+            },
+          ],
+        });
       } else {
         res.status(500).send();
       }
@@ -270,93 +331,74 @@ class OrderController {
   validate(data) {
     const errors = [];
 
-    // 受発注番号が未入力の場合
-    if (!data.orderNo) {
-      errors.push({ field: "orderNo", message: "受発注番号を入力してください" });
-    }
-
-    //受発注番号が8桁以外で入力された場合
-    else if (data.orderNo.length != 8) {
-      errors.push({ field: "orderNo", message: "受発注番号は8桁で入力してください" });
-    }
-
-    //受発注番号が半角英数以外で入力された場合
-    else if (!/^[A-Za-z0-9]+$/.test(data.orderNo)) {
-      errors.push({ field: "orderNo", message: "受発注番号は半角英数で設定してください" });
-    }
-
     // 確定日が未入力の場合
-    if (!data.confirmedDate) {
+    if (data.confirmedDate && isNaN(new Date(data.confirmedDate).getTime())) {
       errors.push({ field: "confirmedDate", message: "確定日を入力してください" });
     }
 
     //日付がyyyy-MM-ddの形式以外で入力された場合
-    else if (!/^\d{4}-\d{2}-\d{2}$/.test(data.confirmedDate)) {
-      errors.push({ field: "confirmedDate", message: "日付はyyyy-MM-ddの形式で入力してください" });
-    }
+    if (data.confirmedDate) {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(data.confirmedDate)) {
+        errors.push({ field: "confirmedDate", message: "日付はyyyy-MM-ddの形式で入力してください" });
+      }
 
-    //確定日が不正な日付で入力された場合
-    else if (isNaN(new Date(data.confirmedDate).getTime())) {
-      errors.push({ field: "confirmedDate", message: "正しい日付を入力してください" });
-    }
+      //確定日が不正な日付で入力された場合
+      else if (isNaN(new Date(data.confirmedDate).getTime())) {
+        errors.push({ field: "confirmedDate", message: "正しい日付を入力してください" });
+      }
 
-    //確定日が受発注日より以前の日付で入力された場合
-    else if (new Date(data.confirmedDate) < new Date(data.orderDate)) {
-      errors.push({ field: "confirmedDate", message: "確定日は受発注日以降の日付を入力してください" });
+      //確定日が受発注日より以前の日付で入力された場合
+      else if (new Date(data.confirmedDate) < new Date(data.orderDate)) {
+        errors.push({ field: "confirmedDate", message: "確定日は受発注日以降の日付を入力してください" });
+      }
     }
 
     // 出荷日が未入力の場合
-    if (!data.shipDate) {
-      errors.push({ field: "shipDate", message: "出荷日を入力してください" });
+    if (data.orderKbn === "1") {
+
+      //日付がyyyy-MM-ddの形式以外で入力された場合
+      if (data.shipDate && !/^\d{4}-\d{2}-\d{2}$/.test(data.shipDate)) {
+        errors.push({ field: "shipDate", message: "日付はyyyy-MM-ddの形式で入力してください" });
+      }
+
+      //出荷日が不正な日付で入力された場合
+      else if (data.shipDate && isNaN(new Date(data.shipDate).getTime())) {
+        errors.push({ field: "shipDate", message: "正しい日付を入力してください" });
+      }
+
+      //出荷日が受注日より以前の日付で入力された場合
+      else if (data.shipDate && new Date(data.shipDate) < new Date(data.orderDate)) {
+        errors.push({ field: "shipDate", message: "出荷日は受注日以降の日付を入力してください" });
+      }
+
+      //出荷日が入金日より以前の日付で入力された場合
+      else if (data.confirmedDate && new Date(data.shipDate) < new Date(data.confirmedDate)) {
+        errors.push({ field: "shipDate", message: "出荷日は入金日以降の日付を入力してください" });
+      }
     }
 
     //日付がyyyy-MM-ddの形式以外で入力された場合
-    else if (!/^\d{4}-\d{2}-\d{2}$/.test(data.shipDate)) {
-      errors.push({ field: "shipDate", message: "日付はyyyy-MM-ddの形式で入力してください" });
-    }
-
-    //出荷日が不正な日付で入力された場合
-    else if (isNaN(new Date(data.shipDate).getTime())) {
-      errors.push({ field: "shipDate", message: "正しい日付を入力してください" });
-    }
-
-    //出荷日が受発注日より以前の日付で入力された場合
-    else if (new Date(data.shipDate) < new Date(data.orderDate)) {
-      errors.push({ field: "shipDate", message: "出荷日は受注日以降の日付を入力してください" });
-    }
-
-    //出荷日が入金日より以前の日付で入力された場合
-    else if (new Date(data.shipDate) < new Date(data.confirmedDate)) {
-      errors.push({ field: "shipDate", message: "出荷日は入金日以降の日付を入力してください" });
-    }
-
-    // 納品予定日が未入力の場合
-    if (!data.deliverDate) {
-      errors.push({ field: "deliverDate", message: "納品予定日を入力してください" });
-    }
-
-    //日付がyyyy-MM-ddの形式以外で入力された場合
-    else if (!/^\d{4}-\d{2}-\d{2}$/.test(data.deliverDate)) {
+    else if (data.deliverDate &&!/^\d{4}-\d{2}-\d{2}$/.test(data.deliverDate)) {
       errors.push({ field: "deliverDate", message: "日付はyyyy-MM-ddの形式で入力してください" });
     }
 
     //納品予定日が不正な日付で入力された場合
-    else if (isNaN(new Date(data.deliverDate).getTime())) {
+    else if (data.deliverDate && isNaN(new Date(data.deliverDate).getTime())) {
       errors.push({ field: "deliverDate", message: "正しい日付を入力してください" });
     }
 
     //納品予定日が受発注日より以前の日付で入力された場合
-    else if (new Date(data.deliverDate) < new Date(data.orderDate)) {
+    else if (data.deliverDate && new Date(data.deliverDate) < new Date(data.orderDate)) {
       errors.push({ field: "deliverDate", message: "納品予定日は受発注日以降の日付を入力してください" });
     }
 
     //納品予定日が確定日より以前の日付で入力された場合
-    else if (new Date(data.deliverDate) < new Date(data.confirmedDate)) {
+    else if (data.deliverDate && new Date(data.deliverDate) < new Date(data.confirmedDate)) {
       errors.push({ field: "deliverDate", message: "納品予定日は確定日以降の日付を入力してください" });
     }
 
     //納品予定日が出荷日より以前の日付で入力された場合
-    else if (new Date(data.deliverDate) < new Date(data.shipDate)) {
+    else if (data.deliverDate && new Date(data.deliverDate) < new Date(data.shipDate)) {
       errors.push({ field: "deliverDate", message: "納品予定日は出荷日以降の日付を入力してください" });
     }
 

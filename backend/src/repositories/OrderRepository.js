@@ -12,19 +12,19 @@ class OrderRepository {
     // 検索条件を作成
     const where = {};
     if (condition.orderNo) {
-      where.orderNo = { [Op.like]: "%" + condition.orderNo + "%" };
+      where.orderNo = { [Op.like]: condition.orderNo + "%" };
     }
     if (condition.orderKbn) {
       where.orderKbn = condition.orderKbn;
     }
     if (condition.clientCode) {
-      where.clientCode = { [Op.like]: "%" + condition.clientCode + "%" };
+      where.clientCode = condition.clientCode;
     }
     if (condition.productCode) {
-      where.productCode = { [Op.like]: "%" + condition.productCode + "%" };
+      where.productCode = condition.productCode;
     }
     if (condition.amountTaxIncludedLow) {
-      where.amountTaxIncluded = { ...where.amountTaxIncluded, [Op.gte]: condition.amountTaxIncludedLow };
+      where.amountTaxIncluded = { [Op.gte]: condition.amountTaxIncludedLow };
     }
     if (condition.amountTaxIncludedHigh) {
       where.amountTaxIncluded = { ...where.amountTaxIncluded, [Op.lte]: condition.amountTaxIncludedHigh };
@@ -48,11 +48,11 @@ class OrderRepository {
   /**
    * 受発注情報詳細取得
    *
-   * @param {*} no 受発注番号
+   * @param {*} orderNo 受発注番号
    * @returns 受発注情報
    */
-  async findById(no) {
-    return await OrderModel.findByPk(no);
+  async findByNo(orderNo) {
+    return await OrderModel.findByPk(orderNo);
   }
 
   /**
@@ -79,19 +79,16 @@ class OrderRepository {
   }
 
   /**
-   * 受発注情報論理削除
+   * 受発注情報物理削除
    *
    * @param {*} orderNo 受発注番号
    */
   async delete(orderNo) {
-    await OrderModel.update(
-      { delFlg: true },
-      {
-        where: {
-          orderNo: orderNo,
-        },
-      }
-    );
+    await OrderModel.destroy({
+      where: {
+        orderNo: orderNo,
+      },
+    });
   }
 }
 

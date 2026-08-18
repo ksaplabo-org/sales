@@ -17,7 +17,7 @@ export async function getOrders(condition) {
  * @param {*} OrderId ユーザーID
  * @returns ユーザー情報
  */
-export async function getOrderByOrderId(orderNo) {
+export async function getOrderByOrderNo(orderNo) {
   const response = await apiClient.get(`/orders/${orderNo}`);
   return response.data;
 }

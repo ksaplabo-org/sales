@@ -52,23 +52,19 @@ const routes = [
       {
         path: "sales/orders/recive/create",
         name: "orderReceiveCreate",
-        component: () => import("@/views/orders/OrderForm.vue"),
+        component: () => import("@/views/orders/OrderCreate.vue"),
       },
       {
         path: "sales/orders/sale/create",
         name: "orderSaleCreate",
-        component: () => import("@/views/orders/OrderForm.vue"),
+        component: () => import("@/views/orders/OrderCreate.vue"),
       },
       {
-        path: "sales/orders/receive/:id/edit",
-        name: "orderReceiveEdit",
-        component: () => import("@/views/orders/OrderForm.vue"),
+        path: "sales/orders/:orderNo/edit",
+        name: "orderEdit",
+        component: () => import("@/views/orders/OrderEdit.vue"),
       },
-      {
-        path: "sales/orders/sale/:id/edit",
-        name: "orderSaleEdit",
-        component: () => import("@/views/orders/OrderForm.vue"),
-      },
+
     ],
   },
 ];
@@ -83,7 +79,7 @@ const router = createRouter({
  * ナビゲーションガード
  */
 router.beforeEach((to) => {
-  // ログインされていない場合にログイン画面二遷移する
+  // ログインされていない場合にログイン画面に遷移する
   if (to.name !== "login" && !Auth.isLogin()) {
     return "/login";
   }
