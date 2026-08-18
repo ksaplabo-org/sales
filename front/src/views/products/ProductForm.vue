@@ -206,10 +206,6 @@ onMounted(async () => {
     } catch (e) {
       console.log(e);
       showFailedToast(messages.MSGE001);
-      loading.value = false;
-      return;
-    } finally {
-      loading.value = false;
     }
   }
 
