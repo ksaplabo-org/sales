@@ -111,15 +111,15 @@
       </div>
     </template>
 
-
+ <!--:tbody-tr-class="changeRowStyle" -->
     <BTable
       head-variant="secondary"
       :items="items"
       :fields="fields"
-      :tbody-tr-class="changeRowStyle"
       class="mb-0"
       show-empty
       responsive
+      
       hover
     >
       <!-- 受発注区分 -->
