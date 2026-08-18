@@ -52,9 +52,9 @@
         <BCol md="4">
           <BFormGroup label="単価">
             <div class="d-flex align-items-center">
-              <BFormInput placeholder="下限" v-model="condition.clientCode" :formatter="formatHalfWidthNumeric" />
+              <BFormInput placeholder="下限" v-model="condition.productPriceLow" :formatter="formatHalfWidthNumeric" />
               <span class="mx-2">～</span>
-              <BFormInput placeholder="上限" v-model="condition.clientCode" :formatter="formatHalfWidthNumeric" />
+              <BFormInput placeholder="上限" v-model="condition.productPriceHigh" :formatter="formatHalfWidthNumeric" />
             </div>
           </BFormGroup>
         </BCol>
