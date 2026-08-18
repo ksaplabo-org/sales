@@ -90,8 +90,8 @@ OrderModel.init(
   {
     sequelize,
     tableName: "orders",
-    timestamps: true,
-  }
+    timestamps: false,
+  },
 );
 
 export default OrderModel;

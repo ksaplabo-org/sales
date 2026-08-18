@@ -1,10 +1,10 @@
 import apiClient from "./axios";
 
 /**
- * ユーザー情報一覧取得API呼び出し
+ * 受発注情報一覧取得API呼び出し
  *
  * @param {*} condition 検索条件
- * @returns ユーザー情報一覧
+ * @returns 受発注情報一覧
  */
 export async function getOrders(condition) {
   const response = await apiClient.get("/orders", { params: condition });
@@ -12,10 +12,10 @@ export async function getOrders(condition) {
 }
 
 /**
- * ユーザー情報詳細取得API呼び出し
+ * 受発注情報詳細取得API呼び出し
  *
- * @param {*} OrderId ユーザーID
- * @returns ユーザー情報
+ * @param {*} orderNo 受発注番号
+ * @returns 受発注情報
  */
 export async function getOrderByOrderNo(orderNo) {
   const response = await apiClient.get(`/orders/${orderNo}`);
@@ -23,28 +23,28 @@ export async function getOrderByOrderNo(orderNo) {
 }
 
 /**
- * ユーザー情報登録
+ * 受発注情報登録
  *
- * @param {*} OrderInfo ユーザー情報
+ * @param {*} orderInfo 受発注情報
  */
 export async function createOrder(orderInfo) {
   await apiClient.post("/orders/", orderInfo);
 }
 
 /**
- * ユーザー情報更新
+ * 受発注情報更新
  *
- * @param {*} OrderInfo ユーザー情報
+ * @param {*} orderInfo 受発注情報
  */
 export async function editOrder(orderInfo) {
   await apiClient.put(`/orders/${orderInfo.orderNo}`, orderInfo);
 }
 
 /**
- * ユーザー情報削除
+ * 受発注情報削除
  *
- * @param {*} OrderId ユーザーID
+ * @param {*} orderNo 受発注番号
  */
-export async function deleteOrder(orderId) {
+export async function deleteOrder(orderNo) {
   await apiClient.delete(`/orders/${orderNo}`);
 }

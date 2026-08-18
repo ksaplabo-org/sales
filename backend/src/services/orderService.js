@@ -1,9 +1,7 @@
 import UniqueConstraintError from "../errors/UniqueConstraintError.js";
 import NotFoundError from "../errors/NotFoundError.js";
-import orderRepository from "../repositories/OrderRepository.js";
-import userRepository from "../repositories/UserRepository.js";
-import productRepository from "../repositories/productRepository.js";
 import UnprocessableContentError from "../errors/UnprocessableContentError.js";
+import orderRepository from "../repositories/orderRepository.js";
 
 class OrderService {
   /**
@@ -40,37 +38,6 @@ class OrderService {
   }
 
   /**
-   * 受発注情報登録
-   *
-   * @param {*} orderInfo 受発注情報
-   */
-  async create(orderInfo) {
-    // 一意性制約チェック
-    const order = await orderRepository.findByNo(orderInfo.orderNo);
-    if (order) {
-      throw new UniqueConstraintError("orderNo", "この受発注番号は既に使用されています");
-    }
-    const client = await clientRepository.findByCode(orderInfo.clientCode);
-    if (!client) {
-      throw new NotFoundError("clientCode", "この取引先コードは存在しません");
-    }
-    const product = await productRepository.findByCode(orderInfo.productCode);
-    if (!product) {
-      throw new NotFoundError("productCode", "この商品コードは存在しません");
-    }
-
-    const now = new Date().toISOString();
-    orderInfo.createdAt = now;
-    orderInfo.updatedAt = now;
-
-    orderInfo.amount = orderInfo.quantity * product.productPrice;
-    orderInfo.tax = Math.round(amount * 0.1);
-    orderInfo.amountTaxIncluded = amount + tax;
-
-    await orderRepository.create(orderInfo);
-  }
-
-  /**
    * 受発注情報更新
    *
    * @param {*} orderNo 受発注番号
@@ -100,7 +67,7 @@ class OrderService {
   }
 
   /**
-   * 受発注情報論理削除
+   * 受発注情報物理削除
    *
    * @param {*} orderNo 受発注番号
    */
@@ -110,7 +77,7 @@ class OrderService {
     if (!order) {
       throw new NotFoundError("orderNo", "この受発注番号は存在しません");
     }
-    if (order && order.cofirmedDate) {
+    if (order.confirmedDate) {
       throw new UnprocessableContentError("orderNo", "この受発注番号は確定日が登録されているため削除できません");
     }
 
