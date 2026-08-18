@@ -1,8 +1,10 @@
 import UniqueConstraintError from "../errors/UniqueConstraintError.js";
 import NotFoundError from "../errors/NotFoundError.js";
-import ValidationError from "../errors/ValidationError.js";
+import ReferenceConstraintError from "../errors/ReferenceConstraintError.js";
 import productRepository from "../repositories/productRepository.js";
+import orderRepository from "../repositories/orderRepository.js";
 import clientRepository from "../repositories/clientRepository.js";
+import ValidationError from "../errors/ValidationError.js";
 
 class ProductService {
   /**
@@ -24,7 +26,7 @@ class ProductService {
   async findByCode(productCode) {
     const product = await productRepository.findByCode(productCode);
     if (!product) {
-      //存在チェック
+      //商品コードの存在チェック
       throw new NotFoundError("productCode", "この商品コードは存在していません");
     }
     return product;
@@ -76,6 +78,7 @@ class ProductService {
     const errors = {};
 
     //発注先コード
+    //受発注区分が発注の場合
     if (product.orderKbn == "2") {
       if (!productInfo.orderClientCode) {
         errors.field = "orderClientCode";
@@ -87,7 +90,9 @@ class ProductService {
         errors.field = "orderClientCode";
         errors.message = "発注先コードは半角英数で設定してください";
       }
-    } else if (product.orderKbn == "1") {
+    }
+    //受発注区分が受注の場合
+    else if (product.orderKbn == "1") {
       if (productInfo.orderClientCode) {
         errors.field = "orderClientCode";
         errors.message = "発注先コードは設定できません";
@@ -113,6 +118,25 @@ class ProductService {
     productInfo.updatedAt = now;
 
     await productRepository.update(productCode, productInfo);
+  }
+
+  /**
+   * 商品情報削除
+   *
+   * @param {*} productCode 商品コード
+   */
+  async delete(productCode) {
+    // 削除データの存在チェック
+    const product = await productRepository.findByCode(productCode);
+    if (!product) {
+      throw new NotFoundError("productCode", "この商品コードは存在していません");
+    }
+    //削除データの外部参照チェック
+    const orders = await orderRepository.findAll({ productCode: productCode });
+    if (orders.length != 0) {
+      throw new ReferenceConstraintError("productCode", "この商品コードは受発注情報で使用されているため削除できません");
+    }
+    await productRepository.delete(productCode);
   }
 }
 

@@ -1,4 +1,4 @@
-import { col, fn, literal, Op } from "sequelize";
+import { literal, Op } from "sequelize";
 import productModel from "../models/productModel.js";
 
 class ProductRepository {
@@ -20,18 +20,18 @@ class ProductRepository {
     if (condition.productName) {
       where.productName = { [Op.like]: "%" + condition.productName + "%" };
     }
-    if (condition.productPriceLow || condition.productPriceHigh) {
+    const hasProductPriceLow = condition.productPriceLow != null && condition.productPriceLow !== "";
+    const hasProductPriceHigh = condition.productPriceHigh != null && condition.productPriceHigh !== "";
+    if (hasProductPriceLow || hasProductPriceHigh) {
       where.productPrice = {};
-
-      if (condition.productPriceLow) {
+      if (hasProductPriceLow) {
         where.productPrice[Op.gte] = condition.productPriceLow;
       }
 
-      if (condition.productPriceHigh) {
+      if (hasProductPriceHigh) {
         where.productPrice[Op.lte] = condition.productPriceHigh;
       }
     }
-
     // 検索結果を返却
     return await productModel.findAll({
       attributes: [
@@ -57,7 +57,7 @@ class ProductRepository {
   }
 
   /**
-   * 情報登録
+   * 商品情報登録
    *
    * @param {*} productInfo 商品情報
    */
@@ -73,6 +73,19 @@ class ProductRepository {
    */
   async update(productCode, productInfo) {
     await productModel.update(productInfo, {
+      where: {
+        productCode: productCode,
+      },
+    });
+  }
+
+  /**
+   * 商品情報物理削除
+   *
+   * @param {*} productCode 商品コード
+   */
+  async delete(productCode) {
+    await productModel.destroy({
       where: {
         productCode: productCode,
       },

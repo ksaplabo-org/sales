@@ -7,6 +7,6 @@ productRoutes.get("/", productController.findAll.bind(productController));
 productRoutes.get("/:productCode", productController.findByCode.bind(productController));
 productRoutes.post("/", productController.create.bind(productController));
 productRoutes.put("/:productCode", productController.update.bind(productController));
-//productRoutes.delete("/:productCode", productController.delete.bind(productController));
+productRoutes.delete("/:productCode", productController.delete.bind(productController));
 
 export default productRoutes;
