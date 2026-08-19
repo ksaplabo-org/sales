@@ -78,7 +78,8 @@
             ・新規登録時の受注は発注先コード欄を非活性表示
             ・発注の場合は発注先候補が存在する場合のみ選択可能
           -->
-          <div v-if="form.orderKbn === '1' && isEdit">-
+          <div v-if="form.orderKbn === '1' && isEdit">
+            -
           </div>
           <BFormSelect
             v-else-if="
@@ -102,7 +103,7 @@
             v-model="form.productName"
             :state="
               form.productName.length > 0 && form.productName.length <= 20
-            "
+              "
             maxlength="20"
             required
           />
@@ -195,14 +196,9 @@ onMounted(async () => {
   if (isEdit.value) {
     // 商品情報詳細取得
     try {
-      const productInfo = await productApi.getProductByProductCode(
+      form.value = await productApi.getProductByProductCode(
         route.params.productCode
       );
-      Object.keys(form.value).forEach((key) => {
-        if (key in productInfo) {
-          form.value[key] = productInfo[key];
-        }
-      });
     } catch (e) {
       console.log(e);
       showFailedToast(messages.MSGE001);
@@ -232,14 +228,12 @@ onMounted(async () => {
 const save = async () => {
   loading.value = true;
   try {
-    // 登録データを作成
-    const saveData = form.value;
     if (isEdit.value) {
-      saveData.updatedId = loginInfo.userId;
-      await productApi.updateProduct(saveData);
+      form.value.updatedId = loginInfo.userId;
+      await productApi.updateProduct(form.value);
     } else {
-      saveData.createdId = loginInfo.userId;
-      await productApi.createProduct(saveData);
+      form.value.createdId = loginInfo.userId;
+      await productApi.createProduct(form.value);
     }
 
     // マスタ画面に遷移
@@ -248,6 +242,7 @@ const save = async () => {
       state: { message: messages.MSGI003, result: true }
     });
   } catch (e) {
+    console.log(e);
     showFailedToast(messages.MSGE004);
   } finally {
     loading.value = false;
@@ -286,7 +281,7 @@ const formatHalfWidthNumeric = (value) => {
 /**
  * 受発注区分変更時の処理
  *
- * @param newOrderKbn 変更後の受発注区分
+ *
  */
 const handleOrderKbnChange = () => {
   if (form.value.orderKbn === "1") {
