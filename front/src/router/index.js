@@ -45,8 +45,6 @@ const routes = [
         component: () => import("@/views/users/UserForm.vue"),
       },
       {
-<<<<<<< HEAD
-=======
         path: "master/clients",
         name: "clientMaster",
         component: () => import("@/views/clients/ClientMaster.vue"),
@@ -62,33 +60,19 @@ const routes = [
         component: () => import("@/views/clients/ClientForm.vue"),
       },
       {
->>>>>>> origin/2026
         path: "sales/orders",
         name: "orderList",
         component: () => import("@/views/orders/OrderList.vue"),
       },
       {
-<<<<<<< HEAD
-        path: "sales/orders",
+        path: "sales/orders/create",
         name: "orderReceiveCreate",
         component: () => import("@/views/orders/OrderCreate.vue"),
       },
       {
-        path: "sales/orders",
+        path: "sales/orders/create",
         name: "orderSaleCreate",
         component: () => import("@/views/orders/OrderCreate.vue"),
-      },
-            {
-        path: "sales/orders/:orderNo/edit",
-        name: "orderEdit",
-        component: () => import("@/views/orders/OrderList.vue"),
-=======
-        path: "sales/orders/create",
-        name: "orderReceiveCreate",
-      },
-      {
-        path: "sales/orders/create",
-        name: "orderSaleCreate",
       },
       {
         path: "sales/orders/:orderNo/edit",
@@ -102,7 +86,6 @@ const routes = [
       {
         path: "master/products/create",
         name: "productCreate",
->>>>>>> origin/2026
       },
     ],
   },

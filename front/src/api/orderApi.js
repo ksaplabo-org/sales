@@ -12,10 +12,9 @@ export async function getOrders(condition) {
 }
 
 /**
-<<<<<<< HEAD
  * 受発注情報詳細取得API呼び出し
  *
- * @param {*} OrderNo 受発注番号
+ * @param {*} orderNo 受発注番号
  * @returns 受発注情報
  */
 export async function getOrderByOrderNo(orderNo) {
@@ -26,16 +25,16 @@ export async function getOrderByOrderNo(orderNo) {
 /**
  * 受発注情報登録
  *
- * @param {*} OrderInfo 受発注情報
+ * @param {*} orderInfo 受発注情報
  */
 export async function createOrder(orderInfo) {
-  await apiClient.post("/orders/", orderInfo);
+  await apiClient.post("/orders", orderInfo);
 }
 
 /**
  * 受発注情報更新
  *
- * @param {*} OrderInfo 受発注情報
+ * @param {*} orderInfo 受発注情報
  */
 export async function editOrder(orderInfo) {
   await apiClient.put(`/orders/${orderInfo.orderNo}`, orderInfo);
@@ -44,12 +43,7 @@ export async function editOrder(orderInfo) {
 /**
  * 受発注情報削除
  *
- * @param {*} OrderNo 受発注番号
-=======
- * 受発注情報削除
- *
  * @param {*} orderNo 受発注番号
->>>>>>> origin/2026
  */
 export async function deleteOrder(orderNo) {
   await apiClient.delete(`/orders/${orderNo}`);

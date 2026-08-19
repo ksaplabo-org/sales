@@ -2,6 +2,8 @@ import UniqueConstraintError from "../errors/UniqueConstraintError.js";
 import NotFoundError from "../errors/NotFoundError.js";
 import UnprocessableContentError from "../errors/UnprocessableContentError.js";
 import orderRepository from "../repositories/orderRepository.js";
+import clientRepository from "../repositories/clientRepository.js";
+import productRepository from "../repositories/productRepository.js";
 
 class OrderService {
   /**
@@ -12,6 +14,39 @@ class OrderService {
    */
   async findAll(condition) {
     return await orderRepository.findAll(condition);
+  }
+
+  /**
+   * 受発注情報登録
+   *
+   * @param {*} orderInfo 受発注情報
+   */
+  async create(orderInfo) {
+    // 一意性制約チェック
+    const order = await orderRepository.findByNo(orderInfo.orderNo);
+    if (order) {
+      throw new UniqueConstraintError("orderNo", "この受発注番号は既に使用されています");
+    }
+    const client = await clientRepository.findByCode(orderInfo.clientCode);
+    if (!client) {
+      throw new NotFoundError("clientCode", "この取引先コードは存在しません");
+    }
+    const product = await productRepository.findByCode(orderInfo.productCode);
+    if (!product) {
+      throw new NotFoundError("productCode", "この商品コードは存在しません");
+    }
+
+    const now = new Date().toISOString();
+    orderInfo.createdAt = now;
+    orderInfo.updatedAt = now;
+
+    const amount = orderInfo.quantity * product.productPrice;
+    const tax = Math.round(amount * 0.1);
+    orderInfo.amount = amount;
+    orderInfo.tax = tax;
+    orderInfo.amountTaxIncluded = amount + tax;
+
+    await orderRepository.create(orderInfo);
   }
 
   /**

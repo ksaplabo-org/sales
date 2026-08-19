@@ -62,8 +62,13 @@
       </BRow>
 
       <!-- 取引先参照モーダル -->
-      <BModal v-model="showClientModal" title="取引先コードの参照">
-        <BTable :items="clientItems" :fields="clientFields" hover selectable select-mode="single" />
+      <BModal v-model="showClientModal" title="取引先コードの参照" size="lg">
+        <BTable :items="clientItems" :fields="clientFields" hover selectable select-mode="single"
+        @row-selected="onClientSelected">
+        <template #cell(postCode)="data">
+          {{ formatPostCode(data.value) }}
+        </template>
+      </BTable>
         <div v-if="clientItems.length === 0" class="text-center text-muted mt-3">検索結果がありません</div>
         <template #footer>
           <BButton variant="secondary" @click="showClientModal = false">キャンセル</BButton>
@@ -167,14 +172,8 @@
               maxlength="7"
               @input="product.productName=''"
               @blur="applyProductInput(form.productCode)"
-              required
-            />
-            <BButton
-              type="button"
-              variant="outline-primary"
-              class="btn-reference text-nowrap"
-              @click="openProductModal"
-            >
+              required/>
+            <BButton type="button" variant="outline-primary" class="btn-reference text-nowrap" @click="openProductModal">
               <i class="fas fa-list me-1"></i>参照
             </BButton>
           </div>
@@ -185,8 +184,9 @@
       </BRow>
 
       <!-- 商品参照モーダル -->
-      <BModal v-model="showProductModal" title="商品コードの参照">
-        <BTable :items="productItems" :fields="productFields" hover selectable select-mode="single" />
+      <BModal v-model="showProductModal" title="商品コードの参照" size="lg">
+        <BTable :items="productItems" :fields="productFields" hover selectable select-mode="single" 
+        @row-selected="onProductSelected"/>
         <div v-if="productItems.length === 0" class="text-center text-muted mt-3">検索結果がありません</div>
         <template #footer>
           <BButton variant="secondary" @click="showProductModal = false">キャンセル</BButton>
@@ -235,7 +235,7 @@
       <BRow class="mb-3">
         <BFormGroup label="金額" label-cols="3">
           <div class="form-control-plaintext">
-            {{ calculate.amount || "-" }}
+            {{ calculate.amount ? calculate.amount.toLocaleString() : "-" }}
           </div>
         </BFormGroup>
       </BRow>
@@ -244,7 +244,7 @@
       <BRow class="mb-3">
         <BFormGroup label="消費税" label-cols="3">
           <div class="form-control-plaintext">
-            {{ calculate.tax || "-" }}
+            {{ calculate.tax ? calculate.tax.toLocaleString() : "-" }}
           </div>
         </BFormGroup>
       </BRow>
@@ -253,7 +253,7 @@
       <BRow class="mb-3">
         <BFormGroup :label="isReceive ? '請求金額' : '支払金額'" label-cols="3">
           <div class="form-control-plaintext">
-            {{ calculate.amountTaxIncluded || "-" }}
+            {{ calculate.amountTaxIncluded ? calculate.amountTaxIncluded.toLocaleString() : "-" }}
           </div>
         </BFormGroup>
       </BRow>
@@ -275,8 +275,8 @@
 import { computed, ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
-//import * as clientApi from "@/api/clientApi.js";
-//import * as productApi from "@/api/productApi.js";
+import * as clientApi from "@/api/clientApi.js";
+import * as productApi from "@/api/productApi.js";
 import * as orderApi from "@/api/orderApi.js";
 
 import Loading from "@/components/Loading.vue";
@@ -358,28 +358,28 @@ const TOAST_MS = 1500;
 //一覧列定義
 //取引先
 const clientFields = [
-  { key: "clientCode", label: "取引先コード", sortable: true },
-  { key: "clientName", label: "取引先名" },
-  { key: "postCode", label: "郵便番号" },
-  { key: "address1", label: "住所1" },
-  { key: "address2", label: "住所2" },
-  { key: "telNumber", label: "電話番号" },
+  { key: "clientCode", label: "取引先コード", thStyle:{whiteSpace:"nowrap"}, sortable: true },
+  { key: "clientName", label: "取引先名",thStyle:{whiteSpace:"nowrap"},},
+  { key: "postCode", label: "郵便番号", thStyle:{whiteSpace:"nowrap"},},
+  { key: "address1", label: "住所1", thStyle:{whiteSpace:"nowrap"},},
+  { key: "address2", label: "住所2", thStyle:{whiteSpace:"nowrap"},},
+  { key: "telNumber", label: "電話番号", thStyle:{whiteSpace:"nowrap"},},
 ];
 //商品(受注時)
 const productFields = computed(() => {
   if (isReceive.value) {
     return [
-      { key: "productCode", label: "商品コード", sortable: true },
-      { key: "productName", label: "商品名" },
-      { key: "productPrice", label: "単価" },
+      { key: "productCode", label: "商品コード", thStyle:{whiteSpace:"nowrap"}, sortable: true },
+      { key: "productName", label: "商品名", thStyle:{whiteSpace:"nowrap"},},
+      { key: "productPrice", label: "単価", thStyle:{whiteSpace:"nowrap"},},
     ];
   }
   //商品(発注時)
   return [
-    { key: "productCode", label: "商品コード", sortable: true },
-    { key: "productName", label: "商品名" },
-    { key: "orderClientCode", label: "発注先コード" },
-    { key: "productPrice", label: "単価" },
+    { key: "productCode", label: "商品コード", thStyle:{whiteSpace:"nowrap"}, sortable: true },
+    { key: "productName", label: "商品名", thStyle:{whiteSpace:"nowrap"},},
+    { key: "orderClientCode", label: "発注先コード", thStyle:{whiteSpace:"nowrap"},},
+    { key: "productPrice", label: "単価", thStyle:{whiteSpace:"nowrap"},},
   ];
 });
 
@@ -390,9 +390,6 @@ const clientCodeState = computed(() => {
 const productCodeState = computed(() => {
   return !!product.value.productName;
 });
-
-//エラー
-const dateErrorMessage = computed
 
 //半角英数字
 const formatHalfWidthAlphaNumeric = (value) => {
@@ -449,14 +446,12 @@ onMounted(async () => {
     }
 
     //取引先情報一覧取得
-    //clientItems.value =
-    //await clientApi.getClients({orderKbn: orderKbn.value});
-    clientItems.value = [];
+    clientItems.value =
+    await clientApi.getClients({orderKbn: orderKbn.value});
 
     //商品情報一覧取得
-    //productItems.value =
-    //await productApi.getProducts({orderKbn: orderKbn.value});
-    productItems.value = [];
+    productItems.value =
+    await productApi.getProducts({orderKbn: orderKbn.value});
   } catch (e) {
     console.error(e);
 
@@ -471,6 +466,10 @@ onMounted(async () => {
  */
 const openClientModal = () => {
   showClientModal.value = true;
+};
+
+const onClientSelected = (row) => {
+  selectedClient.value = row;
 };
 
 /**
@@ -499,13 +498,11 @@ const applyClientInput = (clientCode) => {
     client.value.clientName = null;
     client.value.telNumber = null;
     client.value.address1 = null;
-
-    return;
-  }
-
+  } else {
   client.value.clientName = result.clientName;
   client.value.telNumber = result.telNumber;
   client.value.address1 = result.address1;
+  }
 };
 
 /**
@@ -513,6 +510,10 @@ const applyClientInput = (clientCode) => {
  */
 const openProductModal = () => {
   showProductModal.value = true;
+};
+
+const onProductSelected = (row) => {
+  selectedProduct.value = row;
 };
 
 /**
@@ -604,10 +605,15 @@ const createOrder = async () => {
 
     router.push({
       name: "orderList",
+      state:{
+        message: messages.MSGI003,
+        result: true,
+      },
     });
+
   } catch (e) {
     console.error(e);
-
+    
     openFailedToast(messages.MSGE004);
   } finally {
     loading.value = false;

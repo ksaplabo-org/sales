@@ -11,7 +11,6 @@ const messages = Object.freeze({
   MSGE007: "削除に失敗しました",
   MSGE008: "{0}は{1}桁で入力してください",
   MSGE009: "{0}は半角英数で入力してください",
-<<<<<<< HEAD
   MSGE010: "{0}は{1}文字以内で入力してください",
   MSGE011: "{0}は半角数字で入力してください",
   MSGE012: "{0}は{1}桁以内で入力してください",
@@ -22,9 +21,6 @@ const messages = Object.freeze({
   MSGE017: "{0}は{1}以降の日付を入力してください",
   MSGE018: "{0}が存在しません",
   MSGE019: "入力された{0}は存在しません"
-=======
-  MSGE015: "{0}はxxx-xxxx-xxxxで入力してください",
->>>>>>> origin/2026
 });
 
 export default messages;
