@@ -62,7 +62,7 @@ class OrderRepository {
    * @param {*} orderInfo 受発注情報
    */
   async update(orderNo, orderInfo) {
-    await OrderModel.update(orderInfo, {
+    await orderModel.update(orderInfo, {
       where: {
         orderNo: orderNo,
       },

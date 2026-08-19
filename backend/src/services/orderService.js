@@ -2,6 +2,8 @@ import UniqueConstraintError from "../errors/UniqueConstraintError.js";
 import NotFoundError from "../errors/NotFoundError.js";
 import UnprocessableContentError from "../errors/UnprocessableContentError.js";
 import orderRepository from "../repositories/orderRepository.js";
+import userRepository from "../repositories/userRepository.js";
+import productRepository from "../repositories/productRepository.js";
 
 class OrderService {
   /**
@@ -17,7 +19,7 @@ class OrderService {
   /**
    * 受発注情報詳細取得
    *
-   * @param {*} no 受発注番号
+   * @param {*} orderNo 受発注番号
    * @returns 受発注情報詳細
    */
   async findByNo(orderNo) {
@@ -77,6 +79,7 @@ class OrderService {
     if (!order) {
       throw new NotFoundError("orderNo", "この受発注番号は存在しません");
     }
+    //削除データの削除可否チェック
     if (order.confirmedDate) {
       throw new UnprocessableContentError("orderNo", "この受発注番号は確定日が登録されているため削除できません");
     }

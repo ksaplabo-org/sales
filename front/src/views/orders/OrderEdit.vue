@@ -71,7 +71,7 @@
             {{ view.confirmedDate }}
           </div>
 
-          <!-- 登録画面 または 確定日未登録 -->
+          <!-- 確定日未登録 -->
           <BFormInput
             v-else
             id="confirmedDate"
@@ -79,7 +79,7 @@
             :state="confirmedDateError ? false : true"
             type="date"
           />
-          <BFormInvalidFeedback :state="false" v-if="confirmedDateError">
+          <BFormInvalidFeedback :state="false">
             {{ confirmedDateError }}
           </BFormInvalidFeedback>
         </BFormGroup>
@@ -89,7 +89,7 @@
       <BRow class="mb-3" v-if="view.orderKbn === '1'">
         <BFormGroup label="出荷日" label-cols="3">
           <BFormInput id="shipDate" v-model="view.shipDate" :state="shipDateError ? false : true" type="date" />
-          <BFormInvalidFeedback :state="false" v-if="shipDateError">
+          <BFormInvalidFeedback :state="false">
             {{ shipDateError }}
           </BFormInvalidFeedback>
         </BFormGroup>
@@ -197,7 +197,7 @@
     size="lg"
     ok-title="確定"
     cancel-title="キャンセル"
-    @ok="applySelectedProductConfirm"
+    @ok="applySelectedProduct"
   >
     <BTable
       :items="productItems"
@@ -211,26 +211,6 @@
   </BModal>
 </template>
 
-<!-- 受発注ボタンレイアウト -->
-<style>
-.btn-refarence {
-  background-color: #fff !important;
-  border-color: #007dc5 !important;
-  color: #000 !important;
-}
-
-.btn-refarence:hover {
-  background-color: #0d6efd !important;
-  border-color: #4aa8db !important;
-  color: #fff !important;
-}
-
-.btn-refarence:focus,
-.btn-receive:focus-visible {
-  box-shadow: 0 0 0 0.25rem rgba(2, 100, 150, 0.25) !important;
-}
-</style>
-
 <script setup>
 import { computed, ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
@@ -240,6 +220,7 @@ import Loading from "@/components/Loading.vue";
 import * as Auth from "@/utils/auth.js";
 import messages from "@/constants/messages.js";
 import * as productApi from "@/api/productApi.js";
+import { formatMessage } from "@/utils/messageUtil.js";
 
 /**
  * 半角数字のみに置換する
@@ -291,7 +272,6 @@ const view = ref({
   updatedName: "",
   updatedAt: "",
 });
-
 const product = ref({
   productName: "-",
   productPrice: "-",
@@ -300,18 +280,16 @@ const product = ref({
 // 確定日登録判定入力制御処理
 const hasConfirmedDate = ref(false);
 
-//商品情報モーダル
+//モーダル表示制御
 const showProductModal = ref(false);
+
+//参照行選択
 const selectedProduct = ref(null);
 
-//商品情報一覧検索結果
+//一覧検索結果
 const productItems = ref([]);
 
 //computed
-//エラーメッセージラベル
-const orderDateLabel = computed(() => (view.value.orderKbn === "1" ? "受注日" : "発注日"));
-const confirmedDateLabel = computed(() => (view.value.orderKbn === "1" ? "入金日" : "発注受付完了日"));
-
 //確定日エラーメッセージ
 const confirmedDateError = computed(() => {
   const orderDate = view.value.orderDate;
@@ -322,7 +300,11 @@ const confirmedDateError = computed(() => {
   }
 
   if (new Date(confirmedDate) < new Date(orderDate)) {
-    return `${confirmedDateLabel.value}は${orderDateLabel.value}以降の日付を入力してください。`;
+    return formatMessage(
+      messages.MSGE017,
+      view.value.orderKbn === "1" ? "入金日" : "発注受付完了日",
+      view.value.orderKbn === "1" ? "受注日" : "発注日",
+    );
   }
   return "";
 });
@@ -337,10 +319,10 @@ const shipDateError = computed(() => {
     return "";
   }
   if (new Date(shipDate) < new Date(confirmedDate)) {
-    return `出荷日は${confirmedDateLabel.value}以降の日付を入力してください。`;
+    return formatMessage(messages.MSGE017, "出荷日", "入金日");
   }
   if (new Date(shipDate) < new Date(orderDate)) {
-    return `出荷日は${orderDateLabel.value}以降の日付を入力してください。`;
+    return formatMessage(messages.MSGE017, "出荷日", "受注日");
   }
   return "";
 });
@@ -355,20 +337,14 @@ const deliverDateError = computed(() => {
   if (!deliverDate) {
     return "";
   }
-
-  if (view.value.orderKbn === "1") {
-    if (new Date(deliverDate) < new Date(shipDate)) {
-      return "納品予定日は出荷日以降の日付を入力してください。";
-    }
+  if (new Date(deliverDate) < new Date(shipDate)) {
+    return formatMessage(messages.MSGE017, "納品予定日", "出荷日");
   }
-
-  if (view.value.orderKbn === "2") {
-    if (new Date(deliverDate) < new Date(confirmedDate)) {
-      return "納品予定日は発注受付完了日以降の日付を入力してください。";
-    }
-    if (new Date(deliverDate) < new Date(orderDate)) {
-      return "納品予定日は発注日以降の日付を入力してください。";
-    }
+  if (new Date(deliverDate) < new Date(confirmedDate)) {
+    return formatMessage(messages.MSGE017, "納品予定日", view.value.orderKbn === "1" ? "入金日" : "発注受付完了日");
+  }
+  if (new Date(deliverDate) < new Date(orderDate)) {
+    return formatMessage(messages.MSGE017, "納品予定日", view.value.orderKbn === "1" ? "受注日" : "発注日");
   }
   return "";
 });
@@ -377,19 +353,19 @@ const deliverDateError = computed(() => {
 const productCodeError = computed(() => {
   // 未入力
   if (!view.value.productCode) {
-    return "商品コードを入力してください。";
+    return formatMessage(messages.MSGE014, "商品コード");
   }
   // 桁数チェック
   if (view.value.productCode.length !== 7) {
-    return "商品コードは7桁で入力してください。";
+    return formatMessage(messages.MSGE012, "商品コード", "7");
   }
   //形式チェック
   if (!/^[A-Za-z0-9]+$/.test(view.value.productCode)) {
-    return "商品コードは半角英数で入力してください。";
+    return formatMessage(messages.MSGE011, "商品コード");
   }
   // 存在チェック
   if (product.value.productName === "-") {
-    return "存在しない商品コードです。";
+    return formatMessage(messages.MSGE019, "商品コード");
   }
   return "";
 });
@@ -398,11 +374,11 @@ const productCodeError = computed(() => {
 const quantityError = computed(() => {
   // 未入力チェック
   if (view.value.quantity === "" || view.value.quantity === null || view.value.quantity === undefined) {
-    return "数量を入力してください。";
+    return formatMessage(messages.MSGE014, "数量");
   }
   // 1以上チェック
   if (Number(view.value.quantity) < 1) {
-    return "数量は1以上で入力してください。";
+    return formatMessage(messages.MSGE016, "数量", "1");
   }
   return "";
 });
@@ -416,7 +392,7 @@ const breadcrumbs = computed(() => [
   {
     text: "受発注情報一覧",
     to: {
-      name: "orderSales",
+      name: "orderList",
     },
   },
   {
@@ -428,54 +404,39 @@ const breadcrumbs = computed(() => [
 //商品情報一覧列定義
 const productFields = computed(() => {
   const fields = [
-    {
-      key: "productCode",
-      label: "商品コード",
-      sortable: true,
-    },
-    {
-      key: "productName",
-      label: "商品名",
-    },
+    { key: "productCode", label: "商品コード", sortable: true },
+    { key: "productName", label: "商品名" },
   ];
-
   if (view.value.orderKbn === "2") {
-    fields.push({
-      key: "orderClientCode",
-      label: "発注先コード",
-    });
+    fields.push({ key: "orderClientCode", label: "発注先コード" });
   }
-
-  fields.push({
-    key: "productPrice",
-    label: "単価",
-  });
-
+  fields.push({ key: "productPrice", label: "単価" });
   return fields;
 });
 
-//モーダルを開く
+//商品コード参照モーダル表示処理
 const openProductModal = () => {
   showProductModal.value = true;
 };
 
-//商品選択行保持
+//商品選択行情報反映処理
 const applySelectedProduct = (row) => {
-  selectedProduct.value = row.item;
-};
+  if (row?.item) {
+    selectedProduct.value = row.item;
+    return;
+  }
 
-// 商品選択内容確定処理
-const applySelectedProductConfirm = () => {
   if (!selectedProduct.value) {
     return;
   }
+
   view.value.productCode = selectedProduct.value.productCode;
   product.value.productName = selectedProduct.value.productName;
   product.value.productPrice = selectedProduct.value.productPrice;
   showProductModal.value = false;
 };
 
-//商品情報入力反映処理
+//商品情報モーダル入力反映処理
 const applyProductInput = () => {
   const item = productItems.value.find((p) => p.productCode === view.value.productCode);
 
@@ -538,7 +499,7 @@ onMounted(async () => {
   }
 });
 
-//更新
+//受発注情報更新処理
 const updateOrder = async () => {
   if (
     confirmedDateError.value ||
@@ -548,9 +509,6 @@ const updateOrder = async () => {
     (view.value.orderKbn === "1" && shipDateError.value)
   ) {
     openFailedToast.value = true;
-    setTimeout(() => {
-      openFailedToast.value = false;
-    }, 1500);
     return;
   }
   loading.value = true;
@@ -572,7 +530,7 @@ const updateOrder = async () => {
     await orderApi.editOrder(saveData);
 
     router.push({
-      name: "orderSales",
+      name: "orderList",
       state: {
         result: true,
         message: "更新に成功しました。",
@@ -585,3 +543,23 @@ const updateOrder = async () => {
   }
 };
 </script>
+
+<!-- 受発注ボタンレイアウト -->
+<style>
+.btn-refarence {
+  background-color: #fff !important;
+  border-color: #007dc5 !important;
+  color: #000 !important;
+}
+
+.btn-refarence:hover {
+  background-color: #0d6efd !important;
+  border-color: #4aa8db !important;
+  color: #fff !important;
+}
+
+.btn-refarence:focus,
+.btn-receive:focus-visible {
+  box-shadow: 0 0 0 0.25rem rgba(2, 100, 150, 0.25) !important;
+}
+</style>
