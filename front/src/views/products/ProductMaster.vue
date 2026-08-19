@@ -40,15 +40,11 @@
           <BFormGroup label="受発注区分">
             <BFormSelect
               v-model="condition.orderKbn"
-              :options="[
-                { value: '', text: '全て表示' },
-                { value: '1', text: '受注のみ表示' },
-                { value: '2', text: '発注のみ表示' },
-              ]"
+              :options="order"
             />
           </BFormGroup>
         </BCol>
-        
+
         <BCol md="4">
           <BFormGroup label="商品コード">
             <BFormInput
