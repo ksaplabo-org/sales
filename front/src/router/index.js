@@ -84,6 +84,7 @@ const routes = [
       {
         path: "master/products/create",
         name: "productCreate",
+        component: () => import("@/views/products/ProductForm.vue"),
       },
       {
         path: "master/products/:productCode/edit",
