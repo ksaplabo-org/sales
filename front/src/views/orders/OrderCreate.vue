@@ -5,11 +5,13 @@
       <h3 class="mb-0">
         {{ isReceive ? "受注情報登録" : "発注情報登録" }}
       </h3>
-      <BBreadcrumb :items="[
-        { text: 'トップページ', to: '/' },
-        { text: '受発注情報一覧', to: { name: 'orderList' } },
-        { text: isReceive ? '受注情報登録' : '発注情報登録', active: true},
-      ]" />
+      <BBreadcrumb
+        :items="[
+          { text: 'トップページ', to: '/' },
+          { text: '受発注情報一覧', to: { name: 'orderList' } },
+          { text: isReceive ? '受注情報登録' : '発注情報登録', active: true },
+        ]"
+      />
     </div>
   </BContainer>
 
@@ -35,7 +37,8 @@
             :state="form.orderNo.length === 8"
             :formatter="formatHalfWidthAlphaNumeric"
             maxlength="8"
-            required/>
+            required
+          />
           <BFormInvalidFeedback v-if="form.orderNo">
             {{ formatMessage(messages.MSGE008, "受発注番号", 8) }}
           </BFormInvalidFeedback>
@@ -52,9 +55,10 @@
               :state="clientCodeState"
               :formatter="formatHalfWidthAlphaNumeric"
               maxlength="8"
-              @input="client.clientName=''"
+              @input="client.clientName = ''"
               @blur="applyClientInput(form.clientCode)"
-              required/>
+              required
+            />
             <BButton type="button" variant="outline-primary" class="btn-reference text-nowrap" @click="openClientModal">
               <i class="fas fa-list me-1"></i>参照
             </BButton>
@@ -67,12 +71,18 @@
 
       <!-- 取引先参照モーダル -->
       <BModal v-model="showClientModal" title="取引先コードの参照" size="lg">
-        <BTable :items="clientItems" :fields="clientFields" hover selectable select-mode="single"
-        @row-selected="onClientSelected">
-        <template #cell(postCode)="data">
-          {{ formatPostCode(data.value) }}
-        </template>
-      </BTable>
+        <BTable
+          :items="clientItems"
+          :fields="clientFields"
+          hover
+          selectable
+          select-mode="single"
+          @row-selected="onClientSelected"
+        >
+          <template #cell(postCode)="data">
+            {{ formatPostCode(data.value) }}
+          </template>
+        </BTable>
         <div v-if="clientItems.length === 0" class="text-center text-muted mt-3">検索結果がありません</div>
         <template #footer>
           <BButton variant="secondary" @click="showClientModal = false">キャンセル</BButton>
@@ -121,9 +131,12 @@
             id="confirmedDate"
             v-model="form.confirmedDate"
             :state="form.confirmedDate === '' ? null : form.confirmedDate >= form.orderDate"
-            type="date"/>
+            type="date"
+          />
           <div v-if="form.confirmedDate && form.confirmedDate < form.orderDate" class="text-danger">
-            {{formatMessage(messages.MSGE017, isReceive ? "入金日" : "発注受付完了日", isReceive ? "受注日" : "発注日")}}
+            {{
+              formatMessage(messages.MSGE017, isReceive ? "入金日" : "発注受付完了日", isReceive ? "受注日" : "発注日")
+            }}
           </div>
         </BFormGroup>
       </BRow>
@@ -134,13 +147,22 @@
           <BFormInput
             id="shipDate"
             v-model="form.shipDate"
-            :state="!!form.shipDate &&
-                     (form.confirmedDate ? form.shipDate >= form.confirmedDate : form.shipDate >= form.orderDate)"
-            type="date" required/>
-          <div v-if="!(form.confirmedDate && form.confirmedDate < form.orderDate) &&
-          form.shipDate && (form.confirmedDate ? form.shipDate < form.confirmedDate : form.shipDate < form.orderDate)"
-          class="text-danger">
-            {{formatMessage(messages.MSGE017, "出荷日",form.confirmedDate ? "入金日" : "受注日")}}
+            :state="
+              !!form.shipDate &&
+              (form.confirmedDate ? form.shipDate >= form.confirmedDate : form.shipDate >= form.orderDate)
+            "
+            type="date"
+            required
+          />
+          <div
+            v-if="
+              !(form.confirmedDate && form.confirmedDate < form.orderDate) &&
+              form.shipDate &&
+              (form.confirmedDate ? form.shipDate < form.confirmedDate : form.shipDate < form.orderDate)
+            "
+            class="text-danger"
+          >
+            {{ formatMessage(messages.MSGE017, "出荷日", form.confirmedDate ? "入金日" : "受注日") }}
           </div>
         </BFormGroup>
       </BRow>
@@ -149,17 +171,34 @@
       <BRow class="mb-3">
         <BFormGroup label="納品予定日" label-cols="3">
           <BFormInput
-          id="deliverDate"
-          v-model="form.deliverDate"
-          :state="!!form.deliverDate &&
-                   (form.shipDate ? form.deliverDate >= form.shipDate : form.deliverDate >= form.orderDate)"
-          type="date" required />
-          <div v-if="!(form.confirmedDate && form.confirmedDate < form.orderDate) && 
-          !(form.shipDate && (form.confirmedDate ? form.shipDate < form.confirmedDate
-            : form.shipDate < form.orderDate )) && 
-          form.deliverDate && (form.shipDate ? form.deliverDate < form.shipDate : form.deliverDate < form.orderDate)" 
-          class="text-danger">
-            {{ formatMessage(messages.MSGE017, "納品予定日",isReceive ? (form.shipDate ? "出荷日" : "受注日") : (form.confirmedDate ? "発注受付完了日" : "発注日"))}}
+            id="deliverDate"
+            v-model="form.deliverDate"
+            :state="
+              !!form.deliverDate &&
+              (form.shipDate ? form.deliverDate >= form.shipDate : form.deliverDate >= form.orderDate)
+            "
+            type="date"
+            required
+          />
+          <div
+            v-if="
+              !(form.confirmedDate && form.confirmedDate < form.orderDate) &&
+              !(
+                form.shipDate &&
+                (form.confirmedDate ? form.shipDate < form.confirmedDate : form.shipDate < form.orderDate)
+              ) &&
+              form.deliverDate &&
+              (form.shipDate ? form.deliverDate < form.shipDate : form.deliverDate < form.orderDate)
+            "
+            class="text-danger"
+          >
+            {{
+              formatMessage(
+                messages.MSGE017,
+                "納品予定日",
+                isReceive ? (form.shipDate ? "出荷日" : "受注日") : form.confirmedDate ? "発注受付完了日" : "発注日",
+              )
+            }}
           </div>
         </BFormGroup>
       </BRow>
@@ -174,10 +213,16 @@
               :state="productCodeState"
               :formatter="formatHalfWidthAlphaNumeric"
               maxlength="7"
-              @input="product.productName=''"
+              @input="product.productName = ''"
               @blur="applyProductInput(form.productCode)"
-              required/>
-            <BButton type="button" variant="outline-primary" class="btn-reference text-nowrap" @click="openProductModal">
+              required
+            />
+            <BButton
+              type="button"
+              variant="outline-primary"
+              class="btn-reference text-nowrap"
+              @click="openProductModal"
+            >
               <i class="fas fa-list me-1"></i>参照
             </BButton>
           </div>
@@ -189,8 +234,14 @@
 
       <!-- 商品参照モーダル -->
       <BModal v-model="showProductModal" title="商品コードの参照" size="lg">
-        <BTable :items="productItems" :fields="productFields" hover selectable select-mode="single" 
-        @row-selected="onProductSelected"/>
+        <BTable
+          :items="productItems"
+          :fields="productFields"
+          hover
+          selectable
+          select-mode="single"
+          @row-selected="onProductSelected"
+        />
         <div v-if="productItems.length === 0" class="text-center text-muted mt-3">検索結果がありません</div>
         <template #footer>
           <BButton variant="secondary" @click="showProductModal = false">キャンセル</BButton>
@@ -362,32 +413,32 @@ const TOAST_MS = 1500;
 //一覧列定義
 //取引先
 const clientFields = [
-  { key: "clientCode", label: "取引先コード", thStyle:{whiteSpace:"nowrap"}, sortable: true },
-  { key: "clientName", label: "取引先名",thStyle:{whiteSpace:"nowrap"},},
-  { key: "postCode", label: "郵便番号", thStyle:{whiteSpace:"nowrap"},},
-  { key: "address1", label: "住所1", thStyle:{whiteSpace:"nowrap"},},
-  { key: "address2", label: "住所2", thStyle:{whiteSpace:"nowrap"},},
-  { key: "telNumber", label: "電話番号", thStyle:{whiteSpace:"nowrap"},},
+  { key: "clientCode", label: "取引先コード", thStyle: { whiteSpace: "nowrap" }, sortable: true },
+  { key: "clientName", label: "取引先名", thStyle: { whiteSpace: "nowrap" } },
+  { key: "postCode", label: "郵便番号", thStyle: { whiteSpace: "nowrap" } },
+  { key: "address1", label: "住所1", thStyle: { whiteSpace: "nowrap" } },
+  { key: "address2", label: "住所2", thStyle: { whiteSpace: "nowrap" } },
+  { key: "telNumber", label: "電話番号", thStyle: { whiteSpace: "nowrap" } },
 ];
 //商品(受注時)
 const productFields = computed(() => {
   if (isReceive.value) {
     return [
-      { key: "productCode", label: "商品コード", thStyle:{whiteSpace:"nowrap"}, sortable: true },
-      { key: "productName", label: "商品名", thStyle:{whiteSpace:"nowrap"},},
-      { key: "productPrice", label: "単価", thStyle:{whiteSpace:"nowrap"},},
+      { key: "productCode", label: "商品コード", thStyle: { whiteSpace: "nowrap" }, sortable: true },
+      { key: "productName", label: "商品名", thStyle: { whiteSpace: "nowrap" } },
+      { key: "productPrice", label: "単価", thStyle: { whiteSpace: "nowrap" } },
     ];
   }
   //商品(発注時)
   return [
-    { key: "productCode", label: "商品コード", thStyle:{whiteSpace:"nowrap"}, sortable: true },
-    { key: "productName", label: "商品名", thStyle:{whiteSpace:"nowrap"},},
-    { key: "orderClientCode", label: "発注先コード", thStyle:{whiteSpace:"nowrap"},},
-    { key: "productPrice", label: "単価", thStyle:{whiteSpace:"nowrap"},},
+    { key: "productCode", label: "商品コード", thStyle: { whiteSpace: "nowrap" }, sortable: true },
+    { key: "productName", label: "商品名", thStyle: { whiteSpace: "nowrap" } },
+    { key: "orderClientCode", label: "発注先コード", thStyle: { whiteSpace: "nowrap" } },
+    { key: "productPrice", label: "単価", thStyle: { whiteSpace: "nowrap" } },
   ];
 });
 
-//存在チェック
+//入力コード存在チェック
 const clientCodeState = computed(() => {
   return !!client.value.clientName;
 });
@@ -432,14 +483,12 @@ onMounted(async () => {
     }
 
     //取引先情報一覧取得
-    clientItems.value =
-    await clientApi.getClients({orderKbn: orderKbn.value});
+    clientItems.value = await clientApi.getClients({ orderKbn: orderKbn.value });
 
     //商品情報一覧取得
-    productItems.value =
-    await productApi.getProducts({orderKbn: orderKbn.value});
+    productItems.value = await productApi.getProducts({ orderKbn: orderKbn.value });
   } catch (e) {
-    console.error(e);
+    console.log(e);
 
     openFailedToast(messages.MSGE001);
   } finally {
@@ -488,9 +537,9 @@ const applyClientInput = (clientCode) => {
     client.value.telNumber = null;
     client.value.address1 = null;
   } else {
-  client.value.clientName = result.clientName;
-  client.value.telNumber = result.telNumber;
-  client.value.address1 = result.address1;
+    client.value.clientName = result.clientName;
+    client.value.telNumber = result.telNumber;
+    client.value.address1 = result.address1;
   }
 };
 
@@ -585,10 +634,6 @@ const createOrder = async () => {
     const saveData = {
       ...form.value,
 
-      amount: calculate.value.amount,
-      tax: calculate.value.tax,
-      amountTaxIncluded: calculate.value.amountTaxIncluded,
-
       createdId: loginInfo.userId,
       orderKbn: orderKbn.value,
     };
@@ -597,15 +642,14 @@ const createOrder = async () => {
 
     router.push({
       name: "orderList",
-      state:{
+      state: {
         message: messages.MSGI003,
         result: true,
       },
     });
-
   } catch (e) {
-    console.error(e);
-    
+    console.log(e);
+
     openFailedToast(messages.MSGE004);
   } finally {
     loading.value = false;
