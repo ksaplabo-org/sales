@@ -5,7 +5,11 @@
       <h3 class="mb-0">
         {{ isReceive ? "受注情報登録" : "発注情報登録" }}
       </h3>
-      <BBreadcrumb :items="breadcrumbs" />
+      <BBreadcrumb :items="[
+        { text: 'トップページ', to: '/' },
+        { text: '受発注情報一覧', to: { name: 'orderList' } },
+        { text: isReceive ? '受注情報登録' : '発注情報登録', active: true},
+      ]" />
     </div>
   </BContainer>
 
@@ -407,24 +411,6 @@ const formatPostCode = (postCode) => {
   return postCode.replace(/^(\d{3})(\d{4})$/, "$1-$2");
 };
 
-// パンくずリスト
-const breadcrumbs = computed(() => [
-  {
-    text: "トップページ",
-    to: "/",
-  },
-  {
-    text: "受発注情報一覧",
-    to: {
-      name: "orderList",
-    },
-  },
-  {
-    text: isReceive.value ? "受注情報登録" : "発注情報登録",
-    active: true,
-  },
-]);
-
 /**
  * No1初期表示処理
  */
@@ -468,12 +454,15 @@ const openClientModal = () => {
   showClientModal.value = true;
 };
 
+/**
+ * No3取引先参照行選択処理
+ */
 const onClientSelected = (row) => {
   selectedClient.value = row;
 };
 
 /**
- * No3取引先選択行情報反映処理
+ * No4取引先選択行情報反映処理
  */
 const applySelectedClient = () => {
   if (!selectedClient.value) {
@@ -489,7 +478,7 @@ const applySelectedClient = () => {
 };
 
 /**
- * No4取引先情報入力反映処理
+ * No5取引先情報入力反映処理
  */
 const applyClientInput = (clientCode) => {
   const result = clientItems.value.find((item) => item.clientCode === clientCode);
@@ -506,18 +495,21 @@ const applyClientInput = (clientCode) => {
 };
 
 /**
- * No5商品情報モーダル表示処理
+ * No6商品情報モーダル表示処理
  */
 const openProductModal = () => {
   showProductModal.value = true;
 };
 
+/**
+ * No7商品参照行選択処理
+ */
 const onProductSelected = (row) => {
   selectedProduct.value = row;
 };
 
 /**
- * No6商品選択行情報反映処理
+ * No8商品選択行情報反映処理
  */
 const applySelectedProduct = () => {
   if (!selectedProduct.value) {
@@ -534,7 +526,7 @@ const applySelectedProduct = () => {
 };
 
 /**
- * No7商品情報モーダル入力反映処理
+ * No9商品情報モーダル入力反映処理
  */
 const applyProductInput = (productCode) => {
   const result = productItems.value.find((item) => item.productCode === productCode);
@@ -551,7 +543,7 @@ const applyProductInput = (productCode) => {
 };
 
 /**
- * No8金額計算処理
+ * No10金額計算処理
  */
 const calculateAmount = () => {
   if (!product.value.productPrice || Number(form.value.quantity) < 1) {
@@ -568,7 +560,7 @@ const calculateAmount = () => {
 };
 
 /**
- * No12処理成功トースト表示処理
+ * No14処理成功トースト表示処理
  */
 const openSuccessToast = (message) => {
   successToastText.value = message;
@@ -576,7 +568,7 @@ const openSuccessToast = (message) => {
 };
 
 /**
- * No13処理失敗トースト表示処理
+ * No15処理失敗トースト表示処理
  */
 const openFailedToast = (message) => {
   failedToastText.value = message;
@@ -584,7 +576,7 @@ const openFailedToast = (message) => {
 };
 
 /**
- * No14受発注情報登録処理
+ * No16受発注情報登録処理
  */
 const createOrder = async () => {
   try {
