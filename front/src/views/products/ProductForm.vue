@@ -62,7 +62,10 @@
             @change="handleOrderKbnChange"
           />
           <span v-else>
-            {{ orderKbnOptions.find(option => option.value === form.orderKbn)?.text }}
+            {{
+              orderKbnOptions.find((option) => option.value === form.orderKbn)
+                ?.text
+            }}
           </span>
         </BFormGroup>
       </BRow>
@@ -103,7 +106,7 @@
             v-model="form.productName"
             :state="
               form.productName.length > 0 && form.productName.length <= 20
-              "
+            "
             maxlength="20"
             required
           />
@@ -138,7 +141,7 @@
 </template>
 
 <script setup>
-import { computed,  ref, onMounted } from "vue";
+import { computed, ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 import * as productApi from "@/api/productApi.js";
@@ -175,14 +178,13 @@ const showFailedToastMs = ref(0);
 
 // ログイン情報
 const loginInfo = Auth.getLoginInfo();
-
+//受発注区分表示
 const orderKbnOptions = [
   { value: "1", text: "受注" },
   { value: "2", text: "発注" }
 ];
-
-const orderClientOptions =ref([]);
-
+//発注先コードの一覧
+const orderClientOptions = ref([]);
 /**
  * 初期表示時処理
  */
@@ -196,9 +198,12 @@ onMounted(async () => {
   if (isEdit.value) {
     // 商品情報詳細取得
     try {
-      form.value = await productApi.getProductByProductCode(
+      const productInfo = await productApi.getProductByProductCode(
         route.params.productCode
       );
+      Object.keys(form.value).forEach((key) => {
+        form.value[key] = productInfo[key];
+      });
     } catch (e) {
       console.log(e);
       showFailedToast(messages.MSGE001);
@@ -213,13 +218,13 @@ onMounted(async () => {
       .sort((a, b) => a.clientCode.localeCompare(b.clientCode))
       .map((client) => ({
         value: client.clientCode,
-        text: `${client.clientCode} : ${client.clientName}`
+        text: `${client.clientCode} : ${client.clientName}`,
       }));
   } catch (e) {
     console.log(e);
     showFailedToast(messages.MSGE001);
   }
- loading.value = false;
+  loading.value = false;
 });
 
 /**
@@ -280,8 +285,6 @@ const formatHalfWidthNumeric = (value) => {
 
 /**
  * 受発注区分変更時の処理
- *
- *
  */
 const handleOrderKbnChange = () => {
   if (form.value.orderKbn === "1") {
@@ -293,5 +296,4 @@ const handleOrderKbnChange = () => {
     form.value.orderClientCode = orderClientOptions.value[0].value;
   }
 };
-
 </script>
