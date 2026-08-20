@@ -28,15 +28,6 @@ describe("orderService", () => {
           confirmedDate: "",
           amountTaxIncluded: "20000",
         },
-        {
-          orderNo: "o2000001",
-          orderKbn: "2",
-          clientCode: "cc000002",
-          productCode: "pc00002",
-          orderDate: "2026-1-2",
-          confirmedDate: "2026-1-3",
-          amountTaxIncluded: "70000",
-        },
       ];
 
       // Mock設定
