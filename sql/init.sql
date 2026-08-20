@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS users
 )
 CHARACTER SET utf8mb4
 COLLATE utf8mb4_0900_ai_ci;
- 
+
 #------------------------------------------
 # ユーザーTBL 初期データ登録
 #------------------------------------------
@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS products
 )
 CHARACTER SET utf8mb4
 COLLATE utf8mb4_0900_ai_ci;
- 
+
 #------------------------------------------
 # 商品TBL 初期データ登録
 #------------------------------------------

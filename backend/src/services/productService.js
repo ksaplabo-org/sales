@@ -75,33 +75,32 @@ class ProductService {
     }
 
     //パラメータチェック
-    const errors = {};
+    const error = {};
 
     //発注先コード
-    //受発注区分が発注の場合
     if (product.orderKbn == "2") {
+      //受発注区分が発注の場合
       if (!productInfo.orderClientCode) {
-        errors.field = "orderClientCode";
-        errors.message = "発注先コードが設定されていません";
+        error.field = "orderClientCode";
+        error.message = "発注先コードが設定されていません";
       } else if (productInfo.orderClientCode.length != 8) {
-        errors.field = "orderClientCode";
-        errors.message = "発注先コードは8桁で設定してください";
+        error.field = "orderClientCode";
+        error.message = "発注先コードは8桁で設定してください";
       } else if (!/^[A-Za-z0-9]+$/.test(productInfo.orderClientCode)) {
-        errors.field = "orderClientCode";
-        errors.message = "発注先コードは半角英数で設定してください";
+        error.field = "orderClientCode";
+        error.message = "発注先コードは半角英数で設定してください";
       }
-    }
-    //受発注区分が受注の場合
-    else if (product.orderKbn == "1") {
+    } else if (product.orderKbn == "1") {
+      //受発注区分が受注の場合
       if (productInfo.orderClientCode) {
-        errors.field = "orderClientCode";
-        errors.message = "発注先コードは設定できません";
+        error.field = "orderClientCode";
+        error.message = "発注先コードは設定できません";
       }
     }
 
     //エラー情報オブジェクト要素がある場合
-    if (Object.keys(errors).length > 0) {
-      throw new ValidationError(errors.field, errors.message);
+    if (Object.keys(error).length > 0) {
+      throw new ValidationError(error.field, error.message);
     }
 
     //受発注区分が発注の場合のみチェック

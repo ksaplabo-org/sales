@@ -24,10 +24,10 @@ class ProductController {
 
       // 商品情報一覧検索
       const products = await productService.findAll(condition);
-      return res.json(products);
+      res.json(products);
     } catch (e) {
       console.log(e);
-      return res.status(500).send();
+      res.status(500).send();
     }
   }
 
@@ -60,17 +60,18 @@ class ProductController {
 
       if (errors.length > 0) {
         // パラメータエラー
-        return res.status(400).json({ errors: errors });
+        res.status(400).json({ errors: errors });
+        return;
       }
 
       // 商品情報詳細取得
       const product = await productService.findByCode(req.params.productCode);
-      return res.json(product);
+      res.json(product);
     } catch (e) {
       console.log(e);
       if (e instanceof NotFoundError) {
         // 存在チェックエラー
-        return res.status(NotFoundError.status).json({
+        res.status(NotFoundError.status).json({
           errors: [
             {
               field: e.field,
@@ -78,8 +79,9 @@ class ProductController {
             },
           ],
         });
+        return;
       } else {
-        return res.status(500).send();
+        res.status(500).send();
       }
     }
   }
@@ -129,7 +131,7 @@ class ProductController {
           field: "orderKbn",
           message: "受発注区分が設定されていません",
         });
-      } else if (product.orderKbn != 1 && product.orderKbn != 2) {
+      } else if (product.orderKbn != "1" && product.orderKbn != "2") {
         errors.push({
           field: "orderKbn",
           message: "受発注区分は'1'か'2'を設定してください",
@@ -137,8 +139,8 @@ class ProductController {
       }
 
       //発注先コード
-      //受発注区分が発注の場合
-      if (product.orderKbn == 2) {
+      if (product.orderKbn == "2") {
+        //受発注区分が発注の場合
         if (!product.orderClientCode) {
           errors.push({
             field: "orderClientCode",
@@ -155,9 +157,8 @@ class ProductController {
             message: "発注先コードは半角英数で設定してください",
           });
         }
-      }
-      //受発注区分が受注の場合
-      else if (product.orderKbn == 1) {
+      } else if (product.orderKbn == "1") {
+        //受発注区分が受注の場合
         if (product.orderClientCode) {
           errors.push({
             field: "orderClientCode",
@@ -186,17 +187,19 @@ class ProductController {
 
       if (errors.length > 0) {
         // パラメータエラー
-        return res.status(400).json({ errors: errors });
+        res.status(400).json({ errors: errors });
+        return;
       } else {
         // 登録処理
         await productService.create(product);
-        return res.status(201).send();
+        res.status(201).send();
+        return;
       }
     } catch (e) {
       console.log(e);
       if (e instanceof NotFoundError) {
         //存在チェックエラー
-        return res.status(NotFoundError.status).json({
+        res.status(NotFoundError.status).json({
           errors: [
             {
               field: e.field,
@@ -204,9 +207,10 @@ class ProductController {
             },
           ],
         });
+        return;
       } else if (e instanceof UniqueConstraintError) {
         //一意制約エラー
-        return res.status(UniqueConstraintError.status).json({
+        res.status(UniqueConstraintError.status).json({
           errors: [
             {
               field: e.field,
@@ -214,8 +218,9 @@ class ProductController {
             },
           ],
         });
+        return;
       } else {
-        return res.status(500).send();
+        res.status(500).send();
       }
     }
   }
@@ -249,7 +254,8 @@ class ProductController {
 
       if (errors.length > 0) {
         // パラメータエラー
-        return res.status(400).json({ errors: errors });
+        res.status(400).json({ errors: errors });
+        return;
       }
 
       const product = {
@@ -282,17 +288,18 @@ class ProductController {
 
       if (errors.length > 0) {
         // パラメータエラー
-        return res.status(400).json({ errors: errors });
+        res.status(400).json({ errors: errors });
+        return;
       } else {
         //更新処理
         await productService.update(req.params.productCode, product);
-        return res.send();
+        res.send();
       }
     } catch (e) {
       console.log(e);
       if (e instanceof NotFoundError) {
         //存在チェックエラー
-        return res.status(NotFoundError.status).json({
+        res.status(NotFoundError.status).json({
           errors: [
             {
               field: e.field,
@@ -300,9 +307,10 @@ class ProductController {
             },
           ],
         });
+        return;
       } else if (e instanceof ValidationError) {
         //パラメータエラー
-        return res.status(ValidationError.status).json({
+        res.status(ValidationError.status).json({
           errors: [
             {
               field: e.field,
@@ -310,8 +318,9 @@ class ProductController {
             },
           ],
         });
+        return;
       } else {
-        return res.status(500).send();
+        res.status(500).send();
       }
     }
   }
@@ -345,17 +354,18 @@ class ProductController {
 
       if (errors.length > 0) {
         // パラメータエラー
-        return res.status(400).json({ errors: errors });
+        res.status(400).json({ errors: errors });
+        return;
       }
 
       // 商品情報削除
       await productService.delete(req.params.productCode);
-      return res.send();
+      res.send();
     } catch (e) {
       console.log(e);
       if (e instanceof NotFoundError) {
         //存在チェックエラー
-        return res.status(NotFoundError.status).json({
+        res.status(NotFoundError.status).json({
           errors: [
             {
               field: e.field,
@@ -363,9 +373,10 @@ class ProductController {
             },
           ],
         });
+        return;
       } else if (e instanceof ReferenceConstraintError) {
         //外部参照エラー
-        return res.status(ReferenceConstraintError.status).json({
+        res.status(ReferenceConstraintError.status).json({
           errors: [
             {
               field: e.field,
@@ -373,8 +384,9 @@ class ProductController {
             },
           ],
         });
+        return;
       } else {
-        return res.status(500).send();
+        res.status(500).send();
       }
     }
   }
