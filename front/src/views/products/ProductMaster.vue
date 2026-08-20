@@ -40,7 +40,7 @@
           <BFormGroup label="受発注区分">
             <BFormSelect
               v-model="condition.orderKbn"
-              :options="order"
+              :options="showOrderKbnOptions"
             />
           </BFormGroup>
         </BCol>
@@ -59,7 +59,11 @@
 
         <BCol md="4">
           <BFormGroup label="商品名">
-            <BFormInput placeholder="商品名を入力" v-model="condition.productName" maxlength="20" />
+            <BFormInput
+              placeholder="商品名を入力"
+              v-model="condition.productName"
+              maxlength="20"
+            />
           </BFormGroup>
         </BCol>
       </BRow>
@@ -67,9 +71,17 @@
         <BCol md="4">
           <BFormGroup label="単価">
             <div class="d-flex align-items-center">
-              <BFormInput placeholder="下限" v-model="condition.productPriceLow" :formatter="formatHalfWidthNumeric" />
+              <BFormInput
+                placeholder="下限"
+                v-model="condition.productPriceLow"
+                :formatter="formatHalfWidthNumeric"
+              />
               <span class="mx-2">～</span>
-              <BFormInput placeholder="上限" v-model="condition.productPriceHigh" :formatter="formatHalfWidthNumeric" />
+              <BFormInput
+                placeholder="上限"
+                v-model="condition.productPriceHigh"
+                :formatter="formatHalfWidthNumeric"
+              />
             </div>
           </BFormGroup>
         </BCol>
@@ -119,7 +131,10 @@
         {{ row.item.orderClientCode || "-" }}
       </template>
       <template #cell(orderKbn)="row">
-        {{ showOrderKbnOptions.find((orderKbn) => orderKbn.value === row.value)?.text }}
+        {{
+          showOrderKbnOptions.find((orderKbn) => orderKbn.value === row.value)
+            ?.text
+        }}
       </template>
       <template #cell(productPrice)="row">
         {{ Number(row.item.productPrice).toLocaleString("ja-JP") }}
