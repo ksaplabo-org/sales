@@ -177,18 +177,15 @@ describe("productRepository", () => {
       await productRepository.update(productCode, productInfo);
 
       // 期待する引数
-      const expectedArg = [
-        productInfo,
-        {
-          where: {
-            productCode: "aa00001",
-          },
+      const expectedArg = {
+        where: {
+          productCode: "aa00001",
         },
-      ];
+      };
 
       //検証
       expect(spyUpdate).toHaveBeenCalledTimes(1); // Mockした関数の呼び出し回数を検証
-      expect(spyUpdate).toHaveBeenCalledWith(expectedArg); // Mockした関数呼び出し時の引数を検証
+      expect(spyUpdate).toHaveBeenCalledWith(productInfo, expectedArg); // Mockした関数呼び出し時の引数を検証
     });
   });
 
