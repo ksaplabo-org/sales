@@ -57,6 +57,29 @@ class ProductRepository {
   }
 
   /**
+   * 商品情報登録
+   *
+   * @param {*} productInfo 商品情報
+   */
+  async create(productInfo) {
+    await productModel.create(productInfo);
+  }
+
+  /**
+   * 商品情報更新
+   *
+   * @param {*} productCode 商品コード
+   * @param {*} productInfo 商品情報
+   */
+  async update(productCode, productInfo) {
+    await productModel.update(productInfo, {
+      where: {
+        productCode: productCode,
+      },
+    });
+  }
+
+  /**
    * 商品情報物理削除
    *
    * @param {*} productCode 商品コード

@@ -7,18 +7,18 @@ ProductModel.init(
   {
     productCode: {
       field: "product_code",
-      type: CHAR(7), 
+      type: CHAR(7),
       primaryKey: true,
       allowNull: false,
     },
     orderKbn: {
       field: "order_kbn",
-      type: CHAR(1), 
+      type: CHAR(1),
       allowNull: false,
     },
     orderClientCode: {
       field: "order_client_code",
-      type: CHAR(8), 
+      type: CHAR(8),
       allowNull: true,
     },
     productName: {

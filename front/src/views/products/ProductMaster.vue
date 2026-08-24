@@ -163,7 +163,7 @@ import { formatMessage } from "@/utils/messageUtil.js";
 // Router操作
 const router = useRouter();
 
-// 権限の一覧
+// 受発注区分の選択肢一覧
 const orderKbnOptions = [
   { value: "", text: "全て表示" },
   { value: "1", text: "受注のみ表示" },
