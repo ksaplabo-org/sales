@@ -13,20 +13,8 @@
   </BContainer>
 
   <!-- トースト -->
-  <BToast
-    class="w-100"
-    v-model="showSuccessToastMs"
-    variant="success"
-    no-progress
-    >{{ successToastText }}</BToast
-  >
-  <BToast
-    class="w-100"
-    v-model="showFailedToastMs"
-    variant="danger"
-    no-progress
-    >{{ failedToastText }}</BToast
-  >
+  <BToast class="w-100" v-model="showSuccessToastMs" variant="success" no-progress>{{ successToastText }}</BToast>
+  <BToast class="w-100" v-model="showFailedToastMs" variant="danger" no-progress>{{ failedToastText }}</BToast>
 
   <!-- 検索条件 -->
   <BCard class="shadow-sm mb-3">
@@ -38,10 +26,7 @@
       <BRow>
         <BCol md="4">
           <BFormGroup label="受発注区分">
-            <BFormSelect
-              v-model="condition.orderKbn"
-              :options="orderKbnOptions"
-            />
+            <BFormSelect v-model="condition.orderKbn" :options="orderKbnOptions" />
           </BFormGroup>
         </BCol>
 
@@ -59,11 +44,7 @@
 
         <BCol md="4">
           <BFormGroup label="商品名">
-            <BFormInput
-              placeholder="商品名を入力"
-              v-model="condition.productName"
-              maxlength="20"
-            />
+            <BFormInput placeholder="商品名を入力" v-model="condition.productName" maxlength="20" />
           </BFormGroup>
         </BCol>
       </BRow>
@@ -71,28 +52,16 @@
         <BCol md="4">
           <BFormGroup label="単価">
             <div class="d-flex align-items-center">
-              <BFormInput
-                placeholder="下限"
-                v-model="condition.productPriceLow"
-                :formatter="formatHalfWidthNumeric"
-              />
+              <BFormInput placeholder="下限" v-model="condition.productPriceLow" :formatter="formatHalfWidthNumeric" />
               <span class="mx-2">～</span>
-              <BFormInput
-                placeholder="上限"
-                v-model="condition.productPriceHigh"
-                :formatter="formatHalfWidthNumeric"
-              />
+              <BFormInput placeholder="上限" v-model="condition.productPriceHigh" :formatter="formatHalfWidthNumeric" />
             </div>
           </BFormGroup>
         </BCol>
       </BRow>
       <BRow class="mt-3">
         <BCol class="text-end">
-          <BButton
-            variant="outline-secondary"
-            class="me-2"
-            @click="clearCondition"
-          >
+          <BButton variant="outline-secondary" class="me-2" @click="clearCondition">
             <i class="fas fa-redo"></i>
             クリア
           </BButton>
@@ -118,23 +87,12 @@
       </div>
     </template>
 
-    <BTable
-      head-variant="secondary"
-      :items="items"
-      :fields="fields"
-      class="mb-0"
-      show-empty
-      responsive
-      hover
-    >
+    <BTable head-variant="secondary" :items="items" :fields="fields" class="mb-0" show-empty responsive hover>
       <template #cell(orderClientCode)="row">
         {{ row.item.orderClientCode || "-" }}
       </template>
       <template #cell(orderKbn)="row">
-        {{
-          showOrderKbnOptions.find((orderKbn) => orderKbn.value === row.value)
-            ?.text
-        }}
+        {{ showOrderKbnOptions.find((orderKbn) => orderKbn.value === row.value)?.text }}
       </template>
       <template #cell(productPrice)="row">
         {{ Number(row.item.productPrice).toLocaleString("ja-JP") }}
