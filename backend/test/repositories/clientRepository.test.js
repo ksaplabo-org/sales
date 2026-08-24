@@ -31,15 +31,6 @@ describe("clientRepository", () => {
       { clientCode: "test0002", clientName: "Bテスト商事", orderKbn: "1" },
     ];
 
-    // findAll関数の共通Mock
-    let spy;
-
-    // 全テストケース実行前に行う処理
-    beforeEach(() => {
-      // Mock設定
-      spy = jest.spyOn(clientModel, "findAll").mockResolvedValueOnce(results);
-    });
-
     test.each([
       {
         name: "条件なし",
@@ -101,6 +92,9 @@ describe("clientRepository", () => {
         },
       },
     ])("[正常系] 検索条件:$name", async ({ condition, where }) => {
+      // Mock設定
+      const spy = jest.spyOn(clientModel, "findAll").mockResolvedValueOnce(results);
+
       // テスト対象関数の呼び出し
       const actual = await clientRepository.findAll(condition);
 
@@ -121,6 +115,7 @@ describe("clientRepository", () => {
     test("[正常系] 取引先情報取得", async () => {
       // 検索条件
       const clientCode = "test0001";
+
       // 取得結果
       const result = { clientCode: "test0001", clientName: "Aテスト会社", orderKbn: "1" };
 
@@ -141,7 +136,7 @@ describe("clientRepository", () => {
     test("[正常系] 取引先情報登録", async () => {
       const clientInfo = { clientCode: "test0003", clientName: "Aテスト会社", orderKbn: "1" };
 
-      const spy = jest.spyOn(clientModel, "create").mockResolvedValue(clientInfo);
+      const spy = jest.spyOn(clientModel, "create").mockResolvedValueOnce(clientInfo);
 
       await clientRepository.create(clientInfo);
 
@@ -156,12 +151,11 @@ describe("clientRepository", () => {
 
       const clientInfo = { clientName: "Aテスト商社", orderKbn: "2" };
 
-      const spy = jest.spyOn(clientModel, "update").mockResolvedValue([1]);
+      const spy = jest.spyOn(clientModel, "update").mockResolvedValueOnce([1]);
 
       await clientRepository.update(clientCode, clientInfo);
 
       expect(spy).toHaveBeenCalledTimes(1);
-
       expect(spy).toHaveBeenCalledWith(clientInfo, {
         where: {
           clientCode: clientCode,
@@ -179,7 +173,7 @@ describe("clientRepository", () => {
       const expectedResult = undefined;
 
       // Mock設定
-      const spy = jest.spyOn(clientModel, "destroy").mockResolvedValue(expectedResult);
+      const spy = jest.spyOn(clientModel, "destroy").mockResolvedValueOnce(expectedResult);
 
       // テスト対象実行
       const actual = await clientRepository.delete(clientCode);
