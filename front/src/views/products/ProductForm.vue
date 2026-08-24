@@ -14,14 +14,9 @@
   </BContainer>
 
   <!-- 処理失敗トースト -->
-  <BToast
-    class="w-100"
-    v-model="showFailedToastMs"
-    variant="danger"
-    no-progress
-    no-close-button
-    >{{ failedToastText }}</BToast
-  >
+  <BToast class="w-100" v-model="showFailedToastMs" variant="danger" no-progress no-close-button>{{
+    failedToastText
+  }}</BToast>
 
   <!-- 登録情報 -->
   <BCard class="shadow-sm mb-3">
@@ -62,32 +57,21 @@
             @change="handleOrderKbnChange"
           />
           <span v-else>
-            {{
-              orderKbnOptions.find((option) => option.value === form.orderKbn)
-                ?.text
-            }}
+            {{ orderKbnOptions.find((option) => option.value === form.orderKbn)?.text }}
           </span>
         </BFormGroup>
       </BRow>
 
       <BRow class="mb-3">
-        <BFormGroup
-          label="発注先コード"
-          label-for="orderClientCode"
-          label-cols="3"
-        >
+        <BFormGroup label="発注先コード" label-for="orderClientCode" label-cols="3">
           <!--
             ・編集時の受注は発注先コードを保持しないため「-」を表示
             ・新規登録時の受注は発注先コード欄を非活性表示
             ・発注の場合は発注先候補が存在する場合のみ選択可能
           -->
-          <div v-if="form.orderKbn === '1' && isEdit">
-            -
-          </div>
+          <div v-if="form.orderKbn === '1' && isEdit">-</div>
           <BFormSelect
-            v-else-if="
-              isEdit || form.orderKbn === '1' || orderClientOptions.length > 0
-            "
+            v-else-if="isEdit || form.orderKbn === '1' || orderClientOptions.length > 0"
             v-model="form.orderClientCode"
             :options="orderClientOptions"
             :disabled="form.orderKbn === '1'"
@@ -104,9 +88,7 @@
             id="productName"
             type="text"
             v-model="form.productName"
-            :state="
-              form.productName.length > 0 && form.productName.length <= 20
-            "
+            :state="form.productName.length > 0 && form.productName.length <= 20"
             maxlength="20"
             required
           />
@@ -198,9 +180,7 @@ onMounted(async () => {
   if (isEdit.value) {
     // 商品情報詳細取得
     try {
-      const productInfo = await productApi.getProductByProductCode(
-        route.params.productCode
-      );
+      const productInfo = await productApi.getProductByProductCode(route.params.productCode);
       Object.keys(form.value).forEach((key) => {
         form.value[key] = productInfo[key];
       });
@@ -218,7 +198,7 @@ onMounted(async () => {
       .sort((a, b) => a.clientCode.localeCompare(b.clientCode))
       .map((client) => ({
         value: client.clientCode,
-        text: `${client.clientCode} : ${client.clientName}`,
+        text: `${client.clientCode} : ${client.clientName}`
       }));
   } catch (e) {
     console.log(e);
@@ -289,10 +269,7 @@ const formatHalfWidthNumeric = (value) => {
 const handleOrderKbnChange = () => {
   if (form.value.orderKbn === "1") {
     form.value.orderClientCode = "";
-  } else if (
-    form.value.orderKbn === "2" &&
-    orderClientOptions.value.length > 0
-  ) {
+  } else if (form.value.orderKbn === "2" && orderClientOptions.value.length > 0) {
     form.value.orderClientCode = orderClientOptions.value[0].value;
   }
 };
