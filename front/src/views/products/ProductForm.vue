@@ -7,7 +7,7 @@
         :items="[
           { text: 'トップページ', to: '/' },
           { text: '商品マスタ', to: { name: 'productMaster' } },
-          { text: '商品登録', active: true }
+          { text: '商品登録', active: true },
         ]"
       />
     </div>
@@ -142,7 +142,7 @@ const form = ref({
   orderKbn: "1",
   orderClientCode: "",
   productName: "",
-  productPrice: null
+  productPrice: null,
 });
 
 // 編集画面かどうか
@@ -163,7 +163,7 @@ const loginInfo = Auth.getLoginInfo();
 //受発注区分表示
 const orderKbnOptions = [
   { value: "1", text: "受注" },
-  { value: "2", text: "発注" }
+  { value: "2", text: "発注" },
 ];
 //発注先コードの一覧
 const orderClientOptions = ref([]);
@@ -198,7 +198,7 @@ onMounted(async () => {
       .sort((a, b) => a.clientCode.localeCompare(b.clientCode))
       .map((client) => ({
         value: client.clientCode,
-        text: `${client.clientCode} : ${client.clientName}`
+        text: `${client.clientCode} : ${client.clientName}`,
       }));
   } catch (e) {
     console.log(e);
@@ -224,7 +224,7 @@ const save = async () => {
     // マスタ画面に遷移
     router.push({
       name: "productMaster",
-      state: { message: messages.MSGI003, result: true }
+      state: { message: messages.MSGI003, result: true },
     });
   } catch (e) {
     console.log(e);
