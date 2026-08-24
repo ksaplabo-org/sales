@@ -6,7 +6,7 @@
       <BBreadcrumb
         :items="[
           { text: 'トップページ', to: '/' },
-          { text: '商品マスタ', active: true }
+          { text: '商品マスタ', active: true },
         ]"
       />
     </div>
@@ -108,7 +108,7 @@
             @click="
               router.push({
                 name: 'productEdit',
-                params: { productCode: row.item.productCode }
+                params: { productCode: row.item.productCode },
               })
             "
           >
@@ -167,13 +167,13 @@ const router = useRouter();
 const orderKbnOptions = [
   { value: "", text: "全て表示" },
   { value: "1", text: "受注のみ表示" },
-  { value: "2", text: "発注のみ表示" }
+  { value: "2", text: "発注のみ表示" },
 ];
 
 // 受発注区分表示の一覧
 const showOrderKbnOptions = [
   { value: "1", text: "受注" },
-  { value: "2", text: "発注" }
+  { value: "2", text: "発注" },
 ];
 
 // 検索結果
@@ -187,7 +187,7 @@ const fields = [
   { key: "orderKbn", label: "受発注区分" },
   { key: "orderClientCode", label: "発注先コード" },
   { key: "productPrice", label: "単価" },
-  { key: "actions", label: "" }
+  { key: "actions", label: "" },
 ];
 
 // 検索条件
@@ -196,7 +196,7 @@ const condition = ref({
   productName: "",
   orderKbn: "",
   productPriceLow: null,
-  productPriceHigh: null
+  productPriceHigh: null,
 });
 
 // 読み込み中の表示制御
@@ -245,7 +245,7 @@ const clearCondition = () => {
     productName: "",
     orderKbn: "",
     productPriceLow: null,
-    productPriceHigh: null
+    productPriceHigh: null,
   };
 };
 
