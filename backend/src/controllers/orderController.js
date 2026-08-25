@@ -53,16 +53,15 @@ class OrderController {
         updatedId: req.body.createdId,
       };
 
-      if(order.confirmedDate == ""){
+      if (order.confirmedDate == "") {
         order.confirmedDate = null;
       }
-      if(order.shipDate == ""){
+      if (order.shipDate == "") {
         order.shipDate = null;
       }
-
-      console.log(order);
-      console.log(order.confirmedDate);
-      console.log(order.shipDate);
+      if (order.deliverDate == "") {
+        order.deliverDate = null;
+      }
 
       // 共通バリデーション
       const errors = this.validate(order);
@@ -123,7 +122,7 @@ class OrderController {
       }
 
       //確定日
-      if (order.confirmedDate != null) {
+      if (order.confirmedDate) {
         //日付がyyyy-MM-ddの形式以外で入力された場合
         if (!/^\d{4}-\d{2}-\d{2}$/.test(order.confirmedDate)) {
           errors.push({ field: "confirmedDate", message: "日付はyyyy-MM-ddの形式で入力してください" });

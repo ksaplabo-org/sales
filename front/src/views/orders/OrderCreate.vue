@@ -174,11 +174,17 @@
             id="deliverDate"
             v-model="form.deliverDate"
             :state="
-              !!form.deliverDate &&
-              (form.shipDate ? form.deliverDate >= form.shipDate : form.deliverDate >= form.orderDate)
+              !form.deliverDate
+                ? null
+                : isReceive
+                  ? form.shipDate
+                    ? form.deliverDate >= form.shipDate
+                    : form.deliverDate >= form.orderDate
+                  : form.confirmedDate
+                    ? form.deliverDate >= form.confirmedDate
+                    : form.deliverDate >= form.orderDate
             "
             type="date"
-            required
           />
           <div
             v-if="
@@ -188,7 +194,13 @@
                 (form.confirmedDate ? form.shipDate < form.confirmedDate : form.shipDate < form.orderDate)
               ) &&
               form.deliverDate &&
-              (form.shipDate ? form.deliverDate < form.shipDate : form.deliverDate < form.orderDate)
+              (isReceive
+                ? form.shipDate
+                  ? form.deliverDate < form.shipDate
+                  : form.deliverDate < form.orderDate
+                : form.confirmedDate
+                  ? form.deliverDate < form.confirmedDate
+                  : form.deliverDate < form.orderDate)
             "
             class="text-danger"
           >
