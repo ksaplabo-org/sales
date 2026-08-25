@@ -67,7 +67,8 @@ class OrderService {
         errors.field = "confirmedDate";
         errors.message = "日付はyyyy-MM-ddの形式で入力してください";
       } else if (isNaN(new Date(orderInfo.confirmedDate).getTime())) {
-        (errors.field = "confirmedDate"), (errors.message = "正しい日付を入力してください");
+        errors.field = "confirmedDate"; 
+        errors.message = "正しい日付を入力してください";
       } else if (new Date(orderInfo.confirmedDate) < new Date(data.orderDate)) {
         errors.field = "confirmedDate";
         errors.message = "確定日は受発注日以降の日付を入力してください";

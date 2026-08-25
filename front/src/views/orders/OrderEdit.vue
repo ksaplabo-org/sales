@@ -184,7 +184,10 @@
                 :state="!view.productCode ? null : view.productCode.length === 7 && product.productName !== null"
                 :formatter="formatHalfWidthAlphaNumeric"
                 maxlength="7"
-                @input="product.productName = '-'; product.productPrice = `-`;"
+                @input="
+                  product.productName = '-';
+                  product.productPrice = `-`;
+                "
                 @blur="applyProductInput(view.productCode)"
               />
 
@@ -373,12 +376,12 @@ const applySelectedProduct = () => {
 //商品情報モーダル入力反映処理
 const applyProductInput = (productCode) => {
   const result = productItems.value.find((item) => item.productCode === productCode);
-  if (!result) {
-    product.value.productName = null;
-    product.value.productPrice = null;
-  } else {
+  if (result) {
     product.value.productName = result.productName;
     product.value.productPrice = result.productPrice;
+  } else {
+    product.value.productName = null;
+    product.value.productPrice = null;
   }
 };
 
