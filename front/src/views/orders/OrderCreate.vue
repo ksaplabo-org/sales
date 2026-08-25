@@ -438,13 +438,8 @@ const productFields = computed(() => {
   ];
 });
 
-//入力コード存在チェック
-const clientCodeState = computed(() => {
-  return !!client.value.clientName;
-});
-const productCodeState = computed(() => {
-  return !!product.value.productName;
-});
+const clientCodeState = computed(() => !!client.value.clientName);
+const productCodeState = computed(() => !!product.value.productName);
 
 //半角英数字
 const formatHalfWidthAlphaNumeric = (value) => {
@@ -473,14 +468,14 @@ onMounted(async () => {
       return;
     }
 
-    loading.value = true;
-
     //受発注判定
     if (isReceive.value) {
       orderKbn.value = "1";
     } else {
       orderKbn.value = "2";
     }
+
+    loading.value = true;
 
     //取引先情報一覧取得
     clientItems.value = await clientApi.getClients({ orderKbn: orderKbn.value });
@@ -532,14 +527,14 @@ const applySelectedClient = () => {
 const applyClientInput = (clientCode) => {
   const result = clientItems.value.find((item) => item.clientCode === clientCode);
 
-  if (!result) {
-    client.value.clientName = null;
-    client.value.telNumber = null;
-    client.value.address1 = null;
-  } else {
+  if (result) {
     client.value.clientName = result.clientName;
     client.value.telNumber = result.telNumber;
     client.value.address1 = result.address1;
+  } else {
+    client.value.clientName = null;
+    client.value.telNumber = null;
+    client.value.address1 = null;
   }
 };
 
@@ -580,12 +575,12 @@ const applySelectedProduct = () => {
 const applyProductInput = (productCode) => {
   const result = productItems.value.find((item) => item.productCode === productCode);
 
-  if (!result) {
-    product.value.productName = null;
-    product.value.productPrice = null;
-  } else {
+  if (result) {
     product.value.productName = result.productName;
     product.value.productPrice = result.productPrice;
+  } else {
+    product.value.productName = null;
+    product.value.productPrice = null;
   }
 
   calculateAmount();
