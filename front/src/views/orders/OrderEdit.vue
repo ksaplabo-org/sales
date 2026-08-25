@@ -19,7 +19,7 @@
   </BContainer>
 
   <!-- 処理失敗トースト -->
-  <BToast class="w-100" v-model="showFailedToastMiliSec" variant="danger" no-progress>{{ failedToastText }}</BToast>
+  <BToast class="w-100" v-model="showFailedToastMs" variant="danger" no-progress>{{ failedToastText }}</BToast>
 
   <!-- 登録情報 -->
   <!-- ヘッダー -->
@@ -181,13 +181,14 @@
               <BFormInput
                 id="productCode"
                 v-model="view.productCode"
-                @input="applyProductInput"
-                :state="!!view.productCode && view.productCode.length === 7 && product.productName !== '-'"
+                :state="!view.productCode ? null : view.productCode.length === 7 && product.productName !== null"
                 :formatter="formatHalfWidthAlphaNumeric"
                 maxlength="7"
+                @input="product.productName = '-'; product.productPrice = `-`;"
+                @blur="applyProductInput(view.productCode)"
               />
 
-              <div v-if="view.productCode.length === 7 && product.productName === '-'" class="text-danger">
+              <div v-if="view.productCode.length === 7 && product.productName === null" class="text-danger">
                 {{ formatMessage(messages.MSGE019, "商品コード") }}
               </div>
             </div>
@@ -255,23 +256,20 @@
   <Loading v-if="loading" />
 
   <!-- 商品情報モーダル -->
-  <BModal
-    v-model="showProductModal"
-    title="商品コードの参照"
-    size="lg"
-    ok-title="確定"
-    cancel-title="キャンセル"
-    @ok="applySelectedProduct"
-  >
+  <BModal v-model="showProductModal" title="商品コードの参照" size="lg">
     <BTable
       :items="productItems"
       :fields="productFields"
-      striped
       hover
-      @row-clicked="applySelectedProduct"
-      :tbody-tr-class="(item) => (item && selectedProduct?.productCode === item.productCode ? 'table-primary' : '')"
-    >
-    </BTable>
+      selectable
+      select-mode="single"
+      @row-selected="onProductSelected"
+    />
+    <div v-if="productItems.length === 0" class="text-center text-muted mt-3">検索結果がありません</div>
+    <template #footer>
+      <BButton variant="secondary" @click="showProductModal = false">キャンセル</BButton>
+      <BButton variant="primary" @click="applySelectedProduct">確定</BButton>
+    </template>
   </BModal>
 </template>
 
@@ -300,12 +298,12 @@ onMounted(async () => {
 
     Object.assign(view.value, orderInfo);
 
+    // 初期表示時の状態を保持
+    hasConfirmedDate.value = !!orderInfo.confirmedDate;
+
     if (view.value.updatedAt) {
       view.value.updatedAt = view.value.updatedAt.substring(0, 10).replace(/-/g, "/");
     }
-
-    // 初期表示時の状態を保持
-    hasConfirmedDate.value = !!orderInfo.confirmedDate;
 
     const products = await productApi.getProducts({
       orderKbn: orderInfo.orderKbn,
@@ -328,7 +326,7 @@ onMounted(async () => {
 //処理失敗トースト表示処理
 const openFailedToast = (message) => {
   failedToastText.value = message;
-  showFailedToastMiliSec.value = TOAST_MS;
+  showFailedToastMs.value = TOAST_MS;
 };
 
 /**
@@ -355,13 +353,15 @@ const openProductModal = () => {
   showProductModal.value = true;
 };
 
+//商品参照行選択処理
+const onProductSelected = (row) => {
+  selectedProduct.value = row;
+};
+
 //商品選択行情報反映処理
-const applySelectedProduct = (row) => {
-  if (row?.item) {
-    selectedProduct.value = row.item;
-    return;
-  }
+const applySelectedProduct = () => {
   if (!selectedProduct.value) {
+    showProductModal.value = false;
     return;
   }
   view.value.productCode = selectedProduct.value.productCode;
@@ -371,48 +371,22 @@ const applySelectedProduct = (row) => {
 };
 
 //商品情報モーダル入力反映処理
-const applyProductInput = () => {
-  const item = productItems.value.find((p) => p.productCode === view.value.productCode);
-
-  if (item) {
-    product.value.productName = item.productName;
-    product.value.productPrice = item.productPrice;
+const applyProductInput = (productCode) => {
+  const result = productItems.value.find((item) => item.productCode === productCode);
+  if (!result) {
+    product.value.productName = null;
+    product.value.productPrice = null;
   } else {
-    product.value.productName = "-";
-    product.value.productPrice = "-";
+    product.value.productName = result.productName;
+    product.value.productPrice = result.productPrice;
   }
 };
 
 //受発注情報更新処理
 const updateOrder = async () => {
-  if (
-    (view.value.confirmedDate && view.value.confirmedDate < view.value.orderDate) ||
-    (view.value.orderKbn === "1" &&
-      view.value.shipDate &&
-      (view.value.confirmedDate
-        ? view.value.shipDate < view.value.confirmedDate
-        : view.value.shipDate < view.value.orderDate)) ||
-    (view.value.deliverDate &&
-      (view.value.orderKbn === "1"
-        ? view.value.shipDate
-          ? view.value.deliverDate < view.value.shipDate
-          : view.value.deliverDate < view.value.orderDate
-        : view.value.confirmedDate
-          ? view.value.deliverDate < view.value.confirmedDate
-          : view.value.deliverDate < view.value.orderDate)) ||
-    !view.value.productCode ||
-    view.value.productCode.length !== 7 ||
-    product.value.productName === "-" ||
-    view.value.quantity === "" ||
-    view.value.quantity === null ||
-    Number(view.value.quantity) < 1
-  ) {
-    openFailedToast(massages.MSGE004);
-    return;
-  }
-  loading.value = true;
-
   try {
+    loading.value = true;
+
     const saveData = {
       orderNo: view.value.orderNo,
       confirmedDate: view.value.confirmedDate,
@@ -432,7 +406,7 @@ const updateOrder = async () => {
       name: "orderList",
       state: {
         result: true,
-        message: "更新に成功しました。",
+        message: messages.MSGI003,
       },
     });
   } catch (e) {
@@ -452,7 +426,7 @@ const loginInfo = Auth.getLoginInfo();
 
 //処理失敗トースト表示
 const failedToastText = ref("");
-const showFailedToastMiliSec = ref(0);
+const showFailedToastMs = ref(0);
 const TOAST_MS = 1500;
 
 // ローディング表示
@@ -472,7 +446,7 @@ const view = ref({
   updatedAt: "",
 });
 const product = ref({
-  productName: "-",
+  productName: "",
   productPrice: null,
 });
 

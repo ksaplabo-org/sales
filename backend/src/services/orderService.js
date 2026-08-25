@@ -4,6 +4,7 @@ import UnprocessableContentError from "../errors/UnprocessableContentError.js";
 import orderRepository from "../repositories/orderRepository.js";
 import userRepository from "../repositories/userRepository.js";
 import productRepository from "../repositories/productRepository.js";
+import ValidationError from "../errors/ValidationError.js";
 
 class OrderService {
   /**
@@ -51,6 +52,54 @@ class OrderService {
     if (!order) {
       throw new NotFoundError("orderNo", "この受発注番号は存在しません");
     }
+
+    //パラメータチェック
+    const errors = [];
+
+    //確定日
+    if (order.confirmedDate) {
+      if (orderInfo.confirmedDate) {
+        errors.field = "confirmedDate";
+        errors.message = "確定日は入力できません";
+      }
+    } else if (!order.confirmedDate && orderInfo.confirmedDate) {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(orderInfo.confirmedDate)) {
+        errors.field = "confirmedDate";
+        errors.message = "日付はyyyy-MM-ddの形式で入力してください";
+      } else if (isNaN(new Date(orderInfo.confirmedDate).getTime())) {
+        (errors.field = "confirmedDate"), (errors.message = "正しい日付を入力してください");
+      } else if (new Date(orderInfo.confirmedDate) < new Date(data.orderDate)) {
+        errors.field = "confirmedDate";
+        errors.message = "確定日は受発注日以降の日付を入力してください";
+      }
+    }
+
+    // 出荷日
+    if (order.orderKbn === "2") {
+      if (orderInfo.shipDate) {
+        errors.field = "shipDate";
+        errors.message = "出荷日は入力できません";
+      }
+    } else if (order.orderKbn === "1" && orderInfo.shipDate) {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(orderInfo.shipDate)) {
+        errors.field = "shipDate";
+        errors.message = "日付はyyyy-MM-ddの形式で入力してください";
+      } else if (isNaN(new Date(orderInfo.shipDate).getTime())) {
+        errors.field = "shipDate";
+        errors.message = "正しい日付を入力してください";
+      } else if (new Date(orderInfo.shipDate) < new Date(orderInfo.orderDate)) {
+        errors.field = "shipDate";
+        errors.message = "出荷日は受注日以降の日付を入力してください";
+      } else if (orderInfo.confirmedDate && new Date(orderInfo.shipDate) < new Date(orderInfo.confirmedDate)) {
+        errors.field = "shipDate";
+        errors.message = "出荷日は入金日以降の日付を入力してください";
+      }
+    }
+
+    if (errors.length > 0) {
+      throw new ValidationError(errors.field, errors.message);
+    }
+
     const product = await productRepository.findByCode(orderInfo.productCode);
     if (!product) {
       throw new NotFoundError("productCode", "この商品コードは存在しません");
