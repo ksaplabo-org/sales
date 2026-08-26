@@ -132,12 +132,9 @@ describe("productRepository", () => {
       // テスト対象関数の呼び出し
       const actual = await productRepository.findByCode(productCode);
 
-      // 期待する引数
-      const expectedArg = "aa00001";
-
       // 検証
       expect(spyFindByCode).toHaveBeenCalledTimes(1); // Mockした関数の呼び出し回数を検証
-      expect(spyFindByCode).toHaveBeenCalledWith(expectedArg); // Mockした関数呼び出し時の引数を検証
+      expect(spyFindByCode).toHaveBeenCalledWith(productCode); // Mockした関数呼び出し時の引数を検証
       expect(actual).toEqual(result); // 実行結果と期待結果が一致することを検証
     });
   });
@@ -153,12 +150,9 @@ describe("productRepository", () => {
       // テスト対象関数の呼び出し
       await productRepository.create(productInfo);
 
-      //期待する引数
-      const expectedArg = productInfo;
-
       // 検証
       expect(spyCreate).toHaveBeenCalledTimes(1); // Mockした関数の呼び出し回数を検証
-      expect(spyCreate).toHaveBeenCalledWith(expectedArg); // Mockした関数呼び出し時の引数を検証
+      expect(spyCreate).toHaveBeenCalledWith(productInfo); // Mockした関数呼び出し時の引数を検証
     });
   });
 
@@ -179,7 +173,7 @@ describe("productRepository", () => {
       // 期待する引数
       const expectedArg = {
         where: {
-          productCode: "aa00001",
+          productCode: productCode,
         },
       };
 
@@ -203,7 +197,7 @@ describe("productRepository", () => {
       // 期待する引数
       const expectedArg = {
         where: {
-          productCode: "aa00001",
+          productCode: productCode,
         },
       };
 
