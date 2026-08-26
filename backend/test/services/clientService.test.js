@@ -90,13 +90,15 @@ describe("clientService", () => {
   describe("create 取引先情報登録", () => {
     test("[正常系] 存在しない取引先コードを指定した場合 => 正常終了すること", async () => {
       const clientCode = "a0000003";
+      const mockDate = new Date(); // 現在日時をMock
+
+      jest.useFakeTimers();
+      jest.setSystemTime(mockDate);
 
       const clientInfo = {
         clientCode: clientCode,
         clientName: "C商社",
         orderKbn: "2",
-        createdAt: "2026-08-14 17:17:26",
-        updatedAt: "2026-08-14 17:17:26",
       };
 
       // Mock設定
@@ -111,8 +113,9 @@ describe("clientService", () => {
       expect(spyFindByCode).toHaveBeenCalledWith(clientCode); // Mockした関数呼び出し時の引数を検証
       expect(spyCreate).toHaveBeenCalledTimes(1); // Mockした関数の呼び出し回数を検証
       expect(spyCreate).toHaveBeenCalledWith(clientInfo); // Mockした関数呼び出し時の引数を検証
-      expect(clientInfo.createdAt).toBe(new Date(clientInfo.createdAt).toISOString());
-      expect(clientInfo.updatedAt).toBe(new Date(clientInfo.updatedAt).toISOString());
+      expect(clientInfo.createdAt).toBe(mockDate.toISOString());
+      expect(clientInfo.updatedAt).toBe(mockDate.toISOString());
+      jest.useRealTimers();
     });
 
     test("[異常系] 存在する取引先コードを指定した場合 => UniqueConstraintErrorとなること", async () => {
@@ -144,9 +147,14 @@ describe("clientService", () => {
     test("[正常系] 存在する取引先コードを指定した場合 => 正常終了すること", async () => {
       // 検索条件
       const clientCode = "a0000001";
+      // 現在日時をMock
+      const mockDate = new Date();
+
+      jest.useFakeTimers();
+      jest.setSystemTime(mockDate);
 
       // 更新に送る情報
-      const clientInfo = { clientName: "A株式会社更新", orderKbn: "2", updatedAt: "2026-08-14 17:17:26" };
+      const clientInfo = { clientName: "A株式会社更新", orderKbn: "2" };
 
       // DBに存在するデータ
       const client = {
@@ -174,7 +182,8 @@ describe("clientService", () => {
           orderKbn: "2",
         }),
       );
-      expect(clientInfo.updatedAt).toBe(new Date(clientInfo.updatedAt).toISOString());
+      expect(clientInfo.updatedAt).toBe(mockDate.toISOString());
+      jest.useRealTimers();
     });
 
     test("[異常系] 存在しない取引先コードを指定した場合 => NotFoundErrorとなること", async () => {
@@ -208,7 +217,7 @@ describe("clientService", () => {
       // 検索条件
       const clientCode = "test0011";
 
-      // 前提条件
+      // 受発注一覧取得RepositoryのMock値
       const clients = [];
 
       // 期待結果

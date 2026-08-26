@@ -92,7 +92,7 @@ describe("clientController", () => {
   });
 
   describe("findByCode 取引先情報詳細取得", () => {
-    test("[正常系]検索条件がServiceに渡され、ステータス[200]とServiceの結果がレスポンスされること", async () => {
+    test("[正常系] 検索条件がServiceに渡され、ステータス[200]とServiceの結果がレスポンスされること", async () => {
       // 検索条件
       const req = {
         params: {
@@ -127,7 +127,7 @@ describe("clientController", () => {
       expect(res.json).toHaveBeenCalledWith(expectedResult);
     });
 
-    test("[異常系]取引先コードが未設定の場合、400エラーとメッセージを返却すること", async () => {
+    test("[異常系] 取引先コードが未設定の場合、400エラーとメッセージを返却すること", async () => {
       // 検索条件
       const req = {
         params: {
@@ -158,7 +158,7 @@ describe("clientController", () => {
       });
     });
 
-    test("[異常系]取引先コードが7桁の場合、400エラーとメッセージを返却すること", async () => {
+    test("[異常系] 取引先コードが7桁の場合、400エラーとメッセージを返却すること", async () => {
       // 検索条件
       const req = {
         params: {
@@ -189,7 +189,7 @@ describe("clientController", () => {
       });
     });
 
-    test("[異常系]取引先コードが9桁の場合、400エラーとメッセージを返却すること", async () => {
+    test("[異常系] 取引先コードが9桁の場合、400エラーとメッセージを返却すること", async () => {
       // 検索条件
       const req = {
         params: {
@@ -220,7 +220,7 @@ describe("clientController", () => {
       });
     });
 
-    test("[異常系]取引先コードが半角英数でない場合、400エラーとメッセージを返却すること", async () => {
+    test("[異常系] 取引先コードが半角英数でない場合、400エラーとメッセージを返却すること", async () => {
       // 検索条件
       const req = {
         params: {
@@ -368,7 +368,7 @@ describe("clientController", () => {
 
     test.each([
       [
-        "取引先コード未設定",
+        "取引先コード未設定である",
         {
           clientCode: "",
         },
@@ -378,7 +378,7 @@ describe("clientController", () => {
         },
       ],
       [
-        "取引先コードが7桁",
+        "取引先コードが7桁である",
         {
           clientCode: "test000",
         },
@@ -388,7 +388,7 @@ describe("clientController", () => {
         },
       ],
       [
-        "取引先コードが9桁でない",
+        "取引先コードが9桁である",
         {
           clientCode: "test00001",
         },
@@ -398,7 +398,7 @@ describe("clientController", () => {
         },
       ],
       [
-        "取引先コードが半角英数でない",
+        "取引先コードが半角英数ではない",
         {
           clientCode: "あいうえおかきく",
         },
@@ -408,7 +408,7 @@ describe("clientController", () => {
         },
       ],
       [
-        "受発注区分未設定",
+        "受発注区分未設定である",
         {
           orderKbn: "",
         },
@@ -418,7 +418,7 @@ describe("clientController", () => {
         },
       ],
       [
-        "受発注区分が不正",
+        "受発注区分が不正である",
         {
           orderKbn: "9",
         },
@@ -428,7 +428,7 @@ describe("clientController", () => {
         },
       ],
       [
-        "登録者ID未設定",
+        "登録者ID未設定である",
         {
           createdId: "",
         },
@@ -438,7 +438,7 @@ describe("clientController", () => {
         },
       ],
       [
-        "登録者IDが5桁",
+        "登録者IDが5桁である",
         {
           createdId: "user0",
         },
@@ -448,7 +448,7 @@ describe("clientController", () => {
         },
       ],
       [
-        "登録者IDが7桁",
+        "登録者IDが7桁である",
         {
           createdId: "user001",
         },
@@ -458,7 +458,7 @@ describe("clientController", () => {
         },
       ],
       [
-        "登録者IDが半角英数でない",
+        "登録者IDが半角英数ではない",
         {
           createdId: "あいうえおか",
         },
@@ -467,11 +467,11 @@ describe("clientController", () => {
           message: "登録者IDは半角英数で設定してください",
         },
       ],
-    ])("[異常系] %s の場合、400エラーを返却すること", async (_, body, expectedError) => {
+    ])("[異常系] %s 場合、400エラーを返却すること", async (_, invalidBody, expectedError) => {
       const req = {
         body: {
           ...normalData,
-          ...body,
+          ...invalidBody,
         },
       };
 
@@ -584,7 +584,7 @@ describe("clientController", () => {
       expect(res.send).toHaveBeenCalledTimes(1);
     });
 
-    test("[異常系]取引先コードが未設定の場合、400エラーを返却すること", async () => {
+    test("[異常系] 取引先コードが未設定の場合、400エラーを返却すること", async () => {
       // 検索条件
       const req = {
         params: {
@@ -605,7 +605,7 @@ describe("clientController", () => {
       });
     });
 
-    test("[異常系]取引先コードが7桁の場合、400エラーを返却すること", async () => {
+    test("[異常系] 取引先コードが7桁の場合、400エラーを返却すること", async () => {
       // 検索条件
       const req = {
         params: {
@@ -626,7 +626,7 @@ describe("clientController", () => {
       });
     });
 
-    test("[異常系]取引先コードが9桁の場合、400エラーを返却すること", async () => {
+    test("[異常系] 取引先コードが9桁の場合、400エラーを返却すること", async () => {
       // 検索条件
       const req = {
         params: {
@@ -647,7 +647,7 @@ describe("clientController", () => {
       });
     });
 
-    test("[異常系]取引先コードが半角英数でない場合、400エラーを返却すること", async () => {
+    test("[異常系] 取引先コードが半角英数でない場合、400エラーを返却すること", async () => {
       // 検索条件
       const req = {
         params: {
@@ -670,7 +670,7 @@ describe("clientController", () => {
 
     test.each([
       [
-        "更新者ID未設定",
+        "更新者ID未設定である",
         {
           clientName: "Cテスト株式会社",
           postCode: "",
@@ -685,7 +685,7 @@ describe("clientController", () => {
         },
       ],
       [
-        "更新者IDが5桁",
+        "更新者IDが5桁である",
         {
           clientName: "Cテスト株式会社",
           postCode: "",
@@ -700,7 +700,7 @@ describe("clientController", () => {
         },
       ],
       [
-        "更新者IDが7桁",
+        "更新者IDが7桁である",
         {
           clientName: "Cテスト株式会社",
           postCode: "",
@@ -715,7 +715,7 @@ describe("clientController", () => {
         },
       ],
       [
-        "更新者IDが半角英数でない",
+        "更新者IDが半角英数ではない",
         {
           clientName: "Cテスト株式会社",
           postCode: "",
@@ -729,7 +729,7 @@ describe("clientController", () => {
           message: "更新者IDは半角英数で設定してください",
         },
       ],
-    ])("[異常系] %s の場合、400エラーを返却すること", async (_, body, expectedError) => {
+    ])("[異常系] %s 場合、400エラーを返却すること", async (_, body, expectedError) => {
       const req = {
         params: {
           clientCode: "test0001",
@@ -852,7 +852,7 @@ describe("clientController", () => {
       expect(res.send).toHaveBeenCalledWith();
     });
 
-    test("[異常系]取引先コードが未設定の場合、400エラーを返却すること", async () => {
+    test("[異常系] 取引先コードが未設定の場合、400エラーを返却すること", async () => {
       // 検索条件
       const req = {
         params: {
@@ -883,7 +883,7 @@ describe("clientController", () => {
       });
     });
 
-    test("[異常系]取引先コードが7桁の場合、400エラーを返却すること", async () => {
+    test("[異常系] 取引先コードが7桁の場合、400エラーを返却すること", async () => {
       // 検索条件
       const req = {
         params: {
@@ -914,7 +914,7 @@ describe("clientController", () => {
       });
     });
 
-    test("[異常系]取引先コードが9桁の場合、400エラーを返却すること", async () => {
+    test("[異常系] 取引先コードが9桁の場合、400エラーを返却すること", async () => {
       // 検索条件
       const req = {
         params: {
@@ -945,7 +945,7 @@ describe("clientController", () => {
       });
     });
 
-    test("[異常系]取引先コードが半角英数でない場合、400エラーを返却すること", async () => {
+    test("[異常系] 取引先コードが半角英数でない場合、400エラーを返却すること", async () => {
       // 検索条件
       const req = {
         params: {
@@ -1128,7 +1128,7 @@ describe("clientController", () => {
 
     test.each([
       {
-        name: "6桁の場合",
+        name: "6桁である",
         postCode: "123456",
         errors: {
           field: "postCode",
@@ -1136,7 +1136,7 @@ describe("clientController", () => {
         },
       },
       {
-        name: "8桁の場合",
+        name: "8桁である",
         postCode: "12345678",
         errors: {
           field: "postCode",
