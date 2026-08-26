@@ -7,13 +7,13 @@ import UniqueConstraintError from "../../src/errors/UniqueConstraintError.js";
 import ValidationError from "../../src/errors/ValidationError.js";
 import ReferenceConstraintError from "../../src/errors/ReferenceConstraintError.js";
 
-// 全テストケース実行後に行う処理
+//全テストケース実行後に行う処理
 afterEach(() => {
-  // Mockをすべて初期化
+  //Mockをすべて初期化
   jest.clearAllMocks();
 });
 
-// 各テストで使用するレスポンス引数のMock
+//各テストで使用するレスポンス引数のMock
 const res = {
   status: jest.fn().mockReturnThis(),
   json: jest.fn(),
@@ -23,14 +23,18 @@ const res = {
 describe("productController", () => {
   describe("findAll 商品情報一覧取得", () => {
     test("[正常系] 検索条件がServiceに渡され、Serviceから結果がレスポンスされること", async () => {
-      // 検索条件
+      //検索条件
       const req = {
         query: {
-          productCode: "test01",
+          orderKbn: 1,
+          productCode: "aa00001",
+          productName: "醤油",
+          productPriceLow: 100,
+          productPriceHigh: 1000,
         },
       };
 
-      // Mock設定
+      //Mock設定
       const expectedResult = [
         {
           orderKbn: "1",
@@ -38,47 +42,44 @@ describe("productController", () => {
           productName: "醤油",
           productPrice: 100,
         },
-        {
-          orderKbn: "1",
-          productCode: "aa00002",
-          productName: "塩",
-          productPrice: 200,
-        },
       ];
+      //serviceの戻り値をモック
       const spy = jest.spyOn(productService, "findAll").mockResolvedValueOnce(expectedResult);
 
-      // テスト対象関数の呼び出し
+      //テスト対象関数の呼び出し
       await productController.findAll(req, res);
 
-      // Serviceの呼び出しを検証
+      //Serviceの呼び出しを検証
       expect(spy).toHaveBeenCalledTimes(1);
       expect(spy).toHaveBeenCalledWith({
-        orderKbn: undefined,
-        productCode: "test01",
-        productName: undefined,
-        productPriceLow: undefined,
-        productPriceHigh: undefined,
+        orderKbn: 1,
+        productCode: "aa00001",
+        productName: "醤油",
+        productPriceLow: 100,
+        productPriceHigh: 1000,
       });
-      // レスポンスステータス設定の検証
-      expect(res.status).toHaveBeenCalledTimes(0); // 呼び出しされないことでデフォルト値である200が設定されていることを検証
-      // レスポンス送信の検証
+      //レスポンスステータス設定の検証
+      expect(res.status).toHaveBeenCalledTimes(0); //呼び出しされないことでデフォルト値である200が設定されていることを検証
+      //レスポンス送信の検証
       expect(res.json).toHaveBeenCalledTimes(1);
       expect(res.json).toHaveBeenCalledWith(expectedResult);
     });
+
     test("[異常系] Serviceでエラー発生時、ステータス[500]でレスポンスされること", async () => {
       const req = {
         query: {},
       };
 
-      // Mock設定
+      //serviceエラーモック
       const expectedError = new Error();
       const spyFindAll = jest.spyOn(productService, "findAll").mockRejectedValue(expectedError);
+      //console.logモック
       const spyConsole = jest.spyOn(console, "log").mockResolvedValue();
 
-      // テスト対象関数の呼び出し
-      const actual = await productController.findAll(req, res);
+      //テスト対象関数の呼び出し
+      await productController.findAll(req, res);
 
-      // Serviceの呼び出しを検証
+      //Serviceの呼び出しを検証
       expect(spyFindAll).toHaveBeenCalledTimes(1);
       expect(spyFindAll).toHaveBeenCalledWith({
         orderKbn: undefined,
@@ -87,13 +88,13 @@ describe("productController", () => {
         productPriceLow: undefined,
         productPriceHigh: undefined,
       });
-      // エラー発生時のログ出力を検証
+      //エラー発生時のログ出力を検証
       expect(spyConsole).toHaveBeenCalledTimes(1);
       expect(spyConsole).toHaveBeenCalledWith(expectedError);
-      // レスポンスステータス設定の検証
+      //レスポンスステータス設定の検証
       expect(res.status).toHaveBeenCalledTimes(1);
       expect(res.status).toHaveBeenCalledWith(500);
-      // レスポンス送信の検証
+      //レスポンス送信の検証
       expect(res.send).toHaveBeenCalledTimes(1);
       expect(res.send).toHaveBeenCalledWith();
     });
@@ -101,13 +102,14 @@ describe("productController", () => {
 
   describe("findByCode 商品情報詳細取得", () => {
     test("[正常系] Serviceの結果がレスポンスされること", async () => {
-      // 検索条件
+      //検索条件
       const req = {
         params: {
           productCode: "aa00001",
         },
       };
-      // Mock設定
+
+      //Mock設定
       const expectedResult = [
         {
           orderKbn: "1",
@@ -116,17 +118,18 @@ describe("productController", () => {
           productPrice: 100,
         },
       ];
+      //serviceの戻り値をモック
       const spy = jest.spyOn(productService, "findByCode").mockResolvedValueOnce(expectedResult);
 
-      // テスト対象関数の呼び出し
+      //テスト対象関数の呼び出し
       await productController.findByCode(req, res);
 
-      // Serviceの呼び出しを検証
+      //Serviceの呼び出しを検証
       expect(spy).toHaveBeenCalledTimes(1);
       expect(spy).toHaveBeenCalledWith("aa00001");
-      // レスポンスステータス設定の検証
+      //レスポンスステータス設定の検証
       expect(res.status).toHaveBeenCalledTimes(0);
-      // レスポンス送信の検証
+      //レスポンス送信の検証
       expect(res.json).toHaveBeenCalledTimes(1);
       expect(res.json).toHaveBeenCalledWith(expectedResult);
     });
@@ -137,26 +140,29 @@ describe("productController", () => {
           productCode: "aa00001",
         },
       };
+      //serviceエラーモック
       const expectedError = new Error();
       const spyFindByCode = jest.spyOn(productService, "findByCode").mockRejectedValue(expectedError);
+      //console.logモック
       const spyConsole = jest.spyOn(console, "log").mockResolvedValue();
 
-      // テスト対象関数の呼び出し
-      const actual = await productController.findByCode(req, res);
+      //テスト対象関数の呼び出し
+      await productController.findByCode(req, res);
 
-      // Serviceの呼び出しを検証
+      //Serviceの呼び出しを検証
       expect(spyFindByCode).toHaveBeenCalledTimes(1);
       expect(spyFindByCode).toHaveBeenCalledWith("aa00001");
-      // エラー発生時のログ出力を検証
+      //エラー発生時のログ出力を検証
       expect(spyConsole).toHaveBeenCalledTimes(1);
       expect(spyConsole).toHaveBeenCalledWith(expectedError);
-      // レスポンスステータス設定の検証
+      //レスポンスステータス設定の検証
       expect(res.status).toHaveBeenCalledTimes(1);
       expect(res.status).toHaveBeenCalledWith(500);
-      // レスポンス送信の検証
+      //レスポンス送信の検証
       expect(res.send).toHaveBeenCalledTimes(1);
       expect(res.send).toHaveBeenCalledWith();
     });
+
     test.each([
       {
         testName: "商品コードが未設定",
@@ -169,8 +175,18 @@ describe("productController", () => {
         ],
       },
       {
-        testName: "商品コードが7桁でない",
+        testName: "商品コードが7桁(6桁入力)でない",
         productCode: "aa0001",
+        expectedLog: [
+          {
+            field: "productCode",
+            message: "商品コードは7桁で設定してください",
+          },
+        ],
+      },
+      {
+        testName: "商品コードが7桁(8桁入力)でない",
+        productCode: "aa000012",
         expectedLog: [
           {
             field: "productCode",
@@ -195,16 +211,21 @@ describe("productController", () => {
         },
       };
 
-      // テスト対象関数の呼び出し
-      const actual = await productController.findByCode(req, res);
+      const spy = jest.spyOn(productService, "findByCode");
 
-      // レスポンスステータス設定の検証
+      //テスト対象関数の呼び出し
+      await productController.findByCode(req, res);
+
+      //Serviceが呼ばれていないことを検証
+      expect(spy).not.toHaveBeenCalled();
+      //レスポンスステータス設定の検証
       expect(res.status).toHaveBeenCalledTimes(1);
       expect(res.status).toHaveBeenCalledWith(400);
-      // レスポンス送信の検証
+      //レスポンス送信の検証
       expect(res.json).toHaveBeenCalledTimes(1);
       expect(res.json).toHaveBeenCalledWith({ errors: expectedLog });
     });
+
     test("[異常系] ServiceでNotFoundError発生時、ステータス[404]でレスポンスされること", async () => {
       const productCode = "aa00001";
 
@@ -213,77 +234,91 @@ describe("productController", () => {
           productCode,
         },
       };
-      const exception = new NotFoundError();
-      const spyFindByCode = jest.spyOn(productService, "findByCode").mockRejectedValue(exception);
+      //serviceエラーモック
+      const exceptedError = new NotFoundError(productCode, "この商品コードは存在していません");
+      const spyFindByCode = jest.spyOn(productService, "findByCode").mockRejectedValue(exceptedError);
+      //console.logモック
+      const spyConsole = jest.spyOn(console, "log").mockResolvedValue();
 
       await productController.findByCode(req, res);
 
-      // Serviceの呼び出しを検証
+      //Serviceの呼び出しを検証
       expect(spyFindByCode).toHaveBeenCalledTimes(1);
       expect(spyFindByCode).toHaveBeenCalledWith(productCode);
 
-      // レスポンスステータス設定の検証
+      //エラー発生時のログ出力を検証
+      expect(spyConsole).toHaveBeenCalledTimes(1);
+      expect(spyConsole).toHaveBeenCalledWith(exceptedError);
+
+      //レスポンスステータス設定の検証
       expect(res.status).toHaveBeenCalledTimes(1);
       expect(res.status).toHaveBeenCalledWith(NotFoundError.status);
 
-      // レスポンス送信の検証
+      //レスポンス送信の検証
       expect(res.json).toHaveBeenCalledTimes(1);
       expect(res.json).toHaveBeenCalledWith({
         errors: [
           {
-            field: exception.field,
-            message: exception.message,
+            field: productCode,
+            message: "この商品コードは存在していません",
           },
         ],
       });
     });
   });
+
   describe("delete 商品情報削除", () => {
     test("[正常系] 商品コードがServiceに渡されること", async () => {
-      // 検索条件
+      //検索条件
       const req = {
         params: {
           productCode: "aa00001",
         },
       };
-      // Mock設定
+
+      //serviceの戻り値をモック
       const spy = jest.spyOn(productService, "delete").mockResolvedValueOnce();
 
-      // テスト対象関数の呼び出し
+      //テスト対象関数の呼び出し
       await productController.delete(req, res);
 
-      // Serviceの呼び出しを検証
+      //Serviceの呼び出しを検証
       expect(spy).toHaveBeenCalledTimes(1);
       expect(spy).toHaveBeenCalledWith("aa00001");
-      // レスポンスステータス設定の検証
+      //レスポンスステータス設定の検証
       expect(res.status).toHaveBeenCalledTimes(0);
-      // レスポンス送信の検証
+      //レスポンス送信の検証
       expect(res.send).toHaveBeenCalledTimes(1);
+      expect(res.send).toHaveBeenCalledWith();
     });
+
     test("[異常系] Serviceでエラー発生時、ステータス[500]でレスポンスされること", async () => {
       const req = {
         params: {
           productCode: "aa00001",
         },
       };
+      //serviceエラーモック
       const expectedError = new Error();
       const spyDelete = jest.spyOn(productService, "delete").mockRejectedValue(expectedError);
+      //console.logモック
       const spyConsole = jest.spyOn(console, "log").mockResolvedValue();
 
-      // テスト対象関数の呼び出し
-      const actual = await productController.delete(req, res);
+      //テスト対象関数の呼び出し
+      await productController.delete(req, res);
 
-      // Serviceの呼び出しを検証
+      //Serviceの呼び出しを検証
       expect(spyDelete).toHaveBeenCalledTimes(1);
       expect(spyDelete).toHaveBeenCalledWith("aa00001");
-      // エラー発生時のログ出力を検証
+      //エラー発生時のログ出力を検証
       expect(spyConsole).toHaveBeenCalledTimes(1);
       expect(spyConsole).toHaveBeenCalledWith(expectedError);
-      // レスポンスステータス設定の検証
+      //レスポンスステータス設定の検証
       expect(res.status).toHaveBeenCalledTimes(1);
       expect(res.status).toHaveBeenCalledWith(500);
-      // レスポンス送信の検証
+      //レスポンス送信の検証
       expect(res.send).toHaveBeenCalledTimes(1);
+      expect(res.send).toHaveBeenCalledWith();
     });
 
     test.each([
@@ -298,8 +333,18 @@ describe("productController", () => {
         ],
       },
       {
-        testName: "商品コードが7桁でない",
+        testName: "商品コードが7桁でない(6桁入力である)",
         productCode: "aa0001",
+        expectedLog: [
+          {
+            field: "productCode",
+            message: "商品コードは7桁で設定してください",
+          },
+        ],
+      },
+      {
+        testName: "商品コードが7桁でない(8桁入力である)",
+        productCode: "aa000012",
         expectedLog: [
           {
             field: "productCode",
@@ -324,16 +369,20 @@ describe("productController", () => {
         },
       };
 
-      // テスト対象関数の呼び出し
-      const actual = await productController.delete(req, res);
+      const spy = jest.spyOn(productService, "delete");
+      //テスト対象関数の呼び出し
+      await productController.delete(req, res);
 
-      // レスポンスステータス設定の検証
+      //Serviceが呼び出されていないことを検証
+      expect(spy).not.toHaveBeenCalled();
+      //レスポンスステータス設定の検証
       expect(res.status).toHaveBeenCalledTimes(1);
       expect(res.status).toHaveBeenCalledWith(400);
-      // レスポンス送信の検証
+      //レスポンス送信の検証
       expect(res.json).toHaveBeenCalledTimes(1);
       expect(res.json).toHaveBeenCalledWith({ errors: expectedLog });
     });
+
     test("[異常系] ServiceでNotFoundError発生時、ステータス[404]でレスポンスされること", async () => {
       const productCode = "aa00001";
 
@@ -342,30 +391,38 @@ describe("productController", () => {
           productCode,
         },
       };
-      const exception = new NotFoundError();
-      const spyDelete = jest.spyOn(productService, "delete").mockRejectedValue(exception);
+      //serviceエラーモック
+      const exceptedError = new NotFoundError(productCode, "この商品コードは存在していません");
+      const spyDelete = jest.spyOn(productService, "delete").mockRejectedValue(exceptedError);
+      //console.logモック
+      const spyConsole = jest.spyOn(console, "log").mockResolvedValue();
 
       await productController.delete(req, res);
 
-      // Serviceの呼び出しを検証
+      //Serviceの呼び出しを検証
       expect(spyDelete).toHaveBeenCalledTimes(1);
       expect(spyDelete).toHaveBeenCalledWith(productCode);
 
-      // レスポンスステータス設定の検証
+      //エラー発生時のログ出力を検証
+      expect(spyConsole).toHaveBeenCalledTimes(1);
+      expect(spyConsole).toHaveBeenCalledWith(exceptedError);
+
+      //レスポンスステータス設定の検証
       expect(res.status).toHaveBeenCalledTimes(1);
       expect(res.status).toHaveBeenCalledWith(NotFoundError.status);
 
-      // レスポンス送信の検証
+      //レスポンス送信の検証
       expect(res.json).toHaveBeenCalledTimes(1);
       expect(res.json).toHaveBeenCalledWith({
         errors: [
           {
-            field: exception.field,
-            message: exception.message,
+            field: productCode,
+            message: "この商品コードは存在していません",
           },
         ],
       });
     });
+
     test("[異常系]ServiceでReferenceConstraintError発生時、ステータス[ReferenceConstraintError]でレスポンスされること", async () => {
       const productCode = "aaa0001";
 
@@ -375,15 +432,24 @@ describe("productController", () => {
         },
       };
 
-      const exception = new ReferenceConstraintError();
-
-      const spyDlete = jest.spyOn(productService, "delete").mockRejectedValue(exception);
+      //serviceエラーモック
+      const exceptedError = new ReferenceConstraintError(
+        productCode,
+        "この商品コードは受発注情報で使用されているため削除できません",
+      );
+      const spyDlete = jest.spyOn(productService, "delete").mockRejectedValue(exceptedError);
+      //console.logモック
+      const spyConsole = jest.spyOn(console, "log").mockResolvedValue();
 
       await productController.delete(req, res);
 
       //Serviceの呼び出しを検証
       expect(spyDlete).toHaveBeenCalledTimes(1);
       expect(spyDlete).toHaveBeenCalledWith(productCode);
+
+      //エラー発生時のログ出力を検証
+      expect(spyConsole).toHaveBeenCalledTimes(1);
+      expect(spyConsole).toHaveBeenCalledWith(exceptedError);
 
       //レスポンスステータス設定の検証
       expect(res.status).toHaveBeenCalledTimes(1);
@@ -394,8 +460,8 @@ describe("productController", () => {
       expect(res.json).toHaveBeenCalledWith({
         errors: [
           {
-            field: exception.field,
-            message: exception.message,
+            field: productCode,
+            message: "この商品コードは受発注情報で使用されているため削除できません",
           },
         ],
       });
@@ -415,7 +481,7 @@ describe("productController", () => {
         orderClientCode: "aaaa0001",
       },
     ])("[正常系]$testName 場合、Serviceに商品情報が渡されること", async ({ orderKbn, orderClientCode }) => {
-      // 登録データ
+      //登録データ
       const req = {
         body: {
           productCode: "aa00001",
@@ -428,15 +494,20 @@ describe("productController", () => {
         },
       };
 
-      // Mock設定
-      const spy = jest.spyOn(productService, "create").mockResolvedValueOnce();
+      // validateの戻り値をモック（エラーなし）
+      const spyValidate = jest.spyOn(productController, "validate").mockReturnValue([]);
+      
+      //serviceの戻り値をモック
+      const spyCreate = jest.spyOn(productService, "create").mockResolvedValueOnce();
 
-      // テスト対象関数の呼び出し
+      //テスト対象関数の呼び出し
       await productController.create(req, res);
 
-      // Serviceの呼び出しを検証
-      expect(spy).toHaveBeenCalledTimes(1);
-      expect(spy).toHaveBeenCalledWith({
+      // validateの呼び出しを検証
+      expect(spyValidate).toHaveBeenCalledTimes(1);
+      //Serviceの呼び出しを検証
+      expect(spyCreate).toHaveBeenCalledTimes(1);
+      expect(spyCreate).toHaveBeenCalledWith({
         orderKbn: orderKbn,
         productCode: "aa00001",
         productName: "醤油",
@@ -445,12 +516,14 @@ describe("productController", () => {
         createdId: "test01",
         updatedId: "test01",
       });
-      // レスポンスステータス設定の検証
+      //レスポンスステータス設定の検証
       expect(res.status).toHaveBeenCalledTimes(1);
       expect(res.status).toHaveBeenCalledWith(201);
-      // レスポンス送信の検証
+      //レスポンス送信の検証
       expect(res.send).toHaveBeenCalledTimes(1);
+      expect(res.send).toHaveBeenCalledWith();
     });
+
     //商品コードのバリデーション
     test.each([
       {
@@ -464,8 +537,18 @@ describe("productController", () => {
         ],
       },
       {
-        testName: "商品コードが7桁でない",
+        testName: "商品コードが7桁でない(6桁入力である)",
         productCode: "aa0001",
+        expectedLog: [
+          {
+            field: "productCode",
+            message: "商品コードは7桁で設定してください",
+          },
+        ],
+      },
+      {
+        testName: "商品コードが7桁でない(8桁入力である)",
+        productCode: "aa000012",
         expectedLog: [
           {
             field: "productCode",
@@ -496,13 +579,13 @@ describe("productController", () => {
         },
       };
 
-      // テスト対象関数の呼び出し
-      const actual = await productController.create(req, res);
+      //テスト対象関数の呼び出し
+      await productController.create(req, res);
 
-      // レスポンスステータス設定の検証
+      //レスポンスステータス設定の検証
       expect(res.status).toHaveBeenCalledTimes(1);
       expect(res.status).toHaveBeenCalledWith(400);
-      // レスポンス送信の検証
+      //レスポンス送信の検証
       expect(res.json).toHaveBeenCalledTimes(1);
       expect(res.json).toHaveBeenCalledWith({ errors: expectedLog });
     });
@@ -520,7 +603,7 @@ describe("productController", () => {
         ],
       },
       {
-        testName: "受発注区分が1または2でもない",
+        testName: "受発注区分が有効値(1,2)以外である",
         orderKbn: "3",
         expectedLog: [
           {
@@ -542,16 +625,17 @@ describe("productController", () => {
         },
       };
 
-      // テスト対象関数の呼び出し
-      const actual = await productController.create(req, res);
+      //テスト対象関数の呼び出し
+      await productController.create(req, res);
 
-      // レスポンスステータス設定の検証
+      //レスポンスステータス設定の検証
       expect(res.status).toHaveBeenCalledTimes(1);
       expect(res.status).toHaveBeenCalledWith(400);
-      // レスポンス送信の検証
+      //レスポンス送信の検証
       expect(res.json).toHaveBeenCalledTimes(1);
       expect(res.json).toHaveBeenCalledWith({ errors: expectedLog });
     });
+
     //発注先コードのバリデーション
     test.each([
       {
@@ -565,8 +649,18 @@ describe("productController", () => {
         ],
       },
       {
-        testName: "発注先コードが8桁でない",
+        testName: "発注先コードが8桁でない(7桁入力である)",
         orderClientCode: "aaaa001",
+        expectedLog: [
+          {
+            field: "orderClientCode",
+            message: "発注先コードは8桁で設定してください",
+          },
+        ],
+      },
+      {
+        testName: "発注先コードが8桁でない(9桁入力である)",
+        orderClientCode: "aaaa00012",
         expectedLog: [
           {
             field: "orderClientCode",
@@ -597,18 +691,19 @@ describe("productController", () => {
         },
       };
 
-      // テスト対象関数の呼び出し
-      const actual = await productController.create(req, res);
+      //テスト対象関数の呼び出し
+      await productController.create(req, res);
 
-      // レスポンスステータス設定の検証
+      //レスポンスステータス設定の検証
       expect(res.status).toHaveBeenCalledTimes(1);
       expect(res.status).toHaveBeenCalledWith(400);
-      // レスポンス送信の検証
+      //レスポンス送信の検証
       expect(res.json).toHaveBeenCalledTimes(1);
       expect(res.json).toHaveBeenCalledWith({ errors: expectedLog });
     });
-    test("[異常系]受発注区分が'1'受注で、発注先コードが入力されていること", async () => {
-      // 登録データ
+
+    test("[異常系]受発注区分が'1'受注で発注先コードが入力されている場合、ステータス[400]でレスポンスされること", async () => {
+      //登録データ
       const req = {
         body: {
           productCode: "aa00001",
@@ -621,13 +716,13 @@ describe("productController", () => {
         },
       };
 
-      // テスト対象関数の呼び出し
+      //テスト対象関数の呼び出し
       await productController.create(req, res);
 
-      // レスポンスステータス設定の検証
+      //レスポンスステータス設定の検証
       expect(res.status).toHaveBeenCalledTimes(1);
       expect(res.status).toHaveBeenCalledWith(400);
-      // レスポンス送信の検証
+      //レスポンス送信の検証
       expect(res.json).toHaveBeenCalledTimes(1);
       expect(res.json).toHaveBeenCalledWith({
         errors: [
@@ -638,6 +733,7 @@ describe("productController", () => {
         ],
       });
     });
+
     //登録者Idのバリデーション
     test.each([
       {
@@ -651,8 +747,18 @@ describe("productController", () => {
         ],
       },
       {
-        testName: "登録者IDが6桁でない",
+        testName: "登録者IDが6桁でない(5桁入力である)",
         createdId: "test1",
+        expectedLog: [
+          {
+            field: "createdId",
+            message: "登録者IDは6桁で設定してください",
+          },
+        ],
+      },
+      {
+        testName: "登録者IDが6桁でない(7桁入力である)",
+        createdId: "test012",
         expectedLog: [
           {
             field: "createdId",
@@ -683,18 +789,18 @@ describe("productController", () => {
         },
       };
 
-      // テスト対象関数の呼び出し
-      const actual = await productController.create(req, res);
+      //テスト対象関数の呼び出し
+      await productController.create(req, res);
 
-      // レスポンスステータス設定の検証
+      //レスポンスステータス設定の検証
       expect(res.status).toHaveBeenCalledTimes(1);
       expect(res.status).toHaveBeenCalledWith(400);
-      // レスポンス送信の検証
+      //レスポンス送信の検証
       expect(res.json).toHaveBeenCalledTimes(1);
       expect(res.json).toHaveBeenCalledWith({ errors: expectedLog });
     });
 
-    //  NotFoundErrorのテスト
+    // NotFoundErrorのテスト
     test("[異常系] ServiceでNotFoundError発生時、ステータス[404]でレスポンスされること", async () => {
       const orderClientCode = "aa000001";
 
@@ -709,12 +815,17 @@ describe("productController", () => {
           updatedId: "test01",
         },
       };
-      const exception = new NotFoundError();
-      const spyCreate = jest.spyOn(productService, "create").mockRejectedValue(exception);
+
+      //serviceエラーモック
+      const exceptedError = new NotFoundError(orderClientCode, "この発注先コードは存在していません");
+
+      const spyCreate = jest.spyOn(productService, "create").mockRejectedValue(exceptedError);
+      //console.logモック
+      const spyConsole = jest.spyOn(console, "log").mockResolvedValue();
 
       await productController.create(req, res);
 
-      // Serviceの呼び出しを検証
+      //Serviceの呼び出しを検証
       expect(spyCreate).toHaveBeenCalledTimes(1);
       expect(spyCreate).toHaveBeenCalledWith({
         orderKbn: "2",
@@ -726,23 +837,27 @@ describe("productController", () => {
         updatedId: "test01",
       });
 
-      // レスポンスステータス設定の検証
+      //エラー発生時のログ出力を検証
+      expect(spyConsole).toHaveBeenCalledTimes(1);
+      expect(spyConsole).toHaveBeenCalledWith(exceptedError);
+
+      //レスポンスステータス設定の検証
       expect(res.status).toHaveBeenCalledTimes(1);
       expect(res.status).toHaveBeenCalledWith(NotFoundError.status);
 
-      // レスポンス送信の検証
+      //レスポンス送信の検証
       expect(res.json).toHaveBeenCalledTimes(1);
       expect(res.json).toHaveBeenCalledWith({
         errors: [
           {
-            field: exception.field,
-            message: exception.message,
+            field: orderClientCode,
+            message: "この発注先コードは存在していません",
           },
         ],
       });
     });
 
-    //  UniqueConstraintErrorのテスト
+    // UniqueConstraintErrorのテスト
     test("[異常系] ServiceでUniqueConstraintError発生時、ステータス[409]でレスポンスされること", async () => {
       const productCode = "aa00001";
 
@@ -757,14 +872,21 @@ describe("productController", () => {
           updatedId: "test01",
         },
       };
-      const exception = new UniqueConstraintError();
-      const create = jest.spyOn(productService, "create").mockRejectedValue(exception);
+
+      //serviceエラーモック
+      const exceptedError = new UniqueConstraintError(
+        productCode,
+        "この商品コードは既に登録されているため登録できません",
+      );
+      const spycreate = jest.spyOn(productService, "create").mockRejectedValue(exceptedError);
+      //console.logモック
+      const spyConsole = jest.spyOn(console, "log").mockResolvedValue();
 
       await productController.create(req, res);
 
-      // Serviceの呼び出しを検証
-      expect(create).toHaveBeenCalledTimes(1);
-      expect(create).toHaveBeenCalledWith({
+      //Serviceの呼び出しを検証
+      expect(spycreate).toHaveBeenCalledTimes(1);
+      expect(spycreate).toHaveBeenCalledWith({
         orderKbn: "2",
         productCode: productCode,
         productName: "醤油",
@@ -774,21 +896,26 @@ describe("productController", () => {
         updatedId: "test01",
       });
 
-      // レスポンスステータス設定の検証
+      //エラー発生時のログ出力を検証
+      expect(spyConsole).toHaveBeenCalledTimes(1);
+      expect(spyConsole).toHaveBeenCalledWith(exceptedError);
+
+      //レスポンスステータス設定の検証
       expect(res.status).toHaveBeenCalledTimes(1);
       expect(res.status).toHaveBeenCalledWith(UniqueConstraintError.status);
 
-      // レスポンス送信の検証
+      //レスポンス送信の検証
       expect(res.json).toHaveBeenCalledTimes(1);
       expect(res.json).toHaveBeenCalledWith({
         errors: [
           {
-            field: exception.field,
-            message: exception.message,
+            field: productCode,
+            message: "この商品コードは既に登録されているため登録できません",
           },
         ],
       });
     });
+
     test("[異常系] Serviceでエラー発生時、ステータス[500]でレスポンスされること", async () => {
       const req = {
         body: {
@@ -801,27 +928,43 @@ describe("productController", () => {
           updatedId: "test01",
         },
       };
+
+      //serviceエラーモック
       const expectedError = new Error();
       const spyCreate = jest.spyOn(productService, "create").mockRejectedValue(expectedError);
+      //console.logモック
       const spyConsole = jest.spyOn(console, "log").mockResolvedValue();
 
-      // テスト対象関数の呼び出し
-      const actual = await productController.create(req, res);
+      //テスト対象関数の呼び出し
+      await productController.create(req, res);
 
-      // エラー発生時のログ出力を検証
+      //serviceの呼び出し検証
+      expect(spyCreate).toHaveBeenCalledTimes(1);
+      expect(spyCreate).toHaveBeenCalledWith({
+        orderKbn: "2",
+        productCode: "aaa0001",
+        productName: "醤油",
+        productPrice: 100,
+        orderClientCode: "aa000001",
+        createdId: "test01",
+        updatedId: "test01",
+      });
+
+      //エラー発生時のログ出力を検証
       expect(spyConsole).toHaveBeenCalledTimes(1);
       expect(spyConsole).toHaveBeenCalledWith(expectedError);
-      // レスポンスステータス設定の検証
+      //レスポンスステータス設定の検証
       expect(res.status).toHaveBeenCalledTimes(1);
       expect(res.status).toHaveBeenCalledWith(500);
-      // レスポンス送信の検証
+      //レスポンス送信の検証
       expect(res.send).toHaveBeenCalledTimes(1);
+      expect(res.send).toHaveBeenCalledWith();
     });
   });
 
   describe("update 商品情報更新", () => {
     test("[正常系] Serviceに商品情報が渡されること", async () => {
-      // 更新データ
+      //更新データ
       const req = {
         params: {
           productCode: "aa00001",
@@ -834,13 +977,13 @@ describe("productController", () => {
         },
       };
 
-      // Mock設定
+      //serviceの戻り値をモック
       const spy = jest.spyOn(productService, "update").mockResolvedValueOnce();
 
-      // テスト対象関数の呼び出し
+      //テスト対象関数の呼び出し
       await productController.update(req, res);
 
-      // Serviceの呼び出しを検証
+      //Serviceの呼び出しを検証
       expect(spy).toHaveBeenCalledTimes(1);
       expect(spy).toHaveBeenCalledWith("aa00001", {
         productName: "醤油",
@@ -848,9 +991,13 @@ describe("productController", () => {
         productPrice: 100,
         updatedId: "test01",
       });
-      // レスポンス送信の検証
+      //レスポンスステータス設定の検証
+      expect(res.status).toHaveBeenCalledTimes(0);
+      //レスポンス送信の検証
       expect(res.send).toHaveBeenCalledTimes(1);
+      expect(res.send).toHaveBeenCalledWith();
     });
+
     //商品コードのバリデーション
     test.each([
       {
@@ -864,8 +1011,18 @@ describe("productController", () => {
         ],
       },
       {
-        testName: "商品コードが7桁でない",
+        testName: "商品コードが7桁でない(6桁入力である)",
         productCode: "aa0001",
+        expectedLog: [
+          {
+            field: "productCode",
+            message: "商品コードは7桁で設定してください",
+          },
+        ],
+      },
+      {
+        testName: "商品コードが7桁でない(8桁入力である)",
+        productCode: "aa000012",
         expectedLog: [
           {
             field: "productCode",
@@ -889,17 +1046,21 @@ describe("productController", () => {
           productCode: productCode,
         },
       };
+      const spyUpdate = jest.spyOn(productService, "update");
 
-      // テスト対象関数の呼び出し
-      const actual = await productController.update(req, res);
+      //テスト対象関数の呼び出し
+      await productController.update(req, res);
 
-      // レスポンスステータス設定の検証
+      //商品情報更新取得処理が呼ばれていないことを検証
+      expect(spyUpdate).not.toHaveBeenCalled();
+      //レスポンスステータス設定の検証
       expect(res.status).toHaveBeenCalledTimes(1);
       expect(res.status).toHaveBeenCalledWith(400);
-      // レスポンス送信の検証
+      //レスポンス送信の検証
       expect(res.json).toHaveBeenCalledTimes(1);
       expect(res.json).toHaveBeenCalledWith({ errors: expectedLog });
     });
+
     //更新者Idのバリデーション
     test.each([
       {
@@ -913,8 +1074,18 @@ describe("productController", () => {
         ],
       },
       {
-        testName: "更新者IDが6桁でない",
+        testName: "更新者IDが6桁でない(5桁入力である)",
         updatedId: "test1",
+        expectedLog: [
+          {
+            field: "updatedId",
+            message: "更新者IDは6桁で設定してください",
+          },
+        ],
+      },
+      {
+        testName: "更新者IDが6桁でない(7桁入力である)",
+        updatedId: "test012",
         expectedLog: [
           {
             field: "updatedId",
@@ -944,18 +1115,22 @@ describe("productController", () => {
           updatedId: updatedId,
         },
       };
+      const spyUpdate = jest.spyOn(productService, "update");
 
-      // テスト対象関数の呼び出し
-      const actual = await productController.update(req, res);
+      //テスト対象関数の呼び出し
+      await productController.update(req, res);
 
-      // レスポンスステータス設定の検証
+      //商品情報更新取得処理が呼ばれていないことを検証
+      expect(spyUpdate).not.toHaveBeenCalled();
+      //レスポンスステータス設定の検証
       expect(res.status).toHaveBeenCalledTimes(1);
       expect(res.status).toHaveBeenCalledWith(400);
-      // レスポンス送信の検証
+      //レスポンス送信の検証
       expect(res.json).toHaveBeenCalledTimes(1);
       expect(res.json).toHaveBeenCalledWith({ errors: expectedLog });
     });
-    //  NotFoundErrorのテスト
+
+    // NotFoundErrorのテスト
     test("[異常系] ServiceでNotFoundError発生時、ステータス[404]でレスポンスされること", async () => {
       const productCode = "aa00001";
 
@@ -970,12 +1145,16 @@ describe("productController", () => {
           updatedId: "test01",
         },
       };
-      const exception = new NotFoundError();
-      const spyUpdate = jest.spyOn(productService, "update").mockRejectedValue(exception);
+
+      //serviceエラーモック
+      const expectedError = new NotFoundError(productCode, "この商品コードは存在していません");
+      const spyUpdate = jest.spyOn(productService, "update").mockRejectedValue(expectedError);
+      //console.logモック
+      const spyConsole = jest.spyOn(console, "log").mockResolvedValue();
 
       await productController.update(req, res);
 
-      // Serviceの呼び出しを検証
+      //Serviceの呼び出しを検証
       expect(spyUpdate).toHaveBeenCalledTimes(1);
       expect(spyUpdate).toHaveBeenCalledWith(productCode, {
         productName: "醤油",
@@ -984,21 +1163,25 @@ describe("productController", () => {
         updatedId: "test01",
       });
 
-      // レスポンスステータス設定の検証
+      //エラー発生時のログ出力を検証
+      expect(spyConsole).toHaveBeenCalledTimes(1);
+      expect(spyConsole).toHaveBeenCalledWith(expectedError);
+      //レスポンスステータス設定の検証
       expect(res.status).toHaveBeenCalledTimes(1);
       expect(res.status).toHaveBeenCalledWith(NotFoundError.status);
 
-      // レスポンス送信の検証
+      //レスポンス送信の検証
       expect(res.json).toHaveBeenCalledTimes(1);
       expect(res.json).toHaveBeenCalledWith({
         errors: [
           {
-            field: exception.field,
-            message: exception.message,
+            field: productCode,
+            message: "この商品コードは存在していません",
           },
         ],
       });
     });
+
     //受注なのに発注先コードがある場合のValidationErrorのテスト
     test("[異常系] ServiceでValidationError発生時、ステータス[400]でレスポンスされること", async () => {
       const productCode = "aa00001";
@@ -1014,78 +1197,120 @@ describe("productController", () => {
           updatedId: "test01",
         },
       };
+      //serviceエラーモック
+      const expectedError = new ValidationError("orderClientCode", "発注先コードは設定できません");
+      const spyUpdate = jest.spyOn(productService, "update").mockRejectedValue(expectedError);
+      //console.logモック
+      const spyConsole = jest.spyOn(console, "log").mockResolvedValue();
 
-      const exception = new ValidationError("orderClientCode", "発注先コードは設定できません");
+      productService.update.mockRejectedValue(expectedError);
 
-      productService.update.mockRejectedValue(exception);
-
-      // テスト対象関数の呼び出し
+      //テスト対象関数の呼び出し
       await productController.update(req, res);
 
-      // Service呼び出し確認
+      //Service呼び出し確認
       expect(productService.update).toHaveBeenCalledTimes(1);
 
-      // レスポンスステータス設定の検証
+      //エラー発生時のログ出力を検証
+      expect(spyConsole).toHaveBeenCalledTimes(1);
+      expect(spyConsole).toHaveBeenCalledWith(expectedError);
+
+      //レスポンスステータス設定の検証
       expect(res.status).toHaveBeenCalledTimes(1);
       expect(res.status).toHaveBeenCalledWith(400);
 
-      // レスポンス送信の検証
+      //レスポンス送信の検証
       expect(res.json).toHaveBeenCalledTimes(1);
       expect(res.json).toHaveBeenCalledWith({
         errors: [
           {
-            field: exception.field,
-            message: exception.message,
+            field: "orderClientCode",
+            message: "発注先コードは設定できません",
           },
         ],
       });
     });
+
     test("[異常系] Serviceでエラー発生時、ステータス[500]でレスポンスされること", async () => {
       const req = {
         params: {
           productCode: "aa00001",
         },
         body: {
-          orderKbn: "2",
           productName: "醤油",
           productPrice: 100,
           orderClientCode: "aa000001",
-          createdId: "test01",
           updatedId: "test01",
         },
       };
+
+      //serviceエラーモック
       const expectedError = new Error();
-      const spyCreate = jest.spyOn(productService, "update").mockRejectedValue(expectedError);
+      const spyUpdate = jest.spyOn(productService, "update").mockRejectedValue(expectedError);
+      //console.logモック
       const spyConsole = jest.spyOn(console, "log").mockResolvedValue();
 
-      // テスト対象関数の呼び出し
-      const actual = await productController.update(req, res);
+      //テスト対象関数の呼び出し
+      await productController.update(req, res);
 
-      // エラー発生時のログ出力を検証
+      //Serviceの呼び出しを検証
+      expect(spyUpdate).toHaveBeenCalledTimes(1);
+      expect(spyUpdate).toHaveBeenCalledWith("aa00001", {
+        productName: "醤油",
+        productPrice: 100,
+        orderClientCode: "aa000001",
+        updatedId: "test01",
+      });
+
+      //エラー発生時のログ出力を検証
       expect(spyConsole).toHaveBeenCalledTimes(1);
       expect(spyConsole).toHaveBeenCalledWith(expectedError);
-      // レスポンスステータス設定の検証
+      //レスポンスステータス設定の検証
       expect(res.status).toHaveBeenCalledTimes(1);
       expect(res.status).toHaveBeenCalledWith(500);
-      // レスポンス送信の検証
+      //レスポンス送信の検証
       expect(res.send).toHaveBeenCalledTimes(1);
+      expect(res.send).toHaveBeenCalledWith();
     });
   });
 
   describe("validate 登録・更新共通バリデーション", () => {
     test("[正常系] バリデーションエラーがない場合、空配列が返却されること", () => {
-      // 登録データ
+      //登録データ
       const product = {
         productName: "醤油",
         productPrice: 100,
+      };
+
+      //テスト対象関数の呼び出し
+      const actual = productController.validate(product);
+
+      //バリデーション結果の検証
+      expect(actual).toEqual([]);
+    });
+    test("[異常系] 複数のバリデーションエラーがある場合、エラー情報が複数件返却されること", () => {
+      // 登録データ
+      const product = {
+        productName: "",
+        productPrice: -1,
       };
 
       // テスト対象関数の呼び出し
       const actual = productController.validate(product);
 
       // バリデーション結果の検証
-      expect(actual).toEqual([]);
+      expect(actual).toEqual([
+        {
+          field: "productName",
+          message: "商品名が設定されていません",
+        },
+        {
+          field: "productPrice",
+          message: "単価は1以上で設定してください",
+        },
+      ]);
     });
+
     test.each([
       {
         testName: "商品名が未設定",
@@ -1099,7 +1324,7 @@ describe("productController", () => {
       },
       {
         testName: "商品名が20桁以内で設定されていない",
-        productName: "aaaaabbbbbcccccdddddeeeee",
+        productName: "aaaaabbbbbcccccddddde",
         expectedLog: [
           {
             field: "productName",
@@ -1108,28 +1333,17 @@ describe("productController", () => {
         ],
       },
     ])("[異常系] $testName 場合、ステータス[400]でレスポンスされること", async ({ productName, expectedLog }) => {
-      const req = {
-        params: {
-          productCode: "aa00001",
-        },
-        body: {
-          productName: productName,
-          orderClientCode: "aaaa0001",
-          productPrice: 100,
-          updatedId: "test01",
-        },
+      const product = {
+        productName: productName,
+        productPrice: 100,
       };
 
-      // テスト対象関数の呼び出し
-      const actual = await productController.update(req, res);
+      //テスト対象関数の呼び出し
+      const actual = await productController.validate(product);
 
-      // レスポンスステータス設定の検証
-      expect(res.status).toHaveBeenCalledTimes(1);
-      expect(res.status).toHaveBeenCalledWith(400);
-      // レスポンス送信の検証
-      expect(res.json).toHaveBeenCalledTimes(1);
-      expect(res.json).toHaveBeenCalledWith({ errors: expectedLog });
+      expect(actual).toEqual(expectedLog);
     });
+
     test.each([
       {
         testName: "単価が未設定",
@@ -1142,7 +1356,7 @@ describe("productController", () => {
         ],
       },
       {
-        testName: "単価が1以上で設定されていない",
+        testName: "単価が1以上で設定されていない(-1で設定されている)",
         productPrice: -1,
         expectedLog: [
           {
@@ -1151,6 +1365,16 @@ describe("productController", () => {
           },
         ],
       },
+      /*{
+        testName: "単価が1以上で設定されていない(-1で設定されている)",
+        productPrice: 0,
+        expectedLog: [
+          {
+            field: "productPrice",
+            message: "単価は1以上で設定してください",
+          },
+        ],
+      },*/
       {
         testName: "単価が半角数字で設定されていない",
         productPrice: "a",
@@ -1162,27 +1386,17 @@ describe("productController", () => {
         ],
       },
     ])("[異常系] $testName 場合、ステータス[400]でレスポンスされること", async ({ productPrice, expectedLog }) => {
-      const req = {
-        params: {
-          productCode: "aa00001",
-        },
-        body: {
-          productName: "醤油",
-          orderClientCode: "aaaa0001",
-          productPrice: productPrice,
-          updatedId: "test01",
-        },
+      const product = {
+        productName: "醤油",
+        orderClientCode: "aaaa0001",
+        productPrice: productPrice,
+        updatedId: "test01",
       };
 
-      // テスト対象関数の呼び出し
-      const actual = await productController.update(req, res);
+      //テスト対象関数の呼び出し
+      const actual = await productController.validate(product);
 
-      // レスポンスステータス設定の検証
-      expect(res.status).toHaveBeenCalledTimes(1);
-      expect(res.status).toHaveBeenCalledWith(400);
-      // レスポンス送信の検証
-      expect(res.json).toHaveBeenCalledTimes(1);
-      expect(res.json).toHaveBeenCalledWith({ errors: expectedLog });
+      expect(actual).toEqual(expectedLog);
     });
   });
 });
