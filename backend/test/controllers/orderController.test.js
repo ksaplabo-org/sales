@@ -25,6 +25,11 @@ describe("orderController", () => {
       const req = {
         query: {
           orderNo: "o1000001",
+          orderKbn: "1",
+          clientCode: "cc000001",
+          productCode: "pc00001",
+          amountTaxIncludedLow: "10000",
+          amountTaxIncludedHigh: "50000",
         },
       };
 
@@ -58,11 +63,11 @@ describe("orderController", () => {
       expect(spy).toHaveBeenCalledTimes(1);
       expect(spy).toHaveBeenCalledWith({
         orderNo: "o1000001",
-        orderKbn: undefined,
-        clientCode: undefined,
-        productCode: undefined,
-        amountTaxIncludedLow: undefined,
-        amountTaxIncludedHigh: undefined,
+        orderKbn: "1",
+        clientCode: "cc000001",
+        productCode: "pc00001",
+        amountTaxIncludedLow: "10000",
+        amountTaxIncludedHigh: "50000",
       });
       // レスポンスステータス設定の検証
       expect(res.status).toHaveBeenCalledTimes(0); // 呼び出しされないことでデフォルト値である200が設定されていることを検証
@@ -119,17 +124,16 @@ describe("orderController", () => {
       // Mock設定
       const spy = jest.spyOn(orderService, "delete").mockResolvedValue();
 
-      // テスト対象実行
+      // テスト対象関数の呼び出し
       await orderController.delete(req, res);
 
-      // Service呼び出し確認
+      // Serviceの呼び出しを検証
       expect(spy).toHaveBeenCalledTimes(1);
       expect(spy).toHaveBeenCalledWith("o1000001");
-
-      // レスポンス確認
+      // レスポンス送信の検証
       expect(res.send).toHaveBeenCalledTimes(1);
       expect(res.send).toHaveBeenCalledWith();
-
+      // レスポンスステータス設定の検証
       expect(res.status).not.toHaveBeenCalled();
     });
 
@@ -139,13 +143,17 @@ describe("orderController", () => {
         params: {},
       };
 
+      // Spy設定
       const spy = jest.spyOn(orderService, "delete");
 
+      // テスト対象関数の呼び出し
       await orderController.delete(req, res);
 
+      // Serviceの呼び出しを検証
       expect(spy).not.toHaveBeenCalled();
-
+      // レスポンスステータス設定の検証
       expect(res.status).toHaveBeenCalledWith(400);
+      // レスポンス送信の検証
       expect(res.json).toHaveBeenCalledWith({
         errors: [
           {
@@ -156,20 +164,54 @@ describe("orderController", () => {
       });
     });
 
-    test("[異常系] 受発注番号が8桁以外の場合、400エラーとなること", async () => {
+    test("[異常系] 受発注番号が7桁（8桁以外）の場合、400エラーとなること", async () => {
+      // リクエスト
       const req = {
         params: {
           orderNo: "o100000",
         },
       };
 
+      // Spy設定
       const spy = jest.spyOn(orderService, "delete");
 
+      // テスト対象関数の呼び出し
       await orderController.delete(req, res);
 
+      // Serviceの呼び出しを検証
       expect(spy).not.toHaveBeenCalled();
-
+      // レスポンスステータス設定の検証
       expect(res.status).toHaveBeenCalledWith(400);
+      // レスポンス送信の検証
+      expect(res.json).toHaveBeenCalledWith({
+        errors: [
+          {
+            field: "orderNo",
+            message: "受発注番号は8桁で入力してください",
+          },
+        ],
+      });
+    });
+
+    test("[異常系] 受発注番号が9桁（8桁以外）の場合、400エラーとなること", async () => {
+      // リクエスト
+      const req = {
+        params: {
+          orderNo: "o10000010",
+        },
+      };
+
+      // Spy設定
+      const spy = jest.spyOn(orderService, "delete");
+
+      // テスト対象関数の呼び出し
+      await orderController.delete(req, res);
+
+      // Serviceの呼び出しを検証
+      expect(spy).not.toHaveBeenCalled();
+      // レスポンスステータス設定の検証
+      expect(res.status).toHaveBeenCalledWith(400);
+      // レスポンス送信の検証
       expect(res.json).toHaveBeenCalledWith({
         errors: [
           {
@@ -181,19 +223,24 @@ describe("orderController", () => {
     });
 
     test("[異常系] 受発注番号が半角英数以外の場合、400エラーとなること", async () => {
+      // リクエスト
       const req = {
         params: {
           orderNo: "o1@@@@@1",
         },
       };
 
+      // Spy設定
       const spy = jest.spyOn(orderService, "delete");
 
+      // テスト対象関数の呼び出し
       await orderController.delete(req, res);
 
+      // Serviceの呼び出しを検証
       expect(spy).not.toHaveBeenCalled();
-
+      // レスポンスステータス設定の検証
       expect(res.status).toHaveBeenCalledWith(400);
+      // レスポンス送信の検証
       expect(res.json).toHaveBeenCalledWith({
         errors: [
           {
@@ -205,22 +252,32 @@ describe("orderController", () => {
     });
 
     test("[異常系] NotFoundError発生時、404エラーとなること", async () => {
+      // リクエスト
       const req = {
         params: {
           orderNo: "o1000001",
         },
       };
 
+      // Mock設定
       const expectedError = new NotFoundError("orderNo", "この受発注番号は存在しません");
-
-      jest.spyOn(orderService, "delete").mockRejectedValue(expectedError);
+      const spyDelete = jest.spyOn(orderService, "delete").mockRejectedValue(expectedError);
       const spyConsole = jest.spyOn(console, "log").mockImplementation();
 
+      // テスト対象関数の呼び出し
       await orderController.delete(req, res);
 
+      // Serviceの呼び出しを検証
+      expect(spyDelete).toHaveBeenCalledTimes(1);
+      expect(spyDelete).toHaveBeenCalledWith("o1000001");
+      // エラー発生時のログ出力を検証
+      expect(spyConsole).toHaveBeenCalledTimes(1);
       expect(spyConsole).toHaveBeenCalledWith(expectedError);
-
+      // レスポンスステータス設定の検証
+      expect(res.status).toHaveBeenCalledTimes(1);
       expect(res.status).toHaveBeenCalledWith(NotFoundError.status);
+      // レスポンス送信の検証
+      expect(res.json).toHaveBeenCalledTimes(1);
       expect(res.json).toHaveBeenCalledWith({
         errors: [
           {
@@ -232,25 +289,35 @@ describe("orderController", () => {
     });
 
     test("[異常系] UnprocessableContentError発生時、422エラーとなること", async () => {
+      // リクエスト
       const req = {
         params: {
           orderNo: "o1000001",
         },
       };
 
+      // Mock設定
       const expectedError = new UnprocessableContentError(
         "orderNo",
         "この受発注番号は確定日が登録されているため削除できません",
       );
-
-      jest.spyOn(orderService, "delete").mockRejectedValue(expectedError);
+      const spyDelete = jest.spyOn(orderService, "delete").mockRejectedValue(expectedError);
       const spyConsole = jest.spyOn(console, "log").mockImplementation();
 
+      // テスト対象関数の呼び出し
       await orderController.delete(req, res);
 
+      // Serviceの呼び出しを検証
+      expect(spyDelete).toHaveBeenCalledTimes(1);
+      expect(spyDelete).toHaveBeenCalledWith("o1000001");
+      // エラー発生時のログ出力を検証
+      expect(spyConsole).toHaveBeenCalledTimes(1);
       expect(spyConsole).toHaveBeenCalledWith(expectedError);
-
+      // レスポンスステータス設定の検証
+      expect(res.status).toHaveBeenCalledTimes(1);
       expect(res.status).toHaveBeenCalledWith(UnprocessableContentError.status);
+      // レスポンス送信の検証
+      expect(res.json).toHaveBeenCalledTimes(1);
       expect(res.json).toHaveBeenCalledWith({
         errors: [
           {
@@ -262,23 +329,32 @@ describe("orderController", () => {
     });
 
     test("[異常系] 想定外エラー発生時、500エラーとなること", async () => {
+      // リクエスト
       const req = {
         params: {
           orderNo: "o1000001",
         },
       };
 
+      // Mock設定
       const expectedError = new Error();
-
-      jest.spyOn(orderService, "delete").mockRejectedValue(expectedError);
+      const spyDelete = jest.spyOn(orderService, "delete").mockRejectedValue(expectedError);
       const spyConsole = jest.spyOn(console, "log").mockImplementation();
 
+      // テスト対象関数の呼び出し
       await orderController.delete(req, res);
 
+      // Serviceの呼び出しを検証
+      expect(spyDelete).toHaveBeenCalledTimes(1);
+      expect(spyDelete).toHaveBeenCalledWith("o1000001");
+      // エラー発生時のログ出力を検証
+      expect(spyConsole).toHaveBeenCalledTimes(1);
       expect(spyConsole).toHaveBeenCalledWith(expectedError);
-
+      // レスポンスステータス設定の検証
+      expect(res.status).toHaveBeenCalledTimes(1);
       expect(res.status).toHaveBeenCalledWith(500);
-      expect(res.send).toHaveBeenCalled();
+      // レスポンス送信の検証
+      expect(res.send).toHaveBeenCalledTimes(1);
     });
   });
 });

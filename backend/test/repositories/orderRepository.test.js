@@ -45,15 +45,6 @@ describe("orderRepository", () => {
       },
     ];
 
-    // findAll関数の共通Mock
-    let spy;
-
-    // 全テストケース実行前に行う処理
-    beforeEach(() => {
-      // Mock設定
-      spy = jest.spyOn(orderModel, "findAll").mockResolvedValue(results);
-    });
-
     test.each([
       {
         name: "条件なし",
@@ -128,6 +119,9 @@ describe("orderRepository", () => {
         },
       },
     ])("[正常系] 検索条件:$name", async ({ condition, where }) => {
+      // Mock設定
+      const spy = jest.spyOn(orderModel, "findAll").mockResolvedValueOnce(results);
+
       // テスト対象関数の呼び出し
       const actual = await orderRepository.findAll(condition);
 
@@ -143,53 +137,48 @@ describe("orderRepository", () => {
   });
 
   describe("findByNo 受発注情報詳細取得", () => {
-    // 検索結果
-    const result = {
-      orderNo: "o1000001",
-      orderKbn: "1",
-      clientCode: "cc000001",
-      productCode: "pc00001",
-      orderDate: "2026-1-1",
-      confirmedDate: "",
-      amountTaxIncluded: "20000",
-    };
-
-    let spy;
-
-    beforeEach(() => {
-      spy = jest.spyOn(orderModel, "findByPk").mockResolvedValueOnce(result);
-    });
-
     test("[正常系] 受発注番号を指定して取得", async () => {
+      // 検索結果
+      const result = {
+        orderNo: "o1000001",
+        orderKbn: "1",
+        clientCode: "cc000001",
+        productCode: "pc00001",
+        orderDate: "2026-1-1",
+        confirmedDate: "",
+        amountTaxIncluded: "20000",
+      };
+
       // 検索条件
       const orderNo = "o1000001";
+
+      // Mock設定
+      const spy = jest.spyOn(orderModel, "findByPk").mockResolvedValueOnce(result);
 
       // テスト対象関数の呼び出し
       const actual = await orderRepository.findByNo(orderNo);
 
       // 検証
-      expect(spy).toHaveBeenCalledTimes(1);
-      expect(spy).toHaveBeenCalledWith(orderNo);
-      expect(actual).toEqual(result);
+      expect(spy).toHaveBeenCalledTimes(1); // Mockした関数の呼び出し回数を検証
+      expect(spy).toHaveBeenCalledWith(orderNo); // Mockした関数呼び出し時の引数を検証
+      expect(actual).toEqual(result); // 実行結果と期待結果が一致することを検証
     });
   });
 
   describe("delete 受発注情報物理削除", () => {
-    let spy;
-
-    beforeEach(() => {
-      spy = jest.spyOn(orderModel, "destroy").mockResolvedValueOnce(1);
-    });
-
     test("[正常系] 受発注番号を指定して削除", async () => {
       // 削除条件
       const orderNo = "o1000001";
 
+      // Mock設定
+      const spy = jest.spyOn(orderModel, "destroy").mockResolvedValueOnce(1);
+
       // テスト対象関数の呼び出し
       await orderRepository.delete(orderNo);
 
-      // 検証
+      // Mockした関数の呼び出し回数を検証
       expect(spy).toHaveBeenCalledTimes(1);
+      // Mockした関数呼び出し時の引数を検証
       expect(spy).toHaveBeenCalledWith({
         where: {
           orderNo: orderNo,
