@@ -143,7 +143,7 @@ describe("orderController", () => {
         params: {},
       };
 
-      // Spy設定
+      // Mock設定
       const spy = jest.spyOn(orderService, "delete");
 
       // テスト対象関数の呼び出し
@@ -152,8 +152,10 @@ describe("orderController", () => {
       // Serviceの呼び出しを検証
       expect(spy).not.toHaveBeenCalled();
       // レスポンスステータス設定の検証
+      expect(res.status).toHaveBeenCalledTimes(1);
       expect(res.status).toHaveBeenCalledWith(400);
       // レスポンス送信の検証
+      expect(res.json).toHaveBeenCalledTimes(1);
       expect(res.json).toHaveBeenCalledWith({
         errors: [
           {
@@ -172,7 +174,7 @@ describe("orderController", () => {
         },
       };
 
-      // Spy設定
+      // Mock設定
       const spy = jest.spyOn(orderService, "delete");
 
       // テスト対象関数の呼び出し
@@ -181,8 +183,10 @@ describe("orderController", () => {
       // Serviceの呼び出しを検証
       expect(spy).not.toHaveBeenCalled();
       // レスポンスステータス設定の検証
+      expect(res.status).toHaveBeenCalledTimes(1);
       expect(res.status).toHaveBeenCalledWith(400);
       // レスポンス送信の検証
+      expect(res.json).toHaveBeenCalledTimes(1);
       expect(res.json).toHaveBeenCalledWith({
         errors: [
           {
@@ -201,7 +205,7 @@ describe("orderController", () => {
         },
       };
 
-      // Spy設定
+      // Mock設定
       const spy = jest.spyOn(orderService, "delete");
 
       // テスト対象関数の呼び出し
@@ -210,8 +214,10 @@ describe("orderController", () => {
       // Serviceの呼び出しを検証
       expect(spy).not.toHaveBeenCalled();
       // レスポンスステータス設定の検証
+      expect(res.status).toHaveBeenCalledTimes(1);
       expect(res.status).toHaveBeenCalledWith(400);
       // レスポンス送信の検証
+      expect(res.json).toHaveBeenCalledTimes(1);
       expect(res.json).toHaveBeenCalledWith({
         errors: [
           {
@@ -230,7 +236,7 @@ describe("orderController", () => {
         },
       };
 
-      // Spy設定
+      // Mock設定
       const spy = jest.spyOn(orderService, "delete");
 
       // テスト対象関数の呼び出し
@@ -239,8 +245,10 @@ describe("orderController", () => {
       // Serviceの呼び出しを検証
       expect(spy).not.toHaveBeenCalled();
       // レスポンスステータス設定の検証
+      expect(res.status).toHaveBeenCalledTimes(1);
       expect(res.status).toHaveBeenCalledWith(400);
       // レスポンス送信の検証
+      expect(res.json).toHaveBeenCalledTimes(1);
       expect(res.json).toHaveBeenCalledWith({
         errors: [
           {
@@ -355,6 +363,7 @@ describe("orderController", () => {
       expect(res.status).toHaveBeenCalledWith(500);
       // レスポンス送信の検証
       expect(res.send).toHaveBeenCalledTimes(1);
+      expect(res.send).toHaveBeenCalledWith();
     });
   });
 });
