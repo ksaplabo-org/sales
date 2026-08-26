@@ -45,9 +45,8 @@ describe("orderService", () => {
       // テスト対象関数の呼び出し
       const actual = await orderService.findAll(condition);
 
-      // 実行結果と期待結果が一致することを検証
-      expect(actual).toEqual(expected);
       // 検証
+      expect(actual).toEqual(expected); // 実行結果と期待結果が一致することを検証
       expect(spy).toHaveBeenCalledTimes(1); // Mockした関数の呼び出し回数を検証
       expect(spy).toHaveBeenCalledWith(condition); // Mockした関数呼び出し時の引数を検証
     });
