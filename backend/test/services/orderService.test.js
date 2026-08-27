@@ -57,13 +57,11 @@ describe("orderService", () => {
       // 削除条件
       const orderNo = "o1000001";
 
-      // テストデータ
+      // Mock設定
       const order = {
         orderNo: "o1000001",
         confirmedDate: null,
       };
-
-      // Mock設定
       const findSpy = jest.spyOn(orderRepository, "findByNo").mockResolvedValueOnce(order);
       const deleteSpy = jest.spyOn(orderRepository, "delete").mockResolvedValueOnce();
 
@@ -106,13 +104,11 @@ describe("orderService", () => {
       // 削除条件
       const orderNo = "o2000001";
 
-      // テストデータ
+      // Mock設定
       const order = {
         orderNo: "o2000001",
         confirmedDate: "2026-1-3",
       };
-
-      // Mock設定
       const findSpy = jest.spyOn(orderRepository, "findByNo").mockResolvedValueOnce(order);
 
       // テスト対象関数呼び出し・検証
