@@ -136,7 +136,7 @@ describe("clientController", () => {
       };
 
       // Mock設定
-      const spy = jest.spyOn(clientService, "findByCode").mockRejectedValue();
+      const spy = jest.spyOn(clientService, "findByCode");
 
       // テスト対象関数の呼び出し
       await clientController.findByCode(req, res);
@@ -167,7 +167,7 @@ describe("clientController", () => {
       };
 
       // Mock設定
-      const spy = jest.spyOn(clientService, "findByCode").mockRejectedValue();
+      const spy = jest.spyOn(clientService, "findByCode");
 
       // テスト対象関数の呼び出し
       await clientController.findByCode(req, res);
@@ -198,7 +198,7 @@ describe("clientController", () => {
       };
 
       // Mock設定
-      const spy = jest.spyOn(clientService, "findByCode").mockRejectedValue();
+      const spy = jest.spyOn(clientService, "findByCode");
 
       // テスト対象関数の呼び出し
       await clientController.findByCode(req, res);
@@ -229,7 +229,7 @@ describe("clientController", () => {
       };
 
       // Mock設定
-      const spy = jest.spyOn(clientService, "findByCode").mockRejectedValue();
+      const spy = jest.spyOn(clientService, "findByCode");
 
       // テスト対象関数の呼び出し
       await clientController.findByCode(req, res);
@@ -861,7 +861,7 @@ describe("clientController", () => {
       };
 
       // Mock設定
-      const spyDelete = jest.spyOn(clientService, "delete").mockRejectedValue();
+      const spyDelete = jest.spyOn(clientService, "delete");
 
       // テスト対象関数の呼び出し
       await clientController.delete(req, res);
@@ -892,7 +892,7 @@ describe("clientController", () => {
       };
 
       // Mock設定
-      const spyDelete = jest.spyOn(clientService, "delete").mockRejectedValue();
+      const spyDelete = jest.spyOn(clientService, "delete");
 
       // テスト対象関数の呼び出し
       await clientController.delete(req, res);
@@ -923,7 +923,7 @@ describe("clientController", () => {
       };
 
       // Mock設定
-      const spyDelete = jest.spyOn(clientService, "delete").mockRejectedValue();
+      const spyDelete = jest.spyOn(clientService, "delete");
 
       // テスト対象関数の呼び出し
       await clientController.delete(req, res);
@@ -954,7 +954,7 @@ describe("clientController", () => {
       };
 
       // Mock設定
-      const spyDelete = jest.spyOn(clientService, "delete").mockRejectedValue();
+      const spyDelete = jest.spyOn(clientService, "delete");
 
       // テスト対象関数の呼び出し
       await clientController.delete(req, res);
@@ -1084,14 +1084,21 @@ describe("clientController", () => {
   });
 
   describe("validate 登録更新共通バリデーション", () => {
-    test("[正常系] 取引先名が20文字以内の場合、エラーが発生しないこと", () => {
-      const result = clientController.validate({
+    test.each([
+      {
+        name: "19文字である",
+        clientName: "あいうえおかきくけこさしすせそたちつて",
+      },
+      {
+        name: "20文字である",
         clientName: "あいうえおかきくけこさしすせそたちつてと",
+      },
+       ])("[正常系] 取引先名が$name場合、エラーが発生しないこと", ({ clientName }) => {
+      const result = clientController.validate({
+        clientName,
       });
-      const errors = [];
-      expect(result).toEqual(errors);
+      expect(result).toEqual([]);
     });
-
     test.each([
       {
         name: "未設定である",
@@ -1160,12 +1167,20 @@ describe("clientController", () => {
       expect(result).toContainEqual(errors);
     });
 
-    test("[正常系] 住所1が20文字以内の場合、エラーが発生しないこと", () => {
+    test.each([
+      {
+        name: "19文字である",
+        address1: "あいうえおかきくけこさしすせそたちつて",
+      },
+      {
+        name: "20文字である",
+        address1: "あいうえおかきくけこさしすせそたちつてと",
+      },
+       ])("[正常系] 住所1が$name場合、エラーが発生しないこと", ({ address1 }) => {
       const result = clientController.validate({
         clientName: "あいうえおかきくけこさしすせそたちつてと",
-        address1: "あいうえおかきくけこさしすせそたちつてと",
+        address1,
       });
-
       expect(result).toEqual([]);
     });
 
@@ -1183,13 +1198,21 @@ describe("clientController", () => {
       ]);
     });
 
-    test("[正常系] 住所2が20文字以内の場合、エラーが発生しないこと", () => {
+   test.each([
+      {
+        name: "19文字である",
+        address2: "あいうえおかきくけこさしすせそたちつて",
+      },
+      {
+        name: "20文字である",
+        address2: "あいうえおかきくけこさしすせそたちつてと",
+      },
+       ])("[正常系] 住所2が$name場合、エラーが発生しないこと", ({ address2 }) => {
       const result = clientController.validate({
         clientName: "あいうえおかきくけこさしすせそたちつてと",
-        address2: "あいうえおかきくけこさしすせそたちつてと",
+        address2,
       });
-      const errors = [];
-      expect(result).toEqual(errors);
+      expect(result).toEqual([]);
     });
 
     test("[異常系] 住所2が21文字の場合、エラーが発生すること", () => {

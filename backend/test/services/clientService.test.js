@@ -93,6 +93,7 @@ describe("clientService", () => {
       const mockDate = new Date(); // 現在日時をMock
 
       jest.useFakeTimers();
+      
       jest.setSystemTime(mockDate);
 
       const clientInfo = {
@@ -125,7 +126,7 @@ describe("clientService", () => {
 
       // Mock設定
       const spyFindByCode = jest.spyOn(clientRepository, "findByCode").mockResolvedValueOnce(clientInfo);
-      const spyCreate = jest.spyOn(clientRepository, "create").mockResolvedValueOnce();
+      const spyCreate = jest.spyOn(clientRepository, "create");
 
       try {
         // テスト対象関数の呼び出し
@@ -194,7 +195,7 @@ describe("clientService", () => {
 
       // Mock設定
       const spyFindByCode = jest.spyOn(clientRepository, "findByCode").mockResolvedValueOnce(null);
-      const spyUpdate = jest.spyOn(clientRepository, "update").mockResolvedValueOnce();
+      const spyUpdate = jest.spyOn(clientRepository, "update");
 
       try {
         // テスト対象関数の呼び出し
@@ -218,7 +219,7 @@ describe("clientService", () => {
       const clientCode = "test0011";
 
       // 受発注一覧取得RepositoryのMock値
-      const clients = [];
+      const orders = [];
 
       // 期待結果
       const expectedResult = undefined;
@@ -227,7 +228,7 @@ describe("clientService", () => {
       const spyFindByCode = jest
         .spyOn(clientRepository, "findByCode")
         .mockResolvedValueOnce({ clientCode: "test0011" });
-      const spyFindAll = jest.spyOn(orderRepository, "findAll").mockResolvedValueOnce(clients);
+      const spyFindAll = jest.spyOn(orderRepository, "findAll").mockResolvedValueOnce(orders);
       const spyDelete = jest.spyOn(clientRepository, "delete").mockResolvedValueOnce(expectedResult);
 
       // テスト対象関数の呼び出し
@@ -246,12 +247,12 @@ describe("clientService", () => {
       // 検索条件
       const clientCode = "test1000";
 
-      // 前提条件
-      const clients = [{ clientCode: "test0001" }];
+      // 受発注一覧取得RepositoryのMock値
+      const orders = [];
 
       // Mock設定
       const spyFindByCode = jest.spyOn(clientRepository, "findByCode").mockResolvedValueOnce(null);
-      const spyFindAll = jest.spyOn(orderRepository, "findAll").mockResolvedValueOnce(clients);
+      const spyFindAll = jest.spyOn(orderRepository, "findAll");
       const spyDelete = jest.spyOn(clientRepository, "delete").mockResolvedValueOnce();
 
       try {
@@ -274,15 +275,15 @@ describe("clientService", () => {
       // 検索条件
       const clientCode = "test0001";
 
-      // 前提条件
-      const clients = [{ clientCode: "test0001" }];
+      // 検索条件の取引先コードが受発注情報で存在する
+      const orders = [{ clientCode: "test0001" }];
 
       // Mock設定
       const spyFindByCode = jest
         .spyOn(clientRepository, "findByCode")
         .mockResolvedValueOnce({ clientCode: "test0001" });
-      const spyFindAll = jest.spyOn(orderRepository, "findAll").mockResolvedValueOnce(clients);
-      const spyDelete = jest.spyOn(clientRepository, "delete").mockResolvedValueOnce();
+      const spyFindAll = jest.spyOn(orderRepository, "findAll").mockResolvedValueOnce(orders);
+      const spyDelete = jest.spyOn(clientRepository, "delete");
 
       try {
         // テスト対象関数の呼び出し
