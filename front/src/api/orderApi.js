@@ -36,7 +36,7 @@ export async function createOrder(orderInfo) {
  *
  * @param {*} orderInfo 受発注情報
  */
-export async function editOrder(orderInfo) {
+export async function updateOrder(orderInfo) {
   await apiClient.put(`/orders/${orderInfo.orderNo}`, orderInfo);
 }
 

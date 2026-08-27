@@ -403,7 +403,7 @@ const updateOrder = async () => {
       saveData.shipDate = view.value.shipDate;
     }
 
-    await orderApi.editOrder(saveData);
+    await orderApi.updateOrder(saveData);
 
     router.push({
       name: "orderList",

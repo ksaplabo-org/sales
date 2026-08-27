@@ -58,7 +58,7 @@ class OrderController {
       const order = await orderService.findByNo(req.params.orderNo);
       res.json(order);
     } catch (e) {
-      console.error(e);
+      console.log(e);
 
       if (e instanceof NotFoundError) {
         res.status(NotFoundError.status).json({
@@ -83,7 +83,6 @@ class OrderController {
    */
   async update(req, res) {
     try {
-      console.log(req.body);
       let errors = [];
 
       //受発注番号
@@ -117,12 +116,9 @@ class OrderController {
       if (order.deliverDate == "") {
         order.deliverDate = null;
       }
-    
 
       // 共通バリデーション
       errors = this.validate(order);
-
-      console.log(errors);
 
       // 更新者ID
       if (!order.updatedId) {
@@ -217,7 +213,7 @@ class OrderController {
     const errors = [];
 
     //納品予定日
-    if (data.deliverDate && !/^\d{4}-\d{2}-\d{2}$/.test(data.deliverDate)) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(data.deliverDate)) {
       errors.push({ field: "deliverDate", message: "日付はyyyy-MM-ddの形式で入力してください" });
     } else if (data.deliverDate && isNaN(new Date(data.deliverDate).getTime())) {
       errors.push({ field: "deliverDate", message: "正しい日付を入力してください" });
