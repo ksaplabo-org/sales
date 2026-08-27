@@ -583,7 +583,7 @@ describe("productService", () => {
 
       // Mock設定
       const spyFindByCode = jest.spyOn(productRepository, "findByCode").mockResolvedValueOnce(null);
-      const spyOrderFindAll = jest.spyOn(orderRepository, "findAll").mockResolvedValueOnce([{ productCode: "a0b111" }]);
+      const spyOrderFindAll = jest.spyOn(orderRepository, "findAll");
       const spyDelete = jest.spyOn(productRepository, "delete").mockResolvedValueOnce();
 
       // テスト対象・検証
