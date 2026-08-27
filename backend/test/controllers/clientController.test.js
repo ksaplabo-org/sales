@@ -9,17 +9,20 @@ import UniqueConstraintError from "../../src/errors/UniqueConstraintError.js";
 //各テストケースの後に実行される処理
 afterEach(() => {
   // Mockを全て初期化
-  jest.clearAllMocks();
+  jest.resetAllMocks();
 });
 
 //ClientControlerテスト
 describe("clientController", () => {
   // 各テストで使用するレスポンス引数のMock
-  const res = {
-    status: jest.fn().mockReturnThis(),
-    json: jest.fn(),
-    send: jest.fn(),
-  };
+  let res;
+  beforeEach(() => {
+    res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+      send: jest.fn(),
+    };
+  });
 
   describe("findAll 取引先情報一覧取得", () => {
     test("[正常系] 検索条件がServiceに渡され、ステータス[200]とServiceの結果がレスポンスされること", async () => {
@@ -1093,7 +1096,7 @@ describe("clientController", () => {
         name: "20文字である",
         clientName: "あいうえおかきくけこさしすせそたちつてと",
       },
-       ])("[正常系] 取引先名が$name場合、エラーが発生しないこと", ({ clientName }) => {
+    ])("[正常系] 取引先名が$name場合、エラーが発生しないこと", ({ clientName }) => {
       const result = clientController.validate({
         clientName,
       });
@@ -1176,7 +1179,7 @@ describe("clientController", () => {
         name: "20文字である",
         address1: "あいうえおかきくけこさしすせそたちつてと",
       },
-       ])("[正常系] 住所1が$name場合、エラーが発生しないこと", ({ address1 }) => {
+    ])("[正常系] 住所1が$name場合、エラーが発生しないこと", ({ address1 }) => {
       const result = clientController.validate({
         clientName: "あいうえおかきくけこさしすせそたちつてと",
         address1,
@@ -1198,7 +1201,7 @@ describe("clientController", () => {
       ]);
     });
 
-   test.each([
+    test.each([
       {
         name: "19文字である",
         address2: "あいうえおかきくけこさしすせそたちつて",
@@ -1207,7 +1210,7 @@ describe("clientController", () => {
         name: "20文字である",
         address2: "あいうえおかきくけこさしすせそたちつてと",
       },
-       ])("[正常系] 住所2が$name場合、エラーが発生しないこと", ({ address2 }) => {
+    ])("[正常系] 住所2が$name場合、エラーが発生しないこと", ({ address2 }) => {
       const result = clientController.validate({
         clientName: "あいうえおかきくけこさしすせそたちつてと",
         address2,

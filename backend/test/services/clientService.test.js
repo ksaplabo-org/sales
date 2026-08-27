@@ -10,7 +10,7 @@ describe("clientService", () => {
   // 全テストケース実行後に行う処理
   afterEach(() => {
     // Mockをすべて初期化
-    jest.clearAllMocks();
+    jest.resetAllMocks();
   });
 
   describe("findAll 取引先情報一覧取得", () => {
