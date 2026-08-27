@@ -36,6 +36,7 @@ class OrderService {
       throw new NotFoundError("productCode", "この商品コードは存在しません");
     }
 
+    //数量と単価から金額・消費税・合計金額を計算
     const now = new Date().toISOString();
     orderInfo.createdAt = now;
     orderInfo.updatedAt = now;

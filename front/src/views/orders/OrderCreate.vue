@@ -148,11 +148,13 @@
             id="shipDate"
             v-model="form.shipDate"
             :state="
-              !!form.shipDate &&
-              (form.confirmedDate ? form.shipDate >= form.confirmedDate : form.shipDate >= form.orderDate)
+              !form.shipDate
+                ? null
+                : form.confirmedDate
+                  ? form.shipDate >= form.confirmedDate
+                  : form.shipDate >= form.orderDate
             "
             type="date"
-            required
           />
           <div
             v-if="
@@ -176,10 +178,8 @@
             :state="
               !form.deliverDate
                 ? null
-                : isReceive
-                  ? form.shipDate
-                    ? form.deliverDate >= form.shipDate
-                    : form.deliverDate >= form.orderDate
+                : form.shipDate
+                  ? form.deliverDate >= form.shipDate
                   : form.confirmedDate
                     ? form.deliverDate >= form.confirmedDate
                     : form.deliverDate >= form.orderDate
@@ -188,16 +188,9 @@
           />
           <div
             v-if="
-              !(form.confirmedDate && form.confirmedDate < form.orderDate) &&
-              !(
-                form.shipDate &&
-                (form.confirmedDate ? form.shipDate < form.confirmedDate : form.shipDate < form.orderDate)
-              ) &&
               form.deliverDate &&
-              (isReceive
-                ? form.shipDate
-                  ? form.deliverDate < form.shipDate
-                  : form.deliverDate < form.orderDate
+              (form.shipDate
+                ? form.deliverDate < form.shipDate
                 : form.confirmedDate
                   ? form.deliverDate < form.confirmedDate
                   : form.deliverDate < form.orderDate)
@@ -208,7 +201,15 @@
               formatMessage(
                 messages.MSGE017,
                 "納品予定日",
-                isReceive ? (form.shipDate ? "出荷日" : "受注日") : form.confirmedDate ? "発注受付完了日" : "発注日",
+                form.shipDate
+                  ? "出荷日"
+                  : form.confirmedDate
+                    ? isReceive
+                      ? "入金日"
+                      : "発注受付完了日"
+                    : isReceive
+                      ? "受注日"
+                      : "発注日",
               )
             }}
           </div>
@@ -636,6 +637,7 @@ const openFailedToast = (message) => {
  */
 const createOrder = async () => {
   try {
+    console.log("createOrder start");
     loading.value = true;
 
     const saveData = {
@@ -645,7 +647,11 @@ const createOrder = async () => {
       orderKbn: orderKbn.value,
     };
 
+    console.log(saveData);
+
     await orderApi.createOrder(saveData);
+
+    console.log("create success")
 
     router.push({
       name: "orderList",
@@ -655,7 +661,9 @@ const createOrder = async () => {
       },
     });
   } catch (e) {
+    console.log("create error");
     console.log(e);
+    console.log(e.response);
 
     openFailedToast(messages.MSGE004);
   } finally {

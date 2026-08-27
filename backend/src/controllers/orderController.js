@@ -145,7 +145,7 @@ class OrderController {
       }
 
       //受注の場合
-      else if (order.orderKbn === "1") {
+      else if (order.orderKbn === "1" && order.shipDate) {
         //日付がyyyy-MM-ddの形式以外で入力された場合
         if (!/^\d{4}-\d{2}-\d{2}$/.test(order.shipDate)) {
           errors.push({ field: "shipDate", message: "日付はyyyy-MM-ddの形式で入力してください" });
