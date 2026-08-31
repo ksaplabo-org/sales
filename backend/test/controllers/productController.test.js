@@ -243,6 +243,7 @@ describe("productController", () => {
       //console.logモック
       const spyConsole = jest.spyOn(console, "log").mockResolvedValue();
 
+      //テスト対象関数の呼び出し
       await productController.findByCode(req, res);
 
       //Serviceの呼び出しを検証
@@ -373,6 +374,7 @@ describe("productController", () => {
       };
 
       const spy = jest.spyOn(productService, "delete");
+
       //テスト対象関数の呼び出し
       await productController.delete(req, res);
 
@@ -400,6 +402,7 @@ describe("productController", () => {
       //console.logモック
       const spyConsole = jest.spyOn(console, "log").mockResolvedValue();
 
+      //テスト対象関数の呼び出し
       await productController.delete(req, res);
 
       //Serviceの呼び出しを検証
@@ -444,6 +447,7 @@ describe("productController", () => {
       //console.logモック
       const spyConsole = jest.spyOn(console, "log").mockResolvedValue();
 
+      //テスト対象関数の呼び出し
       await productController.delete(req, res);
 
       //Serviceの呼び出しを検証
@@ -804,10 +808,10 @@ describe("productController", () => {
       };
       //serviceエラーモック
       const exceptedError = new NotFoundError("aa000001", "この発注先コードは存在していません");
-
       const spyCreate = jest.spyOn(productService, "create").mockRejectedValue(exceptedError);
       //console.logモック
       const spyConsole = jest.spyOn(console, "log").mockResolvedValue();
+
       //テスト対象関数の呼び出し
       await productController.create(req, res);
 
@@ -868,6 +872,7 @@ describe("productController", () => {
       //console.logモック
       const spyConsole = jest.spyOn(console, "log").mockResolvedValue();
 
+      //テスト対象関数の呼び出し
       await productController.create(req, res);
 
       //Serviceの呼び出しを検証
@@ -1137,6 +1142,7 @@ describe("productController", () => {
       //console.logモック
       const spyConsole = jest.spyOn(console, "log").mockResolvedValue();
 
+      //テスト対象関数の呼び出し
       await productController.update(req, res);
 
       //Serviceの呼び出しを検証
@@ -1337,17 +1343,20 @@ describe("productController", () => {
           },
         ],
       },
-    ])("[異常系]$testName場合、エラー情報配列に形式チェックエラーの情報を追加するされること", async ({ productName, expectedLog }) => {
-      const product = {
-        productName: productName,
-        productPrice: "100",
-      };
+    ])(
+      "[異常系]$testName場合、エラー情報配列に形式チェックエラーの情報を追加するされること",
+      async ({ productName, expectedLog }) => {
+        const product = {
+          productName: productName,
+          productPrice: "100",
+        };
 
-      //テスト対象関数の呼び出し
-      const actual = await productController.validate(product);
+        //テスト対象関数の呼び出し
+        const actual = await productController.validate(product);
 
-      expect(actual).toEqual(expectedLog);
-    });
+        expect(actual).toEqual(expectedLog);
+      },
+    );
 
     test.each([
       {
@@ -1390,18 +1399,21 @@ describe("productController", () => {
           },
         ],
       },
-    ])("[異常系]$testName場合、エラー情報配列に形式チェックエラーの情報を追加されること", async ({ productPrice, expectedLog }) => {
-      const product = {
-        productName: "醤油",
-        orderClientCode: "aaaa0001",
-        productPrice: productPrice,
-        updatedId: "test01",
-      };
+    ])(
+      "[異常系]$testName場合、エラー情報配列に形式チェックエラーの情報を追加されること",
+      async ({ productPrice, expectedLog }) => {
+        const product = {
+          productName: "醤油",
+          orderClientCode: "aaaa0001",
+          productPrice: productPrice,
+          updatedId: "test01",
+        };
 
-      //テスト対象関数の呼び出し
-      const actual = await productController.validate(product);
+        //テスト対象関数の呼び出し
+        const actual = await productController.validate(product);
 
-      expect(actual).toEqual(expectedLog);
-    });
+        expect(actual).toEqual(expectedLog);
+      },
+    );
   });
 });
