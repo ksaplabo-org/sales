@@ -13,7 +13,7 @@ describe("productService", () => {
   // 全テストケース実行後に行う処理
   afterEach(() => {
     // Mockをすべて初期化
-    jest.clearAllMocks();
+    jest.resetAllMocks();
   });
 
   describe("findAll 商品情報一覧取得", () => {
@@ -134,6 +134,7 @@ describe("productService", () => {
 
       // Mock設定
       const spyFindByCode = jest.spyOn(productRepository, "findByCode").mockResolvedValueOnce(null);
+      const spyClientFindByCode = jest.spyOn(clientRepository, "findByCode");
       const spyCreate = jest.spyOn(productRepository, "create").mockResolvedValueOnce();
 
       // テスト対象関数の呼び出し
@@ -142,6 +143,7 @@ describe("productService", () => {
       // 検証
       expect(spyFindByCode).toHaveBeenCalledTimes(1);
       expect(spyFindByCode).toHaveBeenCalledWith(productInfo.productCode);
+      expect(spyClientFindByCode).not.toHaveBeenCalled();
       expect(spyCreate).toHaveBeenCalledTimes(1);
       expect(spyCreate).toHaveBeenCalledWith(productInfo);
       expect(spyCreate).toHaveBeenCalledWith(productInfo);
@@ -227,7 +229,7 @@ describe("productService", () => {
         orderClientCode: "c0000001",
       };
 
-      //DBに存在するデータ
+      //mock返却データ
       const product = {
         productCode: productCode,
         orderKbn: "2",
@@ -270,7 +272,7 @@ describe("productService", () => {
         orderKbn: "1",
       };
 
-      //DBに存在するデータ
+      //mock返却データ
       const product = {
         productCode: productCode,
         orderKbn: "1",
@@ -278,6 +280,7 @@ describe("productService", () => {
 
       //Mock設定
       const spyFindByCode = jest.spyOn(productRepository, "findByCode").mockResolvedValueOnce(product);
+      const spyClientFindByCode = jest.spyOn(clientRepository, "findByCode");
       const spyUpdate = jest.spyOn(productRepository, "update").mockResolvedValueOnce();
 
       //テスト対象関数の呼び出し
@@ -286,13 +289,14 @@ describe("productService", () => {
       //検証
       expect(spyFindByCode).toHaveBeenCalledTimes(1);
       expect(spyFindByCode).toHaveBeenCalledWith(productCode);
+      expect(spyClientFindByCode).not.toHaveBeenCalled();
       expect(spyUpdate).toHaveBeenCalledTimes(1);
       expect(spyUpdate).toHaveBeenCalledWith(productCode, productInfo);
       expect(productInfo.updatedAt).toBe(mockDate.toISOString());
       jest.useRealTimers();
     });
 
-    test("[異常系] 存在しない発注先コードの場合 => NotFoundErrorになること", async () => {
+    test("[異常系] 受発注区分=2かつ存在しない発注先コードの場合 => NotFoundErrorになること", async () => {
       //検索条件
       const productCode = "a0b0001";
 
@@ -308,7 +312,7 @@ describe("productService", () => {
         orderClientCode: "c0000001",
       };
 
-      //DBに存在するデータ
+      //mock返却データ
       const product = {
         productCode: productCode,
         orderKbn: "2",
@@ -390,7 +394,7 @@ describe("productService", () => {
         orderClientCode: "",
       };
 
-      //DBに存在するデータ
+      //mock返却データ
       const product = {
         productCode: "a0b0001",
         orderKbn: "2",
@@ -418,7 +422,7 @@ describe("productService", () => {
       expect(spyUpdate).not.toHaveBeenCalled();
     });
 
-    test("[異常系] 受発注区分=2かつ発注先コードが8桁以外の場合 => ValidationError", async () => {
+    test("[異常系] 受発注区分=2かつ発注先コードが8桁以外(7桁)の場合 => ValidationError", async () => {
       //検索条件
       const productCode = "a0b0001";
 
@@ -434,7 +438,51 @@ describe("productService", () => {
         orderClientCode: "c000001",
       };
 
-      //DBに存在するデータ
+      //mock返却データ
+      const product = {
+        productCode: "a0b0001",
+        orderKbn: "2",
+        orderClientCode: "c0000001",
+      };
+
+      //Mock設定
+      const spyFindByCode = jest.spyOn(productRepository, "findByCode").mockResolvedValueOnce(product);
+      const spyClientFindByCode = jest.spyOn(clientRepository, "findByCode");
+      const spyUpdate = jest.spyOn(productRepository, "update").mockResolvedValueOnce();
+
+      try {
+        // テスト対象関数の呼び出し
+        await productService.update(productCode, productInfo);
+        // エラーが発生しなかった場合はテスト失敗
+        fail();
+      } catch (e) {
+        expect(e).toBeInstanceOf(ValidationError); // スローしたエラーの検証
+        expect(e.field).toBe("orderClientCode"); // エラーフィールドを検証
+        expect(e.message).toBe("発注先コードは8桁で設定してください"); // エラーメッセージを検証
+      }
+      expect(spyFindByCode).toHaveBeenCalledTimes(1);
+      expect(spyFindByCode).toHaveBeenCalledWith(productCode);
+      expect(spyClientFindByCode).not.toHaveBeenCalled();
+      expect(spyUpdate).not.toHaveBeenCalled();
+    });
+
+    test("[異常系] 受発注区分=2かつ発注先コードが8桁以外(9桁)の場合 => ValidationError", async () => {
+      //検索条件
+      const productCode = "a0b0001";
+
+      //現在日時をmock
+      const mockDate = new Date();
+
+      jest.useFakeTimers();
+      jest.setSystemTime(mockDate);
+
+      //更新情報
+      const productInfo = {
+        orderKbn: "2",
+        orderClientCode: "c00000001",
+      };
+
+      //mock返却データ
       const product = {
         productCode: "a0b0001",
         orderKbn: "2",
@@ -478,7 +526,7 @@ describe("productService", () => {
         orderClientCode: "あ0000001",
       };
 
-      //DBに存在するデータ
+      //mock返却データ
       const product = {
         productCode: "a0b0001",
         orderKbn: "2",
@@ -522,7 +570,7 @@ describe("productService", () => {
         orderClientCode: "c0000001",
       };
 
-      //DBに存在するデータ
+      //mock返却データ
       const product = {
         productCode: "a0b0001",
         orderKbn: "1",
