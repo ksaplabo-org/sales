@@ -82,10 +82,10 @@ describe("productService", () => {
 
   describe("create 商品情報登録", () => {
     test("[正常系] 受発注区分=2の場合かつ取引先コードが存在する場合 => 登録できること", async () => {
-      const mockDate = new Date(); //現在日時をmock
+      const mockDate = new Date(); //現在日時を保存
 
-      jest.useFakeTimers();
-      jest.setSystemTime(mockDate);
+      jest.useFakeTimers(); //検証用の仮想時間を使用
+      jest.setSystemTime(mockDate); //日時をmockDateに固定
 
       // 登録情報
       const productInfo = {
@@ -119,10 +119,10 @@ describe("productService", () => {
     });
 
     test("[正常系] 受発注区分=1の場合 => 登録できること", async () => {
-      const mockDate = new Date(); //現在日時をmock
+      const mockDate = new Date(); //現在日時を保存
 
-      jest.useFakeTimers();
-      jest.setSystemTime(mockDate);
+      jest.useFakeTimers(); //検証用の仮想時間を使用
+      jest.setSystemTime(mockDate); //日時をmockDateに固定
 
       // 登録情報
       const productInfo = {
@@ -145,7 +145,6 @@ describe("productService", () => {
       expect(spyFindByCode).toHaveBeenCalledWith(productInfo.productCode);
       expect(spyClientFindByCode).not.toHaveBeenCalled();
       expect(spyCreate).toHaveBeenCalledTimes(1);
-      expect(spyCreate).toHaveBeenCalledWith(productInfo);
       expect(spyCreate).toHaveBeenCalledWith(productInfo);
       expect(productInfo.createdAt).toBe(mockDate.toISOString());
       expect(productInfo.updatedAt).toBe(mockDate.toISOString());
@@ -217,11 +216,10 @@ describe("productService", () => {
       //検索条件
       const productCode = "a0b0001";
 
-      //現在日時をmock
-      const mockDate = new Date();
+      const mockDate = new Date(); //現在日時を保存
 
-      jest.useFakeTimers();
-      jest.setSystemTime(mockDate);
+      jest.useFakeTimers(); //検証用の仮想時間を使用
+      jest.setSystemTime(mockDate); //日時をmockDateに固定
 
       //更新情報
       const productInfo = {
@@ -262,10 +260,10 @@ describe("productService", () => {
       const productCode = "a0b0001";
 
       //現在日時をmock
-      const mockDate = new Date();
+      const mockDate = new Date(); //現在日時を保存
 
-      jest.useFakeTimers();
-      jest.setSystemTime(mockDate);
+      jest.useFakeTimers(); //検証用の仮想時間を使用
+      jest.setSystemTime(mockDate); //日時をmockDateに固定
 
       //更新情報
       const productInfo = {
@@ -301,10 +299,10 @@ describe("productService", () => {
       const productCode = "a0b0001";
 
       //現在日時をmock
-      const mockDate = new Date();
+      const mockDate = new Date(); //現在日時を保存
 
-      jest.useFakeTimers();
-      jest.setSystemTime(mockDate);
+      jest.useFakeTimers(); //検証用の仮想時間を使用
+      jest.setSystemTime(mockDate); //日時をmockDateに固定
 
       //更新情報
       const productInfo = {
@@ -346,10 +344,10 @@ describe("productService", () => {
       const productCode = "a0b0001";
 
       //現在日時をmock
-      const mockDate = new Date();
+      const mockDate = new Date(); //現在日時を保存
 
-      jest.useFakeTimers();
-      jest.setSystemTime(mockDate);
+      jest.useFakeTimers(); //検証用の仮想時間を使用
+      jest.setSystemTime(mockDate); //日時をmockDateに固定
 
       //更新情報
       const productInfo = {
@@ -383,10 +381,10 @@ describe("productService", () => {
       const productCode = "a0b0001";
 
       //現在日時をmock
-      const mockDate = new Date();
+      const mockDate = new Date(); //現在日時を保存
 
-      jest.useFakeTimers();
-      jest.setSystemTime(mockDate);
+      jest.useFakeTimers(); //検証用の仮想時間を使用
+      jest.setSystemTime(mockDate); //日時をmockDateに固定
 
       //更新情報
       const productInfo = {
@@ -427,10 +425,10 @@ describe("productService", () => {
       const productCode = "a0b0001";
 
       //現在日時をmock
-      const mockDate = new Date();
+      const mockDate = new Date(); //現在日時を保存
 
-      jest.useFakeTimers();
-      jest.setSystemTime(mockDate);
+      jest.useFakeTimers(); //検証用の仮想時間を使用
+      jest.setSystemTime(mockDate); //日時をmockDateに固定
 
       //更新情報
       const productInfo = {
@@ -471,10 +469,10 @@ describe("productService", () => {
       const productCode = "a0b0001";
 
       //現在日時をmock
-      const mockDate = new Date();
+      const mockDate = new Date(); //現在日時を保存
 
-      jest.useFakeTimers();
-      jest.setSystemTime(mockDate);
+      jest.useFakeTimers(); //検証用の仮想時間を使用
+      jest.setSystemTime(mockDate); //日時をmockDateに固定
 
       //更新情報
       const productInfo = {
@@ -515,10 +513,10 @@ describe("productService", () => {
       const productCode = "a0b0001";
 
       //現在日時をmock
-      const mockDate = new Date();
+      const mockDate = new Date(); //現在日時を保存
 
-      jest.useFakeTimers();
-      jest.setSystemTime(mockDate);
+      jest.useFakeTimers(); //検証用の仮想時間を使用
+      jest.setSystemTime(mockDate); //日時をmockDateに固定
 
       //更新情報
       const productInfo = {
@@ -559,10 +557,10 @@ describe("productService", () => {
       const productCode = "a0b0001";
 
       //現在日時をmock
-      const mockDate = new Date();
+      const mockDate = new Date(); //現在日時を保存
 
-      jest.useFakeTimers();
-      jest.setSystemTime(mockDate);
+      jest.useFakeTimers(); //検証用の仮想時間を使用
+      jest.setSystemTime(mockDate); //日時をmockDateに固定
 
       //更新情報
       const productInfo = {
