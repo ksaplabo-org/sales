@@ -40,9 +40,9 @@ class OrderController {
    */
   async findByNo(req, res) {
     try {
-      let errors = [];
+      const errors = [];
 
-      //受発注番号
+      //受発注番号バリデーション
       if (!req.params.orderNo) {
         errors.push({ field: "orderNo", message: "受発注番号を入力してください" });
       } else if (req.params.orderNo.length != 8) {
@@ -85,7 +85,7 @@ class OrderController {
     try {
       let errors = [];
 
-      //受発注番号
+      //受発注番号バリデーション
       if (!req.params.orderNo) {
         errors.push({ field: "orderNo", message: "受発注番号を入力してください" });
       } else if (req.params.orderNo.length != 8) {
@@ -120,7 +120,7 @@ class OrderController {
       // 共通バリデーション
       errors = this.validate(order);
 
-      // 更新者ID
+      // 更新者IDバリデーション
       if (!order.updatedId) {
         errors.push({ field: "updatedId", message: "更新者IDを入力してください" });
       } else if (order.updatedId.length != 6) {
@@ -175,7 +175,7 @@ class OrderController {
   async delete(req, res) {
     try {
       const errors = [];
-      // 受発注番号
+      // 受発注番号バリデーション
       if (!req.params.orderNo) {
         errors.push({ field: "orderNo", message: "受発注番号を入力してください" });
       } else if (req.params.orderNo.length != 8) {
@@ -212,20 +212,7 @@ class OrderController {
   validate(data) {
     const errors = [];
 
-    //納品予定日
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(data.deliverDate)) {
-      errors.push({ field: "deliverDate", message: "日付はyyyy-MM-ddの形式で入力してください" });
-    } else if (data.deliverDate && isNaN(new Date(data.deliverDate).getTime())) {
-      errors.push({ field: "deliverDate", message: "正しい日付を入力してください" });
-    } else if (data.deliverDate && new Date(data.deliverDate) < new Date(data.orderDate)) {
-      errors.push({ field: "deliverDate", message: "納品予定日は受発注日以降の日付を入力してください" });
-    } else if (data.deliverDate && new Date(data.deliverDate) < new Date(data.confirmedDate)) {
-      errors.push({ field: "deliverDate", message: "納品予定日は確定日以降の日付を入力してください" });
-    } else if (data.deliverDate && new Date(data.deliverDate) < new Date(data.shipDate)) {
-      errors.push({ field: "deliverDate", message: "納品予定日は出荷日以降の日付を入力してください" });
-    }
-
-    // 商品コード
+    // 商品コードバリデーション
     if (!data.productCode) {
       errors.push({ field: "productCode", message: "商品コードを入力してください" });
     } else if (data.productCode.length != 7) {
@@ -234,7 +221,7 @@ class OrderController {
       errors.push({ field: "productCode", message: "商品コードは半角英数で入力してください" });
     }
 
-    // 数量
+    // 数量バリデーション
     if (!data.quantity) {
       errors.push({ field: "quantity", message: "数量を入力してください" });
     } else if (!/^\d+$/.test(data.quantity)) {

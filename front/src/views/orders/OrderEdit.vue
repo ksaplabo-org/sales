@@ -3,14 +3,14 @@
   <BContainer fluid class="px-0 pb-2 mb-2">
     <div class="d-flex justify-content-between align-items-center">
       <h3 class="mb-0">
-        {{ view.orderKbn === "1" ? "受注情報" : "発注情報" }}
+        {{ view.orderKbn === "1" ? "受注情報" : view.orderKbn === "2" ? "発注情報" : "" }}
       </h3>
       <BBreadcrumb
         :items="[
           { text: 'トップページ', to: '/' },
           { text: '受発注情報一覧', to: '/' },
           {
-            text: view.orderKbn === '1' ? '受注情報編集' : '発注情報編集',
+            text: view.orderKbn === '1' ? '受注情報編集' : view.orderKbn === '2' ? '発注情報編集' : '',
             active: true,
           },
         ]"
@@ -22,13 +22,13 @@
   <BToast class="w-100" v-model="showFailedToastMs" variant="danger" no-progress>{{ failedToastText }}</BToast>
 
   <!-- 登録情報 -->
-  <!-- ヘッダー -->
   <BCard class="shadow-sm mb-3">
+    <!-- ヘッダー -->
     <template #header>
       <div class="d-flex justify-content-between align-items-center">
         <strong>{{ "編集情報" }}</strong>
 
-        <div class="text-end small text-muted">
+        <div class="small text-muted">
           <div>最終更新者:{{ view.updatedName }}</div>
           <div>最終更新日:{{ view.updatedAt }}</div>
         </div>
@@ -38,7 +38,10 @@
     <!-- 受発注番号 -->
     <BForm @submit.prevent="updateOrder">
       <BRow class="mb-3">
-        <BFormGroup :label="view.orderKbn === '1' ? '受注番号' : '発注番号'" label-cols="3">
+        <BFormGroup
+          :label="view.orderKbn === '1' ? '受注番号' : view.orderKbn === '2' ? '発注番号' : ''"
+          label-cols="3"
+        >
           <div class="form-control-plaintext">
             {{ view.orderNo }}
           </div>
@@ -56,7 +59,7 @@
 
       <!-- 受発注日 -->
       <BRow class="mb-3">
-        <BFormGroup :label="view.orderKbn === '1' ? '受注日' : '発注日'" label-cols="3">
+        <BFormGroup :label="view.orderKbn === '1' ? '受注日' : view.orderKbn === '2' ? '発注日' : ''" label-cols="3">
           <div class="form-control-plaintext">
             {{ view.orderDate }}
           </div>
@@ -65,7 +68,10 @@
 
       <!-- 確定日 -->
       <BRow class="mb-3">
-        <BFormGroup :label="view.orderKbn === '1' ? '入金日' : '発注受付完了日'" label-cols="3">
+        <BFormGroup
+          :label="view.orderKbn === '1' ? '入金日' : view.orderKbn === '2' ? '発注受付完了日' : ''"
+          label-cols="3"
+        >
           <!-- 編集画面 かつ 確定日が登録済み -->
           <div v-if="hasConfirmedDate" class="form-control-plaintext">
             {{ view.confirmedDate }}
@@ -76,15 +82,15 @@
             v-else
             id="confirmedDate"
             v-model="view.confirmedDate"
-            :state="!view.confirmedDate ? true : view.confirmedDate >= view.orderDate"
+            :state="isValidConfirmedDate()"
             type="date"
           />
-          <div v-if="view.confirmedDate && view.confirmedDate < view.orderDate" class="text-danger">
+          <div v-if="showConfirmedDateError()" class="text-danger">
             {{
               formatMessage(
                 messages.MSGE017,
-                view.orderKbn === "1" ? "入金日" : "発注受付完了日",
-                view.orderKbn === "1" ? "受注日" : "発注日",
+                view.orderKbn === "1" ? "入金日" : view.orderKbn === "2" ? "発注受付完了日" : "",
+                view.orderKbn === "1" ? "受注日" : view.orderKbn === "2" ? "発注日" : "",
               )
             }}
           </div>
@@ -94,26 +100,8 @@
       <!-- 出荷日 -->
       <BRow class="mb-3" v-if="view.orderKbn === '1'">
         <BFormGroup label="出荷日" label-cols="3">
-          <BFormInput
-            id="shipDate"
-            v-model="view.shipDate"
-            :state="
-              !view.shipDate
-                ? true
-                : view.confirmedDate
-                  ? view.shipDate >= view.confirmedDate
-                  : view.shipDate >= view.orderDate
-            "
-            type="date"
-          />
-          <div
-            v-if="
-              !(view.confirmedDate && view.confirmedDate < view.orderDate) &&
-              view.shipDate &&
-              (view.confirmedDate ? view.shipDate < view.confirmedDate : view.shipDate < view.orderDate)
-            "
-            class="text-danger"
-          >
+          <BFormInput id="shipDate" v-model="view.shipDate" :state="isValidShipDate()" type="date" />
+          <div v-if="showShipDateError()" class="text-danger">
             {{ formatMessage(messages.MSGE017, "出荷日", view.confirmedDate ? "入金日" : "受注日") }}
           </div>
         </BFormGroup>
@@ -122,53 +110,9 @@
       <!-- 納品予定日 -->
       <BRow class="mb-3">
         <BFormGroup label="納品予定日" label-cols="3">
-          <BFormInput
-            id="deliverDate"
-            v-model="view.deliverDate"
-            :state="
-              !view.deliverDate
-                ? true
-                : view.orderKbn === '1'
-                  ? view.shipDate
-                    ? view.deliverDate >= view.shipDate
-                    : view.deliverDate >= view.orderDate
-                  : view.confirmedDate
-                    ? view.deliverDate >= view.confirmedDate
-                    : view.deliverDate >= view.orderDate
-            "
-            type="date"
-          />
-          <div
-            v-if="
-              !(view.confirmedDate && view.confirmedDate < view.orderDate) &&
-              !(
-                view.shipDate &&
-                (view.confirmedDate ? view.shipDate < view.confirmedDate : view.shipDate < view.orderDate)
-              ) &&
-              view.deliverDate &&
-              (view.orderKbn === '1'
-                ? view.shipDate
-                  ? view.deliverDate < view.shipDate
-                  : view.deliverDate < view.orderDate
-                : view.confirmedDate
-                  ? view.deliverDate < view.confirmedDate
-                  : view.deliverDate < view.orderDate)
-            "
-            class="text-danger"
-          >
-            {{
-              formatMessage(
-                messages.MSGE017,
-                "納品予定日",
-                view.orderKbn === "1"
-                  ? view.shipDate
-                    ? "出荷日"
-                    : "受注日"
-                  : view.confirmedDate
-                    ? "発注受付完了日"
-                    : "発注日",
-              )
-            }}
+          <BFormInput id="deliverDate" v-model="view.deliverDate" :state="isValidDeliverDate()" type="date" />
+          <div v-if="showDeliverDateError()" class="text-danger">
+            {{ formatMessage(messages.MSGE017, "納品予定日", getDeliverDateBaseLabel()) }}
           </div>
         </BFormGroup>
       </BRow>
@@ -197,12 +141,7 @@
             </div>
 
             <!-- 商品情報一覧モーダル -->
-            <BButton
-              type="button"
-              variant="outline-primary"
-              class="btn-refarence text-nowrap"
-              @click="openProductModal"
-            >
+            <BButton variant="outline-primary" class="text-dark" @click="openProductModal">
               <i class="fas fa-list me-1"></i>
               参照
             </BButton>
@@ -223,7 +162,7 @@
       <BRow class="mb-3">
         <BFormGroup label="単価" label-cols="3">
           <div class="form-control-plaintext">
-            {{ product.productPrice }}
+            {{ product.productPrice == null ? "" : product.productPrice.toLocaleString("ja-JP") }}
           </div>
         </BFormGroup>
       </BRow>
@@ -270,7 +209,7 @@
     />
     <div v-if="productItems.length === 0" class="text-center text-muted mt-3">検索結果がありません</div>
     <template #footer>
-      <BButton variant="secondary" @click="showProductModal = false">キャンセル</BButton>
+      <BButton variant="secondary" @click="selectedProduct = null; showProductModal = false;">キャンセル</BButton>
       <BButton variant="primary" @click="applySelectedProduct">確定</BButton>
     </template>
   </BModal>
@@ -286,6 +225,157 @@ import * as Auth from "@/utils/auth.js";
 import messages from "@/constants/messages.js";
 import * as productApi from "@/api/productApi.js";
 import { formatMessage } from "@/utils/messageUtil.js";
+
+//ルート情報取得
+const route = useRoute();
+const router = useRouter();
+
+// ログイン情報
+const loginInfo = Auth.getLoginInfo();
+
+//処理失敗トースト表示
+const failedToastText = ref("");
+const showFailedToastMs = ref(0);
+const TOAST_MS = 1500;
+
+// ローディング表示
+const loading = ref(false);
+
+// 表示項目
+const view = ref({
+  orderNo: "",
+  clientCode: "",
+  orderDate: "",
+  confirmedDate: "",
+  shipDate: "",
+  deliverDate: "",
+  productCode: "",
+  quantity: null,
+  updatedName: "",
+  updatedAt: "",
+});
+const product = ref({
+  productName: "",
+  productPrice: null,
+});
+
+// 確定日登録判定入力制御処理
+const hasConfirmedDate = ref(false);
+
+//モーダル表示制御
+const showProductModal = ref(false);
+
+//参照行選択
+const selectedProduct = ref(null);
+
+//一覧検索結果
+const productItems = ref([]);
+
+const productFields = [
+  { key: "productCode", label: "商品コード", sortable: true },
+  { key: "productName", label: "商品名" },
+  ...(view.value.orderKbn === "2" ? [{ key: "orderClientCode", label: "発注先コード" }] : []),
+  { key: "productPrice", label: "単価" },
+];
+
+//確定日入力チェック
+const isValidConfirmedDate = () => {
+  return !view.value.confirmedDate || view.value.confirmedDate >= view.value.orderDate;
+};
+
+//出荷日入力チェック
+const isValidShipDate = () => {
+  if (!view.value.shipDate) {
+    return true;
+  }
+
+  if (view.value.confirmedDate) {
+    return view.value.shipDate >= view.value.confirmedDate;
+  }
+
+  return view.value.shipDate >= view.value.orderDate;
+};
+
+//納品予定日入力チェック
+const isValidDeliverDate = () => {
+  if (!view.value.deliverDate) {
+    return true;
+  }
+
+  if (view.value.orderKbn === "1") {
+    return view.value.shipDate
+      ? view.value.deliverDate >= view.value.shipDate
+      : view.value.deliverDate >= view.value.orderDate;
+  }
+
+  return view.value.confirmedDate
+    ? view.value.deliverDate >= view.value.confirmedDate
+    : view.value.deliverDate >= view.value.orderDate;
+};
+
+const showShipDateError = () => {
+  if (view.value.confirmedDate && view.value.confirmedDate < view.value.orderDate) {
+    return false;
+  }
+
+  if (!view.value.shipDate) {
+    return false;
+  }
+
+  return view.value.confirmedDate
+    ? view.value.shipDate < view.value.confirmedDate
+    : view.value.shipDate < view.value.orderDate;
+};
+
+const showDeliverDateError = () => {
+  // 確定日エラー表示中なら納品予定日のエラーは表示しない
+  if (view.value.confirmedDate && view.value.confirmedDate < view.value.orderDate) {
+    return false;
+  }
+
+  // 出荷日エラー表示中なら納品予定日のエラーは表示しない
+  if (
+    view.value.shipDate &&
+    (view.value.confirmedDate
+      ? view.value.shipDate < view.value.confirmedDate
+      : view.value.shipDate < view.value.orderDate)
+  ) {
+    return false;
+  }
+
+  // 納品予定日未入力
+  if (!view.value.deliverDate) {
+    return false;
+  }
+
+  // 受注
+  if (view.value.orderKbn === "1") {
+    return view.value.shipDate
+      ? view.value.deliverDate < view.value.shipDate
+      : view.value.deliverDate < view.value.orderDate;
+  }
+
+  // 発注
+  return view.value.confirmedDate
+    ? view.value.deliverDate < view.value.confirmedDate
+    : view.value.deliverDate < view.value.orderDate;
+};
+
+const showConfirmedDateError = () => {
+  return view.value.confirmedDate && view.value.confirmedDate < view.value.orderDate;
+};
+
+const getDeliverDateBaseLabel = () => {
+  if (view.value.orderKbn === "1") {
+    return view.value.shipDate ? "出荷日" : "受注日";
+  }
+
+  if (view.value.orderKbn === "2") {
+    return view.value.confirmedDate ? "発注受付完了日" : "発注日";
+  }
+
+  return "";
+};
 
 //初期処理
 onMounted(async () => {
@@ -311,6 +401,7 @@ onMounted(async () => {
     const products = await productApi.getProducts({
       orderKbn: orderInfo.orderKbn,
     });
+
     productItems.value = products;
 
     if (view.value.productCode) {
@@ -392,7 +483,6 @@ const updateOrder = async () => {
 
     const saveData = {
       orderNo: view.value.orderNo,
-      confirmedDate: view.value.confirmedDate,
       deliverDate: view.value.deliverDate,
       productCode: view.value.productCode,
       quantity: view.value.quantity,
@@ -401,6 +491,10 @@ const updateOrder = async () => {
 
     if (view.value.orderKbn === "1") {
       saveData.shipDate = view.value.shipDate;
+    }
+
+    if (!hasConfirmedDate.value) {
+      saveData.confirmedDate = view.value.confirmedDate;
     }
 
     await orderApi.updateOrder(saveData);
@@ -414,87 +508,11 @@ const updateOrder = async () => {
     });
   } catch (e) {
     console.log(e);
+    console.log(e.response);
+    console.log(e.response?.data);
     openFailedToast(messages.MSGE004);
   } finally {
     loading.value = false;
   }
 };
-
-//ルート情報取得
-const route = useRoute();
-const router = useRouter();
-
-// ログイン情報
-const loginInfo = Auth.getLoginInfo();
-
-//処理失敗トースト表示
-const failedToastText = ref("");
-const showFailedToastMs = ref(0);
-const TOAST_MS = 1500;
-
-// ローディング表示
-const loading = ref(false);
-
-// 表示項目
-const view = ref({
-  orderNo: "",
-  clientCode: "",
-  orderDate: "",
-  confirmedDate: "",
-  shipDate: "",
-  deliverDate: "",
-  productCode: "",
-  quantity: null,
-  updatedName: "",
-  updatedAt: "",
-});
-const product = ref({
-  productName: "",
-  productPrice: null,
-});
-
-// 確定日登録判定入力制御処理
-const hasConfirmedDate = ref(false);
-
-//モーダル表示制御
-const showProductModal = ref(false);
-
-//参照行選択
-const selectedProduct = ref(null);
-
-//一覧検索結果
-const productItems = ref([]);
-
-//商品情報一覧列定義
-const productFields = computed(() => {
-  const fields = [
-    { key: "productCode", label: "商品コード", sortable: true },
-    { key: "productName", label: "商品名" },
-  ];
-  if (view.value.orderKbn === "2") {
-    fields.push({ key: "orderClientCode", label: "発注先コード" });
-  }
-  fields.push({ key: "productPrice", label: "単価" });
-  return fields;
-});
 </script>
-
-<!-- 参照ボタンレイアウト -->
-<style>
-.btn-refarence {
-  background-color: #fff !important;
-  border-color: #007dc5 !important;
-  color: #000 !important;
-}
-
-.btn-refarence:hover {
-  background-color: #0d6efd !important;
-  border-color: #4aa8db !important;
-  color: #fff !important;
-}
-
-.btn-refarence:focus,
-.btn-receive:focus-visible {
-  box-shadow: 0 0 0 0.25rem rgba(2, 100, 150, 0.25) !important;
-}
-</style>

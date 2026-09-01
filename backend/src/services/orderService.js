@@ -24,17 +24,13 @@ class OrderService {
    * @returns 受発注情報詳細
    */
   async findByNo(orderNo) {
+    //受発注番号の存在チェック
     const order = await orderRepository.findByNo(orderNo);
     if (!order) {
-      //受発注番号の存在チェック
       throw new NotFoundError("orderNo", "この受発注番号は存在しません");
     }
 
     const user = await userRepository.findById(order.updatedId);
-    if (!user) {
-      //ユーザーIDの存在チェック
-      throw new NotFoundError("userId", "このユーザーIDは存在しません");
-    }
 
     //更新者名の設定
     order.dataValues.updatedName = `${user.lastName} ${user.firstName}`;
@@ -57,23 +53,23 @@ class OrderService {
 
     //バリデーションチェック
     const errors = [];
+    const confirmedDate = orderInfo.confirmedDate || order.confirmedDate;
 
-    //確定日
     if (order.confirmedDate) {
+      //確定日
       if (orderInfo.confirmedDate) {
-        errors.field = "confirmedDate";
-        errors.message = "確定日は入力できません";
+        errors.push({ field: "confirmedDate", message: "確定日は入力できません" });
       }
     } else if (!order.confirmedDate && orderInfo.confirmedDate) {
       if (!/^\d{4}-\d{2}-\d{2}$/.test(orderInfo.confirmedDate)) {
-        errors.field = "confirmedDate";
-        errors.message = "日付はyyyy-MM-ddの形式で入力してください";
-      } else if (isNaN(new Date(orderInfo.confirmedDate).getTime())) {
-        errors.field = "confirmedDate";
-        errors.message = "正しい日付を入力してください";
+        errors.push({ field: "confirmedDate", message: "日付はyyyy-MM-ddの形式で入力してください" });
+      } else if (
+        isNaN(new Date(orderInfo.confirmedDate).getTime()) ||
+        new Date(orderInfo.confirmedDate).toISOString().slice(0, 10) !== orderInfo.confirmedDate
+      ) {
+        errors.push({ field: "confirmedDate", message: "正しい日付を入力してください" });
       } else if (new Date(orderInfo.confirmedDate) < new Date(order.orderDate)) {
-        errors.field = "confirmedDate";
-        errors.message = "確定日は受発注日以降の日付を入力してください";
+        errors.push({ field: "confirmedDate", message: "確定日は受発注日以降の日付を入力してください" });
       }
     }
 
@@ -81,33 +77,48 @@ class OrderService {
     if (order.orderKbn === "2") {
       //受発注区分が発注の場合
       if (orderInfo.shipDate) {
-        errors.field = "shipDate";
-        errors.message = "出荷日は入力できません";
+        errors.push({ field: "shipDate", message: "出荷日は入力できません" });
       }
     } else if (order.orderKbn === "1" && orderInfo.shipDate) {
       if (!/^\d{4}-\d{2}-\d{2}$/.test(orderInfo.shipDate)) {
-        errors.field = "shipDate";
-        errors.message = "日付はyyyy-MM-ddの形式で入力してください";
-      } else if (isNaN(new Date(orderInfo.shipDate).getTime())) {
-        errors.field = "shipDate";
-        errors.message = "正しい日付を入力してください";
+        errors.push({ field: "shipDate", message: "日付はyyyy-MM-ddの形式で入力してください" });
+      } else if (
+        isNaN(new Date(orderInfo.shipDate).getTime()) ||
+        new Date(orderInfo.shipDate).toISOString().slice(0, 10) !== orderInfo.shipDate
+      ) {
+        errors.push({ field: "shipDate", message: "正しい日付を入力してください" });
       } else if (new Date(orderInfo.shipDate) < new Date(order.orderDate)) {
-        errors.field = "shipDate";
-        errors.message = "出荷日は受注日以降の日付を入力してください";
-      } else if (orderInfo.confirmedDate && new Date(orderInfo.shipDate) < new Date(orderInfo.confirmedDate)) {
-        errors.field = "shipDate";
-        errors.message = "出荷日は入金日以降の日付を入力してください";
+        errors.push({ field: "shipDate", message: "出荷日は受注日以降の日付を入力してください" });
+      } else if (confirmedDate && new Date(orderInfo.shipDate) < new Date(confirmedDate)) {
+        errors.push({ field: "shipDate", message: "出荷日は入金日以降の日付を入力してください" });
+      }
+    }
+
+    //納品予定日バリデーション
+    if (order.deliverDate) {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(orderInfo.deliverDate)) {
+        errors.push({ field: "deliverDate", message: "日付はyyyy-MM-ddの形式で入力してください" });
+      } else if (
+        isNaN(new Date(orderInfo.deliverDate).getTime()) ||
+        new Date(orderInfo.deliverDate).toISOString().slice(0, 10) !== orderInfo.deliverDate
+      ) {
+        errors.push({ field: "deliverDate", message: "正しい日付を入力してください" });
+      } else if (new Date(orderInfo.deliverDate) < new Date(order.orderDate)) {
+        errors.push({ field: "deliverDate", message: "納品予定日は受発注日以降の日付を入力してください" });
+      } else if (confirmedDate && new Date(orderInfo.deliverDate) < new Date(confirmedDate)) {
+        errors.push({ field: "deliverDate", message: "納品予定日は確定日以降の日付を入力してください" });
+      } else if (new Date(orderInfo.deliverDate) < new Date(orderInfo.shipDate)) {
+        errors.push({ field: "deliverDate", message: "納品予定日は出荷日以降の日付を入力してください" });
       }
     }
 
     //エラー情報配列要素が存在する場合
     if (errors.length > 0) {
-      throw new ValidationError(errors.field, errors.message);
+      throw new ValidationError(errors[0].field, errors[0].message);
     }
-
+    //商品コードの存在チェック
     const product = await productRepository.findByCode(orderInfo.productCode);
     if (!product) {
-      //商品コードの存在チェック
       throw new NotFoundError("productCode", "この商品コードは存在しません");
     }
 
