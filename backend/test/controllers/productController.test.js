@@ -1299,6 +1299,7 @@ describe("productController", () => {
       const actual = productController.validate(product);
       expect(actual).toEqual([]);
     });
+
     test("[異常系]複数のバリデーションエラーがある場合、エラー情報が複数件返却されること", () => {
       // 登録データ
       const product = {
