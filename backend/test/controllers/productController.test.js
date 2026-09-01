@@ -249,15 +249,12 @@ describe("productController", () => {
       //Serviceの呼び出しを検証
       expect(spyFindByCode).toHaveBeenCalledTimes(1);
       expect(spyFindByCode).toHaveBeenCalledWith(productCode);
-
       //エラー発生時のログ出力を検証
       expect(spyConsole).toHaveBeenCalledTimes(1);
       expect(spyConsole).toHaveBeenCalledWith(exceptedError);
-
       //レスポンスステータス設定の検証
       expect(res.status).toHaveBeenCalledTimes(1);
       expect(res.status).toHaveBeenCalledWith(NotFoundError.status);
-
       //レスポンス送信の検証
       expect(res.json).toHaveBeenCalledTimes(1);
       expect(res.json).toHaveBeenCalledWith({
@@ -408,15 +405,12 @@ describe("productController", () => {
       //Serviceの呼び出しを検証
       expect(spyDelete).toHaveBeenCalledTimes(1);
       expect(spyDelete).toHaveBeenCalledWith(productCode);
-
       //エラー発生時のログ出力を検証
       expect(spyConsole).toHaveBeenCalledTimes(1);
       expect(spyConsole).toHaveBeenCalledWith(exceptedError);
-
       //レスポンスステータス設定の検証
       expect(res.status).toHaveBeenCalledTimes(1);
       expect(res.status).toHaveBeenCalledWith(NotFoundError.status);
-
       //レスポンス送信の検証
       expect(res.json).toHaveBeenCalledTimes(1);
       expect(res.json).toHaveBeenCalledWith({
@@ -453,15 +447,12 @@ describe("productController", () => {
       //Serviceの呼び出しを検証
       expect(spyDelete).toHaveBeenCalledTimes(1);
       expect(spyDelete).toHaveBeenCalledWith(productCode);
-
       //エラー発生時のログ出力を検証
       expect(spyConsole).toHaveBeenCalledTimes(1);
       expect(spyConsole).toHaveBeenCalledWith(exceptedError);
-
       //レスポンスステータス設定の検証
       expect(res.status).toHaveBeenCalledTimes(1);
       expect(res.status).toHaveBeenCalledWith(ReferenceConstraintError.status);
-
       //レスポンス送信の検証
       expect(res.json).toHaveBeenCalledTimes(1);
       expect(res.json).toHaveBeenCalledWith({
@@ -581,6 +572,7 @@ describe("productController", () => {
 
       //テスト対象関数の呼び出し
       await productController.create(req, res);
+
       //レスポンスステータス設定の検証
       expect(res.status).toHaveBeenCalledTimes(1);
       expect(res.status).toHaveBeenCalledWith(400);
@@ -625,6 +617,7 @@ describe("productController", () => {
 
       //テスト対象関数の呼び出し
       await productController.create(req, res);
+
       //レスポンスステータス設定の検証
       expect(res.status).toHaveBeenCalledTimes(1);
       expect(res.status).toHaveBeenCalledWith(400);
@@ -691,6 +684,7 @@ describe("productController", () => {
 
         //テスト対象関数の呼び出し
         await productController.create(req, res);
+
         //レスポンスステータス設定の検証
         expect(res.status).toHaveBeenCalledTimes(1);
         expect(res.status).toHaveBeenCalledWith(400);
@@ -715,6 +709,7 @@ describe("productController", () => {
 
       //テスト対象関数の呼び出し
       await productController.create(req, res);
+
       //レスポンスステータス設定の検証
       expect(res.status).toHaveBeenCalledTimes(1);
       expect(res.status).toHaveBeenCalledWith(400);
@@ -786,6 +781,7 @@ describe("productController", () => {
 
       //テスト対象関数の呼び出し
       await productController.create(req, res);
+
       //レスポンスステータス設定の検証
       expect(res.status).toHaveBeenCalledTimes(1);
       expect(res.status).toHaveBeenCalledWith(400);
@@ -826,15 +822,12 @@ describe("productController", () => {
         createdId: "test01",
         updatedId: "test01",
       });
-
       //エラー発生時のログ出力を検証
       expect(spyConsole).toHaveBeenCalledTimes(1);
       expect(spyConsole).toHaveBeenCalledWith(exceptedError);
-
       //レスポンスステータス設定の検証
       expect(res.status).toHaveBeenCalledTimes(1);
       expect(res.status).toHaveBeenCalledWith(NotFoundError.status);
-
       //レスポンス送信の検証
       expect(res.json).toHaveBeenCalledTimes(1);
       expect(res.json).toHaveBeenCalledWith({
@@ -886,15 +879,12 @@ describe("productController", () => {
         createdId: "test01",
         updatedId: "test01",
       });
-
       //エラー発生時のログ出力を検証
       expect(spyConsole).toHaveBeenCalledTimes(1);
       expect(spyConsole).toHaveBeenCalledWith(exceptedError);
-
       //レスポンスステータス設定の検証
       expect(res.status).toHaveBeenCalledTimes(1);
       expect(res.status).toHaveBeenCalledWith(UniqueConstraintError.status);
-
       //レスポンス送信の検証
       expect(res.json).toHaveBeenCalledTimes(1);
       expect(res.json).toHaveBeenCalledWith({
@@ -939,7 +929,6 @@ describe("productController", () => {
         createdId: "test01",
         updatedId: "test01",
       });
-
       //エラー発生時のログ出力を検証
       expect(spyConsole).toHaveBeenCalledTimes(1);
       expect(spyConsole).toHaveBeenCalledWith(expectedError);
@@ -1155,14 +1144,12 @@ describe("productController", () => {
         productPrice: "100",
         updatedId: "test01",
       });
-
       //エラー発生時のログ出力を検証
       expect(spyConsole).toHaveBeenCalledTimes(1);
       expect(spyConsole).toHaveBeenCalledWith(expectedError);
       //レスポンスステータス設定の検証
       expect(res.status).toHaveBeenCalledTimes(1);
       expect(res.status).toHaveBeenCalledWith(NotFoundError.status);
-
       //レスポンス送信の検証
       expect(res.json).toHaveBeenCalledTimes(1);
       expect(res.json).toHaveBeenCalledWith({
@@ -1202,15 +1189,12 @@ describe("productController", () => {
 
       //Service呼び出し確認
       expect(spyUpdate).toHaveBeenCalledTimes(1);
-
       //エラー発生時のログ出力を検証
       expect(spyConsole).toHaveBeenCalledTimes(1);
       expect(spyConsole).toHaveBeenCalledWith(expectedError);
-
       //レスポンスステータス設定の検証
       expect(res.status).toHaveBeenCalledTimes(1);
       expect(res.status).toHaveBeenCalledWith(400);
-
       //レスポンス送信の検証
       expect(res.json).toHaveBeenCalledTimes(1);
       expect(res.json).toHaveBeenCalledWith({
@@ -1253,15 +1237,12 @@ describe("productController", () => {
         orderClientCode: "aa000001",
         updatedId: "test01",
       });
-
       //エラー発生時のログ出力を検証
       expect(spyConsole).toHaveBeenCalledTimes(1);
       expect(spyConsole).toHaveBeenCalledWith(expectedError);
-
       //レスポンスステータス設定の検証
       expect(res.status).toHaveBeenCalledTimes(1);
       expect(res.status).toHaveBeenCalledWith(500);
-
       //レスポンス送信の検証
       expect(res.send).toHaveBeenCalledTimes(1);
       expect(res.send).toHaveBeenCalledWith();
