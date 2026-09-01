@@ -143,6 +143,7 @@ describe("productController", () => {
           productCode: "aa00001",
         },
       };
+
       //serviceエラーモック
       const expectedError = new Error();
       const spyFindByCode = jest.spyOn(productService, "findByCode").mockRejectedValue(expectedError);
@@ -213,6 +214,7 @@ describe("productController", () => {
           productCode: productCode,
         },
       };
+
       //serviceの戻り値をモック
       const spy = jest.spyOn(productService, "findByCode").mockResolvedValue(undefined);
 
@@ -237,6 +239,7 @@ describe("productController", () => {
           productCode,
         },
       };
+
       //serviceエラーモック
       const exceptedError = new NotFoundError("productCode", "この商品コードは存在していません");
       const spyFindByCode = jest.spyOn(productService, "findByCode").mockRejectedValue(exceptedError);
@@ -299,6 +302,7 @@ describe("productController", () => {
           productCode: "aa00001",
         },
       };
+
       //serviceエラーモック
       const expectedError = new Error();
       const spyDelete = jest.spyOn(productService, "delete").mockRejectedValue(expectedError);
@@ -369,6 +373,7 @@ describe("productController", () => {
           productCode: productCode,
         },
       };
+
       //serviceの戻り値をモック
       const spy = jest.spyOn(productService, "delete");
 
@@ -393,6 +398,7 @@ describe("productController", () => {
           productCode,
         },
       };
+
       //serviceエラーモック
       const exceptedError = new NotFoundError(productCode, "この商品コードは存在していません");
       const spyDelete = jest.spyOn(productService, "delete").mockRejectedValue(exceptedError);
@@ -802,6 +808,7 @@ describe("productController", () => {
           createdId: "test01",
         },
       };
+
       //serviceエラーモック
       const exceptedError = new NotFoundError("aa000001", "この発注先コードは存在していません");
       const spyCreate = jest.spyOn(productService, "create").mockRejectedValue(exceptedError);
@@ -1025,6 +1032,7 @@ describe("productController", () => {
           productCode: productCode,
         },
       };
+
       //serviceの戻り値をモック
       const spyUpdate = jest.spyOn(productService, "update");
 
@@ -1095,6 +1103,7 @@ describe("productController", () => {
           updatedId: updatedId,
         },
       };
+
       //serviceの戻り値をモック
       const spyUpdate = jest.spyOn(productService, "update");
 
@@ -1273,11 +1282,16 @@ describe("productController", () => {
         productName: "aaaaabbbbbcccccdefgh",
       },
     ])("[正常系]商品名が$testNameの場合、バリデーションエラーがなく空配列が返却されること", ({ productName }) => {
+      //登録データ
       const product = {
         productName,
         productPrice: "100",
       };
+
+      //テスト対象関数の呼び出し
       const actual = productController.validate(product);
+
+      //バリデーション結果の検証
       expect(actual).toEqual([]);
     });
 
@@ -1328,6 +1342,7 @@ describe("productController", () => {
     ])(
       "[異常系]$testName場合、エラー情報配列に形式チェックエラーの情報を追加するされること",
       async ({ productName, expectedLog }) => {
+        // 登録データ
         const product = {
           productName: productName,
           productPrice: "100",
@@ -1336,6 +1351,7 @@ describe("productController", () => {
         //テスト対象関数の呼び出し
         const actual = await productController.validate(product);
 
+        //バリデーション結果の検証
         expect(actual).toEqual(expectedLog);
       },
     );
@@ -1384,6 +1400,7 @@ describe("productController", () => {
     ])(
       "[異常系]$testName場合、エラー情報配列に形式チェックエラーの情報を追加されること",
       async ({ productPrice, expectedLog }) => {
+        // 登録データ
         const product = {
           productName: "醤油",
           orderClientCode: "aaaa0001",
@@ -1394,6 +1411,7 @@ describe("productController", () => {
         //テスト対象関数の呼び出し
         const actual = await productController.validate(product);
 
+        //バリデーション結果の検証
         expect(actual).toEqual(expectedLog);
       },
     );
