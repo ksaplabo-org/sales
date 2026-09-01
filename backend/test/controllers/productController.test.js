@@ -213,8 +213,8 @@ describe("productController", () => {
           productCode: productCode,
         },
       };
-
-      const spy = jest.spyOn(productService, "findByCode");
+      //serviceの戻り値をモック
+      const spy = jest.spyOn(productService, "findByCode").mockResolvedValue(undefined);
 
       //テスト対象関数の呼び出し
       await productController.findByCode(req, res);
@@ -372,7 +372,7 @@ describe("productController", () => {
           productCode: productCode,
         },
       };
-
+      //serviceの戻り値をモック
       const spy = jest.spyOn(productService, "delete");
 
       //テスト対象関数の呼び出し
@@ -1036,6 +1036,7 @@ describe("productController", () => {
           productCode: productCode,
         },
       };
+      //serviceの戻り値をモック
       const spyUpdate = jest.spyOn(productService, "update");
 
       //テスト対象関数の呼び出し
@@ -1105,6 +1106,7 @@ describe("productController", () => {
           updatedId: updatedId,
         },
       };
+      //serviceの戻り値をモック
       const spyUpdate = jest.spyOn(productService, "update");
 
       //テスト対象関数の呼び出し
@@ -1195,13 +1197,11 @@ describe("productController", () => {
       //console.logモック
       const spyConsole = jest.spyOn(console, "log").mockResolvedValue();
 
-      productService.update.mockRejectedValue(expectedError);
-
       //テスト対象関数の呼び出し
       await productController.update(req, res);
 
       //Service呼び出し確認
-      expect(productService.update).toHaveBeenCalledTimes(1);
+      expect(spyUpdate).toHaveBeenCalledTimes(1);
 
       //エラー発生時のログ出力を検証
       expect(spyConsole).toHaveBeenCalledTimes(1);
