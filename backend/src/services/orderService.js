@@ -42,11 +42,9 @@ class OrderService {
     orderInfo.updatedAt = now;
 
     //数量と単価から金額・消費税・合計金額を計算
-    const amount = orderInfo.quantity * product.productPrice;
-    const tax = Math.round(amount * 0.1);
-    orderInfo.amount = amount;
-    orderInfo.tax = tax;
-    orderInfo.amountTaxIncluded = amount + tax;
+    orderInfo.amount = orderInfo.quantity * product.productPrice;
+    orderInfo.tax = Math.round(orderInfo.amount * 0.1);
+    orderInfo.amountTaxIncluded = orderInfo.amount + orderInfo.tax;
 
     await orderRepository.create(orderInfo);
   }

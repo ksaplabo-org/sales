@@ -70,12 +70,10 @@ class OrderController {
       if (!order.orderNo) {
         errors.push({ field: "orderNo", message: "受発注番号を入力してください" });
       }
-
       //受発注番号が8桁以外で入力された場合
       else if (order.orderNo.length != 8) {
         errors.push({ field: "orderNo", message: "受発注番号は8桁で入力してください" });
       }
-
       //受発注番号が半角英数以外で入力された場合
       else if (!/^[A-Za-z0-9]+$/.test(order.orderNo)) {
         errors.push({ field: "orderNo", message: "受発注番号は半角英数で入力してください" });
@@ -85,7 +83,6 @@ class OrderController {
       if (!order.orderKbn) {
         errors.push({ field: "orderKbn", message: "受発注区分を入力してください" });
       }
-
       //受発注区分に1か2以外が入力された場合
       else if (!["1", "2"].includes(order.orderKbn)) {
         errors.push({ field: "orderKbn", message: "受発注区分は1か2を入力してください" });
@@ -95,75 +92,103 @@ class OrderController {
       if (!order.clientCode) {
         errors.push({ field: "clientCode", message: "取引先コードを入力してください" });
       }
-
       //取引先コードが8桁以外で入力された場合
       else if (order.clientCode.length != 8) {
         errors.push({ field: "clientCode", message: "取引先コードは8桁で入力してください" });
       }
-
       //取引先コードが半角英数以外で入力された場合
       else if (!/^[A-Za-z0-9]+$/.test(order.clientCode)) {
         errors.push({ field: "clientCode", message: "取引先コードは半角英数で入力してください" });
       }
 
+      //受発注日エラー
       //受発注日が未入力の場合
       if (!order.orderDate) {
         errors.push({ field: "orderDate", message: "受発注日を入力してください" });
       }
-
       //日付がyyyy-MM-ddの形式以外で入力された場合
       else if (!/^\d{4}-\d{2}-\d{2}$/.test(order.orderDate)) {
         errors.push({ field: "orderDate", message: "日付はyyyy-MM-ddの形式で入力してください" });
       }
-
       //不正な日付が入力された場合
-      else if (isNaN(new Date(order.orderDate).getTime())) {
+      else if (
+        isNaN(new Date(order.orderDate).getTime()) ||
+        new Date(order.orderDate).toISOString().slice(0, 10) !== order.orderDate
+      ) {
         errors.push({ field: "orderDate", message: "正しい日付を入力してください" });
       }
 
-      //確定日
+      //確定日エラー
       if (order.confirmedDate) {
         //日付がyyyy-MM-ddの形式以外で入力された場合
         if (!/^\d{4}-\d{2}-\d{2}$/.test(order.confirmedDate)) {
           errors.push({ field: "confirmedDate", message: "日付はyyyy-MM-ddの形式で入力してください" });
         }
-
         //不正な日付が入力された場合
-        else if (isNaN(new Date(order.confirmedDate).getTime())) {
+        else if (
+          isNaN(new Date(order.confirmedDate).getTime()) ||
+          new Date(order.confirmedDate).toISOString().slice(0, 10) !== order.confirmedDate
+        ) {
           errors.push({ field: "confirmedDate", message: "正しい日付を入力してください" });
         }
-
         //確定日が受発注日よりも前の場合
         else if (new Date(order.confirmedDate) < new Date(order.orderDate)) {
           errors.push({ field: "confirmedDate", message: "確定日は受発注日以降の日付を入力してください" });
         }
       }
 
+      //出荷日エラー
       //発注で出荷日が入力されている場合
       if (order.orderKbn === "2" && order.shipDate) {
         errors.push({ field: "shipDate", message: "出荷日は入力できません" });
       }
-
       //受注の場合
       else if (order.orderKbn === "1" && order.shipDate) {
         //日付がyyyy-MM-ddの形式以外で入力された場合
         if (!/^\d{4}-\d{2}-\d{2}$/.test(order.shipDate)) {
           errors.push({ field: "shipDate", message: "日付はyyyy-MM-ddの形式で入力してください" });
         }
-
         //不正な日付が入力された場合
-        else if (isNaN(new Date(order.shipDate).getTime())) {
+        else if (
+          isNaN(new Date(order.shipDate).getTime()) ||
+          new Date(order.shipDate).toISOString().slice(0, 10) !== order.shipDate
+        ) {
           errors.push({ field: "shipDate", message: "正しい日付を入力してください" });
         }
-
         //出荷日が受注日よりも前の場合
         else if (new Date(order.shipDate) < new Date(order.orderDate)) {
           errors.push({ field: "shipDate", message: "出荷日は受注日以降の日付を入力してください" });
         }
-
         //出荷日が入金日よりも前の場合
         else if (order.confirmedDate && new Date(order.shipDate) < new Date(order.confirmedDate)) {
           errors.push({ field: "shipDate", message: "出荷日は入金日以降の日付を入力してください" });
+        }
+      }
+
+      //納品予定日エラー
+      if (order.deliverDate) {
+        //日付がyyyy-MM-ddの形式以外で入力された場合
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(order.deliverDate)) {
+          errors.push({ field: "deliverDate", message: "日付はyyyy-MM-ddの形式で入力してください" });
+        }
+        //不正な日付が入力された場合
+        else if (
+          isNaN(new Date(order.deliverDate).getTime()) ||
+          new Date(order.deliverDate).toISOString().slice(0, 10) !== order.deliverDate
+        ) {
+          errors.push({ field: "deliverDate", message: "正しい日付を入力してください" });
+        }
+        //納品予定日が受発注日より以前の日付で入力された場合
+        else if (new Date(order.deliverDate) < new Date(order.orderDate)) {
+          errors.push({ field: "deliverDate", message: "納品予定日は受発注日以降の日付を入力してください" });
+        }
+        //納品予定日が確定日より以前の日付で入力された場合
+        else if (new Date(order.deliverDate) < new Date(order.confirmedDate)) {
+          errors.push({ field: "deliverDate", message: "納品予定日は確定日以降の日付を入力してください" });
+        }
+        //納品予定日が出荷日より以前の日付で入力された場合
+        else if (new Date(order.deliverDate) < new Date(order.shipDate)) {
+          errors.push({ field: "deliverDate", message: "納品予定日は出荷日以降の日付を入力してください" });
         }
       }
 
@@ -171,12 +196,10 @@ class OrderController {
       if (!order.createdId) {
         errors.push({ field: "createdId", message: "登録者IDを入力してください" });
       }
-
       //登録者IDが6桁以外で入力された場合
       else if (order.createdId.length != 6) {
         errors.push({ field: "createdId", message: "登録者IDは6桁で入力してください" });
       }
-
       //登録者IDが半角英数以外で入力された場合
       else if (!/^[A-Za-z0-9]+$/.test(order.createdId)) {
         errors.push({ field: "createdId", message: "登録者IDは半角英数で入力してください" });
@@ -262,41 +285,14 @@ class OrderController {
   validate(data) {
     const errors = [];
 
-    //日付がyyyy-MM-ddの形式以外で入力された場合
-    if (data.deliverDate && !/^\d{4}-\d{2}-\d{2}$/.test(data.deliverDate)) {
-      errors.push({ field: "deliverDate", message: "日付はyyyy-MM-ddの形式で入力してください" });
-    }
-
-    //納品予定日が不正な日付で入力された場合
-    else if (data.deliverDate && isNaN(new Date(data.deliverDate).getTime())) {
-      errors.push({ field: "deliverDate", message: "正しい日付を入力してください" });
-    }
-
-    //納品予定日が受発注日より以前の日付で入力された場合
-    else if (data.deliverDate && new Date(data.deliverDate) < new Date(data.orderDate)) {
-      errors.push({ field: "deliverDate", message: "納品予定日は受発注日以降の日付を入力してください" });
-    }
-
-    //納品予定日が確定日より以前の日付で入力された場合
-    else if (data.deliverDate && new Date(data.deliverDate) < new Date(data.confirmedDate)) {
-      errors.push({ field: "deliverDate", message: "納品予定日は確定日以降の日付を入力してください" });
-    }
-
-    //納品予定日が出荷日より以前の日付で入力された場合
-    else if (data.deliverDate && new Date(data.deliverDate) < new Date(data.shipDate)) {
-      errors.push({ field: "deliverDate", message: "納品予定日は出荷日以降の日付を入力してください" });
-    }
-
     // 商品コードが未入力の場合
     if (!data.productCode) {
       errors.push({ field: "productCode", message: "商品コードを入力してください" });
     }
-
     //商品コードが7桁以外で入力された場合
     else if (data.productCode.length != 7) {
       errors.push({ field: "productCode", message: "商品コードは7桁で入力してください" });
     }
-
     //商品コードが半角英数以外で入力された場合
     else if (!/^[A-Za-z0-9]+$/.test(data.productCode)) {
       errors.push({ field: "productCode", message: "商品コードは半角英数で入力してください" });
@@ -306,12 +302,10 @@ class OrderController {
     if (!data.quantity) {
       errors.push({ field: "quantity", message: "数量を入力してください" });
     }
-
     //数量が半角数字以外で入力された場合
     else if (!/^\d+$/.test(data.quantity)) {
       errors.push({ field: "quantity", message: "数量は半角数字で入力してください" });
     }
-
     //数量が1以下で入力された場合
     else if (Number(data.quantity) < 1) {
       errors.push({ field: "quantity", message: "数量は1以上で入力してください" });

@@ -254,7 +254,11 @@
           selectable
           select-mode="single"
           @row-selected="onProductSelected"
-        />
+        >
+          <template #cell(productPrice)="data">
+            {{ Number(data.value).toLocaleString() }}
+          </template>
+        </BTable>
         <div v-if="productItems.length === 0" class="text-center text-muted mt-3">検索結果がありません</div>
         <template #footer>
           <BButton variant="secondary" @click="showProductModal = false">キャンセル</BButton>
@@ -275,7 +279,7 @@
       <BRow class="mb-3">
         <BFormGroup label="単価" label-cols="3">
           <div class="form-control-plaintext">
-            {{ product.productPrice || "-" }}
+            {{ product.productPrice ? product.productPrice.toLocaleString() : "-" }}
           </div>
         </BFormGroup>
       </BRow>
@@ -651,7 +655,7 @@ const createOrder = async () => {
 
     await orderApi.createOrder(saveData);
 
-    console.log("create success")
+    console.log("create success");
 
     router.push({
       name: "orderList",
