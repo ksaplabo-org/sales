@@ -127,13 +127,8 @@
       <!-- 確定日 -->
       <BRow class="mb-3">
         <BFormGroup :label="isReceive ? '入金日' : '発注受付完了日'" label-cols="3">
-          <BFormInput
-            id="confirmedDate"
-            v-model="form.confirmedDate"
-            :state="form.confirmedDate === '' ? null : form.confirmedDate >= form.orderDate"
-            type="date"
-          />
-          <div v-if="form.confirmedDate && form.confirmedDate < form.orderDate" class="text-danger">
+          <BFormInput id="confirmedDate" v-model="form.confirmedDate" :state="confirmedDateState()" type="date" />
+          <div v-if="showComfirmedDateError()" class="text-danger">
             {{
               formatMessage(messages.MSGE017, isReceive ? "入金日" : "発注受付完了日", isReceive ? "受注日" : "発注日")
             }}
@@ -144,26 +139,8 @@
       <!-- 出荷日 -->
       <BRow class="mb-3" v-if="isReceive">
         <BFormGroup label="出荷日" label-cols="3">
-          <BFormInput
-            id="shipDate"
-            v-model="form.shipDate"
-            :state="
-              !form.shipDate
-                ? null
-                : form.confirmedDate
-                  ? form.shipDate >= form.confirmedDate
-                  : form.shipDate >= form.orderDate
-            "
-            type="date"
-          />
-          <div
-            v-if="
-              !(form.confirmedDate && form.confirmedDate < form.orderDate) &&
-              form.shipDate &&
-              (form.confirmedDate ? form.shipDate < form.confirmedDate : form.shipDate < form.orderDate)
-            "
-            class="text-danger"
-          >
+          <BFormInput id="shipDate" v-model="form.shipDate" :state="shipDateState()" type="date" />
+          <div v-if="showShipDateError()" class="text-danger">
             {{ formatMessage(messages.MSGE017, "出荷日", form.confirmedDate ? "入金日" : "受注日") }}
           </div>
         </BFormGroup>
@@ -172,31 +149,8 @@
       <!-- 納品予定日 -->
       <BRow class="mb-3">
         <BFormGroup label="納品予定日" label-cols="3">
-          <BFormInput
-            id="deliverDate"
-            v-model="form.deliverDate"
-            :state="
-              !form.deliverDate
-                ? null
-                : form.shipDate
-                  ? form.deliverDate >= form.shipDate
-                  : form.confirmedDate
-                    ? form.deliverDate >= form.confirmedDate
-                    : form.deliverDate >= form.orderDate
-            "
-            type="date"
-          />
-          <div
-            v-if="
-              form.deliverDate &&
-              (form.shipDate
-                ? form.deliverDate < form.shipDate
-                : form.confirmedDate
-                  ? form.deliverDate < form.confirmedDate
-                  : form.deliverDate < form.orderDate)
-            "
-            class="text-danger"
-          >
+          <BFormInput id="deliverDate" v-model="form.deliverDate" :state="deliverDateState()" type="date" />
+          <div v-if="showDeliverDateError()" class="text-danger">
             {{
               formatMessage(
                 messages.MSGE017,
@@ -457,6 +411,48 @@ const productFields = computed(() => {
 
 const clientCodeState = computed(() => !!client.value.clientName);
 const productCodeState = computed(() => !!product.value.productName);
+
+const confirmedDateState = () => {
+  return form.value.confirmedDate === "" ? null : form.value.confirmedDate >= form.value.orderDate;
+};
+const shipDateState = () => {
+  return !form.value.shipDate
+    ? null
+    : form.value.confirmedDate
+      ? form.value.shipDate >= form.value.confirmedDate
+      : form.value.shipDate >= form.value.orderDate;
+};
+const deliverDateState = () => {
+  return !form.value.deliverDate
+    ? null
+    : form.value.shipDate
+      ? form.value.deliverDate >= form.value.shipDate
+      : form.value.confirmedDate
+        ? form.value.deliverDate >= form.value.confirmedDate
+        : form.value.deliverDate >= form.value.orderDate;
+};
+const showComfirmedDateError = () => {
+  return form.confirmedDate && form.confirmedDate < form.orderDate;
+};
+const showShipDateError = () => {
+  return (
+    !(form.value.confirmedDate && form.value.confirmedDate < form.value.orderDate) &&
+    form.value.shipDate &&
+    (form.value.confirmedDate
+      ? form.value.shipDate < form.value.confirmedDate
+      : form.value.shipDate < form.value.orderDate)
+  );
+};
+const showDeliverDateError = () => {
+  return (
+    form.value.deliverDate &&
+    (form.value.shipDate
+      ? form.value.deliverDate < form.value.shipDate
+      : form.value.confirmedDate
+        ? form.value.deliverDate < form.value.confirmedDate
+        : form.value.deliverDate < form.value.orderDate)
+  );
+};
 
 //半角英数字
 const formatHalfWidthAlphaNumeric = (value) => {
