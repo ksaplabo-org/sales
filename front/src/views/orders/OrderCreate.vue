@@ -127,8 +127,13 @@
       <!-- 確定日 -->
       <BRow class="mb-3">
         <BFormGroup :label="isReceive ? '入金日' : '発注受付完了日'" label-cols="3">
-          <BFormInput id="confirmedDate" v-model="form.confirmedDate" :state="confirmedDateState()" type="date" />
-          <div v-if="showComfirmedDateError()" class="text-danger">
+          <BFormInput
+            id="confirmedDate"
+            v-model="form.confirmedDate"
+            :state="form.confirmedDate === '' ? null : form.confirmedDate >= form.orderDate"
+            type="date"
+          />
+          <div v-if="form.confirmedDate && form.confirmedDate < form.orderDate" class="text-danger">
             {{
               formatMessage(messages.MSGE017, isReceive ? "入金日" : "発注受付完了日", isReceive ? "受注日" : "発注日")
             }}
@@ -151,21 +156,7 @@
         <BFormGroup label="納品予定日" label-cols="3">
           <BFormInput id="deliverDate" v-model="form.deliverDate" :state="deliverDateState()" type="date" />
           <div v-if="showDeliverDateError()" class="text-danger">
-            {{
-              formatMessage(
-                messages.MSGE017,
-                "納品予定日",
-                form.shipDate
-                  ? "出荷日"
-                  : form.confirmedDate
-                    ? isReceive
-                      ? "入金日"
-                      : "発注受付完了日"
-                    : isReceive
-                      ? "受注日"
-                      : "発注日",
-              )
-            }}
+            {{ formatMessage(messages.MSGE017, "納品予定日", deliverDateErrorTarget()) }}
           </div>
         </BFormGroup>
       </BRow>
@@ -412,46 +403,64 @@ const productFields = computed(() => {
 const clientCodeState = computed(() => !!client.value.clientName);
 const productCodeState = computed(() => !!product.value.productName);
 
-const confirmedDateState = () => {
-  return form.value.confirmedDate === "" ? null : form.value.confirmedDate >= form.value.orderDate;
-};
+//出荷日の入力チェック状態
 const shipDateState = () => {
-  return !form.value.shipDate
-    ? null
-    : form.value.confirmedDate
-      ? form.value.shipDate >= form.value.confirmedDate
-      : form.value.shipDate >= form.value.orderDate;
+  if (!form.value.shipDate) {
+    return null;
+  }
+  if (form.value.confirmedDate) {
+    return form.value.shipDate >= form.value.confirmedDate;
+  }
+  return form.value.shipDate >= form.value.orderDate;
 };
+//納品予定日の入力チェック状態
 const deliverDateState = () => {
-  return !form.value.deliverDate
-    ? null
-    : form.value.shipDate
-      ? form.value.deliverDate >= form.value.shipDate
-      : form.value.confirmedDate
-        ? form.value.deliverDate >= form.value.confirmedDate
-        : form.value.deliverDate >= form.value.orderDate;
+  if (!form.value.deliverDate) {
+    return null;
+  }
+  if (form.value.shipDate) {
+    return form.value.deliverDate >= form.value.shipDate;
+  }
+  if (form.value.confirmedDate) {
+    return form.value.deliverDate >= form.value.confirmedDate;
+  }
+  return form.value.deliverDate >= form.value.orderDate;
 };
-const showComfirmedDateError = () => {
-  return form.confirmedDate && form.confirmedDate < form.orderDate;
-};
+//出荷日のエラーメッセージ表示判定
 const showShipDateError = () => {
-  return (
-    !(form.value.confirmedDate && form.value.confirmedDate < form.value.orderDate) &&
-    form.value.shipDate &&
-    (form.value.confirmedDate
-      ? form.value.shipDate < form.value.confirmedDate
-      : form.value.shipDate < form.value.orderDate)
-  );
+  if (form.value.confirmedDate && form.value.confirmedDate < form.value.orderDate) {
+    return false;
+  }
+  if (!form.value.shipDate) {
+    return false;
+  }
+  if (form.value.confirmedDate) {
+    return form.value.shipDate < form.value.confirmedDate;
+  }
+  return form.value.shipDate < form.value.orderDate;
 };
+//納品予定日のエラーメッセージ表示判定
 const showDeliverDateError = () => {
-  return (
-    form.value.deliverDate &&
-    (form.value.shipDate
-      ? form.value.deliverDate < form.value.shipDate
-      : form.value.confirmedDate
-        ? form.value.deliverDate < form.value.confirmedDate
-        : form.value.deliverDate < form.value.orderDate)
-  );
+  if (!form.value.deliverDate) {
+    return false;
+  }
+  if (form.value.shipDate) {
+    return form.value.deliverDate < form.value.shipDate;
+  }
+  if (form.value.confirmedDate) {
+    return form.value.deliverDate < form.value.confirmedDate;
+  }
+  return form.value.deliverDate < form.value.orderDate;
+};
+//納品予定日のエラーメッセージの基準値ラベル取得
+const deliverDateErrorTarget = () => {
+  if (form.value.shipDate) {
+    return "出荷日";
+  }
+  if (form.value.confirmedDate) {
+    return isReceive.value ? "入金日" : "発注受付完了日";
+  }
+  return isReceive.value ? "受注日" : "発注日";
 };
 
 //半角英数字
