@@ -1330,22 +1330,19 @@ describe("productController", () => {
           },
         ],
       },
-    ])(
-      "[異常系] $testName場合、エラー情報配列に情報が追加されること",
-      async ({ productName, expectedErrors }) => {
-        // 登録データ
-        const product = {
-          productName: productName,
-          productPrice: "100",
-        };
+    ])("[異常系] $testName場合、エラー情報配列に情報が追加されること", async ({ productName, expectedErrors }) => {
+      // 登録データ
+      const product = {
+        productName: productName,
+        productPrice: "100",
+      };
 
-        //テスト対象関数の呼び出し
-        const actual = await productController.validate(product);
+      //テスト対象関数の呼び出し
+      const actual = await productController.validate(product);
 
-        //バリデーション結果の検証
-        expect(actual).toEqual(expectedErrors);
-      },
-    );
+      //バリデーション結果の検証
+      expect(actual).toEqual(expectedErrors);
+    });
 
     test.each([
       {
