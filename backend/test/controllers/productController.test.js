@@ -7,7 +7,7 @@ import UniqueConstraintError from "../../src/errors/UniqueConstraintError.js";
 import ValidationError from "../../src/errors/ValidationError.js";
 import ReferenceConstraintError from "../../src/errors/ReferenceConstraintError.js";
 
-//全テストケース実行前に行う処理
+//全テストケース実行後に行う処理
 afterEach(() => {
   //Mockをすべて初期化
   jest.resetAllMocks();
@@ -15,7 +15,6 @@ afterEach(() => {
 
 describe("productController", () => {
   let res;
-
   //各テストで使用するレスポンス引数のMock
   beforeEach(() => {
     res = {
