@@ -95,7 +95,7 @@ class OrderService {
     }
 
     //納品予定日バリデーション
-    if (order.deliverDate) {
+    if (orderInfo.deliverDate) {
       if (!/^\d{4}-\d{2}-\d{2}$/.test(orderInfo.deliverDate)) {
         errors.push({ field: "deliverDate", message: "日付はyyyy-MM-ddの形式で入力してください" });
       } else if (
