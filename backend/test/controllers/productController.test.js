@@ -1331,7 +1331,7 @@ describe("productController", () => {
         ],
       },
     ])(
-      "[異常系] $testName場合、エラー情報配列に形式チェックエラーの情報を追加するされること",
+      "[異常系] $testName場合、エラー情報配列に情報が追加されること",
       async ({ productName, expectedErrors }) => {
         // 登録データ
         const product = {
