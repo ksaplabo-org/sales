@@ -1,4 +1,4 @@
-import { beforeEach, expect, jest } from "@jest/globals";
+import { beforeEach, afterEach, expect, jest } from "@jest/globals";
 
 import productController from "../../src/controllers/productController.js";
 import productService from "../../src/services/productService.js";
@@ -7,25 +7,26 @@ import UniqueConstraintError from "../../src/errors/UniqueConstraintError.js";
 import ValidationError from "../../src/errors/ValidationError.js";
 import ReferenceConstraintError from "../../src/errors/ReferenceConstraintError.js";
 
-let res;
-
 //全テストケース実行前に行う処理
-beforeEach(() => {
+afterEach(() => {
   //Mockをすべて初期化
   jest.resetAllMocks();
-
-  //各テストで使用するレスポンス引数のMock
-
-  res = {
-    status: jest.fn().mockReturnThis(),
-    json: jest.fn(),
-    send: jest.fn(),
-  };
 });
 
 describe("productController", () => {
+  let res;
+
+  //各テストで使用するレスポンス引数のMock
+  beforeEach(() => {
+    res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+      send: jest.fn(),
+    };
+  });
+
   describe("findAll 商品情報一覧取得", () => {
-    test("[正常系] 検索条件がServiceに渡され、Serviceから結果がレスポンスされること", async () => {
+    test("[正常系] 検索条件がServiceに渡され、ステータス[200]とServiceの結果がレスポンスされること", async () => {
       //検索条件
       const req = {
         query: {
@@ -104,7 +105,7 @@ describe("productController", () => {
   });
 
   describe("findByCode 商品情報詳細取得", () => {
-    test("[正常系] Serviceの結果がレスポンスされること", async () => {
+    test("[正常系] 商品コードがServiceに渡され、ステータス[200]とServiceの結果がレスポンスされること", async () => {
       //検索条件
       const req = {
         params: {
@@ -131,7 +132,7 @@ describe("productController", () => {
       expect(spy).toHaveBeenCalledTimes(1);
       expect(spy).toHaveBeenCalledWith("aa00001");
       //レスポンスステータス設定の検証
-      expect(res.status).toHaveBeenCalledTimes(0);
+      expect(res.status).toHaveBeenCalledTimes(0); //呼び出しされないことでデフォルト値である200が設定されていることを検証
       //レスポンス送信の検証
       expect(res.json).toHaveBeenCalledTimes(1);
       expect(res.json).toHaveBeenCalledWith(expectedResult);
@@ -171,7 +172,7 @@ describe("productController", () => {
       {
         testName: "商品コードが未設定",
         productCode: undefined,
-        expectedLog: [
+        expectedErrors: [
           {
             field: "productCode",
             message: "商品コードが設定されていません",
@@ -179,9 +180,9 @@ describe("productController", () => {
         ],
       },
       {
-        testName: "商品コードが7桁(6桁入力)でない",
+        testName: "商品コードが7桁でない(6桁入力である)",
         productCode: "aa0001",
-        expectedLog: [
+        expectedErrors: [
           {
             field: "productCode",
             message: "商品コードは7桁で設定してください",
@@ -189,9 +190,9 @@ describe("productController", () => {
         ],
       },
       {
-        testName: "商品コードが7桁(8桁入力)でない",
+        testName: "商品コードが7桁でない(8桁入力である)",
         productCode: "aa000012",
-        expectedLog: [
+        expectedErrors: [
           {
             field: "productCode",
             message: "商品コードは7桁で設定してください",
@@ -201,14 +202,14 @@ describe("productController", () => {
       {
         testName: "商品コードが半角英数でない",
         productCode: "aa0000あ",
-        expectedLog: [
+        expectedErrors: [
           {
             field: "productCode",
             message: "商品コードは半角英数で設定してください",
           },
         ],
       },
-    ])("[異常系]$testName場合、ステータス[400]でレスポンスされること", async ({ productCode, expectedLog }) => {
+    ])("[異常系] $testName場合、ステータス[400]でレスポンスされること", async ({ productCode, expectedErrors }) => {
       const req = {
         params: {
           productCode: productCode,
@@ -228,15 +229,13 @@ describe("productController", () => {
       expect(res.status).toHaveBeenCalledWith(400);
       //レスポンス送信の検証
       expect(res.json).toHaveBeenCalledTimes(1);
-      expect(res.json).toHaveBeenCalledWith({ errors: expectedLog });
+      expect(res.json).toHaveBeenCalledWith({ errors: expectedErrors });
     });
 
     test("[異常系] ServiceでNotFoundError発生時、ステータス[404]でレスポンスされること", async () => {
-      const productCode = "aa00001";
-
       const req = {
         params: {
-          productCode,
+          productCode: "aaa0001",
         },
       };
 
@@ -251,7 +250,7 @@ describe("productController", () => {
 
       //Serviceの呼び出しを検証
       expect(spyFindByCode).toHaveBeenCalledTimes(1);
-      expect(spyFindByCode).toHaveBeenCalledWith(productCode);
+      expect(spyFindByCode).toHaveBeenCalledWith("aaa0001");
       //エラー発生時のログ出力を検証
       expect(spyConsole).toHaveBeenCalledTimes(1);
       expect(spyConsole).toHaveBeenCalledWith(exceptedError);
@@ -272,7 +271,7 @@ describe("productController", () => {
   });
 
   describe("delete 商品情報削除", () => {
-    test("[正常系] 商品コードがServiceに渡され、Serviceから結果がレスポンスされること", async () => {
+    test("[正常系] 商品コードがServiceに渡され、ステータス[200]とServiceから結果がレスポンスされること", async () => {
       //検索条件
       const req = {
         params: {
@@ -290,7 +289,7 @@ describe("productController", () => {
       expect(spy).toHaveBeenCalledTimes(1);
       expect(spy).toHaveBeenCalledWith("aa00001");
       //レスポンスステータス設定の検証
-      expect(res.status).toHaveBeenCalledTimes(0);
+      expect(res.status).toHaveBeenCalledTimes(0); //呼び出しされないことでデフォルト値である200が設定されていることを検証
       //レスポンス送信の検証
       expect(res.send).toHaveBeenCalledTimes(1);
       expect(res.send).toHaveBeenCalledWith();
@@ -330,7 +329,7 @@ describe("productController", () => {
       {
         testName: "商品コードが未設定",
         productCode: undefined,
-        expectedLog: [
+        expectedErrors: [
           {
             field: "productCode",
             message: "商品コードが設定されていません",
@@ -340,7 +339,7 @@ describe("productController", () => {
       {
         testName: "商品コードが7桁でない(6桁入力である)",
         productCode: "aa0001",
-        expectedLog: [
+        expectedErrors: [
           {
             field: "productCode",
             message: "商品コードは7桁で設定してください",
@@ -350,7 +349,7 @@ describe("productController", () => {
       {
         testName: "商品コードが7桁でない(8桁入力である)",
         productCode: "aa000012",
-        expectedLog: [
+        expectedErrors: [
           {
             field: "productCode",
             message: "商品コードは7桁で設定してください",
@@ -360,14 +359,14 @@ describe("productController", () => {
       {
         testName: "商品コードが半角英数でない",
         productCode: "aa0000あ",
-        expectedLog: [
+        expectedErrors: [
           {
             field: "productCode",
             message: "商品コードは半角英数で設定してください",
           },
         ],
       },
-    ])("[異常系]$testName場合、ステータス[400]でレスポンスされること", async ({ productCode, expectedLog }) => {
+    ])("[異常系] $testName場合、ステータス[400]でレスポンスされること", async ({ productCode, expectedErrors }) => {
       const req = {
         params: {
           productCode: productCode,
@@ -387,20 +386,18 @@ describe("productController", () => {
       expect(res.status).toHaveBeenCalledWith(400);
       //レスポンス送信の検証
       expect(res.json).toHaveBeenCalledTimes(1);
-      expect(res.json).toHaveBeenCalledWith({ errors: expectedLog });
+      expect(res.json).toHaveBeenCalledWith({ errors: expectedErrors });
     });
 
     test("[異常系] ServiceでNotFoundError発生時、ステータス[404]でレスポンスされること", async () => {
-      const productCode = "aa00001";
-
       const req = {
         params: {
-          productCode,
+          productCode: "aaa0001",
         },
       };
 
       //serviceエラーモック
-      const exceptedError = new NotFoundError(productCode, "この商品コードは存在していません");
+      const exceptedError = new NotFoundError("productCode", "この商品コードは存在していません");
       const spyDelete = jest.spyOn(productService, "delete").mockRejectedValue(exceptedError);
       //console.logモック
       const spyConsole = jest.spyOn(console, "log").mockResolvedValue();
@@ -410,7 +407,7 @@ describe("productController", () => {
 
       //Serviceの呼び出しを検証
       expect(spyDelete).toHaveBeenCalledTimes(1);
-      expect(spyDelete).toHaveBeenCalledWith(productCode);
+      expect(spyDelete).toHaveBeenCalledWith("aaa0001");
       //エラー発生時のログ出力を検証
       expect(spyConsole).toHaveBeenCalledTimes(1);
       expect(spyConsole).toHaveBeenCalledWith(exceptedError);
@@ -422,25 +419,23 @@ describe("productController", () => {
       expect(res.json).toHaveBeenCalledWith({
         errors: [
           {
-            field: productCode,
+            field: "productCode",
             message: "この商品コードは存在していません",
           },
         ],
       });
     });
 
-    test("[異常系]ServiceでReferenceConstraintError発生時、ステータス[409]でレスポンスされること", async () => {
-      const productCode = "aaa0001";
-
+    test("[異常系] ServiceでReferenceConstraintError発生時、ステータス[409]でレスポンスされること", async () => {
       const req = {
         params: {
-          productCode,
+          productCode: "aaa0001",
         },
       };
 
       //serviceエラーモック
       const exceptedError = new ReferenceConstraintError(
-        productCode,
+        "productCode",
         "この商品コードは受発注情報で使用されているため削除できません",
       );
       const spyDelete = jest.spyOn(productService, "delete").mockRejectedValue(exceptedError);
@@ -452,7 +447,7 @@ describe("productController", () => {
 
       //Serviceの呼び出しを検証
       expect(spyDelete).toHaveBeenCalledTimes(1);
-      expect(spyDelete).toHaveBeenCalledWith(productCode);
+      expect(spyDelete).toHaveBeenCalledWith("aaa0001");
       //エラー発生時のログ出力を検証
       expect(spyConsole).toHaveBeenCalledTimes(1);
       expect(spyConsole).toHaveBeenCalledWith(exceptedError);
@@ -464,7 +459,7 @@ describe("productController", () => {
       expect(res.json).toHaveBeenCalledWith({
         errors: [
           {
-            field: productCode,
+            field: "productCode",
             message: "この商品コードは受発注情報で使用されているため削除できません",
           },
         ],
@@ -484,50 +479,53 @@ describe("productController", () => {
         orderKbn: "2",
         orderClientCode: "aaaa0001",
       },
-    ])("[正常系]$testName場合、Serviceに商品情報が渡されること", async ({ orderKbn, orderClientCode }) => {
-      //登録データ
-      const req = {
-        body: {
+    ])(
+      "[正常系] $testName場合、Serviceに商品情報が渡され、ステータス[201]でレスポンスされること",
+      async ({ orderKbn, orderClientCode }) => {
+        //登録データ
+        const req = {
+          body: {
+            productCode: "aa00001",
+            productName: "醤油",
+            orderKbn: orderKbn,
+            orderClientCode: orderClientCode,
+            productPrice: "100",
+            createdId: "test01",
+          },
+        };
+
+        //serviceの戻り値をモック
+        const spyCreate = jest.spyOn(productService, "create").mockResolvedValue();
+
+        //テスト対象関数の呼び出し
+        await productController.create(req, res);
+
+        //Serviceの呼び出しを検証
+        expect(spyCreate).toHaveBeenCalledTimes(1);
+        expect(spyCreate).toHaveBeenCalledWith({
+          orderKbn: orderKbn,
           productCode: "aa00001",
           productName: "醤油",
-          orderKbn: orderKbn,
-          orderClientCode: orderClientCode,
           productPrice: "100",
+          orderClientCode: orderClientCode,
           createdId: "test01",
-        },
-      };
-
-      //serviceの戻り値をモック
-      const spyCreate = jest.spyOn(productService, "create").mockResolvedValue();
-
-      //テスト対象関数の呼び出し
-      await productController.create(req, res);
-
-      //Serviceの呼び出しを検証
-      expect(spyCreate).toHaveBeenCalledTimes(1);
-      expect(spyCreate).toHaveBeenCalledWith({
-        orderKbn: orderKbn,
-        productCode: "aa00001",
-        productName: "醤油",
-        productPrice: "100",
-        orderClientCode: orderClientCode,
-        createdId: "test01",
-        updatedId: "test01",
-      });
-      //レスポンスステータス設定の検証
-      expect(res.status).toHaveBeenCalledTimes(1);
-      expect(res.status).toHaveBeenCalledWith(201);
-      //レスポンス送信の検証
-      expect(res.send).toHaveBeenCalledTimes(1);
-      expect(res.send).toHaveBeenCalledWith();
-    });
+          updatedId: "test01",
+        });
+        //レスポンスステータス設定の検証
+        expect(res.status).toHaveBeenCalledTimes(1);
+        expect(res.status).toHaveBeenCalledWith(201);
+        //レスポンス送信の検証
+        expect(res.send).toHaveBeenCalledTimes(1);
+        expect(res.send).toHaveBeenCalledWith();
+      },
+    );
 
     //商品コードのバリデーション
     test.each([
       {
         testName: "商品コードが未設定",
         productCode: undefined,
-        expectedLog: [
+        expectedErrors: [
           {
             field: "productCode",
             message: "商品コードが設定されていません",
@@ -537,7 +535,7 @@ describe("productController", () => {
       {
         testName: "商品コードが7桁でない(6桁入力である)",
         productCode: "aa0001",
-        expectedLog: [
+        expectedErrors: [
           {
             field: "productCode",
             message: "商品コードは7桁で設定してください",
@@ -547,7 +545,7 @@ describe("productController", () => {
       {
         testName: "商品コードが7桁でない(8桁入力である)",
         productCode: "aa000012",
-        expectedLog: [
+        expectedErrors: [
           {
             field: "productCode",
             message: "商品コードは7桁で設定してください",
@@ -557,14 +555,14 @@ describe("productController", () => {
       {
         testName: "商品コードが半角英数でない",
         productCode: "aa0000あ",
-        expectedLog: [
+        expectedErrors: [
           {
             field: "productCode",
             message: "商品コードは半角英数で設定してください",
           },
         ],
       },
-    ])("[異常系]$testName場合、ステータス[400]でレスポンスされること", async ({ productCode, expectedLog }) => {
+    ])("[異常系] $testName場合、ステータス[400]でレスポンスされること", async ({ productCode, expectedErrors }) => {
       const req = {
         body: {
           orderKbn: "2",
@@ -584,7 +582,7 @@ describe("productController", () => {
       expect(res.status).toHaveBeenCalledWith(400);
       //レスポンス送信の検証
       expect(res.json).toHaveBeenCalledTimes(1);
-      expect(res.json).toHaveBeenCalledWith({ errors: expectedLog });
+      expect(res.json).toHaveBeenCalledWith({ errors: expectedErrors });
     });
 
     //受発注区分のバリデーション
@@ -592,7 +590,7 @@ describe("productController", () => {
       {
         testName: "受発注区分が未設定",
         orderKbn: undefined,
-        expectedLog: [
+        expectedErrors: [
           {
             field: "orderKbn",
             message: "受発注区分が設定されていません",
@@ -602,14 +600,14 @@ describe("productController", () => {
       {
         testName: "受発注区分が有効値(1,2)以外である",
         orderKbn: "3",
-        expectedLog: [
+        expectedErrors: [
           {
             field: "orderKbn",
             message: "受発注区分は'1'か'2'を設定してください",
           },
         ],
       },
-    ])("[異常系]$testName場合、ステータス[400]でレスポンスされること", async ({ orderKbn, expectedLog }) => {
+    ])("[異常系] $testName場合、ステータス[400]でレスポンスされること", async ({ orderKbn, expectedErrors }) => {
       const req = {
         body: {
           orderKbn: orderKbn,
@@ -629,7 +627,7 @@ describe("productController", () => {
       expect(res.status).toHaveBeenCalledWith(400);
       //レスポンス送信の検証
       expect(res.json).toHaveBeenCalledTimes(1);
-      expect(res.json).toHaveBeenCalledWith({ errors: expectedLog });
+      expect(res.json).toHaveBeenCalledWith({ errors: expectedErrors });
     });
 
     //発注先コードのバリデーション
@@ -637,7 +635,7 @@ describe("productController", () => {
       {
         testName: "発注先コードが未設定",
         orderClientCode: undefined,
-        expectedLog: [
+        expectedErrors: [
           {
             field: "orderClientCode",
             message: "発注先コードが設定されていません",
@@ -647,7 +645,7 @@ describe("productController", () => {
       {
         testName: "発注先コードが8桁でない(7桁入力である)",
         orderClientCode: "aaaa001",
-        expectedLog: [
+        expectedErrors: [
           {
             field: "orderClientCode",
             message: "発注先コードは8桁で設定してください",
@@ -657,7 +655,7 @@ describe("productController", () => {
       {
         testName: "発注先コードが8桁でない(9桁入力である)",
         orderClientCode: "aaaa00012",
-        expectedLog: [
+        expectedErrors: [
           {
             field: "orderClientCode",
             message: "発注先コードは8桁で設定してください",
@@ -667,7 +665,7 @@ describe("productController", () => {
       {
         testName: "発注先コードが半角英数でない",
         orderClientCode: "aaaa000あ",
-        expectedLog: [
+        expectedErrors: [
           {
             field: "orderClientCode",
             message: "発注先コードは半角英数で設定してください",
@@ -675,8 +673,8 @@ describe("productController", () => {
         ],
       },
     ])(
-      "[異常系]受発注区分が'2'発注で$testName場合、ステータス[400]でレスポンスされること",
-      async ({ orderClientCode, expectedLog }) => {
+      "[異常系] 受発注区分が'2'発注で$testName場合、ステータス[400]でレスポンスされること",
+      async ({ orderClientCode, expectedErrors }) => {
         const req = {
           body: {
             orderKbn: "2",
@@ -696,11 +694,11 @@ describe("productController", () => {
         expect(res.status).toHaveBeenCalledWith(400);
         //レスポンス送信の検証
         expect(res.json).toHaveBeenCalledTimes(1);
-        expect(res.json).toHaveBeenCalledWith({ errors: expectedLog });
+        expect(res.json).toHaveBeenCalledWith({ errors: expectedErrors });
       },
     );
 
-    test("[異常系]受発注区分が'1'受注で発注先コードが入力されている場合、ステータス[400]でレスポンスされること", async () => {
+    test("[異常系] 受発注区分が'1'受注で発注先コードが入力されている場合、ステータス[400]でレスポンスされること", async () => {
       //登録データ
       const req = {
         body: {
@@ -736,7 +734,7 @@ describe("productController", () => {
       {
         testName: "登録者IDが未設定",
         createdId: undefined,
-        expectedLog: [
+        expectedErrors: [
           {
             field: "createdId",
             message: "登録者IDが設定されていません",
@@ -746,7 +744,7 @@ describe("productController", () => {
       {
         testName: "登録者IDが6桁でない(5桁入力である)",
         createdId: "test1",
-        expectedLog: [
+        expectedErrors: [
           {
             field: "createdId",
             message: "登録者IDは6桁で設定してください",
@@ -756,7 +754,7 @@ describe("productController", () => {
       {
         testName: "登録者IDが6桁でない(7桁入力である)",
         createdId: "test012",
-        expectedLog: [
+        expectedErrors: [
           {
             field: "createdId",
             message: "登録者IDは6桁で設定してください",
@@ -766,14 +764,14 @@ describe("productController", () => {
       {
         testName: "登録者IDが半角英数でない",
         createdId: "test1あ",
-        expectedLog: [
+        expectedErrors: [
           {
             field: "createdId",
             message: "登録者IDは半角英数で設定してください",
           },
         ],
       },
-    ])("[異常系]$testName場合、ステータス[400]でレスポンスされること", async ({ createdId, expectedLog }) => {
+    ])("[異常系] $testName場合、ステータス[400]でレスポンスされること", async ({ createdId, expectedErrors }) => {
       const req = {
         body: {
           orderKbn: "2",
@@ -793,7 +791,7 @@ describe("productController", () => {
       expect(res.status).toHaveBeenCalledWith(400);
       //レスポンス送信の検証
       expect(res.json).toHaveBeenCalledTimes(1);
-      expect(res.json).toHaveBeenCalledWith({ errors: expectedLog });
+      expect(res.json).toHaveBeenCalledWith({ errors: expectedErrors });
     });
 
     // NotFoundErrorのテスト
@@ -810,7 +808,7 @@ describe("productController", () => {
       };
 
       //serviceエラーモック
-      const exceptedError = new NotFoundError("aa000001", "この発注先コードは存在していません");
+      const exceptedError = new NotFoundError("orderClientCode", "この発注先コードは存在していません");
       const spyCreate = jest.spyOn(productService, "create").mockRejectedValue(exceptedError);
       //console.logモック
       const spyConsole = jest.spyOn(console, "log").mockResolvedValue();
@@ -840,7 +838,7 @@ describe("productController", () => {
       expect(res.json).toHaveBeenCalledWith({
         errors: [
           {
-            field: "aa000001",
+            field: "orderClientCode",
             message: "この発注先コードは存在していません",
           },
         ],
@@ -849,12 +847,10 @@ describe("productController", () => {
 
     // UniqueConstraintErrorのテスト
     test("[異常系] ServiceでUniqueConstraintError発生時、ステータス[409]でレスポンスされること", async () => {
-      const productCode = "aa00001";
-
       const req = {
         body: {
           orderKbn: "2",
-          productCode: productCode,
+          productCode: "aa00001",
           productName: "醤油",
           productPrice: "100",
           orderClientCode: "aa000001",
@@ -864,7 +860,7 @@ describe("productController", () => {
 
       //serviceエラーモック
       const exceptedError = new UniqueConstraintError(
-        productCode,
+        "productCode",
         "この商品コードは既に登録されているため登録できません",
       );
       //serviceエラーモック
@@ -879,7 +875,7 @@ describe("productController", () => {
       expect(spyCreate).toHaveBeenCalledTimes(1);
       expect(spyCreate).toHaveBeenCalledWith({
         orderKbn: "2",
-        productCode: productCode,
+        productCode: "aa00001",
         productName: "醤油",
         productPrice: "100",
         orderClientCode: "aa000001",
@@ -897,7 +893,7 @@ describe("productController", () => {
       expect(res.json).toHaveBeenCalledWith({
         errors: [
           {
-            field: productCode,
+            field: "productCode",
             message: "この商品コードは既に登録されているため登録できません",
           },
         ],
@@ -949,7 +945,7 @@ describe("productController", () => {
   });
 
   describe("update 商品情報更新", () => {
-    test("[正常系] Serviceに商品情報が渡されること", async () => {
+    test("[正常系] Serviceに商品情報が渡され、ステータス[200]でレスポンスされること", async () => {
       //更新データ
       const req = {
         params: {
@@ -989,7 +985,7 @@ describe("productController", () => {
       {
         testName: "商品コードが未設定",
         productCode: undefined,
-        expectedLog: [
+        expectedErrors: [
           {
             field: "productCode",
             message: "商品コードが設定されていません",
@@ -999,7 +995,7 @@ describe("productController", () => {
       {
         testName: "商品コードが7桁でない(6桁入力である)",
         productCode: "aa0001",
-        expectedLog: [
+        expectedErrors: [
           {
             field: "productCode",
             message: "商品コードは7桁で設定してください",
@@ -1009,7 +1005,7 @@ describe("productController", () => {
       {
         testName: "商品コードが7桁でない(8桁入力である)",
         productCode: "aa000012",
-        expectedLog: [
+        expectedErrors: [
           {
             field: "productCode",
             message: "商品コードは7桁で設定してください",
@@ -1019,14 +1015,14 @@ describe("productController", () => {
       {
         testName: "商品コードが半角英数でない",
         productCode: "aa0000あ",
-        expectedLog: [
+        expectedErrors: [
           {
             field: "productCode",
             message: "商品コードは半角英数で設定してください",
           },
         ],
       },
-    ])("[異常系]$testName場合、ステータス[400]でレスポンスされること", async ({ productCode, expectedLog }) => {
+    ])("[異常系] $testName場合、ステータス[400]でレスポンスされること", async ({ productCode, expectedErrors }) => {
       const req = {
         params: {
           productCode: productCode,
@@ -1046,7 +1042,7 @@ describe("productController", () => {
       expect(res.status).toHaveBeenCalledWith(400);
       //レスポンス送信の検証
       expect(res.json).toHaveBeenCalledTimes(1);
-      expect(res.json).toHaveBeenCalledWith({ errors: expectedLog });
+      expect(res.json).toHaveBeenCalledWith({ errors: expectedErrors });
     });
 
     //更新者Idのバリデーション
@@ -1054,7 +1050,7 @@ describe("productController", () => {
       {
         testName: "更新者IDが未設定",
         updatedId: undefined,
-        expectedLog: [
+        expectedErrors: [
           {
             field: "updatedId",
             message: "更新者IDが設定されていません",
@@ -1064,7 +1060,7 @@ describe("productController", () => {
       {
         testName: "更新者IDが6桁でない(5桁入力である)",
         updatedId: "test1",
-        expectedLog: [
+        expectedErrors: [
           {
             field: "updatedId",
             message: "更新者IDは6桁で設定してください",
@@ -1074,7 +1070,7 @@ describe("productController", () => {
       {
         testName: "更新者IDが6桁でない(7桁入力である)",
         updatedId: "test012",
-        expectedLog: [
+        expectedErrors: [
           {
             field: "updatedId",
             message: "更新者IDは6桁で設定してください",
@@ -1084,14 +1080,14 @@ describe("productController", () => {
       {
         testName: "更新者IDが半角英数でない",
         updatedId: "test1あ",
-        expectedLog: [
+        expectedErrors: [
           {
             field: "updatedId",
             message: "更新者IDは半角英数で設定してください",
           },
         ],
       },
-    ])("[異常系]$testName場合、ステータス[400]でレスポンスされること", async ({ updatedId, expectedLog }) => {
+    ])("[異常系] $testName場合、ステータス[400]でレスポンスされること", async ({ updatedId, expectedErrors }) => {
       const req = {
         params: {
           productCode: "aa00001",
@@ -1117,16 +1113,14 @@ describe("productController", () => {
       expect(res.status).toHaveBeenCalledWith(400);
       //レスポンス送信の検証
       expect(res.json).toHaveBeenCalledTimes(1);
-      expect(res.json).toHaveBeenCalledWith({ errors: expectedLog });
+      expect(res.json).toHaveBeenCalledWith({ errors: expectedErrors });
     });
 
     // NotFoundErrorのテスト
     test("[異常系] ServiceでNotFoundError発生時、ステータス[404]でレスポンスされること", async () => {
-      const productCode = "aa00001";
-
       const req = {
         params: {
-          productCode: productCode,
+          productCode: "aa00001",
         },
         body: {
           productName: "醤油",
@@ -1137,7 +1131,7 @@ describe("productController", () => {
       };
 
       //serviceエラーモック
-      const expectedError = new NotFoundError(productCode, "この商品コードは存在していません");
+      const expectedError = new NotFoundError("productCode", "この商品コードは存在していません");
       const spyUpdate = jest.spyOn(productService, "update").mockRejectedValue(expectedError);
       //console.logモック
       const spyConsole = jest.spyOn(console, "log").mockResolvedValue();
@@ -1147,7 +1141,7 @@ describe("productController", () => {
 
       //Serviceの呼び出しを検証
       expect(spyUpdate).toHaveBeenCalledTimes(1);
-      expect(spyUpdate).toHaveBeenCalledWith(productCode, {
+      expect(spyUpdate).toHaveBeenCalledWith("aa00001", {
         productName: "醤油",
         orderClientCode: "aaaa0001",
         productPrice: "100",
@@ -1164,7 +1158,7 @@ describe("productController", () => {
       expect(res.json).toHaveBeenCalledWith({
         errors: [
           {
-            field: productCode,
+            field: "productCode",
             message: "この商品コードは存在していません",
           },
         ],
@@ -1173,11 +1167,9 @@ describe("productController", () => {
 
     //受注なのに発注先コードがある場合のValidationErrorのテスト
     test("[異常系] ServiceでValidationError発生時、ステータス[400]でレスポンスされること", async () => {
-      const productCode = "aa00001";
-
       const req = {
         params: {
-          productCode: productCode,
+          productCode: "aa00001",
         },
         body: {
           productName: "醤油",
@@ -1259,7 +1251,7 @@ describe("productController", () => {
   });
 
   describe("validate 登録・更新共通バリデーション", () => {
-    test("[正常系]バリデーションエラーがない場合、空配列が返却されること", () => {
+    test("[正常系] バリデーションエラーがない場合、空配列が返却されること", () => {
       //登録データ
       const product = {
         productName: "醤油",
@@ -1281,7 +1273,7 @@ describe("productController", () => {
         testName: "商品名が20文字",
         productName: "aaaaabbbbbcccccdefgh",
       },
-    ])("[正常系]商品名が$testNameの場合、バリデーションエラーがなく空配列が返却されること", ({ productName }) => {
+    ])("[正常系] 商品名が$testNameの場合、バリデーションエラーがなく空配列が返却されること", ({ productName }) => {
       //登録データ
       const product = {
         productName,
@@ -1295,7 +1287,7 @@ describe("productController", () => {
       expect(actual).toEqual([]);
     });
 
-    test("[異常系]複数のバリデーションエラーがある場合、エラー情報が複数件返却されること", () => {
+    test("[異常系] 複数のバリデーションエラーがある場合、エラー情報が複数件返却されること", () => {
       // 登録データ
       const product = {
         productName: "",
@@ -1322,7 +1314,7 @@ describe("productController", () => {
       {
         testName: "商品名が未設定",
         productName: undefined,
-        expectedLog: [
+        expectedErrors: [
           {
             field: "productName",
             message: "商品名が設定されていません",
@@ -1332,7 +1324,7 @@ describe("productController", () => {
       {
         testName: "商品名が20文字以内で設定されていない(21文字で入力されている)",
         productName: "aaaaabbbbbcccccddddde",
-        expectedLog: [
+        expectedErrors: [
           {
             field: "productName",
             message: "商品名は20桁以内で設定してください",
@@ -1340,8 +1332,8 @@ describe("productController", () => {
         ],
       },
     ])(
-      "[異常系]$testName場合、エラー情報配列に形式チェックエラーの情報を追加するされること",
-      async ({ productName, expectedLog }) => {
+      "[異常系] $testName場合、エラー情報配列に形式チェックエラーの情報を追加するされること",
+      async ({ productName, expectedErrors }) => {
         // 登録データ
         const product = {
           productName: productName,
@@ -1352,7 +1344,7 @@ describe("productController", () => {
         const actual = await productController.validate(product);
 
         //バリデーション結果の検証
-        expect(actual).toEqual(expectedLog);
+        expect(actual).toEqual(expectedErrors);
       },
     );
 
@@ -1360,7 +1352,7 @@ describe("productController", () => {
       {
         testName: "単価が未設定",
         productPrice: undefined,
-        expectedLog: [
+        expectedErrors: [
           {
             field: "productPrice",
             message: "単価が設定されていません",
@@ -1370,7 +1362,7 @@ describe("productController", () => {
       {
         testName: "単価が1以上で設定されていない(-1で設定されている)",
         productPrice: "-1",
-        expectedLog: [
+        expectedErrors: [
           {
             field: "productPrice",
             message: "単価は1以上で設定してください",
@@ -1380,7 +1372,7 @@ describe("productController", () => {
       {
         testName: "単価が1以上で設定されていない(0で設定されている)",
         productPrice: "0",
-        expectedLog: [
+        expectedErrors: [
           {
             field: "productPrice",
             message: "単価は1以上で設定してください",
@@ -1390,30 +1382,27 @@ describe("productController", () => {
       {
         testName: "単価が半角数字で設定されていない",
         productPrice: "a",
-        expectedLog: [
+        expectedErrors: [
           {
             field: "productPrice",
             message: "単価は半角数字で設定してください",
           },
         ],
       },
-    ])(
-      "[異常系]$testName場合、エラー情報配列に形式チェックエラーの情報を追加されること",
-      async ({ productPrice, expectedLog }) => {
-        // 登録データ
-        const product = {
-          productName: "醤油",
-          orderClientCode: "aaaa0001",
-          productPrice: productPrice,
-          updatedId: "test01",
-        };
+    ])("[異常系] $testName場合、エラー情報配列に情報が追加されること", async ({ productPrice, expectedErrors }) => {
+      // 登録データ
+      const product = {
+        productName: "醤油",
+        orderClientCode: "aaaa0001",
+        productPrice: productPrice,
+        updatedId: "test01",
+      };
 
-        //テスト対象関数の呼び出し
-        const actual = await productController.validate(product);
+      //テスト対象関数の呼び出し
+      const actual = await productController.validate(product);
 
-        //バリデーション結果の検証
-        expect(actual).toEqual(expectedLog);
-      },
-    );
+      //バリデーション結果の検証
+      expect(actual).toEqual(expectedErrors);
+    });
   });
 });
