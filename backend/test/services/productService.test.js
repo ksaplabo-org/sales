@@ -612,7 +612,7 @@ describe("productService", () => {
       //mock返却データ
       const product = {
         productCode: productCode,
-        orderKbn: "0",
+        orderKbn: "3",
       };
 
       //Mock設定
