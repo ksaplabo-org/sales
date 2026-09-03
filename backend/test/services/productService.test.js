@@ -595,7 +595,7 @@ describe("productService", () => {
       expect(spyUpdate).not.toHaveBeenCalled();
     });
 
-    test("[異常系] 受発注区分が1または2以外（受発注区分=3）の場合 => 誤って更新される", async () => {
+    test("[異常系] 受発注区分が1または2以外（受発注区分=3）の場合 => 正常に更新されること", async () => {
       //検索条件
       const productCode = "a0b0001";
 
