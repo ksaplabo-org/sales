@@ -30,13 +30,18 @@
       <BRow>
         <BCol md="4">
           <BFormGroup label="取引先コード">
-            <BFormInput placeholder="取引先コードを入力" v-model="condition.clientCode" />
+            <BFormInput
+              placeholder="取引先コードを入力"
+              v-model="condition.clientCode"
+              :formatter="formatClientCode"
+              maxlength="8"
+            />
           </BFormGroup>
         </BCol>
 
         <BCol md="4">
           <BFormGroup label="取引先名">
-            <BFormInput placeholder="取引先名を入力" v-model="condition.clientName" />
+            <BFormInput placeholder="取引先名を入力" v-model="condition.clientName" maxlength="20" />
           </BFormGroup>
         </BCol>
 
@@ -241,6 +246,15 @@ const searchClients = async () => {
   } finally {
     loading.value = false;
   }
+};
+
+/**
+ * 取引先コードの入力値を半角英数のみに変換
+ *
+ * @param clientCode 取引先コード
+ */
+const formatClientCode = (clientCode) => {
+  return clientCode.replace(/[^A-Za-z0-9]/g, "");
 };
 
 /**
