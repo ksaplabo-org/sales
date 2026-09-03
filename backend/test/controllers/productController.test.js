@@ -270,7 +270,7 @@ describe("productController", () => {
   });
 
   describe("delete 商品情報削除", () => {
-    test("[正常系] 商品コードがServiceに渡され、ステータス[200]とServiceから結果がレスポンスされること", async () => {
+    test("[正常系] 商品コードがServiceに渡され、ステータス[200]とServiceの結果がレスポンスされること", async () => {
       //検索条件
       const req = {
         params: {
