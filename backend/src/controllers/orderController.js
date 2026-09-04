@@ -2,7 +2,7 @@ import UniqueConstraintError from "../errors/UniqueConstraintError.js";
 import NotFoundError from "../errors/NotFoundError.js";
 import UnprocessableContentError from "../errors/UnprocessableContentError.js";
 import orderService from "../services/orderService.js";
-import ValidationError from "../errors/ValidationError.js";
+import OrderValidationError from "../errors/OrderValidationError.js";
 
 class OrderController {
   /**
@@ -52,7 +52,8 @@ class OrderController {
       }
 
       if (errors.length > 0) {
-        return res.status(400).json({ errors: errors });
+        res.status(400).json({ errors: errors });
+        return;
       }
 
       const order = await orderService.findByNo(req.params.orderNo);
@@ -95,7 +96,8 @@ class OrderController {
       }
 
       if (errors.length > 0) {
-        return res.status(400).json({ errors: errors });
+        res.status(400).json({ errors: errors });
+        return;
       }
 
       const order = {
@@ -149,15 +151,10 @@ class OrderController {
           ],
         });
         return;
-      } else if (e instanceof ValidationError) {
+      } else if (e instanceof OrderValidationError) {
         //パラメータエラー
-        res.status(ValidationError.status).json({
-          errors: [
-            {
-              field: e.field,
-              message: e.message,
-            },
-          ],
+        res.status(OrderValidationError.status).json({
+          errors: e.errors,
         });
         return;
       } else {
