@@ -594,6 +594,44 @@ describe("productService", () => {
       expect(spyClientFindByCode).not.toHaveBeenCalled();
       expect(spyUpdate).not.toHaveBeenCalled();
     });
+
+    test("[異常系] 受発注区分が1または2以外（受発注区分=3）の場合 => 正常に更新されること", async () => {
+      //検索条件
+      const productCode = "a0b0001";
+
+      const mockDate = new Date(); //現在日時を保存
+
+      jest.useFakeTimers(); //検証用の仮想時間を使用
+      jest.setSystemTime(mockDate); //日時をmockDateに固定
+
+      //更新情報
+      const productInfo = {
+        orderKbn: "3",
+      };
+
+      //mock返却データ
+      const product = {
+        productCode: productCode,
+        orderKbn: "3",
+      };
+
+      //Mock設定
+      const spyFindByCode = jest.spyOn(productRepository, "findByCode").mockResolvedValueOnce(product);
+      const spyClientFindByCode = jest.spyOn(clientRepository, "findByCode");
+      const spyUpdate = jest.spyOn(productRepository, "update").mockResolvedValueOnce();
+
+      //テスト対象関数の呼び出し
+      await productService.update(productCode, productInfo);
+
+      //検証
+      expect(spyFindByCode).toHaveBeenCalledTimes(1);
+      expect(spyFindByCode).toHaveBeenCalledWith(productCode);
+      expect(spyClientFindByCode).not.toHaveBeenCalled();
+      expect(spyUpdate).toHaveBeenCalledTimes(1);
+      expect(spyUpdate).toHaveBeenCalledWith(productCode, productInfo);
+      expect(productInfo.updatedAt).toBe(mockDate.toISOString());
+      jest.useRealTimers();
+    });
   });
 
   describe("delete 商品情報削除", () => {
