@@ -16,8 +16,8 @@
   </BContainer>
 
   <!-- トースト -->
-  <BToast class="w-100" v-model="showSuccessToastMiliSec" variant="success" no-progress>{{ successToastText }}</BToast>
-  <BToast class="w-100" v-model="showFailedToastMiliSec" variant="danger" no-progress>{{ failedToastText }}</BToast>
+  <BToast class="w-100" v-model="showSuccessToastMs" variant="success" no-progress>{{ successToastText }}</BToast>
+  <BToast class="w-100" v-model="showFailedToastMs" variant="danger" no-progress>{{ failedToastText }}</BToast>
 
   <!-- ヘッダー -->
   <BCard class="shadow-sm mb-3">
@@ -52,7 +52,7 @@
             <BFormInput
               id="clientCode"
               v-model="form.clientCode"
-              :state="clientCodeState"
+              :state="!!client.clientName"
               :formatter="formatHalfWidthAlphaNumeric"
               maxlength="8"
               @input="client.clientName = ''"
@@ -86,7 +86,7 @@
         <div v-if="clientItems.length === 0" class="text-center text-muted mt-3">検索結果がありません</div>
         <template #footer>
           <BButton variant="secondary" @click="showClientModal = false">キャンセル</BButton>
-          <BButton variant="primary" @click="applySelectedClient">確定</BButton>
+          <BButton variant="primary" @click="applySelectedClient" :disabled="!selectedClient">確定</BButton>
         </template>
       </BModal>
 
@@ -144,7 +144,7 @@
       <!-- 出荷日 -->
       <BRow class="mb-3" v-if="isReceive">
         <BFormGroup label="出荷日" label-cols="3">
-          <BFormInput id="shipDate" v-model="form.shipDate" :state="shipDateState()" type="date" />
+          <BFormInput id="shipDate" v-model="form.shipDate" :state="shipDateState()" type="date" required />
           <div v-if="showShipDateError()" class="text-danger">
             {{ formatMessage(messages.MSGE017, "出荷日", form.confirmedDate ? "入金日" : "受注日") }}
           </div>
@@ -168,7 +168,7 @@
             <BFormInput
               id="productCode"
               v-model="form.productCode"
-              :state="productCodeState"
+              :state="!!product.productName"
               :formatter="formatHalfWidthAlphaNumeric"
               maxlength="7"
               @input="product.productName = ''"
@@ -207,7 +207,7 @@
         <div v-if="productItems.length === 0" class="text-center text-muted mt-3">検索結果がありません</div>
         <template #footer>
           <BButton variant="secondary" @click="showProductModal = false">キャンセル</BButton>
-          <BButton variant="primary" @click="applySelectedProduct">確定</BButton>
+          <BButton variant="primary" @click="applySelectedProduct" :disabled="!selectedProduct">確定</BButton>
         </template>
       </BModal>
 
@@ -366,8 +366,8 @@ const successToastText = ref("");
 const failedToastText = ref("");
 
 //処理トースト表示ミリ秒
-const showSuccessToastMiliSec = ref(0);
-const showFailedToastMiliSec = ref(0);
+const showSuccessToastMs = ref(0);
+const showFailedToastMs = ref(0);
 
 //トースト表示ミリ秒
 const TOAST_MS = 1500;
@@ -400,13 +400,10 @@ const productFields = computed(() => {
   ];
 });
 
-const clientCodeState = computed(() => !!client.value.clientName);
-const productCodeState = computed(() => !!product.value.productName);
-
 //出荷日の入力チェック状態
 const shipDateState = () => {
   if (!form.value.shipDate) {
-    return null;
+    return false;
   }
   if (form.value.confirmedDate) {
     return form.value.shipDate >= form.value.confirmedDate;
@@ -418,11 +415,14 @@ const deliverDateState = () => {
   if (!form.value.deliverDate) {
     return null;
   }
-  if (form.value.shipDate) {
-    return form.value.deliverDate >= form.value.shipDate;
+  if (isReceive.value) {
+    if (form.value.shipDate) {
+      return form.value.deliverDate >= form.value.shipDate;
+    }
+    return form.value.deliverDate >= form.value.orderDate;
   }
-  if (form.value.confirmedDate) {
-    return form.value.deliverDate >= form.value.confirmedDate;
+  if (form.value.confirmedDate && form.value.deliverDate < form.value.confirmedDate) {
+    return false;
   }
   return form.value.deliverDate >= form.value.orderDate;
 };
@@ -441,26 +441,35 @@ const showShipDateError = () => {
 };
 //納品予定日のエラーメッセージ表示判定
 const showDeliverDateError = () => {
+  if (form.value.confirmedDate && form.value.confirmedDate < form.value.orderDate) {
+    return false;
+  }
+  if (showShipDateError()) {
+    return false;
+  }
   if (!form.value.deliverDate) {
     return false;
   }
-  if (form.value.shipDate) {
-    return form.value.deliverDate < form.value.shipDate;
+  if (isReceive.value) {
+    if (form.value.shipDate) {
+      return form.value.deliverDate < form.value.shipDate;
+    }
+    return form.value.deliverDate < form.value.orderDate;
   }
-  if (form.value.confirmedDate) {
-    return form.value.deliverDate < form.value.confirmedDate;
+  if (form.value.confirmedDate && form.value.deliverDate < form.value.confirmedDate) {
+    return true;
   }
   return form.value.deliverDate < form.value.orderDate;
 };
 //納品予定日のエラーメッセージの基準値ラベル取得
 const deliverDateErrorTarget = () => {
-  if (form.value.shipDate) {
+  if (isReceive.value) {
     return "出荷日";
   }
-  if (form.value.confirmedDate) {
-    return isReceive.value ? "入金日" : "発注受付完了日";
+  if (form.value.confirmedDate && form.value.deliverDate < form.value.confirmedDate) {
+    return "発注受付完了日";
   }
-  return isReceive.value ? "受注日" : "発注日";
+  return "発注日";
 };
 
 //半角英数字
@@ -630,7 +639,7 @@ const calculateAmount = () => {
  */
 const openSuccessToast = (message) => {
   successToastText.value = message;
-  showSuccessToastMiliSec.value = TOAST_MS;
+  showSuccessToastMs.value = TOAST_MS;
 };
 
 /**
@@ -638,7 +647,7 @@ const openSuccessToast = (message) => {
  */
 const openFailedToast = (message) => {
   failedToastText.value = message;
-  showFailedToastMiliSec.value = TOAST_MS;
+  showFailedToastMs.value = TOAST_MS;
 };
 
 /**
