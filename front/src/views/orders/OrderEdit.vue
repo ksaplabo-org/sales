@@ -102,7 +102,7 @@
         <BFormGroup label="出荷日" label-cols="3">
           <BFormInput id="shipDate" v-model="view.shipDate" :state="isValidShipDate()" type="date" />
           <div v-if="showShipDateError()" class="text-danger">
-            {{ formatMessage(messages.MSGE017, "出荷日", view.confirmedDate ? "入金日" : "受注日") }}
+              {{ formatMessage(messages.MSGE017, "出荷日", view.confirmedDate ? "入金日" : "受注日") }}
           </div>
         </BFormGroup>
       </BRow>
@@ -209,8 +209,15 @@
     />
     <div v-if="productItems.length === 0" class="text-center text-muted mt-3">検索結果がありません</div>
     <template #footer>
-      <BButton variant="secondary" @click="selectedProduct = null; showProductModal = false;">キャンセル</BButton>
-      <BButton variant="primary" @click="applySelectedProduct">確定</BButton>
+      <BButton
+        variant="secondary"
+        @click="
+          selectedProduct = null;
+          showProductModal = false;
+        "
+        >キャンセル</BButton
+      >
+      <BButton variant="primary" @click="applySelectedProduct" :disabled="!selectedProduct">確定</BButton>
     </template>
   </BModal>
 </template>
@@ -280,13 +287,20 @@ const productFields = [
 
 //確定日入力チェック
 const isValidConfirmedDate = () => {
-  return !view.value.confirmedDate || view.value.confirmedDate >= view.value.orderDate;
+  if (!view.value.confirmedDate) {
+    return null;
+  }
+  return view.value.confirmedDate >= view.value.orderDate;
 };
 
 //出荷日入力チェック
 const isValidShipDate = () => {
+  if (view.value.orderKbn !== "1") {
+    return null;
+  }
+
   if (!view.value.shipDate) {
-    return true;
+    return false;
   }
 
   if (view.value.confirmedDate) {
@@ -298,14 +312,15 @@ const isValidShipDate = () => {
 
 //納品予定日入力チェック
 const isValidDeliverDate = () => {
+  if (showShipDateError()) {
+    return null;
+  }
   if (!view.value.deliverDate) {
-    return true;
+    return null;
   }
 
   if (view.value.orderKbn === "1") {
-    return view.value.shipDate
-      ? view.value.deliverDate >= view.value.shipDate
-      : view.value.deliverDate >= view.value.orderDate;
+    return !view.value.shipDate || view.value.deliverDate >= view.value.shipDate;
   }
 
   return view.value.confirmedDate
@@ -334,12 +349,7 @@ const showDeliverDateError = () => {
   }
 
   // 出荷日エラー表示中なら納品予定日のエラーは表示しない
-  if (
-    view.value.shipDate &&
-    (view.value.confirmedDate
-      ? view.value.shipDate < view.value.confirmedDate
-      : view.value.shipDate < view.value.orderDate)
-  ) {
+  if (showShipDateError()) {
     return false;
   }
 
@@ -350,9 +360,7 @@ const showDeliverDateError = () => {
 
   // 受注
   if (view.value.orderKbn === "1") {
-    return view.value.shipDate
-      ? view.value.deliverDate < view.value.shipDate
-      : view.value.deliverDate < view.value.orderDate;
+    return view.value.shipDate && view.value.deliverDate < view.value.shipDate;
   }
 
   // 発注
@@ -367,7 +375,7 @@ const showConfirmedDateError = () => {
 
 const getDeliverDateBaseLabel = () => {
   if (view.value.orderKbn === "1") {
-    return view.value.shipDate ? "出荷日" : "受注日";
+    return "出荷日";
   }
 
   if (view.value.orderKbn === "2") {
