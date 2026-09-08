@@ -268,7 +268,7 @@ class ClientController {
     }
 
     // 電話番号
-    if (!/^\d{3}-\d{4}-\d{4}$/.test(data.telNumber)) {
+    if (data.telNumber && !/^\d{3}-\d{4}-\d{4}$/.test(data.telNumber)) {
       errors.push({ field: "telNumber", message: "電話番号はxxx-xxxx-xxxxで設定してください" });
     }
     return errors;
