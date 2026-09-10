@@ -104,7 +104,7 @@
           <BButton
             size="sm"
             variant="outline-primary"
-            @click="router.push({ name: 'clientEdit', params: { clientCode: row.item.clientCode } })"
+            @click="editClient(row.item.clientCode)"
             v-if="loginInfo.role == 2"
           >
             <i class="fas fa-pen"></i>
@@ -305,6 +305,30 @@ const deleteClient = async () => {
   } catch (e) {
     console.log(e);
     openFailedToast(messages.MSGE007);
+  } finally {
+    loading.value = false;
+  }
+};
+
+/**
+ * 取引先登録画面遷移処理
+ *
+ * @param clientCode 取引先コード
+ */
+const editClient = async (clientCode) => {
+  loading.value = true;
+
+  try {
+    // 存在チェックを兼ねて取引先情報取得
+    await clientApi.getClientByClientCode(clientCode);
+
+    router.push({
+      name: "clientEdit",
+      params: { clientCode },
+    });
+  } catch (e) {
+    console.log(e);
+    openFailedToast(messages.MSGE001);
   } finally {
     loading.value = false;
   }
