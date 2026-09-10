@@ -30,10 +30,12 @@
           <div v-if="!isEdit">
             <BFormInput
               id="productCode"
-              v-model="form.productCode"
               :state="form.productCode.length === 7"
-              :formatter="formatHalfWidthAlphaNumeric"
               maxlength="7"
+              type="text"
+              v-model.lazy="form.productCode"
+              @input="(e) => formatAlphaNumericInput(e, 'productCode', 'alphaNumeric')"
+              @compositionend="(e) => formatAlphaNumericInput(e, 'productCode', 'alphaNumeric')"
               required
             />
             <BFormInvalidFeedback v-if="form.productCode">{{
@@ -99,11 +101,12 @@
         <BFormGroup label="単価" label-for="productPrice" label-cols="3">
           <BFormInput
             id="productPrice"
-            type="number"
+            type="text"
             min="1"
-            v-model="form.productPrice"
+            v-model.lazy="form.productPrice"
+            @input="(e) => formatNumericInput(e, 'productPrice')"
+            @compositionend="(e) => formatNumericInput(e, 'productPrice')"
             :state="form.productPrice > 0"
-            :formatter="formatHalfWidthNumeric"
             required
           />
         </BFormGroup>
@@ -244,23 +247,34 @@ const showFailedToast = (message) => {
   showFailedToastMs.value = TOAST_MS;
 };
 
-/**
- * 半角英数のみに置換
- *
- * @param value 検査値
- */
-const formatHalfWidthAlphaNumeric = (value) => {
-  return value.replace(/[^A-Za-z0-9]/g, "");
+//半角英数字の変換
+const formatAlphaNumericInput = (event, key) => {
+  //IMEが無効の場合
+  if (!event.isComposing) {
+    let value = event.target.value;
+
+    //半角英数字変換処理
+    value = value.replace(/[^A-Za-z0-9]/g, "");
+
+    //変換後文字列更新処理
+    form[key] = value;
+    event.target.value = value;
+  }
 };
 
-/**
- * 半角数字のみに置換する
- *
- * @param value 検査値
- */
-const formatHalfWidthNumeric = (value) => {
-  const result = value.replace(/[^0-9]/g, "");
-  return result === "" ? "" : Number(result);
+//半角数字の変換
+const formatNumericInput = (event, key) => {
+  //IMEが無効の場合
+  if (!event.isComposing) {
+    let value = event.target.value;
+
+    //半角数字変換処理
+    value = value.replace(/[^0-9]/g, "").replace(/^0+(?=\d)/, "");
+
+    //変換後文字列更新処理
+    form[key] = value;
+    event.target.value = value;
+  }
 };
 
 /**

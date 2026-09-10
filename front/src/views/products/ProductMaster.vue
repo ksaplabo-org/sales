@@ -36,8 +36,9 @@
               placeholder="商品コードを入力"
               maxlength="7"
               type="text"
-              v-model="condition.productCode"
-              :formatter="formatHalfWidthAlphaNumeric"
+              v-model.lazy="condition.productCode"
+              @input="(e) => formatAlphaNumericInput(e, 'productCode')"
+              @compositionend="(e) => formatAlphaNumericInput(e, 'productCode')"
             />
           </BFormGroup>
         </BCol>
@@ -52,9 +53,23 @@
         <BCol md="4">
           <BFormGroup label="単価">
             <div class="d-flex align-items-center">
-              <BFormInput placeholder="下限" v-model="condition.productPriceLow" :formatter="formatHalfWidthNumeric" />
+              <BFormInput
+                placeholder="下限"
+                type="text"
+                min="0"
+                v-model.lazy="condition.productPriceLow"
+                @input="(e) => formatNumericInput(e, 'productPriceLow')"
+                @compositionend="(e) => formatNumericInput(e, 'productPriceLow')"
+              />
               <span class="mx-2">～</span>
-              <BFormInput placeholder="上限" v-model="condition.productPriceHigh" :formatter="formatHalfWidthNumeric" />
+              <BFormInput
+                placeholder="上限"
+                type="text"
+                min="0"
+                v-model.lazy="condition.productPriceHigh"
+                @input="(e) => formatNumericInput(e, 'productPriceHigh')"
+                @compositionend="(e) => formatNumericInput(e, 'productPriceHigh')"
+              />
             </div>
           </BFormGroup>
         </BCol>
@@ -311,22 +326,33 @@ const deleteProduct = async () => {
   }
 };
 
-/**
- * 半角英数のみに置換する
- *
- * @param value 検査値
- */
-const formatHalfWidthAlphaNumeric = (value) => {
-  return value.replace(/[^A-Za-z0-9]/g, "");
+//半角英数字の変換
+const formatAlphaNumericInput = (event, key) => {
+  //IMEが無効の場合
+  if (!event.isComposing) {
+    let value = event.target.value;
+
+    //半角英数字変換処理
+    value = value.replace(/[^A-Za-z0-9]/g, "");
+
+    //変換後文字列更新処理
+    condition[key] = value;
+    event.target.value = value;
+  }
 };
 
-/**
- * 半角数字のみに置換する
- *
- * @param value 検査値
- */
-const formatHalfWidthNumeric = (value) => {
-  const result = value.replace(/[^0-9]/g, "");
-  return result === "" ? "" : Number(result);
+//半角数字の変換
+const formatNumericInput = (event, key) => {
+  //IMEが無効の場合
+  if (!event.isComposing) {
+    let value = event.target.value;
+
+    //半角数字変換処理
+    value = value.replace(/[^0-9]/g, "").replace(/^0+(?=\d)/, "");
+
+    //変換後文字列更新処理
+    condition[key] = value;
+    event.target.value = value;
+  }
 };
 </script>
