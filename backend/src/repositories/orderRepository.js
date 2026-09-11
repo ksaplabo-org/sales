@@ -56,6 +56,20 @@ class OrderRepository {
   }
 
   /**
+   * 受発注情報更新
+   *
+   * @param {*} orderNo 受発注番号
+   * @param {*} orderInfo 受発注情報
+   */
+  async update(orderNo, orderInfo) {
+    await orderModel.update(orderInfo, {
+      where: {
+        orderNo: orderNo,
+      },
+    });
+  }
+
+  /**
    * 受発注情報物理削除
    *
    * @param {*} orderNo 受発注番号
