@@ -13,8 +13,8 @@
   </BContainer>
 
   <!-- トースト -->
-  <BToast class="w-100" v-model="showSuccessToastMs" variant="success" no-progress>{{ successToastText }}</BToast>
-  <BToast class="w-100" v-model="showFailedToastMs" variant="danger" no-progress>{{ failedToastText }}</BToast>
+  <BToast class="w-100" v-model="showSuccessToastMs" variant="success" no-progress no-close-button>{{ successToastText }}</BToast>
+  <BToast class="w-100" v-model="showFailedToastMs" variant="danger" no-progress no-close-button>{{ failedToastText }}</BToast>
 
   <!-- 検索条件 -->
   <BCard class="shadow-sm mb-3">
