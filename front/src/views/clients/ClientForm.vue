@@ -58,12 +58,7 @@
 
       <BRow class="mb-3">
         <BFormGroup label="受発注区分" label-for="orderKbn" label-cols="3">
-          <BFormSelect
-            v-model="form.orderKbn"
-            :options="orderKbnOptions"
-            required
-            v-if="!isEdit"
-          />
+          <BFormSelect v-model="form.orderKbn" :options="orderKbnOptions" required v-if="!isEdit" />
           <div v-else class="form-control-plaintext">{{ orderKbnText }}</div>
         </BFormGroup>
       </BRow>
@@ -101,7 +96,7 @@
           <BFormInput
             id="telNumber"
             v-model="form.telNumber"
-            :state="form.telNumber.length === 0? null : (form.telNumber.length === 13 && /^\d{3}-\d{4}-\d{4}$/.test(form.telNumber)) ? null : false"
+            :state="form.telNumber.length === 0 ? null : /^\d{3}-\d{4}-\d{4}$/.test(form.telNumber) ? null : false"
             :formatter="formatTelNumber"
             maxlength="13"
             placeholder="例:xxx-xxxx-xxxx"
