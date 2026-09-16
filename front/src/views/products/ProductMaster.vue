@@ -56,7 +56,6 @@
               <BFormInput
                 placeholder="下限"
                 type="text"
-                min="0"
                 v-model="condition.productPriceLow"
                 @input="formatNumericInput"
                 @compositionend="formatNumericInput"
@@ -65,7 +64,6 @@
               <BFormInput
                 placeholder="上限"
                 type="text"
-                min="0"
                 v-model="condition.productPriceHigh"
                 @input="formatNumericInput"
                 @compositionend="formatNumericInput"
@@ -328,7 +326,7 @@ const deleteProduct = async () => {
 
 //半角英数字の変換
 const formatAlphaNumericInput = (event) => {
-  //IMEが無効の場合
+  // IME変換中の値は変換しないように制御
   if (event.isComposing) return;
 
   const input = event.target;
@@ -343,7 +341,7 @@ const formatAlphaNumericInput = (event) => {
 
 //半角数字の変換
 const formatNumericInput = (event) => {
-  //IMEが無効の場合
+  // IME変換中の値は変換しないように制御
   if (event.isComposing) return;
 
   const input = event.target;
