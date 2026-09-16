@@ -36,9 +36,9 @@
               placeholder="商品コードを入力"
               maxlength="7"
               type="text"
-              v-model.lazy="condition.productCode"
-              @input="(e) => formatAlphaNumericInput(e, 'productCode')"
-              @compositionend="(e) => formatAlphaNumericInput(e, 'productCode')"
+              v-model="condition.productCode"
+              @input="formatAlphaNumericInput"
+              @compositionend="formatAlphaNumericInput"
             />
           </BFormGroup>
         </BCol>
@@ -57,18 +57,18 @@
                 placeholder="下限"
                 type="text"
                 min="0"
-                v-model.lazy="condition.productPriceLow"
-                @input="(e) => formatNumericInput(e, 'productPriceLow')"
-                @compositionend="(e) => formatNumericInput(e, 'productPriceLow')"
+                v-model="condition.productPriceLow"
+                @input="formatNumericInput"
+                @compositionend="formatNumericInput"
               />
               <span class="mx-2">～</span>
               <BFormInput
                 placeholder="上限"
                 type="text"
                 min="0"
-                v-model.lazy="condition.productPriceHigh"
-                @input="(e) => formatNumericInput(e, 'productPriceHigh')"
-                @compositionend="(e) => formatNumericInput(e, 'productPriceHigh')"
+                v-model="condition.productPriceHigh"
+                @input="formatNumericInput"
+                @compositionend="formatNumericInput"
               />
             </div>
           </BFormGroup>
@@ -327,32 +327,32 @@ const deleteProduct = async () => {
 };
 
 //半角英数字の変換
-const formatAlphaNumericInput = (event, key) => {
+const formatAlphaNumericInput = (event) => {
   //IMEが無効の場合
-  if (!event.isComposing) {
-    let value = event.target.value;
+  if (event.isComposing) return;
 
-    //半角英数字変換処理
-    value = value.replace(/[^A-Za-z0-9]/g, "");
-
-    //変換後文字列更新処理
-    condition[key] = value;
-    event.target.value = value;
+  const input = event.target;
+  const formatValue = input.value.replace(/[^A-Za-z0-9]/g, ""); // フォーマット処理
+  if (input.value !== formatValue) {
+    // 入力値にフォーマットした値を反映
+    input.value = formatValue;
+    // 双方向バインディングに反映するためinputイベントを発火
+    input.dispatchEvent(new Event("input", { bubbles: true }));
   }
 };
 
 //半角数字の変換
-const formatNumericInput = (event, key) => {
+const formatNumericInput = (event) => {
   //IMEが無効の場合
-  if (!event.isComposing) {
-    let value = event.target.value;
+  if (event.isComposing) return;
 
-    //半角数字変換処理
-    value = value.replace(/[^0-9]/g, "").replace(/^0+(?=\d)/, "");
-
-    //変換後文字列更新処理
-    condition[key] = value;
-    event.target.value = value;
+  const input = event.target;
+  const formatValue = input.value.replace(/[^0-9]/g, "").replace(/^0+(?=\d)/, ""); // フォーマット処理
+  if (input.value !== formatValue) {
+    // 入力値にフォーマットした値を反映
+    input.value = formatValue;
+    // 双方向バインディングに反映するためinputイベントを発火
+    input.dispatchEvent(new Event("input", { bubbles: true }));
   }
 };
 </script>

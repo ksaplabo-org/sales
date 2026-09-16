@@ -33,9 +33,9 @@
               :state="form.productCode.length === 7"
               maxlength="7"
               type="text"
-              v-model.lazy="form.productCode"
-              @input="(e) => formatAlphaNumericInput(e, 'productCode', 'alphaNumeric')"
-              @compositionend="(e) => formatAlphaNumericInput(e, 'productCode', 'alphaNumeric')"
+              v-model="form.productCode"
+              @input="formatAlphaNumericInput"
+              @compositionend="formatAlphaNumericInput"
               required
             />
             <BFormInvalidFeedback v-if="form.productCode">{{
@@ -103,9 +103,9 @@
             id="productPrice"
             type="text"
             min="1"
-            v-model.lazy="form.productPrice"
-            @input="(e) => formatNumericInput(e, 'productPrice')"
-            @compositionend="(e) => formatNumericInput(e, 'productPrice')"
+            v-model="form.productPrice"
+            @input="formatNumericInput"
+            @compositionend="formatNumericInput"
             :state="form.productPrice > 0"
             required
           />
@@ -248,32 +248,32 @@ const showFailedToast = (message) => {
 };
 
 //半角英数字の変換
-const formatAlphaNumericInput = (event, key) => {
+const formatAlphaNumericInput = (event) => {
   //IMEが無効の場合
-  if (!event.isComposing) {
-    let value = event.target.value;
+  if (event.isComposing) return;
 
-    //半角英数字変換処理
-    value = value.replace(/[^A-Za-z0-9]/g, "");
-
-    //変換後文字列更新処理
-    form[key] = value;
-    event.target.value = value;
+  const input = event.target;
+  const formatValue = input.value.replace(/[^A-Za-z0-9]/g, ""); // フォーマット処理
+  if (input.value !== formatValue) {
+    // 入力値にフォーマットした値を反映
+    input.value = formatValue;
+    // 双方向バインディングに反映するためinputイベントを発火
+    input.dispatchEvent(new Event("input", { bubbles: true }));
   }
 };
 
 //半角数字の変換
-const formatNumericInput = (event, key) => {
+const formatNumericInput = (event) => {
   //IMEが無効の場合
-  if (!event.isComposing) {
-    let value = event.target.value;
+  if (event.isComposing) return;
 
-    //半角数字変換処理
-    value = value.replace(/[^0-9]/g, "").replace(/^0+(?=\d)/, "");
-
-    //変換後文字列更新処理
-    form[key] = value;
-    event.target.value = value;
+  const input = event.target;
+  const formatValue = input.value.replace(/[^0-9]/g, "").replace(/^0+(?=\d)/, ""); // フォーマット処理
+  if (input.value !== formatValue) {
+    // 入力値にフォーマットした値を反映
+    input.value = formatValue;
+    // 双方向バインディングに反映するためinputイベントを発火
+    input.dispatchEvent(new Event("input", { bubbles: true }));
   }
 };
 
