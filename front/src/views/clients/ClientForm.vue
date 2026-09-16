@@ -58,7 +58,12 @@
 
       <BRow class="mb-3">
         <BFormGroup label="受発注区分" label-for="orderKbn" label-cols="3">
-          <BFormSelect v-model="form.orderKbn" :options="orderKbnOptions" required v-if="!isEdit" />
+          <BFormSelect
+            v-model="form.orderKbn"
+            :options="orderKbnOptions"
+            required
+            v-if="!isEdit"
+          />
           <div v-else class="form-control-plaintext">{{ orderKbnText }}</div>
         </BFormGroup>
       </BRow>
