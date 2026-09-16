@@ -8,7 +8,7 @@
       <BBreadcrumb
         :items="[
           { text: 'トップページ', to: '/' },
-          { text: '受発注情報一覧', to: '/' },
+          { text: '受発注情報一覧', to: { name: 'orderList' } },
           {
             text: view.orderKbn === '1' ? '受注情報編集' : view.orderKbn === '2' ? '発注情報編集' : '',
             active: true,
@@ -60,7 +60,7 @@
       <BRow class="mb-3">
         <BFormGroup :label="view.orderKbn === '1' ? '受注日' : view.orderKbn === '2' ? '発注日' : ''" label-cols="3">
           <div class="form-control-plaintext">
-            {{ view.orderDate }}
+            {{ orderDateDisplay }}
           </div>
         </BFormGroup>
       </BRow>
@@ -73,7 +73,7 @@
         >
           <!-- 編集画面 かつ 確定日が登録済み -->
           <div v-if="hasConfirmedDate" class="form-control-plaintext">
-            {{ view.confirmedDate }}
+            {{ confirmedDateDisplay }}
           </div>
 
           <!-- 確定日未登録 -->
@@ -81,10 +81,10 @@
             v-else
             id="confirmedDate"
             v-model="view.confirmedDate"
-            :state="confirmedDateState()"
+            :state="getConfirmedDateState()"
             type="date"
           />
-          <div v-if="showConfirmedDateError()" class="text-danger">
+          <div v-if="getConfirmedDateState() === false" class="text-danger">
             {{
               formatMessage(
                 messages.MSGE017,
@@ -99,8 +99,8 @@
       <!-- 出荷日 -->
       <BRow class="mb-3" v-if="view.orderKbn === '1'">
         <BFormGroup label="出荷日" label-cols="3">
-          <BFormInput id="shipDate" v-model="view.shipDate" :state="shipDateState()" type="date" />
-          <div v-if="showShipDateError()" class="text-danger">
+          <BFormInput id="shipDate" v-model="view.shipDate" :state="getShipDateState()" type="date" />
+          <div v-if="view.shipDate && getShipDateState() === false" class="text-danger">
             {{ formatMessage(messages.MSGE017, "出荷日", view.confirmedDate ? "入金日" : "受注日") }}
           </div>
         </BFormGroup>
@@ -109,8 +109,8 @@
       <!-- 納品予定日 -->
       <BRow class="mb-3">
         <BFormGroup label="納品予定日" label-cols="3">
-          <BFormInput id="deliverDate" v-model="view.deliverDate" :state="deliverDateState()" type="date" />
-          <div v-if="showDeliverDateError()" class="text-danger">
+          <BFormInput id="deliverDate" v-model="view.deliverDate" :state="getDeliverDateState()" type="date" />
+          <div v-if="getDeliverDateState() === false" class="text-danger">
             {{ formatMessage(messages.MSGE017, "納品予定日", deliverDateErrorTarget()) }}
           </div>
         </BFormGroup>
@@ -124,29 +124,57 @@
               <BFormInput
                 id="productCode"
                 v-model="view.productCode"
-                :state="!view.productCode ? null : view.productCode.length === 7 && product.productName !== null"
+                :state="view.productCode.length === 7 && product.productName !== null"
                 :formatter="formatHalfWidthAlphaNumeric"
                 maxlength="7"
                 @input="
-                  product.productName = '-';
-                  product.productPrice = `-`;
+                  product.productName = null;
+                  product.productPrice = null;
                 "
                 @blur="applyProductInput(view.productCode)"
               />
-
-              <div v-if="view.productCode.length === 7 && product.productName === null" class="text-danger">
+              <div
+                v-if="view.productCode && view.productCode.length === 7 && product.productName == null"
+                class="text-danger"
+              >
                 {{ formatMessage(messages.MSGE019, "商品コード") }}
               </div>
             </div>
-
-            <!-- 商品情報一覧モーダル -->
-            <BButton variant="outline-primary" class="text-dark" @click="openProductModal">
-              <i class="fas fa-list me-1"></i>
-              参照
+            <BButton type="button" variant="outline-primary" class="text-dark" @click="openProductModal">
+              <i class="fas fa-list me-1"></i>参照
             </BButton>
           </div>
         </BFormGroup>
       </BRow>
+
+      <!-- 商品情報モーダル -->
+      <BModal v-model="showProductModal" title="商品コードの参照" size="lg">
+        <BTable
+          :items="productItems"
+          :fields="productFields"
+          head-variant="secondary"
+          hover
+          selectable
+          select-mode="single"
+          @row-selected="onProductSelected"
+        >
+          <template #cell(productPrice)="data">
+            {{ Number(data.value).toLocaleString() }}
+          </template>
+        </BTable>
+        <div v-if="productItems.length === 0" class="text-center text-muted mt-3">検索結果がありません</div>
+        <template #footer>
+          <BButton
+            variant="secondary"
+            @click="
+              selectedProduct = null;
+              showProductModal = false;
+            "
+            >キャンセル
+          </BButton>
+          <BButton variant="primary" @click="applySelectedProduct" :disabled="!selectedProduct">確定</BButton>
+        </template>
+      </BModal>
 
       <!-- 商品名 -->
       <BRow class="mb-3">
@@ -170,20 +198,19 @@
       <BRow class="mb-3">
         <BFormGroup label="数量" label-cols="3">
           <BFormInput
+            v-model="view.quantity"
+            :state="Number(view.quantity) >= 1"
+            :formatter="formatHalfWidthNumeric"
             type="number"
             min="1"
-            v-model="view.quantity"
-            :formatter="formatHalfWidthNumeric"
-            :state="Number(view.quantity) >= 1"
           />
-
           <div v-if="view.quantity !== '' && view.quantity !== null && Number(view.quantity) < 1" class="text-danger">
             {{ formatMessage(messages.MSGE016, "数量", 1) }}
           </div>
         </BFormGroup>
-
-        <!-- 編集ボタン -->
       </BRow>
+
+      <!-- 編集ボタン -->
       <div class="d-flex justify-content-center">
         <BButton type="submit" variant="primary">
           <i class="fas fa-save"></i>
@@ -195,30 +222,6 @@
 
   <!-- ローディングマスク -->
   <Loading v-if="loading" />
-
-  <!-- 商品情報モーダル -->
-  <BModal v-model="showProductModal" title="商品コードの参照" size="lg">
-    <BTable
-      :items="productItems"
-      :fields="productFields"
-      hover
-      selectable
-      select-mode="single"
-      @row-selected="onProductSelected"
-    />
-    <div v-if="productItems.length === 0" class="text-center text-muted mt-3">検索結果がありません</div>
-    <template #footer>
-      <BButton
-        variant="secondary"
-        @click="
-          selectedProduct = null;
-          showProductModal = false;
-        "
-        >キャンセル</BButton
-      >
-      <BButton variant="primary" @click="applySelectedProduct" :disabled="!selectedProduct">確定</BButton>
-    </template>
-  </BModal>
 </template>
 
 <script setup>
@@ -285,15 +288,13 @@ const productFields = [
 ];
 
 //確定日入力チェック
-const confirmedDateState = () => {
-  if (!view.value.confirmedDate) {
-    return null;
-  }
+const getConfirmedDateState = () => {
+  if (!view.value.confirmedDate) return null;
   return view.value.confirmedDate >= view.value.orderDate;
 };
 
 //出荷日入力チェック
-const shipDateState = () => {
+const getShipDateState = () => {
   if (view.value.orderKbn !== "1") {
     return null;
   }
@@ -307,66 +308,44 @@ const shipDateState = () => {
 };
 
 //納品予定日入力チェック
-const deliverDateState = () => {
+const getDeliverDateState = () => {
   if (!view.value.deliverDate) {
     return null;
   }
   if (view.value.orderKbn === "1") {
-    return !view.value.shipDate || view.value.deliverDate >= view.value.shipDate;
+    if (view.value.shipDate) {
+      return view.value.deliverDate >= view.value.shipDate;
+    }
+    if (view.value.confirmedDate) {
+      return view.value.deliverDate >= view.value.confirmedDate;
+    }
+    return view.value.deliverDate >= view.value.orderDate;
   }
   return view.value.confirmedDate
     ? view.value.deliverDate >= view.value.confirmedDate
     : view.value.deliverDate >= view.value.orderDate;
 };
 
-const showConfirmedDateError = () => {
-  return view.value.confirmedDate && view.value.confirmedDate < view.value.orderDate;
-};
-
-const showShipDateError = () => {
-  if (view.value.confirmedDate && view.value.confirmedDate < view.value.orderDate) {
-    return false;
-  }
-  if (!view.value.shipDate) {
-    return false;
-  }
-  return view.value.confirmedDate
-    ? view.value.shipDate < view.value.confirmedDate
-    : view.value.shipDate < view.value.orderDate;
-};
-
-const showDeliverDateError = () => {
-  // 確定日エラー表示中なら納品予定日のエラーは表示しない
-  if (view.value.confirmedDate && view.value.confirmedDate < view.value.orderDate) {
-    return false;
-  }
-  // 出荷日エラー表示中なら納品予定日のエラーは表示しない
-  if (showShipDateError()) {
-    return false;
-  }
-  // 納品予定日未入力
-  if (!view.value.deliverDate) {
-    return false;
-  }
-  // 受注
-  if (view.value.orderKbn === "1") {
-    return view.value.shipDate && view.value.deliverDate < view.value.shipDate;
-  }
-  // 発注
-  return view.value.confirmedDate
-    ? view.value.deliverDate < view.value.confirmedDate
-    : view.value.deliverDate < view.value.orderDate;
-};
-
 const deliverDateErrorTarget = () => {
   if (view.value.orderKbn === "1") {
-    return "出荷日";
+    if (view.value.shipDate) {
+      return "出荷日";
+    }
+    if (view.value.confirmedDate) {
+      return "入金日";
+    }
+    return "受注日";
   }
-  if (view.value.orderKbn === "2") {
-    return view.value.confirmedDate ? "発注受付完了日" : "発注日";
-  }
-  return "";
+  return view.value.confirmedDate ? "発注受付完了日" : "発注日";
 };
+
+const orderDateDisplay = computed(() => {
+  return view.value.orderDate ? view.value.orderDate.replace(/-/g, "/") : "";
+});
+
+const confirmedDateDisplay = computed(() => {
+  return view.value.confirmedDate ? view.value.confirmedDate.replace(/-/g, "/") : "";
+});
 
 //初期処理
 onMounted(async () => {
@@ -401,7 +380,6 @@ onMounted(async () => {
       product.value.productPrice = productInfo.productPrice;
     }
   } catch (e) {
-    console.log(e);
     openFailedToast(messages.MSGE001);
   } finally {
     loading.value = false;
@@ -445,10 +423,6 @@ const onProductSelected = (row) => {
 
 //商品選択行情報反映処理
 const applySelectedProduct = () => {
-  if (!selectedProduct.value) {
-    showProductModal.value = false;
-    return;
-  }
   view.value.productCode = selectedProduct.value.productCode;
   product.value.productName = selectedProduct.value.productName;
   product.value.productPrice = selectedProduct.value.productPrice;
@@ -498,9 +472,6 @@ const updateOrder = async () => {
       },
     });
   } catch (e) {
-    console.log(e);
-    console.log(e.response);
-    console.log(e.response?.data);
     openFailedToast(messages.MSGE004);
   } finally {
     loading.value = false;
