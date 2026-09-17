@@ -41,7 +41,8 @@
               maxlength="7"
               type="text"
               v-model="condition.productCode"
-              :formatter="formatHalfWidthAlphaNumeric"
+              @input="formatAlphaNumericInput"
+              @compositionend="formatAlphaNumericInput"
             />
           </BFormGroup>
         </BCol>
@@ -56,9 +57,21 @@
         <BCol md="4">
           <BFormGroup label="単価">
             <div class="d-flex align-items-center">
-              <BFormInput placeholder="下限" v-model="condition.productPriceLow" :formatter="formatHalfWidthNumeric" />
+              <BFormInput
+                placeholder="下限"
+                type="text"
+                v-model="condition.productPriceLow"
+                @input="formatNumericInput"
+                @compositionend="formatNumericInput"
+              />
               <span class="mx-2">～</span>
-              <BFormInput placeholder="上限" v-model="condition.productPriceHigh" :formatter="formatHalfWidthNumeric" />
+              <BFormInput
+                placeholder="上限"
+                type="text"
+                v-model="condition.productPriceHigh"
+                @input="formatNumericInput"
+                @compositionend="formatNumericInput"
+              />
             </div>
           </BFormGroup>
         </BCol>
@@ -315,22 +328,33 @@ const deleteProduct = async () => {
   }
 };
 
-/**
- * 半角英数のみに置換する
- *
- * @param value 検査値
- */
-const formatHalfWidthAlphaNumeric = (value) => {
-  return value.replace(/[^A-Za-z0-9]/g, "");
+//半角英数字の変換
+const formatAlphaNumericInput = (event) => {
+  // IME変換中の値は変換しないように制御
+  if (event.isComposing) return;
+
+  const input = event.target;
+  const formatValue = input.value.replace(/[^A-Za-z0-9]/g, ""); // フォーマット処理
+  if (input.value !== formatValue) {
+    // 入力値にフォーマットした値を反映
+    input.value = formatValue;
+    // 双方向バインディングに反映するためinputイベントを発火
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+  }
 };
 
-/**
- * 半角数字のみに置換する
- *
- * @param value 検査値
- */
-const formatHalfWidthNumeric = (value) => {
-  const result = value.replace(/[^0-9]/g, "");
-  return result === "" ? "" : Number(result);
+//半角数字の変換
+const formatNumericInput = (event) => {
+  // IME変換中の値は変換しないように制御
+  if (event.isComposing) return;
+
+  const input = event.target;
+  const formatValue = input.value.replace(/[^0-9]/g, "").replace(/^0+(?=\d)/, ""); // フォーマット処理
+  if (input.value !== formatValue) {
+    // 入力値にフォーマットした値を反映
+    input.value = formatValue;
+    // 双方向バインディングに反映するためinputイベントを発火
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+  }
 };
 </script>
