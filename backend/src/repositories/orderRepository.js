@@ -56,6 +56,15 @@ class OrderRepository {
   }
 
   /**
+   * 受発注情報登録
+   *
+   * @param {*} orderInfo 受発注情報
+   */
+  async create(orderInfo) {
+    await orderModel.create(orderInfo);
+  }
+
+  /**
    * 受発注情報物理削除
    *
    * @param {*} orderNo 受発注番号

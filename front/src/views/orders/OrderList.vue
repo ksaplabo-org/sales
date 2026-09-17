@@ -276,7 +276,7 @@ onMounted(async () => {
     openSuccessToast(state.message);
 
     // 再表示の防止のためstateを初期化
-    history.replaceStatement({}, "");
+    history.replaceState({}, "");
   }
 
   // 一覧検索

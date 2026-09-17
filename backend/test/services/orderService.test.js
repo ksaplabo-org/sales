@@ -5,6 +5,8 @@ import NotFoundError from "../../src/errors/NotFoundError.js";
 import UnprocessableContentError from "../../src/errors/UnprocessableContentError.js";
 import orderService from "../../src/services/orderService.js";
 import orderRepository from "../../src/repositories/orderRepository.js";
+import clientRepository from "../../src/repositories/clientRepository.js";
+import productRepository from "../../src/repositories/productRepository.js";
 
 describe("orderService", () => {
   // 全テストケース実行後に行う処理
@@ -49,6 +51,97 @@ describe("orderService", () => {
       expect(actual).toEqual(expected); // 実行結果と期待結果が一致することを検証
       expect(spy).toHaveBeenCalledTimes(1); // Mockした関数の呼び出し回数を検証
       expect(spy).toHaveBeenCalledWith(condition); // Mockした関数呼び出し時の引数を検証
+    });
+  });
+
+  describe("create 受発注情報登録", () => {
+    test("[正常系] 受発注情報を登録できること", async () => {
+      // テストデータ
+      const orderInfo = {
+        orderNo: "o1000001",
+        orderKbn: "1",
+        clientCode: "cc000001",
+        productCode: "pc00001",
+        quantity: 10,
+        orderDate: "2026-1-1",
+        confirmedDate: "",
+        shipDate: "",
+        deliverDate: "",
+      };
+
+      const client = {
+        clientCode: "cc000001",
+      };
+
+      const product = {
+        productCode: "pc00001",
+        productPrice: 1000,
+      };
+
+      // Mock設定
+      const spyFindByNo = jest.spyOn(orderRepository, "findByNo").mockResolvedValueOnce(null);
+      const spyFindClient = jest.spyOn(clientRepository, "findByCode").mockResolvedValueOnce(client);
+      const spyFindProduct = jest.spyOn(productRepository, "findByCode").mockResolvedValueOnce(product);
+      const spyCreate = jest.spyOn(orderRepository, "create").mockResolvedValueOnce();
+
+      // テスト対象関数呼び出し
+      await orderService.create(orderInfo);
+
+      // 検証
+      expect(spyFindByNo).toHaveBeenCalledWith(orderInfo.orderNo);
+      expect(spyFindClient).toHaveBeenCalledWith(orderInfo.clientCode);
+      expect(spyFindProduct).toHaveBeenCalledWith(orderInfo.productCode);
+      expect(spyCreate).toHaveBeenCalledTimes(1);
+
+      const createArg = spyCreate.mock.calls[0][0];
+
+      expect(createArg.amount).toBe(10000);
+      expect(createArg.tax).toBe(1000);
+      expect(createArg.amountTaxIncluded).toBe(11000);
+
+      expect(createArg.createdAt).toBeDefined();
+      expect(createArg.updatedAt).toBeDefined();
+    });
+
+    test("[異常系] 受発注番号が既に存在する場合はUniqueConstraintErrorが発生すること", async () => {
+      const orderInfo = {
+        orderNo: "o1000001",
+      };
+
+      jest.spyOn(orderRepository, "findByNo").mockResolvedValueOnce({
+        orderNo: "o1000001",
+      });
+
+      await expect(orderService.create(orderInfo)).rejects.toThrow(UniqueConstraintError);
+    });
+
+    test("[異常系] 取引先コードが存在しない場合はNotFoundErrorが発生すること", async () => {
+      const orderInfo = {
+        orderNo: "o1000001",
+        clientCode: "cc999999",
+      };
+
+      jest.spyOn(orderRepository, "findByNo").mockResolvedValueOnce(null);
+      jest.spyOn(clientRepository, "findByCode").mockResolvedValueOnce(null);
+      await expect(orderService.create(orderInfo)).rejects.toThrow(NotFoundError);
+    });
+
+    test("[異常系] 商品コードが存在しない場合はNotFoundErrorが発生すること", async () => {
+      const orderInfo = {
+        orderNo: "o1000001",
+        clientCode: "cc000001",
+        productCode: "pc99999",
+      };
+
+      jest.spyOn(orderRepository, "findByNo").mockResolvedValueOnce(null);
+
+      jest.spyOn(clientRepository, "findByCode").mockResolvedValueOnce({
+        clientCode: "cc000001",
+      });
+
+      jest.spyOn(productRepository, "findByCode").mockResolvedValueOnce(null);
+
+      await expect(orderService.create(orderInfo)).rejects.toThrow(NotFoundError);
     });
   });
 
