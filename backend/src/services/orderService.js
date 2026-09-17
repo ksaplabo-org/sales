@@ -132,7 +132,7 @@ class OrderService {
         errors.push({ field: "deliverDate", message: "納品予定日は受発注日以降の日付を入力してください" });
       } else if (confirmedDate && deliverDate < confirmedDate) {
         errors.push({ field: "deliverDate", message: "納品予定日は確定日以降の日付を入力してください" });
-      } else if (order.orderKbn === "1" && shipDate && deliverDate < shipDate) {
+      } else if (shipDate && deliverDate < shipDate) {
         errors.push({ field: "deliverDate", message: "納品予定日は出荷日以降の日付を入力してください" });
       }
     }

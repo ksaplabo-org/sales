@@ -3,7 +3,7 @@
   <BContainer fluid class="px-0 pb-2 mb-2">
     <div class="d-flex justify-content-between align-items-center">
       <h3 class="mb-0">
-        {{ view.orderKbn === "1" ? "受注情報" : view.orderKbn === "2" ? "発注情報" : "" }}
+        {{ view.orderKbn === "1" ? "受注情報編集" : view.orderKbn === "2" ? "発注情報編集" : "" }}
       </h3>
       <BBreadcrumb
         :items="[
@@ -60,7 +60,7 @@
       <BRow class="mb-3">
         <BFormGroup :label="view.orderKbn === '1' ? '受注日' : view.orderKbn === '2' ? '発注日' : ''" label-cols="3">
           <div class="form-control-plaintext">
-            {{ orderDateDisplay }}
+            {{ formatDate(view.orderDate) }}
           </div>
         </BFormGroup>
       </BRow>
@@ -73,7 +73,7 @@
         >
           <!-- 編集画面 かつ 確定日が登録済み -->
           <div v-if="hasConfirmedDate" class="form-control-plaintext">
-            {{ confirmedDateDisplay }}
+            {{ formatDate(view.confirmedDate) }}
           </div>
 
           <!-- 確定日未登録 -->
@@ -111,7 +111,7 @@
         <BFormGroup label="納品予定日" label-cols="3">
           <BFormInput id="deliverDate" v-model="view.deliverDate" :state="getDeliverDateState()" type="date" />
           <div v-if="getDeliverDateState() === false" class="text-danger">
-            {{ formatMessage(messages.MSGE017, "納品予定日", deliverDateErrorTarget()) }}
+            {{ formatMessage(messages.MSGE017, "納品予定日", getTargetLabel()) }}
           </div>
         </BFormGroup>
       </BRow>
@@ -280,12 +280,12 @@ const selectedProduct = ref(null);
 //一覧検索結果
 const productItems = ref([]);
 
-const productFields = [
+const productFields = computed(() => [
   { key: "productCode", label: "商品コード", sortable: true },
   { key: "productName", label: "商品名" },
   ...(view.value.orderKbn === "2" ? [{ key: "orderClientCode", label: "発注先コード" }] : []),
   { key: "productPrice", label: "単価" },
-];
+]);
 
 //確定日入力チェック
 const getConfirmedDateState = () => {
@@ -312,21 +312,15 @@ const getDeliverDateState = () => {
   if (!view.value.deliverDate) {
     return null;
   }
-  if (view.value.orderKbn === "1") {
-    if (view.value.shipDate) {
-      return view.value.deliverDate >= view.value.shipDate;
-    }
-    if (view.value.confirmedDate) {
-      return view.value.deliverDate >= view.value.confirmedDate;
-    }
-    return view.value.deliverDate >= view.value.orderDate;
+  if (view.value.orderKbn === "1" && view.value.shipDate) {
+    return view.value.deliverDate >= view.value.shipDate;
   }
   return view.value.confirmedDate
     ? view.value.deliverDate >= view.value.confirmedDate
     : view.value.deliverDate >= view.value.orderDate;
 };
 
-const deliverDateErrorTarget = () => {
+const getTargetLabel = () => {
   if (view.value.orderKbn === "1") {
     if (view.value.shipDate) {
       return "出荷日";
@@ -339,13 +333,9 @@ const deliverDateErrorTarget = () => {
   return view.value.confirmedDate ? "発注受付完了日" : "発注日";
 };
 
-const orderDateDisplay = computed(() => {
-  return view.value.orderDate ? view.value.orderDate.replace(/-/g, "/") : "";
-});
-
-const confirmedDateDisplay = computed(() => {
-  return view.value.confirmedDate ? view.value.confirmedDate.replace(/-/g, "/") : "";
-});
+const formatDate = (date) => {
+  return date ? date.replace(/-/g, "/") : "";
+};
 
 //初期処理
 onMounted(async () => {
@@ -472,6 +462,7 @@ const updateOrder = async () => {
       },
     });
   } catch (e) {
+    console.log(e);
     openFailedToast(messages.MSGE004);
   } finally {
     loading.value = false;
