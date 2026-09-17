@@ -74,6 +74,7 @@
         <BTable
           :items="clientItems"
           :fields="clientFields"
+          head-variant="secondary"
           hover
           selectable
           select-mode="single"
@@ -144,8 +145,8 @@
       <!-- 出荷日 -->
       <BRow class="mb-3" v-if="isReceive">
         <BFormGroup label="出荷日" label-cols="3">
-          <BFormInput id="shipDate" v-model="form.shipDate" :state="shipDateState()" type="date" required />
-          <div v-if="showShipDateError()" class="text-danger">
+          <BFormInput id="shipDate" v-model="form.shipDate" :state="getShipDateState()" type="date" required />
+          <div v-if="form.shipDate && getShipDateState() === false" class="text-danger">
             {{ formatMessage(messages.MSGE017, "出荷日", form.confirmedDate ? "入金日" : "受注日") }}
           </div>
         </BFormGroup>
@@ -154,8 +155,8 @@
       <!-- 納品予定日 -->
       <BRow class="mb-3">
         <BFormGroup label="納品予定日" label-cols="3">
-          <BFormInput id="deliverDate" v-model="form.deliverDate" :state="deliverDateState()" type="date" />
-          <div v-if="showDeliverDateError()" class="text-danger">
+          <BFormInput id="deliverDate" v-model="form.deliverDate" :state="getDeliverDateState()" type="date" />
+          <div v-if="getDeliverDateState() === false" class="text-danger">
             {{ formatMessage(messages.MSGE017, "納品予定日", deliverDateErrorTarget()) }}
           </div>
         </BFormGroup>
@@ -195,6 +196,7 @@
         <BTable
           :items="productItems"
           :fields="productFields"
+          head-variant="secondary"
           hover
           selectable
           select-mode="single"
@@ -400,8 +402,11 @@ const productFields = computed(() => {
   ];
 });
 
-//出荷日の入力チェック状態
-const shipDateState = () => {
+//出荷日入力チェック
+const getShipDateState = () => {
+  if (!isReceive.value) {
+    return null;
+  }
   if (!form.value.shipDate) {
     return false;
   }
@@ -410,8 +415,8 @@ const shipDateState = () => {
   }
   return form.value.shipDate >= form.value.orderDate;
 };
-//納品予定日の入力チェック状態
-const deliverDateState = () => {
+//納品予定日入力チェック
+const getDeliverDateState = () => {
   if (!form.value.deliverDate) {
     return null;
   }
@@ -419,57 +424,27 @@ const deliverDateState = () => {
     if (form.value.shipDate) {
       return form.value.deliverDate >= form.value.shipDate;
     }
+    if (form.value.confirmedDate) {
+      return form.value.deliverDate >= form.value.confirmedDate;
+    }
     return form.value.deliverDate >= form.value.orderDate;
   }
-  if (form.value.confirmedDate && form.value.deliverDate < form.value.confirmedDate) {
-    return false;
-  }
-  return form.value.deliverDate >= form.value.orderDate;
+  return form.value.confirmedDate
+    ? form.value.deliverDate >= form.value.confirmedDate
+    : form.value.deliverDate >= form.value.orderDate;
 };
-//出荷日のエラーメッセージ表示判定
-const showShipDateError = () => {
-  if (form.value.confirmedDate && form.value.confirmedDate < form.value.orderDate) {
-    return false;
-  }
-  if (!form.value.shipDate) {
-    return false;
-  }
-  if (form.value.confirmedDate) {
-    return form.value.shipDate < form.value.confirmedDate;
-  }
-  return form.value.shipDate < form.value.orderDate;
-};
-//納品予定日のエラーメッセージ表示判定
-const showDeliverDateError = () => {
-  if (form.value.confirmedDate && form.value.confirmedDate < form.value.orderDate) {
-    return false;
-  }
-  if (showShipDateError()) {
-    return false;
-  }
-  if (!form.value.deliverDate) {
-    return false;
-  }
-  if (isReceive.value) {
-    if (form.value.shipDate) {
-      return form.value.deliverDate < form.value.shipDate;
-    }
-    return form.value.deliverDate < form.value.orderDate;
-  }
-  if (form.value.confirmedDate && form.value.deliverDate < form.value.confirmedDate) {
-    return true;
-  }
-  return form.value.deliverDate < form.value.orderDate;
-};
-//納品予定日のエラーメッセージの基準値ラベル取得
+//納品予定日のエラーメッセージ
 const deliverDateErrorTarget = () => {
   if (isReceive.value) {
-    return "出荷日";
+    if (form.value.shipDate) {
+      return "出荷日";
+    }
+    if (form.value.confirmedDate) {
+      return "入金日";
+    }
+    return "受注日";
   }
-  if (form.value.confirmedDate && form.value.deliverDate < form.value.confirmedDate) {
-    return "発注受付完了日";
-  }
-  return "発注日";
+  return form.value.confirmedDate ? "発注受付完了日" : "発注日";
 };
 
 //半角英数字
@@ -540,10 +515,6 @@ const onClientSelected = (row) => {
  * No4取引先選択行情報反映処理
  */
 const applySelectedClient = () => {
-  if (!selectedClient.value) {
-    showClientModal.value = false;
-    return;
-  }
   form.value.clientCode = selectedClient.value.clientCode;
   client.value.clientName = selectedClient.value.clientName;
   client.value.telNumber = selectedClient.value.telNumber;
@@ -587,10 +558,6 @@ const onProductSelected = (row) => {
  * No8商品選択行情報反映処理
  */
 const applySelectedProduct = () => {
-  if (!selectedProduct.value) {
-    showProductModal.value = false;
-    return;
-  }
   form.value.productCode = selectedProduct.value.productCode;
   product.value.productName = selectedProduct.value.productName;
   product.value.productPrice = selectedProduct.value.productPrice;
@@ -655,21 +622,15 @@ const openFailedToast = (message) => {
  */
 const createOrder = async () => {
   try {
-    console.log("createOrder start");
     loading.value = true;
 
     const saveData = {
       ...form.value,
-
       createdId: loginInfo.userId,
       orderKbn: orderKbn.value,
     };
 
-    console.log(saveData);
-
     await orderApi.createOrder(saveData);
-
-    console.log("create success");
 
     router.push({
       name: "orderList",
@@ -679,15 +640,14 @@ const createOrder = async () => {
       },
     });
   } catch (e) {
-    console.log("create error");
     console.log(e);
     console.log(e.response);
-
     openFailedToast(messages.MSGE004);
   } finally {
     loading.value = false;
   }
 };
+
 </script>
 
 <style>
