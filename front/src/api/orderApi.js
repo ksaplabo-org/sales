@@ -12,6 +12,35 @@ export async function getOrders(condition) {
 }
 
 /**
+ * 受発注情報詳細取得API呼び出し
+ *
+ * @param {*} orderNo 受発注番号
+ * @returns 受発注情報
+ */
+export async function getOrderByOrderNo(orderNo) {
+  const response = await apiClient.get(`/orders/${orderNo}`);
+  return response.data;
+}
+
+/**
+ * 受発注情報登録
+ *
+ * @param {*} orderInfo 受発注情報
+ */
+export async function createOrder(orderInfo) {
+  await apiClient.post("/orders/", orderInfo);
+}
+
+/**
+ * 受発注情報更新
+ *
+ * @param {*} orderInfo 受発注情報
+ */
+export async function updateOrder(orderInfo) {
+  await apiClient.put(`/orders/${orderInfo.orderNo}`, orderInfo);
+}
+
+/**
  * 受発注情報削除
  *
  * @param {*} orderNo 受発注番号
