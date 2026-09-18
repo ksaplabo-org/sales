@@ -111,7 +111,7 @@
         <BFormGroup label="納品予定日" label-cols="3">
           <BFormInput id="deliverDate" v-model="view.deliverDate" :state="getDeliverDateState()" type="date" />
           <div v-if="getDeliverDateState() === false" class="text-danger">
-            {{ formatMessage(messages.MSGE017, "納品予定日", getTargetLabel()) }}
+            {{ formatMessage(messages.MSGE017, "納品予定日", getInvalidDeliverDateFieldName()) }}
           </div>
         </BFormGroup>
       </BRow>
@@ -320,7 +320,7 @@ const getDeliverDateState = () => {
     : view.value.deliverDate >= view.value.orderDate;
 };
 
-const getTargetLabel = () => {
+const getInvalidDeliverDateFieldName = () => {
   if (view.value.orderKbn === "1") {
     if (view.value.shipDate) {
       return "出荷日";
@@ -370,6 +370,7 @@ onMounted(async () => {
       product.value.productPrice = productInfo.productPrice;
     }
   } catch (e) {
+  console.log(e);
     openFailedToast(messages.MSGE001);
   } finally {
     loading.value = false;
