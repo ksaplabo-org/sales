@@ -53,6 +53,7 @@ class OrderService {
 
     //バリデーションチェック
     const errors = [];
+    //単項目チェック
     //確定日
     if (order.confirmedDate) {
       if (orderInfo.confirmedDate) {
@@ -100,7 +101,6 @@ class OrderService {
         }
       }
     }
-
     //エラー情報配列要素が存在する場合
     if (errors.length > 0) {
       throw new OrderValidationError(errors);
