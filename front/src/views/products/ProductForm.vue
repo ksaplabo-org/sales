@@ -103,8 +103,8 @@
             id="productPrice"
             type="text"
             v-model="form.productPrice"
-            @input="formatNumericInput"
-            @compositionend="formatNumericInput"
+            @input="formatQuantityInput"
+            @compositionend="formatQuantityInput"
             :state="form.productPrice > 0"
             required
           />
@@ -246,7 +246,11 @@ const showFailedToast = (message) => {
   showFailedToastMs.value = TOAST_MS;
 };
 
-//半角英数字の変換
+/**
+ * 半角英数字変換処理
+ *
+ * @param event 画面からの情報
+ */
 const formatAlphaNumericInput = (event) => {
   // IME変換中の値は変換しないように制御
   if (event.isComposing) return;
@@ -261,8 +265,12 @@ const formatAlphaNumericInput = (event) => {
   }
 };
 
-//半角数字の変換
-const formatNumericInput = (event) => {
+/**
+ * 半角数量変換処理
+ *
+ * @param event 画面からの情報
+ */
+const formatQuantityInput = (event) => {
   // IME変換中の値は変換しないように制御
   if (event.isComposing) return;
 
