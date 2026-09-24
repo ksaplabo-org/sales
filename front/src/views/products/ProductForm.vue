@@ -267,7 +267,7 @@ const formatNumericInput = (event) => {
   if (event.isComposing) return;
 
   const input = event.target;
-  const formatValue = input.value.replace(/[^0-9]/g, "").replace(/^0+(?=\d)/, ""); // フォーマット処理
+  const formatValue = input.value.replace(/[^0-9]/g, "").replace(/^0/, ""); // フォーマット処理
   if (input.value !== formatValue) {
     // 入力値にフォーマットした値を反映
     input.value = formatValue;
