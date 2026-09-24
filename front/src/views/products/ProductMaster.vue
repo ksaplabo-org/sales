@@ -324,7 +324,11 @@ const deleteProduct = async () => {
   }
 };
 
-//半角英数字の変換
+/**
+ * 半角英数字変換処理
+ *
+ * @param event 画面からの情報
+ */
 const formatAlphaNumericInput = (event) => {
   // IME変換中の値は変換しないように制御
   if (event.isComposing) return;
@@ -339,7 +343,11 @@ const formatAlphaNumericInput = (event) => {
   }
 };
 
-//半角数字の変換
+/**
+ * 半角数字変換処理
+ *
+ * @param event 画面からの情報
+ */
 const formatNumericInput = (event) => {
   // IME変換中の値は変換しないように制御
   if (event.isComposing) return;
