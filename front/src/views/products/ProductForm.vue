@@ -30,10 +30,12 @@
           <div v-if="!isEdit">
             <BFormInput
               id="productCode"
-              v-model="form.productCode"
               :state="form.productCode.length === 7"
-              :formatter="formatHalfWidthAlphaNumeric"
               maxlength="7"
+              type="text"
+              v-model="form.productCode"
+              @input="formatAlphaNumericInput"
+              @compositionend="formatAlphaNumericInput"
               required
             />
             <BFormInvalidFeedback v-if="form.productCode">{{
@@ -99,11 +101,11 @@
         <BFormGroup label="単価" label-for="productPrice" label-cols="3">
           <BFormInput
             id="productPrice"
-            type="number"
-            min="1"
+            type="text"
             v-model="form.productPrice"
+            @input="formatQuantityInput"
+            @compositionend="formatQuantityInput"
             :state="form.productPrice > 0"
-            :formatter="formatHalfWidthNumeric"
             required
           />
         </BFormGroup>
@@ -245,22 +247,41 @@ const showFailedToast = (message) => {
 };
 
 /**
- * 半角英数のみに置換
+ * 半角英数字変換処理
  *
- * @param value 検査値
+ * @param event 画面からの情報
  */
-const formatHalfWidthAlphaNumeric = (value) => {
-  return value.replace(/[^A-Za-z0-9]/g, "");
+const formatAlphaNumericInput = (event) => {
+  // IME変換中の値は変換しないように制御
+  if (event.isComposing) return;
+
+  const input = event.target;
+  const formatValue = input.value.replace(/[^A-Za-z0-9]/g, ""); // フォーマット処理
+  if (input.value !== formatValue) {
+    // 入力値にフォーマットした値を反映
+    input.value = formatValue;
+    // 双方向バインディングに反映するためinputイベントを発火
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+  }
 };
 
 /**
- * 半角数字のみに置換する
+ * 数量変換処理
  *
- * @param value 検査値
+ * @param event 画面からの情報
  */
-const formatHalfWidthNumeric = (value) => {
-  const result = value.replace(/[^0-9]/g, "");
-  return result === "" ? "" : Number(result);
+const formatQuantityInput = (event) => {
+  // IME変換中の値は変換しないように制御
+  if (event.isComposing) return;
+
+  const input = event.target;
+  const formatValue = input.value.replace(/[^0-9]/g, "").replace(/^0/, ""); // フォーマット処理
+  if (input.value !== formatValue) {
+    // 入力値にフォーマットした値を反映
+    input.value = formatValue;
+    // 双方向バインディングに反映するためinputイベントを発火
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+  }
 };
 
 /**
