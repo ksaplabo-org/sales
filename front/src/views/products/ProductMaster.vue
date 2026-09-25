@@ -344,7 +344,7 @@ const formatAlphaNumericInput = (event) => {
 };
 
 /**
- * 半角数字変換処理
+ * 数値変換処理
  *
  * @param event 画面からの情報
  */
