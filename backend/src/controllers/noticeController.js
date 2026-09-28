@@ -60,7 +60,7 @@ class NoticeController {
         return;
       }
 
-      // 商品情報削除
+      // お知らせ情報削除
       await noticeService.delete(req.params.noticeId);
       res.send();
     } catch (e) {

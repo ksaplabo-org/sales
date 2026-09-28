@@ -59,7 +59,7 @@ NoticeModel.init(
   },
   {
     sequelize,
-    tableName: "products",
+    tableName: "notices",
     timestamp: false,
   },
 );
