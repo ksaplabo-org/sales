@@ -52,7 +52,7 @@
             <BFormInput
               id="clientCode"
               v-model="form.clientCode"
-              :state="!!client.clientName"
+              :state="form.clientCode.length === 8 && client.clientName !== null"
               :formatter="formatHalfWidthAlphaNumeric"
               maxlength="8"
               @input="client.clientName = ''"
@@ -63,13 +63,13 @@
               <i class="fas fa-list me-1"></i>参照
             </BButton>
           </div>
-          <div v-if="form.clientCode.length && client.clientName === null" class="text-danger">
+          <div v-if="form.clientCode && form.clientCode.length === 8 && client.clientName === null" class="text-danger">
             {{ formatMessage(messages.MSGE019, "取引先コード") }}
           </div>
         </BFormGroup>
       </BRow>
 
-      <!-- 取引先参照モーダル -->
+      <!-- 取引先情報参照モーダル -->
       <BModal v-model="showClientModal" title="取引先コードの参照" size="lg">
         <BTable
           :items="clientItems"
@@ -86,7 +86,14 @@
         </BTable>
         <div v-if="clientItems.length === 0" class="text-center text-muted mt-3">検索結果がありません</div>
         <template #footer>
-          <BButton variant="secondary" @click="showClientModal = false">キャンセル</BButton>
+          <BButton
+            variant="secondary"
+            @click="
+              selectedClient = null;
+              showClientModal = false;
+            "
+            >キャンセル</BButton
+          >
           <BButton variant="primary" @click="applySelectedClient" :disabled="!selectedClient">確定</BButton>
         </template>
       </BModal>
@@ -128,13 +135,8 @@
       <!-- 確定日 -->
       <BRow class="mb-3">
         <BFormGroup :label="isReceive ? '入金日' : '発注受付完了日'" label-cols="3">
-          <BFormInput
-            id="confirmedDate"
-            v-model="form.confirmedDate"
-            :state="form.confirmedDate === '' ? null : form.confirmedDate >= form.orderDate"
-            type="date"
-          />
-          <div v-if="form.confirmedDate && form.confirmedDate < form.orderDate" class="text-danger">
+          <BFormInput id="confirmedDate" v-model="form.confirmedDate" :state="getConfirmedDateState()" type="date" />
+          <div v-if="getConfirmedDateState() === false" class="text-danger">
             {{
               formatMessage(messages.MSGE017, isReceive ? "入金日" : "発注受付完了日", isReceive ? "受注日" : "発注日")
             }}
@@ -157,7 +159,7 @@
         <BFormGroup label="納品予定日" label-cols="3">
           <BFormInput id="deliverDate" v-model="form.deliverDate" :state="getDeliverDateState()" type="date" />
           <div v-if="getDeliverDateState() === false" class="text-danger">
-            {{ formatMessage(messages.MSGE017, "納品予定日", deliverDateErrorTarget()) }}
+            {{ formatMessage(messages.MSGE017, "納品予定日", getInvalidDeliverDateFieldName()) }}
           </div>
         </BFormGroup>
       </BRow>
@@ -169,7 +171,7 @@
             <BFormInput
               id="productCode"
               v-model="form.productCode"
-              :state="!!product.productName"
+              :state="form.productCode.length === 7 && product.productName !== null"
               :formatter="formatHalfWidthAlphaNumeric"
               maxlength="7"
               @input="product.productName = ''"
@@ -185,13 +187,16 @@
               <i class="fas fa-list me-1"></i>参照
             </BButton>
           </div>
-          <div v-if="form.productCode.length && product.productName === null" class="text-danger">
+          <div
+            v-if="form.productCode && form.productCode.length === 7 && product.productName === null"
+            class="text-danger"
+          >
             {{ formatMessage(messages.MSGE019, "商品コード") }}
           </div>
         </BFormGroup>
       </BRow>
 
-      <!-- 商品参照モーダル -->
+      <!-- 商品情報参照モーダル -->
       <BModal v-model="showProductModal" title="商品コードの参照" size="lg">
         <BTable
           :items="productItems"
@@ -208,7 +213,14 @@
         </BTable>
         <div v-if="productItems.length === 0" class="text-center text-muted mt-3">検索結果がありません</div>
         <template #footer>
-          <BButton variant="secondary" @click="showProductModal = false">キャンセル</BButton>
+          <BButton
+            variant="secondary"
+            @click="
+              selectedProduct = null;
+              showProductModal = false;
+            "
+            >キャンセル</BButton
+          >
           <BButton variant="primary" @click="applySelectedProduct" :disabled="!selectedProduct">確定</BButton>
         </template>
       </BModal>
@@ -226,7 +238,7 @@
       <BRow class="mb-3">
         <BFormGroup label="単価" label-cols="3">
           <div class="form-control-plaintext">
-            {{ product.productPrice ? product.productPrice.toLocaleString() : "-" }}
+            {{ product.productPrice == null ? "" : product.productPrice.toLocaleString("ja-JP") }}
           </div>
         </BFormGroup>
       </BRow>
@@ -402,6 +414,11 @@ const productFields = computed(() => {
   ];
 });
 
+//確定日入力チェック
+const getConfirmedDateState = () => {
+  if (!form.value.confirmedDate) return null;
+  return form.value.confirmedDate >= form.value.orderDate;
+};
 //出荷日入力チェック
 const getShipDateState = () => {
   if (!isReceive.value) {
@@ -434,7 +451,7 @@ const getDeliverDateState = () => {
     : form.value.deliverDate >= form.value.orderDate;
 };
 //納品予定日のエラーメッセージ
-const deliverDateErrorTarget = () => {
+const getInvalidDeliverDateFieldName = () => {
   if (isReceive.value) {
     if (form.value.shipDate) {
       return "出荷日";
@@ -641,13 +658,11 @@ const createOrder = async () => {
     });
   } catch (e) {
     console.log(e);
-    console.log(e.response);
     openFailedToast(messages.MSGE004);
   } finally {
     loading.value = false;
   }
 };
-
 </script>
 
 <style>
