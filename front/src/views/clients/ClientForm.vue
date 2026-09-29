@@ -14,8 +14,8 @@
   </BContainer>
 
   <!-- 処理失敗トースト -->
-  <BToast class="w-100" v-model="showFailedToastMs" variant="danger" no-progress no-close-button>{{
-    messages.MSGE004
+  <BToast class="w-100" v-model="showFailedToastMs" variant="danger" no-close-button no-progress>{{
+    failedToastText
   }}</BToast>
 
   <!-- 登録情報 -->
@@ -58,12 +58,7 @@
 
       <BRow class="mb-3">
         <BFormGroup label="受発注区分" label-for="orderKbn" label-cols="3">
-          <BFormSelect
-            v-model="form.orderKbn"
-            :options="orderKbnOptions"
-            required
-            v-if="!isEdit"
-          />
+          <BFormSelect v-model="form.orderKbn" :options="orderKbnOptions" required v-if="!isEdit" />
           <div v-else class="form-control-plaintext">{{ orderKbnText }}</div>
         </BFormGroup>
       </BRow>
@@ -73,7 +68,7 @@
           <BFormInput
             id="postCode"
             v-model="form.postCode"
-            :state="form.postCode.length === 0 || form.postCode.length === 7"
+            :state="form.postCode.length >= 1 && form.postCode.length <= 6 ? false : null"
             :formatter="formatPostCode"
             maxlength="7"
             placeholder="-は入力しないでください"
@@ -86,13 +81,13 @@
 
       <BRow class="mb-3">
         <BFormGroup label="住所1" label-for="address1" label-cols="3">
-          <BFormInput id="address1" v-model="form.address1" :state="form.address1.length >= 0" maxlength="20" />
+          <BFormInput id="address1" v-model="form.address1" maxlength="20" />
         </BFormGroup>
       </BRow>
 
       <BRow class="mb-3">
         <BFormGroup label="住所2" label-for="address2" label-cols="3">
-          <BFormInput id="address2" v-model="form.address2" :state="form.address2.length >= 0" maxlength="20" />
+          <BFormInput id="address2" v-model="form.address2" maxlength="20" />
         </BFormGroup>
       </BRow>
 
@@ -101,10 +96,7 @@
           <BFormInput
             id="telNumber"
             v-model="form.telNumber"
-            :state="
-              form.telNumber.length === 0 ||
-              (form.telNumber.length === 13 && /^\d{3}-\d{4}-\d{4}$/.test(form.telNumber))
-            "
+            :state="form.telNumber.length === 0 ? null : /^\d{3}-\d{4}-\d{4}$/.test(form.telNumber) ? null : false"
             :formatter="formatTelNumber"
             maxlength="13"
             placeholder="例:xxx-xxxx-xxxx"
@@ -166,6 +158,7 @@ const orderKbnText = computed(() => orderKbnOptions.find((option) => option.valu
 // 読み込み中の表示制御
 const loading = ref(false);
 // 処理失敗トーストの表示制御
+const failedToastText = ref("");
 const showFailedToastMs = ref(0);
 
 // ログイン情報
@@ -197,6 +190,7 @@ onMounted(async () => {
       });
     } catch (e) {
       console.log(e);
+      openFailedToast(messages.MSGE001);
     } finally {
       loading.value = false;
     }
@@ -231,6 +225,16 @@ const formatTelNumber = (telNumber) => {
 };
 
 /**
+ * 処理失敗トースト表示処理
+ *
+ * @param message メッセージ
+ */
+const openFailedToast = (message) => {
+  failedToastText.value = message;
+  showFailedToastMs.value = TOAST_MS;
+};
+
+/**
  * 登録処理
  */
 const saveClientInfo = async () => {
@@ -249,7 +253,8 @@ const saveClientInfo = async () => {
     // マスタ画面に遷移
     router.push({ name: "clientMaster", state: { message: messages.MSGI003, result: true } });
   } catch (e) {
-    showFailedToastMs.value = TOAST_MS;
+    console.log(e);
+    openFailedToast(messages.MSGE004);
   } finally {
     loading.value = false;
   }

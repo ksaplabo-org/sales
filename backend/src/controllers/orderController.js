@@ -2,6 +2,7 @@ import UniqueConstraintError from "../errors/UniqueConstraintError.js";
 import NotFoundError from "../errors/NotFoundError.js";
 import UnprocessableContentError from "../errors/UnprocessableContentError.js";
 import orderService from "../services/orderService.js";
+import OrderValidationError from "../errors/OrderValidationError.js";
 
 class OrderController {
   /**
@@ -32,11 +33,16 @@ class OrderController {
   }
 
   /**
+<<<<<<< HEAD
    * 受発注情報登録
+=======
+   * 受発注情報詳細取得
+>>>>>>> origin/2026
    *
    * @param {*} req リクエスト情報
    * @param {*} res レスポンス情報
    */
+<<<<<<< HEAD
   async create(req, res) {
     try {
       const order = {
@@ -157,10 +163,27 @@ class OrderController {
 
       if (errors.length > 0) {
         // パラメータエラー
+=======
+  async findByNo(req, res) {
+    try {
+      const errors = [];
+
+      //受発注番号バリデーション
+      if (!req.params.orderNo) {
+        errors.push({ field: "orderNo", message: "受発注番号を入力してください" });
+      } else if (req.params.orderNo.length != 8) {
+        errors.push({ field: "orderNo", message: "受発注番号は8桁で入力してください" });
+      } else if (!/^[A-Za-z0-9]+$/.test(req.params.orderNo)) {
+        errors.push({ field: "orderNo", message: "受発注番号は半角英数で入力してください" });
+      }
+
+      if (errors.length > 0) {
+>>>>>>> origin/2026
         res.status(400).json({ errors: errors });
         return;
       }
 
+<<<<<<< HEAD
       // 相関チェック
       // 確定日バリデーション
       if (order.confirmedDate && new Date(order.confirmedDate) < new Date(order.orderDate)) {
@@ -206,6 +229,14 @@ class OrderController {
           ],
         });
       } else if (e instanceof NotFoundError) {
+=======
+      const order = await orderService.findByNo(req.params.orderNo);
+      res.json(order);
+    } catch (e) {
+      console.log(e);
+
+      if (e instanceof NotFoundError) {
+>>>>>>> origin/2026
         res.status(NotFoundError.status).json({
           errors: [
             {
@@ -221,6 +252,96 @@ class OrderController {
   }
 
   /**
+<<<<<<< HEAD
+=======
+   * 受発注情報編集
+   *
+   * @param {*} req リクエスト情報
+   * @param {*} res レスポンス情報
+   */
+  async update(req, res) {
+    try {
+      let errors = [];
+
+      //受発注番号バリデーション
+      if (!req.params.orderNo) {
+        errors.push({ field: "orderNo", message: "受発注番号を入力してください" });
+      } else if (req.params.orderNo.length != 8) {
+        errors.push({ field: "orderNo", message: "受発注番号は8桁で入力してください" });
+      } else if (!/^[A-Za-z0-9]+$/.test(req.params.orderNo)) {
+        errors.push({ field: "orderNo", message: "受発注番号は半角英数で入力してください" });
+      }
+
+      if (errors.length > 0) {
+        res.status(400).json({ errors: errors });
+        return;
+      }
+
+      const order = {
+        confirmedDate: req.body.confirmedDate,
+        shipDate: req.body.shipDate,
+        deliverDate: req.body.deliverDate,
+        productCode: req.body.productCode,
+        quantity: req.body.quantity,
+        updatedId: req.body.updatedId,
+      };
+
+      if (order.confirmedDate == "") {
+        order.confirmedDate = null;
+      }
+      if (order.shipDate == "") {
+        order.shipDate = null;
+      }
+      if (order.deliverDate == "") {
+        order.deliverDate = null;
+      }
+
+      // 共通バリデーション
+      errors = this.validate(order);
+
+      // 更新者IDバリデーション
+      if (!order.updatedId) {
+        errors.push({ field: "updatedId", message: "更新者IDを入力してください" });
+      } else if (order.updatedId.length != 6) {
+        errors.push({ field: "updatedId", message: "更新者IDは6桁で入力してください" });
+      } else if (!/^[A-Za-z0-9]+$/.test(order.updatedId)) {
+        errors.push({ field: "updatedId", message: "更新者IDは半角英数で入力してください" });
+      }
+
+      if (errors.length > 0) {
+        // パラメータエラー
+        res.status(400).json({ errors: errors });
+      } else {
+        await orderService.update(req.params.orderNo, order);
+        res.send();
+      }
+    } catch (e) {
+      console.log(e);
+
+      if (e instanceof NotFoundError) {
+        res.status(NotFoundError.status).json({
+          errors: [
+            {
+              field: e.field,
+              message: e.message,
+            },
+          ],
+        });
+        return;
+      } else if (e instanceof OrderValidationError) {
+        //パラメータエラー
+        res.status(OrderValidationError.status).json({
+          errors: e.errors,
+        });
+        return;
+      } else {
+        res.status(500).send();
+      }
+    }
+  }
+
+  /**
+>>>>>>> origin/2026
    * 受発注情報削除
    *
    * @param {*} req リクエスト情報
@@ -229,7 +350,7 @@ class OrderController {
   async delete(req, res) {
     try {
       const errors = [];
-      // 受発注番号のバリデーション
+      // 受発注番号バリデーション
       if (!req.params.orderNo) {
         errors.push({ field: "orderNo", message: "受発注番号を入力してください" });
       } else if (req.params.orderNo.length != 8) {
@@ -256,6 +377,10 @@ class OrderController {
       }
     }
   }
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/2026
   /**
    * 登録・更新共通バリデーション
    *
@@ -265,7 +390,11 @@ class OrderController {
   validate(data) {
     const errors = [];
 
+<<<<<<< HEAD
     // 商品コードエラー
+=======
+    // 商品コードバリデーション
+>>>>>>> origin/2026
     if (!data.productCode) {
       errors.push({ field: "productCode", message: "商品コードを入力してください" });
     } else if (data.productCode.length != 7) {
@@ -274,7 +403,11 @@ class OrderController {
       errors.push({ field: "productCode", message: "商品コードは半角英数で入力してください" });
     }
 
+<<<<<<< HEAD
     // 数量エラー
+=======
+    // 数量バリデーション
+>>>>>>> origin/2026
     if (!data.quantity) {
       errors.push({ field: "quantity", message: "数量を入力してください" });
     } else if (!/^\d+$/.test(data.quantity)) {

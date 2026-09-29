@@ -161,7 +161,7 @@
           <BButton
             size="sm"
             variant="outline-primary"
-            @click="router.push({ name: 'orderEdit', params: { id: row.item.orderNo } })"
+            @click="router.push({ name: 'orderEdit', params: { orderNo: row.item.orderNo } })"
             v-if="loginInfo.role == 1"
           >
             <i class="fas fa-pen"></i>

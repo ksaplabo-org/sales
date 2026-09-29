@@ -77,6 +77,7 @@ const routes = [
       {
         path: "sales/orders/:orderNo/edit",
         name: "orderEdit",
+        component: () => import("@/views/orders/OrderEdit.vue"),
       },
       {
         path: "master/products",
@@ -107,7 +108,7 @@ const router = createRouter({
  * ナビゲーションガード
  */
 router.beforeEach((to) => {
-  // ログインされていない場合にログイン画面二遷移する
+  // ログインされていない場合にログイン画面に遷移する
   if (to.name !== "login" && !Auth.isLogin()) {
     return "/login";
   }
