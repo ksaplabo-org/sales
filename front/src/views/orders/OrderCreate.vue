@@ -35,8 +35,10 @@
             id="orderNo"
             v-model="form.orderNo"
             :state="form.orderNo.length === 8"
-            :formatter="formatHalfWidthAlphaNumeric"
+            type="text"
             maxlength="8"
+            @input="formatAlphaNumericInput"
+            @compositionend="formatAlphaNumericInput"
             required
           />
           <BFormInvalidFeedback v-if="form.orderNo">
@@ -53,9 +55,12 @@
               id="clientCode"
               v-model="form.clientCode"
               :state="form.clientCode.length === 8 && client.clientName !== null"
-              :formatter="formatHalfWidthAlphaNumeric"
               maxlength="8"
-              @input="client.clientName = ''"
+              @input="
+                client.clientName = '';
+                formatAlphaNumericInput;
+              "
+              @compositionend="formatAlphaNumericInput"
               @blur="applyClientInput(form.clientCode)"
               required
             />
@@ -172,9 +177,12 @@
               id="productCode"
               v-model="form.productCode"
               :state="form.productCode.length === 7 && product.productName !== null"
-              :formatter="formatHalfWidthAlphaNumeric"
               maxlength="7"
-              @input="product.productName = ''"
+              @input="
+                product.productName = '';
+                formatAlphaNumericInput;
+              "
+              @compositionend="formatAlphaNumericInput"
               @blur="applyProductInput(form.productCode)"
               required
             />
@@ -250,9 +258,9 @@
             id="quantity"
             v-model="form.quantity"
             :state="Number(form.quantity) >= 1"
-            :formatter="formatHalfWidthNumeric"
-            type="number"
-            min="1"
+            type="text"
+            @input="formatQuantityInput"
+            @compositionend="formatQuantityInput"
             @blur="calculateAmount"
             required
           />
@@ -464,15 +472,42 @@ const getInvalidDeliverDateFieldName = () => {
   return form.value.confirmedDate ? "発注受付完了日" : "発注日";
 };
 
-//半角英数字
-const formatHalfWidthAlphaNumeric = (value) => {
-  return value.replace(/[^A-Za-z0-9]/g, "");
+/**
+ * 半角英数字変換処理
+ *
+ * @param event 画面からの情報
+ */
+const formatAlphaNumericInput = (event) => {
+  // IME変換中の値は変換しないように制御
+  if (event.isComposing) return;
+
+  const input = event.target;
+  const formatValue = input.value.replace(/[^A-Za-z0-9]/g, ""); // フォーマット処理
+  if (input.value !== formatValue) {
+    // 入力値にフォーマットした値を反映
+    input.value = formatValue;
+    // 双方向バインディングに反映するためinputイベントを発火
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+  }
 };
 
-//半角数字
-const formatHalfWidthNumeric = (value) => {
-  const result = value.replace(/[^0-9]/g, "");
-  return result === "" ? "" : Number(result);
+/**
+ * 数量変換処理
+ *
+ * @param event 画面からの情報
+ */
+const formatQuantityInput = (event) => {
+  // IME変換中の値は変換しないように制御
+  if (event.isComposing) return;
+
+  const input = event.target;
+  const formatValue = input.value.replace(/[^0-9]/g, "").replace(/^0/, ""); // フォーマット処理
+  if (input.value !== formatValue) {
+    // 入力値にフォーマットした値を反映
+    input.value = formatValue;
+    // 双方向バインディングに反映するためinputイベントを発火
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+  }
 };
 
 //郵便番号
