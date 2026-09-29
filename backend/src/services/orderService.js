@@ -2,14 +2,10 @@ import UniqueConstraintError from "../errors/UniqueConstraintError.js";
 import NotFoundError from "../errors/NotFoundError.js";
 import UnprocessableContentError from "../errors/UnprocessableContentError.js";
 import orderRepository from "../repositories/orderRepository.js";
-<<<<<<< HEAD
+import userRepository from "../repositories/userRepository.js";
 import clientRepository from "../repositories/clientRepository.js";
 import productRepository from "../repositories/productRepository.js";
-=======
-import userRepository from "../repositories/userRepository.js";
-import productRepository from "../repositories/productRepository.js";
 import OrderValidationError from "../errors/OrderValidationError.js";
->>>>>>> origin/2026
 
 class OrderService {
   /**
@@ -23,22 +19,6 @@ class OrderService {
   }
 
   /**
-<<<<<<< HEAD
-   * 受発注情報登録
-   *
-   * @param {*} orderInfo 受発注情報
-   */
-  async create(orderInfo) {
-    // 一意性制約チェック
-    const order = await orderRepository.findByNo(orderInfo.orderNo);
-    if (order) {
-      throw new UniqueConstraintError("orderNo", "この受発注番号は既に使用されています");
-    }
-    const client = await clientRepository.findByCode(orderInfo.clientCode);
-    if (!client) {
-      throw new NotFoundError("clientCode", "この取引先コードは存在しません");
-    }
-=======
    * 受発注情報詳細取得
    *
    * @param {*} orderNo 受発注番号
@@ -57,6 +37,39 @@ class OrderService {
     order.dataValues.updatedName = `${user.lastName} ${user.firstName}`;
 
     return order;
+  }
+
+  /**
+   * 受発注情報登録
+   *
+   * @param {*} orderInfo 受発注情報
+   */
+  async create(orderInfo) {
+    // 一意性制約チェック
+    const order = await orderRepository.findByNo(orderInfo.orderNo);
+    if (order) {
+      throw new UniqueConstraintError("orderNo", "この受発注番号は既に使用されています");
+    }
+    const client = await clientRepository.findByCode(orderInfo.clientCode);
+    if (!client) {
+      throw new NotFoundError("clientCode", "この取引先コードは存在しません");
+    }
+    const product = await productRepository.findByCode(orderInfo.productCode);
+    if (!product) {
+      throw new NotFoundError("productCode", "この商品コードは存在しません");
+    }
+
+    //登録日時・更新日時を設定
+    const now = new Date().toISOString();
+    orderInfo.createdAt = now;
+    orderInfo.updatedAt = now;
+
+    //数量と単価から金額・消費税・合計金額を計算
+    orderInfo.amount = orderInfo.quantity * product.productPrice;
+    orderInfo.tax = Math.round(orderInfo.amount * 0.1);
+    orderInfo.amountTaxIncluded = orderInfo.amount + orderInfo.tax;
+
+    await orderRepository.create(orderInfo);
   }
 
   /**
@@ -162,20 +175,10 @@ class OrderService {
     }
 
     //商品コードの存在チェック
->>>>>>> origin/2026
     const product = await productRepository.findByCode(orderInfo.productCode);
     if (!product) {
       throw new NotFoundError("productCode", "この商品コードは存在しません");
     }
-<<<<<<< HEAD
-
-    //登録日時・更新日時を設定
-    const now = new Date().toISOString();
-    orderInfo.createdAt = now;
-    orderInfo.updatedAt = now;
-
-    //数量と単価から金額・消費税・合計金額を計算
-=======
     if (product.orderKbn !== order.orderKbn) {
       throw new NotFoundError("productCode", "この商品コードは存在しません");
     }
@@ -185,19 +188,12 @@ class OrderService {
     orderInfo.updatedAt = now;
 
     //金額、消費税、合計金額の設定
->>>>>>> origin/2026
     orderInfo.amount = orderInfo.quantity * product.productPrice;
     orderInfo.tax = Math.round(orderInfo.amount * 0.1);
     orderInfo.amountTaxIncluded = orderInfo.amount + orderInfo.tax;
 
-<<<<<<< HEAD
-    await orderRepository.create(orderInfo);
-  }
-
-=======
     await orderRepository.update(orderNo, orderInfo);
   }
->>>>>>> origin/2026
   /**
    * 受発注情報物理削除
    *
