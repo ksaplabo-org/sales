@@ -123,3 +123,34 @@ INSERT INTO orders values ("o1000001", "1", "a0000001", "2026-07-21", NULL, "202
 INSERT INTO orders values ("o1000002", "2", "a0000002", "2026-07-21", NULL,  NULL, "2026-08-04", "aa00002", "200", "70000", "7000", "77000", "user02", now(), "user02", now());
 INSERT INTO orders values ("o1000003", "1", "a0000003", "2026-07-21", "2026-07-25",  "2026-07-28", "2026-08-04", "aa00003", "150", "15000", "1500", "16500", "user02", now(), "user02", now());
 INSERT INTO orders values ("o1000004", "2", "a0000004", "2026-07-21", "2026-07-25",  NULL, "2026-08-04", "aa00004", "10", "3600000", "36000", "396000", "user02", now(), "user02", now());
+
+
+#------------------------------------------
+# お知らせTBL 作成
+#------------------------------------------
+DROP TABLE IF EXISTS notices;
+CREATE TABLE IF NOT EXISTS notices
+(
+    notice_id char(7) NOT NULL PRIMARY KEY,
+    title varchar(20) NOT NULL,
+    content TEXT NOT NULL,
+    start_date DATE NOT NULL,
+    end_date DATE NOT NULL,
+    target_type char(1) NOT NULL,
+    created_id char(6) NOT NULL,
+    created_at datetime NOT NULL,
+    updated_id char(6) NOT NULL,
+    updated_at datetime NOT NULL
+)
+CHARACTER SET utf8mb4
+COLLATE utf8mb4_0900_ai_ci;
+
+#------------------------------------------
+# お知らせTBL 初期データ登録
+#------------------------------------------
+DELETE FROM notices;
+INSERT INTO notices values ("i000001", "お知らせ情報A", "お知らせ内容を記載", "2026-07-21", "2026-07-25", "0", "user01", now(), "user01", now());
+INSERT INTO notices values ("i000002", "お知らせ情報B", "お知らせ内容を記載", "2026-07-22", "2026-07-26", "1", "user01", now(), "user01", now());
+INSERT INTO notices values ("i000003", "お知らせ情報C", "お知らせ内容を記載", "2026-07-23", "2026-07-27", "2", "user01", now(), "user01", now());
+INSERT INTO notices values ("i000004", "お知らせ情報D", "お知らせ内容を記載", "2026-07-24", "2026-07-28", "1", "user01", now(), "user01", now());
+INSERT INTO notices values ("2222222", "お知らせ情報E", "お知らせ内容を記載", "2026-07-25", "2026-07-29", "2", "user01", now(), "user01", now());
