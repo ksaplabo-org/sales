@@ -30,7 +30,7 @@ describe("orderRepository", () => {
         orderKbn: "1",
         clientCode: "cc000001",
         productCode: "pc00001",
-        orderDate: "2026-1-1",
+        orderDate: "2026-01-01",
         confirmedDate: "",
         amountTaxIncluded: "20000",
       },
@@ -39,8 +39,8 @@ describe("orderRepository", () => {
         orderKbn: "2",
         clientCode: "cc000002",
         productCode: "pc00002",
-        orderDate: "2026-1-2",
-        confirmedDate: "2026-1-3",
+        orderDate: "2026-01-02",
+        confirmedDate: "2026-01-03",
         amountTaxIncluded: "70000",
       },
     ];
@@ -144,7 +144,7 @@ describe("orderRepository", () => {
         orderKbn: "1",
         clientCode: "cc000001",
         productCode: "pc00001",
-        orderDate: "2026-1-1",
+        orderDate: "2026-01-01",
         confirmedDate: "",
         amountTaxIncluded: "20000",
       };
@@ -162,6 +162,29 @@ describe("orderRepository", () => {
       expect(spy).toHaveBeenCalledTimes(1); // Mockした関数の呼び出し回数を検証
       expect(spy).toHaveBeenCalledWith(orderNo); // Mockした関数呼び出し時の引数を検証
       expect(actual).toEqual(result); // 実行結果と期待結果が一致することを検証
+    });
+  });
+
+  describe("update 受発注情報更新", () => {
+    test("[正常系] 受発注情報を更新", async () => {
+      // 更新条件
+      const orderNo = "o1000001";
+      const orderInfo = { clientCode: "cc000001", orderKbn: "1" };
+
+      // Mock設定
+      const spy = jest.spyOn(orderModel, "update").mockResolvedValueOnce([1]);
+
+      // テスト関数の呼び出し
+      await orderRepository.update(orderNo, orderInfo);
+
+      // Mockした関数の呼び出し回数を検証
+      expect(spy).toHaveBeenCalledTimes(1);
+      // Mockした関数呼び出し時の引数を検証
+      expect(spy).toHaveBeenCalledWith(orderInfo, {
+        where: {
+          orderNo: orderNo,
+        },
+      });
     });
   });
 
