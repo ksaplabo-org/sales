@@ -397,28 +397,28 @@ const TOAST_MS = 1500;
 //一覧列定義
 //取引先
 const clientFields = [
-  { key: "clientCode", label: "取引先コード", thStyle: { whiteSpace: "nowrap" }, sortable: true },
-  { key: "clientName", label: "取引先名", thStyle: { whiteSpace: "nowrap" } },
-  { key: "postCode", label: "郵便番号", thStyle: { whiteSpace: "nowrap" } },
-  { key: "address1", label: "住所1", thStyle: { whiteSpace: "nowrap" } },
-  { key: "address2", label: "住所2", thStyle: { whiteSpace: "nowrap" } },
-  { key: "telNumber", label: "電話番号", thStyle: { whiteSpace: "nowrap" } },
+  { key: "clientCode", label: "取引先コード", sortable: true },
+  { key: "clientName", label: "取引先名" },
+  { key: "postCode", label: "郵便番号" },
+  { key: "address1", label: "住所1" },
+  { key: "address2", label: "住所2" },
+  { key: "telNumber", label: "電話番号" },
 ];
 //商品(受注時)
 const productFields = computed(() => {
   if (isReceive.value) {
     return [
-      { key: "productCode", label: "商品コード", thStyle: { whiteSpace: "nowrap" }, sortable: true },
-      { key: "productName", label: "商品名", thStyle: { whiteSpace: "nowrap" } },
-      { key: "productPrice", label: "単価", thStyle: { whiteSpace: "nowrap" } },
+      { key: "productCode", label: "商品コード", sortable: true },
+      { key: "productName", label: "商品名" },
+      { key: "productPrice", label: "単価" },
     ];
   }
   //商品(発注時)
   return [
-    { key: "productCode", label: "商品コード", thStyle: { whiteSpace: "nowrap" }, sortable: true },
-    { key: "productName", label: "商品名", thStyle: { whiteSpace: "nowrap" } },
-    { key: "orderClientCode", label: "発注先コード", thStyle: { whiteSpace: "nowrap" } },
-    { key: "productPrice", label: "単価", thStyle: { whiteSpace: "nowrap" } },
+    { key: "productCode", label: "商品コード", sortable: true },
+    { key: "productName", label: "商品名" },
+    { key: "orderClientCode", label: "発注先コード" },
+    { key: "productPrice", label: "単価" },
   ];
 });
 
@@ -510,7 +510,7 @@ const formatQuantityInput = (event) => {
   }
 };
 
-//郵便番号
+//郵便番号変換処理
 const formatPostCode = (postCode) => {
   return postCode.replace(/^(\d{3})(\d{4})$/, "$1-$2");
 };
