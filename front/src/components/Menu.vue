@@ -66,6 +66,12 @@ const menus = ref([
         to: "/master/products",
         roles: ["1", "2"],
       },
+      {
+        title: "お知らせマスタ",
+        icon: "fa-bell",
+        to: "/master/notices",
+        roles: ["2"],
+      },
     ],
   },
   {
