@@ -125,12 +125,14 @@
                 id="productCode"
                 v-model="view.productCode"
                 :state="view.productCode.length === 7 && product.productName !== null"
-                :formatter="formatHalfWidthAlphaNumeric"
+                type="text"
                 maxlength="7"
                 @input="
                   product.productName = null;
                   product.productPrice = null;
+                  formatAlphaNumericInput;
                 "
+                @compositionend="formatAlphaNumericInput"
                 @blur="applyProductInput(view.productCode)"
               />
               <div
@@ -200,9 +202,9 @@
           <BFormInput
             v-model="view.quantity"
             :state="Number(view.quantity) >= 1"
-            :formatter="formatHalfWidthNumeric"
-            type="number"
-            min="1"
+            type="text"
+            @input="formatQuantityInput"
+            @compositionend="formatQuantityInput"
           />
           <div v-if="view.quantity !== '' && view.quantity !== null && Number(view.quantity) < 1" class="text-danger">
             {{ formatMessage(messages.MSGE016, "数量", 1) }}
@@ -370,7 +372,7 @@ onMounted(async () => {
       product.value.productPrice = productInfo.productPrice;
     }
   } catch (e) {
-  console.log(e);
+    console.log(e);
     openFailedToast(messages.MSGE001);
   } finally {
     loading.value = false;
@@ -386,20 +388,39 @@ const openFailedToast = (message) => {
 /**
  * 半角英数字変換処理
  *
- * @param value 検査値
+ * @param event 画面からの情報
  */
-const formatHalfWidthAlphaNumeric = (value) => {
-  return value.replace(/[^A-Za-z0-9]/g, "");
+const formatAlphaNumericInput = (event) => {
+  // IME変換中の値は変換しないように制御
+  if (event.isComposing) return;
+
+  const input = event.target;
+  const formatValue = input.value.replace(/[^A-Za-z0-9]/g, ""); // フォーマット処理
+  if (input.value !== formatValue) {
+    // 入力値にフォーマットした値を反映
+    input.value = formatValue;
+    // 双方向バインディングに反映するためinputイベントを発火
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+  }
 };
 
 /**
- * 半角数字変換処理
+ * 数量変換処理
  *
- * @param value 検査値
+ * @param event 画面からの情報
  */
-const formatHalfWidthNumeric = (value) => {
-  const result = value.replace(/[^0-9]/g, "");
-  return result === "" ? "" : Number(result);
+const formatQuantityInput = (event) => {
+  // IME変換中の値は変換しないように制御
+  if (event.isComposing) return;
+
+  const input = event.target;
+  const formatValue = input.value.replace(/[^0-9]/g, "").replace(/^0/, ""); // フォーマット処理
+  if (input.value !== formatValue) {
+    // 入力値にフォーマットした値を反映
+    input.value = formatValue;
+    // 双方向バインディングに反映するためinputイベントを発火
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+  }
 };
 
 //商品コード参照モーダル表示処理
