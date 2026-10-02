@@ -92,6 +92,11 @@ const routes = [
         name: "productEdit",
         component: () => import("@/views/products/ProductForm.vue"),
       },
+      {
+        path: "master/notices",
+        name: "noticeMaster",
+        component: () => import("@/views/notices/NoticeMaster.vue"),
+      },
     ],
   },
 ];
