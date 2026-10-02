@@ -1,6 +1,6 @@
 import UniqueConstraintError from "../errors/UniqueConstraintError.js";
 import NotFoundError from "../errors/NotFoundError.js";
-import ValidationError from "../errors/ValidationError.js";
+import MultipleValidationError from "../errors/MultipleValidationError.js";
 import noticeService from "../services/noticeService.js";
 
 class NoticeController {
@@ -165,15 +165,10 @@ class NoticeController {
           ],
         });
         return;
-      } else if (e instanceof ValidationError) {
+      } else if (e instanceof MultipleValidationError) {
         //パラメータエラー
-        res.status(ValidationError.status).json({
-          errors: [
-            {
-              field: e.field,
-              message: e.message,
-            },
-          ],
+        res.status(MultipleValidationError.status).json({
+          errors: e.errors,
         });
         return;
       } else {
@@ -267,15 +262,10 @@ class NoticeController {
           ],
         });
         return;
-      } else if (e instanceof ValidationError) {
+      } else if (e instanceof MultipleValidationError) {
         //パラメータエラー
-        res.status(ValidationError.status).json({
-          errors: [
-            {
-              field: e.field,
-              message: e.message,
-            },
-          ],
+        res.status(MultipleValidationError.status).json({
+          errors: e.errors,
         });
         return;
       } else {
@@ -404,11 +394,6 @@ class NoticeController {
       errors.push({
         field: "endDate",
         message: "掲載終了日に正しい日付を入力してください",
-      });
-    } else if (data.endDate < data.startDate) {
-      errors.push({
-        field: "endDate",
-        message: "掲載終了日を掲載開始日以降に設定してください",
       });
     }
 

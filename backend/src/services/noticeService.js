@@ -1,7 +1,7 @@
 import UniqueConstraintError from "../errors/UniqueConstraintError.js";
 import NotFoundError from "../errors/NotFoundError.js";
 import noticeRepository from "../repositories/noticeRepository.js";
-import ValidationError from "../errors/ValidationError.js";
+import MultipleValidationError from "../errors/MultipleValidationError.js";
 
 class NoticeService {
   /**
@@ -44,9 +44,29 @@ class NoticeService {
     //現在日時を取得
     const now = new Date().toISOString();
 
+    //日付バリデーション
+    //空のエラー情報配列
+    const errors = [];
+
     //掲載開始日バリデーションチェック
-    if (noticeInfo.startDate < now) {
-      throw new ValidationError("startDate", "掲載開始日をシステム日時以降に設定してください");
+    if (noticeInfo.startDate != notice.startDate && noticeInfo.startDate < now) {
+      errors.push({
+        field: "startDate",
+        message: "掲載開始日をシステム日付以降に設定してください",
+      });
+    }
+
+    //掲載終了日バリデーションチェック
+    if (noticeInfo.endDate < noticeInfo.startDate) {
+      errors.push({
+        field: "endDate",
+        message: "掲載終了日を掲載開始日以降に設定してください",
+      });
+    }
+
+    //エラー情報配列要素が存在する場合
+    if (errors.length > 0) {
+      throw new MultipleValidationError(errors);
     }
 
     //登録情報に現在日時を設定
@@ -72,9 +92,29 @@ class NoticeService {
     //現在日時を取得
     const now = new Date().toISOString();
 
+    //日付バリデーション
+    //空のエラー情報配列
+    const errors = [];
+
     //掲載開始日バリデーションチェック
     if (noticeInfo.startDate != notice.startDate && noticeInfo.startDate < now) {
-      throw new ValidationError("startDate", "掲載開始日を登録済みの日付またはシステム日時以降に設定してください");
+      errors.push({
+        field: "startDate",
+        message: "掲載開始日を登録済みの日付またはシステム日付以降に設定してください",
+      });
+    }
+
+    //掲載終了日バリデーションチェック
+    if (noticeInfo.endDate < noticeInfo.startDate) {
+      errors.push({
+        field: "endDate",
+        message: "掲載終了日を掲載開始日以降に設定してください",
+      });
+    }
+
+    //エラー情報配列要素が存在する場合
+    if (errors.length > 0) {
+      throw new MultipleValidationError(errors);
     }
 
     noticeInfo.updatedAt = now;
