@@ -9,6 +9,9 @@ class NoticeService {
    * @returns お知らせ情報一覧
    */
   async findAll(condition) {
+    if (condition.startSearchDate > condition.endSearchDate) {
+      return [];
+    }
     return await noticeRepository.findAll(condition);
   }
 

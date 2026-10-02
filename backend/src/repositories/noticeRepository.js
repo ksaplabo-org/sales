@@ -15,15 +15,11 @@ class NoticeRepository {
       where.noticeId = { [Op.like]: "%" + condition.noticeId + "%" };
     }
 
-    if (condition.startSearchDate || condition.endSearchDate) {
-      where.searchDate = {};
-      if (condition.startSearchDate) {
-        where.searchDate[Op.gte] = condition.startSearchDate;
-      }
-
-      if (condition.endSearchDate) {
-        where.searchDate[Op.lte] = condition.endSearchDate;
-      }
+    if (condition.startSearchDate) {
+      where.endDate = { [Op.gte]: condition.startSearchDate };
+    }
+    if (condition.endSearchDate) {
+      where.startDate = { [Op.lte]: condition.endSearchDate };
     }
     if (condition.targetType) {
       where.targetType = { [Op.eq]: condition.targetType };
