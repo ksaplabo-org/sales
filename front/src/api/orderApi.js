@@ -28,7 +28,7 @@ export async function getOrderByOrderNo(orderNo) {
  * @param {*} orderInfo 受発注情報
  */
 export async function createOrder(orderInfo) {
-  await apiClient.post("/orders/", orderInfo);
+  await apiClient.post("/orders", orderInfo);
 }
 
 /**
