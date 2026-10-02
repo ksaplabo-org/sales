@@ -165,7 +165,7 @@ class OrderController {
       if (order.orderKbn === "2" && order.shipDate) {
         //発注
         errors.push({ field: "shipDate", message: "出荷日は入力できません" });
-      } else if (order.orderKbn === "1" && order.shipDate) {
+      } else if (order.orderKbn === "1") {
         //受注
         if (!order.shipDate) {
           errors.push({ field: "shipDate", message: "出荷日を入力してください" });
@@ -206,26 +206,32 @@ class OrderController {
         return;
       }
 
+      //Date化
+      const orderDate = new Date(order.orderDate);
+      const confirmedDate = order.confirmedDate ? new Date(order.confirmedDate) : null;
+      const shipDate = order.shipDate ? new Date(order.shipDate) : null;
+      const deliverDate = order.deliverDate ? new Date(order.deliverDate) : null;
+
       // 相関チェック
-      // 確定日バリデーション
-      if (order.confirmedDate && new Date(order.confirmedDate) < new Date(order.orderDate)) {
+      // 確定日
+      if (confirmedDate && confirmedDate < orderDate) {
         errors.push({ field: "confirmedDate", message: "確定日は受発注日以降の日付を入力してください" });
       }
-      // 出荷日バリデーション
-      if (order.shipDate) {
-        if (new Date(order.shipDate) < new Date(order.orderDate)) {
+      // 出荷日
+      if (shipDate) {
+        if (shipDate < orderDate) {
           errors.push({ field: "shipDate", message: "出荷日は受注日以降の日付を入力してください" });
-        } else if (order.confirmedDate && new Date(order.shipDate) < new Date(order.confirmedDate)) {
+        } else if (confirmedDate && shipDate < confirmedDate) {
           errors.push({ field: "shipDate", message: "出荷日は入金日以降の日付を入力してください" });
         }
       }
-      // 納品予定日バリデーション
-      if (order.deliverDate) {
-        if (new Date(order.deliverDate) < new Date(order.orderDate)) {
+      // 納品予定日
+      if (deliverDate) {
+        if (deliverDate < orderDate) {
           errors.push({ field: "deliverDate", message: "納品予定日は受発注日以降の日付を入力してください" });
-        } else if (order.confirmedDate && new Date(order.deliverDate) < new Date(order.confirmedDate)) {
+        } else if (confirmedDate && deliverDate < confirmedDate) {
           errors.push({ field: "deliverDate", message: "納品予定日は確定日以降の日付を入力してください" });
-        } else if (order.shipDate && new Date(order.deliverDate) < new Date(order.shipDate)) {
+        } else if (shipDate && deliverDate < shipDate) {
           errors.push({ field: "deliverDate", message: "納品予定日は出荷日以降の日付を入力してください" });
         }
       }

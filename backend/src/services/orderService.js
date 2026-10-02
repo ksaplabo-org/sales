@@ -50,10 +50,12 @@ class OrderService {
     if (order) {
       throw new UniqueConstraintError("orderNo", "この受発注番号は既に使用されています");
     }
+    // 取引先情報の存在チェック
     const client = await clientRepository.findByCode(orderInfo.clientCode);
     if (!client) {
       throw new NotFoundError("clientCode", "この取引先コードは存在しません");
     }
+    //商品情報の存在チェック
     const product = await productRepository.findByCode(orderInfo.productCode);
     if (!product) {
       throw new NotFoundError("productCode", "この商品コードは存在しません");

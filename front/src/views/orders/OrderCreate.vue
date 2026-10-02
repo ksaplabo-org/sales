@@ -27,9 +27,9 @@
       </div>
     </template>
 
-    <!-- 受発注番号 -->
     <BForm @submit.prevent="createOrder">
       <BRow class="mb-3">
+        <!-- 受発注番号 -->
         <BFormGroup :label="isReceive ? '受注番号' : '発注番号'" label-cols="3">
           <BFormInput
             id="orderNo"
@@ -57,14 +57,16 @@
               :state="form.clientCode.length === 8 && client.clientName !== null"
               maxlength="8"
               @input="
-                client.clientName = '';
+                client.clientName = null;
+                client.telNumber = null;
+                client.address1 = null;
                 formatAlphaNumericInput;
               "
               @compositionend="formatAlphaNumericInput"
               @blur="applyClientInput(form.clientCode)"
               required
             />
-            <BButton type="button" variant="outline-primary" class="btn-reference text-nowrap" @click="openClientModal">
+            <BButton type="button" variant="outline-primary" class="text-dark text-nowrap" @click="openClientModal">
               <i class="fas fa-list me-1"></i>参照
             </BButton>
           </div>
@@ -179,19 +181,15 @@
               :state="form.productCode.length === 7 && product.productName !== null"
               maxlength="7"
               @input="
-                product.productName = '';
+                product.productName = null;
+                product.productPrice = null;
                 formatAlphaNumericInput;
               "
               @compositionend="formatAlphaNumericInput"
               @blur="applyProductInput(form.productCode)"
               required
             />
-            <BButton
-              type="button"
-              variant="outline-primary"
-              class="btn-reference text-nowrap"
-              @click="openProductModal"
-            >
+            <BButton type="button" variant="outline-primary" class="text-dark text-nowrap" @click="openProductModal">
               <i class="fas fa-list me-1"></i>参照
             </BButton>
           </div>
@@ -246,7 +244,7 @@
       <BRow class="mb-3">
         <BFormGroup label="単価" label-cols="3">
           <div class="form-control-plaintext">
-            {{ product.productPrice == null ? "" : product.productPrice.toLocaleString("ja-JP") }}
+            {{ product.productPrice == null ? "-" : product.productPrice.toLocaleString("ja-JP") }}
           </div>
         </BFormGroup>
       </BRow>
@@ -311,7 +309,7 @@
 </template>
 
 <script setup>
-import { computed, ref, onMounted } from "vue";
+import { ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 import * as clientApi from "@/api/clientApi.js";
@@ -332,9 +330,7 @@ const loading = ref(false);
 const loginInfo = Auth.getLoginInfo();
 
 //登録の受発注判定
-const isReceive = computed(() => {
-  return route.name === "orderReceiveCreate";
-});
+const isReceive = route.name === "orderReceiveCreate";
 
 //受発注区分
 const orderKbn = ref("");
@@ -404,23 +400,13 @@ const clientFields = [
   { key: "address2", label: "住所2" },
   { key: "telNumber", label: "電話番号" },
 ];
-//商品(受注時)
-const productFields = computed(() => {
-  if (isReceive.value) {
-    return [
-      { key: "productCode", label: "商品コード", sortable: true },
-      { key: "productName", label: "商品名" },
-      { key: "productPrice", label: "単価" },
-    ];
-  }
-  //商品(発注時)
-  return [
-    { key: "productCode", label: "商品コード", sortable: true },
-    { key: "productName", label: "商品名" },
-    { key: "orderClientCode", label: "発注先コード" },
-    { key: "productPrice", label: "単価" },
-  ];
-});
+//商品
+const productFields = [
+  { key: "productCode", label: "商品コード", sortable: true },
+  { key: "productName", label: "商品名" },
+  ...(!isReceive ? [{ key: "orderClientCode", label: "発注先コード" }] : []),
+  { key: "productPrice", label: "単価" },
+];
 
 //確定日入力チェック
 const getConfirmedDateState = () => {
@@ -429,7 +415,7 @@ const getConfirmedDateState = () => {
 };
 //出荷日入力チェック
 const getShipDateState = () => {
-  if (!isReceive.value) {
+  if (!isReceive) {
     return null;
   }
   if (!form.value.shipDate) {
@@ -445,22 +431,19 @@ const getDeliverDateState = () => {
   if (!form.value.deliverDate) {
     return null;
   }
-  if (isReceive.value) {
-    if (form.value.shipDate) {
-      return form.value.deliverDate >= form.value.shipDate;
-    }
-    if (form.value.confirmedDate) {
-      return form.value.deliverDate >= form.value.confirmedDate;
-    }
-    return form.value.deliverDate >= form.value.orderDate;
+  //受注時のみ
+  if (isReceive && form.value.shipDate) {
+    return form.value.deliverDate >= form.value.shipDate;
   }
-  return form.value.confirmedDate
-    ? form.value.deliverDate >= form.value.confirmedDate
-    : form.value.deliverDate >= form.value.orderDate;
+  //共通処理
+  if (form.value.confirmedDate) {
+    return form.value.deliverDate >= form.value.confirmedDate;
+  }
+  return form.value.deliverDate >= form.value.orderDate;
 };
 //納品予定日のエラーメッセージ
 const getInvalidDeliverDateFieldName = () => {
-  if (isReceive.value) {
+  if (isReceive) {
     if (form.value.shipDate) {
       return "出荷日";
     }
@@ -516,7 +499,7 @@ const formatPostCode = (postCode) => {
 };
 
 /**
- * No1初期表示処理
+ * 初期表示処理
  */
 onMounted(async () => {
   try {
@@ -527,7 +510,7 @@ onMounted(async () => {
     }
 
     //受発注判定
-    if (isReceive.value) {
+    if (isReceive) {
       orderKbn.value = "1";
     } else {
       orderKbn.value = "2";
@@ -550,21 +533,21 @@ onMounted(async () => {
 });
 
 /**
- * No2取引先情報モーダル表示処理
+ * 取引先情報モーダル表示処理
  */
 const openClientModal = () => {
   showClientModal.value = true;
 };
 
 /**
- * No3取引先参照行選択処理
+ * 取引先参照行選択処理
  */
 const onClientSelected = (row) => {
   selectedClient.value = row;
 };
 
 /**
- * No4取引先選択行情報反映処理
+ * 取引先選択行情報反映処理
  */
 const applySelectedClient = () => {
   form.value.clientCode = selectedClient.value.clientCode;
@@ -576,7 +559,7 @@ const applySelectedClient = () => {
 };
 
 /**
- * No5取引先情報入力反映処理
+ * 取引先情報入力反映処理
  */
 const applyClientInput = (clientCode) => {
   const result = clientItems.value.find((item) => item.clientCode === clientCode);
@@ -593,21 +576,21 @@ const applyClientInput = (clientCode) => {
 };
 
 /**
- * No6商品情報モーダル表示処理
+ * 商品情報モーダル表示処理
  */
 const openProductModal = () => {
   showProductModal.value = true;
 };
 
 /**
- * No7商品参照行選択処理
+ * 商品参照行選択処理
  */
 const onProductSelected = (row) => {
   selectedProduct.value = row;
 };
 
 /**
- * No8商品選択行情報反映処理
+ * 商品選択行情報反映処理
  */
 const applySelectedProduct = () => {
   form.value.productCode = selectedProduct.value.productCode;
@@ -620,7 +603,7 @@ const applySelectedProduct = () => {
 };
 
 /**
- * No9商品情報モーダル入力反映処理
+ * 商品情報モーダル入力反映処理
  */
 const applyProductInput = (productCode) => {
   const result = productItems.value.find((item) => item.productCode === productCode);
@@ -637,7 +620,7 @@ const applyProductInput = (productCode) => {
 };
 
 /**
- * No10金額計算処理
+ * 金額計算処理
  */
 const calculateAmount = () => {
   if (!product.value.productPrice || Number(form.value.quantity) < 1) {
@@ -654,7 +637,7 @@ const calculateAmount = () => {
 };
 
 /**
- * No14処理成功トースト表示処理
+ * 処理成功トースト表示処理
  */
 const openSuccessToast = (message) => {
   successToastText.value = message;
@@ -662,7 +645,7 @@ const openSuccessToast = (message) => {
 };
 
 /**
- * No15処理失敗トースト表示処理
+ * 処理失敗トースト表示処理
  */
 const openFailedToast = (message) => {
   failedToastText.value = message;
@@ -670,7 +653,7 @@ const openFailedToast = (message) => {
 };
 
 /**
- * No16受発注情報登録処理
+ * 受発注情報登録処理
  */
 const createOrder = async () => {
   try {
@@ -699,23 +682,3 @@ const createOrder = async () => {
   }
 };
 </script>
-
-<style>
-/*参照ボタンレイアウト*/
-.btn-reference {
-  background-color: #fff !important;
-  border-color: #0d6efb !important;
-  color: #000 !important;
-}
-
-.btn-reference:hover {
-  background-color: #0b5ed7 !important;
-  border-color: #0a58ca !important;
-  color: #fff !important;
-}
-
-.btn-reference:focus,
-.btn-reference:focus-visible {
-  box-shadow: 0 0 0 0.25rem rgba(2, 100, 150, 0.25) !important;
-}
-</style>
