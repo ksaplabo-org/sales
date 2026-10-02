@@ -386,11 +386,6 @@ class NoticeController {
         field: "startDate",
         message: "掲載開始日に正しい日付を入力してください",
       });
-    } else if (data.startDate <= now) {
-      errors.push({
-        field: "startDate",
-        message: "掲載開始日をシステム日時以降に設定してください",
-      });
     }
 
     // 掲載終了日
