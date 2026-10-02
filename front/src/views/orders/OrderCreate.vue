@@ -257,8 +257,8 @@
             v-model="form.quantity"
             :state="Number(form.quantity) >= 1"
             type="text"
-            @input="formatQuantityInput"
-            @compositionend="formatQuantityInput"
+            @input="formatNumericInput"
+            @compositionend="formatNumericInput"
             @blur="calculateAmount"
             required
           />
@@ -475,16 +475,16 @@ const formatAlphaNumericInput = (event) => {
 };
 
 /**
- * 数量変換処理
+ * 数値変換処理
  *
  * @param event 画面からの情報
  */
-const formatQuantityInput = (event) => {
+const formatNumericInput = (event) => {
   // IME変換中の値は変換しないように制御
   if (event.isComposing) return;
 
   const input = event.target;
-  const formatValue = input.value.replace(/[^0-9]/g, "").replace(/^0/, ""); // フォーマット処理
+  const formatValue = input.value.replace(/[^0-9]/g, "").replace(/^0+(?=\d)/, ""); // フォーマット処理
   if (input.value !== formatValue) {
     // 入力値にフォーマットした値を反映
     input.value = formatValue;
