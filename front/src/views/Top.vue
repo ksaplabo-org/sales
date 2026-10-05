@@ -18,12 +18,18 @@
         <BCard class="shadow-sm mb-3 user-card">
           <template #header>
             <div class="d-flex justify-content-between">
-              <strong> <i class="fas fa-user"></i>　ユーザーマスタ </strong>
+              <strong> <i class="fas fa-user"></i><span class="ms-2">ユーザーマスタ</span></strong>
             </div>
           </template>
 
-          <div class="mt-3 mb-4 ms-4">一般　：{{ countUser }}件</div>
-          <div class="mb-3 ms-4">管理者：{{ countAdmin }}件</div>
+          <div>
+            <span class="label-text mt-3 mb-4 ms-4">一般</span>
+            ：{{ countUser }}件
+          </div>
+          <div>
+            <span class="label-text mb-3 ms-4">管理者</span>
+            ：{{ countAdmin }}件
+          </div>
         </BCard>
       </div>
 
@@ -31,12 +37,18 @@
         <BCard class="shadow-sm mb-3 client-card">
           <template #header>
             <div class="d-flex justify-content-between">
-              <strong> <i class="fas fa-money-bill-wave"></i>　取引先マスタ </strong>
+              <strong> <i class="fas fa-money-bill-wave"></i><span class="ms-2">取引先マスタ</span></strong>
             </div>
           </template>
 
-          <div class="mt-3 mb-4 ms-4">顧客　：{{ countCustomer }}件</div>
-          <div class="mb-3 ms-4">仕入先：{{ countSupplier }}件</div>
+          <div>
+            <span class="label-text mt-3 mb-4 ms-4">顧客</span>
+            ：{{ countCustomer }} 件
+          </div>
+          <div>
+            <span class="label-text mb-3 ms-4">仕入れ先</span>
+            ：{{ countSupplier }}件
+          </div>
         </BCard>
       </div>
 
@@ -44,20 +56,26 @@
         <BCard class="shadow-sm mb-3 product-card">
           <template #header>
             <div class="d-flex justify-content-between">
-              <strong> <i class="fas fa-solid fa-barcode"></i>　商品マスタ </strong>
+              <strong> <i class="fas fa-solid fa-barcode"></i><span class="ms-2">商品マスタ</span></strong>
             </div>
           </template>
 
-          <div class="mt-3 mb-4 ms-4">受注商品：{{ countJuchuProduct }}件</div>
-          <div class="mb-3 ms-4">発注商品：{{ countHatchuProduct }}件</div>
+          <div>
+            <span class="label-text mt-3 mb-4 ms-4">受注商品</span>
+            ：{{ countJuchuProduct }}件
+          </div>
+          <div>
+            <span class="label-text mb-3 ms-4">発注商品</span>
+            ：{{ countHatchuProduct }}件
+          </div>
         </BCard>
       </div>
     </div>
 
     <div class="d-flex justify-content-end">
-      <BCard class="shadow-sm mb-3" style="width: 260px; margin-right: 40px">
+      <BCard class="shadow-sm mb-3" style="width: 260px">
         <div class="d-flex justify-content-center">
-          <span @click="sortUpdatedAt" style="cursor: pointer">
+          <span @click="changeSortState" style="cursor: pointer">
             <i class="far fa-clock"></i>
             最終更新日
             <span v-if="sortState === 1" style="color: #000000"> ↑ </span>
@@ -68,7 +86,7 @@
 
         <div>
           <div v-for="label in sortedLabels" :key="label.id" class="d-flex justify-content-center">
-            {{ label.name + label.date }}
+            {{ label.name + "：" + label.date }}
           </div>
         </div>
       </BCard>
@@ -79,17 +97,19 @@
   <div v-if="loginInfo.role == 1">
     <BCard class="shadow-sm mb-3 order-card">
       <template #header>
-        <strong> <i class="fas fa-file-invoice-dollar"></i>　受発注状況 </strong>
+        <strong> <i class="fas fa-file-invoice-dollar"></i><span class="ms-2">受発注状況</span></strong>
       </template>
       <BCard class="mb-3">
         <div class="ms-4 mb-3">未処理の受発注件数</div>
-        <div class="mt-3 mb-4 ms-4">
-          受注：
+        <div>
+          <span class="label-text mt-3 mb-4 ms-4">受注</span>
+          ：
           <RouterLink v-if="countPendingJuchu > 0" :to="{ name: 'orderList' }"> {{ countPendingJuchu }}件 </RouterLink>
           <span v-else> {{ countPendingJuchu }}件 </span>
         </div>
-        <div class="mb-3 ms-4">
-          発注：
+        <div>
+          <span class="label-text mb-3 ms-4">発注</span>
+          ：
           <RouterLink v-if="countPendingHatchu > 0" :to="{ name: 'orderList' }">
             {{ countPendingHatchu }}件
           </RouterLink>
@@ -98,8 +118,14 @@
       </BCard>
       <BCard class="mb-3">
         <div class="ms-4 mb-3">今月の受注額・発注額の合計</div>
-        <div class="mt-3 mb-4 ms-4">受注総額：¥{{ totalJuchuAmount.toLocaleString("ja-JP") }}</div>
-        <div class="mb-3 ms-4">発注総額：¥{{ totalHatchuAmount.toLocaleString("ja-JP") }}</div>
+        <div>
+          <span class="label-text mt-3 mb-4 ms-4">受注総額</span>
+          ：¥{{ totalJuchuAmount.toLocaleString("ja-JP") }}
+        </div>
+        <div>
+          <span class="label-text mb-3 ms-4">発注総額</span>
+          ：¥{{ totalHatchuAmount.toLocaleString("ja-JP") }}
+        </div>
       </BCard>
     </BCard>
   </div>
@@ -137,10 +163,10 @@ const countHatchuProduct = computed(() => products.value.filter((product) => pro
 let productUpdatedAt = ref("");
 
 // 最終更新日の配列
-const lastUpdatedAt = ref([
-  { id: 1, name: "ユーザーマスタ：", date: userUpdatedAt },
-  { id: 2, name: "取引先マスタ：", date: clientUpdatedAt },
-  { id: 3, name: "商品マスタ　：", date: productUpdatedAt },
+const lastUpdatedMasters = ref([
+  { id: 1, name: "ユーザーマスタ", date: userUpdatedAt },
+  { id: 2, name: "取引先マスタ", date: clientUpdatedAt },
+  { id: 3, name: "商品マスタ　", date: productUpdatedAt },
 ]);
 
 // 受発注状況
@@ -195,29 +221,35 @@ onMounted(async () => {
       clients.value = await clientApi.getClients();
       products.value = await productApi.getProducts();
 
-      // ユーザーの最終更新日取得
-      userUpdatedAt.value = users.value.reduce(
-        (max, user) => (max > user.updatedAt ? max : user.updatedAt),
-        users.value[0].updatedAt,
-      );
-      userUpdatedAt.value = userUpdatedAt.value.substring(0, 10).replace(/-/g, "/");
+      if (users.value.length > 0) {
+        // ユーザーの最終更新日取得
+        userUpdatedAt.value = users.value.reduce(
+          (max, user) => (max > user.updatedAt ? max : user.updatedAt),
+          users.value[0].updatedAt,
+        );
+        userUpdatedAt.value = userUpdatedAt.value.substring(0, 10).replace(/-/g, "/");
+      }
 
-      // 取引先の最終更新日
-      clientUpdatedAt.value = clients.value.reduce(
-        (max, client) => (max > client.updatedAt ? max : client.updatedAt),
-        clients.value[0].updatedAt,
-      );
-      clientUpdatedAt.value = clientUpdatedAt.value.substring(0, 10).replace(/-/g, "/");
+      if (clients.value.length > 0) {
+        // 取引先の最終更新日
+        clientUpdatedAt.value = clients.value.reduce(
+          (max, client) => (max > client.updatedAt ? max : client.updatedAt),
+          clients.value[0].updatedAt,
+        );
+        clientUpdatedAt.value = clientUpdatedAt.value.substring(0, 10).replace(/-/g, "/");
+      }
 
-      // 商品の最終更新日
-      productUpdatedAt.value = products.value.reduce(
-        (max, product) => (max > product.updatedAt ? max : product.updatedAt),
-        products.value[0].updatedAt,
-      );
-      productUpdatedAt.value = productUpdatedAt.value.substring(0, 10).replace(/-/g, "/");
+      if (products.value.length > 0) {
+        // 商品の最終更新日
+        productUpdatedAt.value = products.value.reduce(
+          (max, product) => (max > product.updatedAt ? max : product.updatedAt),
+          products.value[0].updatedAt,
+        );
+        productUpdatedAt.value = productUpdatedAt.value.substring(0, 10).replace(/-/g, "/");
+      }
       // 権限が一般の場合
-    }if (loginInfo.role === "1") {
-        orders.value = await orderApi.getOrders();
+    } else if (loginInfo.role === "1") {
+      orders.value = await orderApi.getOrders();
     }
   } catch (e) {
     console.log(e);
@@ -230,21 +262,24 @@ onMounted(async () => {
 /**
  * ソート状態の切り替え
  */
-const sortUpdatedAt = () => {
+const changeSortState = () => {
   sortState.value = (sortState.value + 1) % 3;
 };
 
 /**
- * 最終更新日の表示順管理
+ * ソート後の最終更新されたマスタ情報
  */
 const sortedLabels = computed(() => {
-  const copiedLabels = [...lastUpdatedAt.value];
+  const copiedLabels = [...lastUpdatedMasters.value];
 
   if (sortState.value === 1) {
+    // 昇順
     return copiedLabels.sort((a, b) => a.date.localeCompare(b.date));
   } else if (sortState.value === 2) {
+    // 降順
     return copiedLabels.sort((a, b) => b.date.localeCompare(a.date));
   } else if (sortState.value === 0) {
+    // 未ソート
     return copiedLabels;
   }
 });
@@ -276,5 +311,10 @@ const openFailedToast = (message) => {
 
 .order-card .card-header {
   background-color: #ffd7dc;
+}
+
+.label-text {
+  display: inline-block;
+  width: 70px;
 }
 </style>
