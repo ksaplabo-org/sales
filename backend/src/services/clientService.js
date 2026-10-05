@@ -1,6 +1,7 @@
 import UniqueConstraintError from "../errors/UniqueConstraintError.js";
 import NotFoundError from "../errors/NotFoundError.js";
 import ReferenceConstraintError from "../errors/ReferenceConstraintError.js";
+import ValidationError from "../errors/ValidationError.js";
 import clientRepository from "../repositories/clientRepository.js";
 import orderRepository from "../repositories/orderRepository.js";
 
@@ -41,6 +42,10 @@ class ClientService {
       throw new UniqueConstraintError("clientCode", "この取引先コードは既に使用されています");
     }
 
+    if (clientInfo.address1 ==0 && clientInfo.address2 > 0){
+      throw new ValidationError("address2", "住所1から設定してください");
+    }
+
     const now = new Date().toISOString();
     clientInfo.createdAt = now;
     clientInfo.updatedAt = now;
@@ -59,6 +64,10 @@ class ClientService {
     const client = await clientRepository.findByCode(clientCode);
     if (!client) {
       throw new NotFoundError("clientCode", "この取引先情報は存在しません");
+    }
+
+    if (clientInfo.address1 ==0 && clientInfo.address2 > 0){
+      throw new ValidationError("address2", "住所1から設定してください");
     }
     
     const now = new Date().toISOString();
