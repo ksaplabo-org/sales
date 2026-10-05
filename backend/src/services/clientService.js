@@ -42,7 +42,7 @@ class ClientService {
       throw new UniqueConstraintError("clientCode", "この取引先コードは既に使用されています");
     }
 
-    if (clientInfo.address1 ==0 && clientInfo.address2 > 0){
+    if (!clientInfo.address1 && clientInfo.address2){
       throw new ValidationError("address2", "住所1から設定してください");
     }
 
@@ -66,7 +66,7 @@ class ClientService {
       throw new NotFoundError("clientCode", "この取引先情報は存在しません");
     }
 
-    if (clientInfo.address1 ==0 && clientInfo.address2 > 0){
+    if (!clientInfo.address1 && clientInfo.address2){
       throw new ValidationError("address2", "住所1から設定してください");
     }
     
