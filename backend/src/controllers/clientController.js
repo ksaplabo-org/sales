@@ -129,7 +129,7 @@ class ClientController {
       } else if (e instanceof ValidationError) {
         //整合性チェックエラー
         res.status(ValidationError.status).json({ errors: [{ field: e.field, message: e.message }] });
-      }else {
+      } else {
         res.status(500).send();
       }
     }
@@ -193,7 +193,7 @@ class ClientController {
       } else if (e instanceof ValidationError) {
         //整合性チェックエラー
         res.status(ValidationError.status).json({ errors: [{ field: e.field, message: e.message }] });
-      }else {
+      } else {
         res.status(500).send();
       }
     }

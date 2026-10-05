@@ -91,7 +91,7 @@
             id="address2"
             v-model="form.address2"
             maxlength="20"
-            :state="form.address1.length <= 0 && form.address2.length > 0 ? false : null"
+            :state="form.address1.length == 0 && form.address2.length > 0 ? false : null"
           />
           <BFormInvalidFeedback v-if="form.address2">{{
             formatMessage(messages.MSGE020, "住所1")
