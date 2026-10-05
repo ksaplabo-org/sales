@@ -247,7 +247,6 @@ onMounted(async () => {
       users.value = await userApi.getUsers();
       clients.value = await clientApi.getClients();
       products.value = await productApi.getProducts();
-
       // 権限が一般の場合
     } else if (loginInfo.role === "1") {
       orders.value = await orderApi.getOrders();
