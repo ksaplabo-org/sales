@@ -19,7 +19,7 @@ class NoticeService {
    */
   async delete(noticeId) {
     // 削除データの存在チェック
-    const notice = await noticeRepository.findByCode(noticeId);
+    const notice = await noticeRepository.findById(noticeId);
     if (!notice) {
       throw new NotFoundError("noticeId", "このお知らせIDは存在していません");
     }
