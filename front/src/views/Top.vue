@@ -85,7 +85,7 @@
         </div>
 
         <div>
-          <div v-for="label in sortedLabels" :key="label.id" class="d-flex justify-content-center">
+          <div v-for="label in sortedLastUpdatedMasters" :key="label.id" class="d-flex justify-content-center">
             {{ label.name + "：" + label.date }}
           </div>
         </div>
@@ -269,7 +269,7 @@ const changeSortState = () => {
 /**
  * ソート後の最終更新されたマスタ情報
  */
-const sortedLabels = computed(() => {
+const sortedLastUpdatedMasters = computed(() => {
   const copiedLabels = [...lastUpdatedMasters.value];
 
   if (sortState.value === 1) {
