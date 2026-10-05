@@ -4,6 +4,7 @@ import orderController from "../../src/controllers/orderController.js";
 import orderService from "../../src/services/orderService.js";
 import NotFoundError from "../../src/errors/NotFoundError.js";
 import UnprocessableContentError from "../../src/errors/UnprocessableContentError.js";
+import UniqueConstraintError from "../../src/errors/UniqueConstraintError.js";
 import OrderValidationError from "../../src/errors/OrderValidationError.js";
 
 // 全テストケース実行後に行う処理
@@ -180,7 +181,7 @@ describe("orderController", () => {
       });
     });
 
-    test("[異常系] 受発注番号が7桁（8桁以外）の場合、400エラーとなること", async () => {
+    test("[異常系] 受発注番号が7桁の場合、400エラーとなること", async () => {
       //検索条件
       const req = {
         params: {
@@ -211,7 +212,7 @@ describe("orderController", () => {
       });
     });
 
-    test("[異常系] 受発注番号が9桁（8桁以外）の場合、400エラーとなること", async () => {
+    test("[異常系] 受発注番号が9桁の場合、400エラーとなること", async () => {
       const req = {
         // 検索条件
         params: {
@@ -341,6 +342,271 @@ describe("orderController", () => {
     });
   });
 
+  describe("create 受発注情報登録", () => {
+    test("[正常系] 登録情報がServiceに渡され、ステータス[201]でレスポンスされること", async () => {
+      // Mock設定
+      const spy = jest.spyOn(orderService, "create").mockResolvedValue();
+
+      // テスト対象関数の呼び出し
+      await orderController.create(orderData, res);
+
+      //Serviceの呼び出しを検証
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          confirmedDate: null,
+          deliverDate: null,
+        }),
+      );
+      //レスポンスステータス設定の検証
+      expect(res.status).toHaveBeenCalledWith(201);
+    });
+
+    test("[正常系] 発注時に空文字の出荷日がnull変換されてServiceに渡され、ステータス[201]でレスポンスされること", async () => {
+      // Mock設定
+      const req = {
+        body: {
+          ...orderData.body,
+          orderKbn: "2",
+          shipDate: "",
+        },
+      };
+      const spy = jest.spyOn(orderService, "create").mockResolvedValue();
+
+      // テスト対象関数の呼び出し
+      await orderController.create(req, res);
+
+      //Serviceの呼び出しを検証
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          shipDate: null,
+        }),
+      );
+      //レスポンスステータス設定の検証
+      expect(res.status).toHaveBeenCalledWith(201);
+    });
+
+    test("[正常系]納品予定日が出荷日以降の場合、正常終了すること", async () => {
+      // Mock設定
+      const req = {
+        body: {
+          ...orderData.body,
+          shipDate: "2026-01-02",
+          deliverDate: "2026-01-03",
+        },
+      };
+      const spy = jest.spyOn(orderService, "create").mockResolvedValue();
+
+      // テスト対象関数の呼び出し
+      await orderController.create(req, res);
+
+      //Serviceの呼び出しを検証
+      expect(spy).toHaveBeenCalledTimes(1);
+    });
+
+    //登録情報
+    const orderData = {
+      body: {
+        orderNo: "o1000001",
+        orderKbn: "1",
+        clientCode: "cc000001",
+        orderDate: "2026-01-01",
+        confirmedDate: "",
+        shipDate: "2026-01-03",
+        deliverDate: "",
+        productCode: "pc00001",
+        quantity: 10,
+        createdId: "u00001",
+        updatedId: "u00001",
+      },
+    };
+    test.each([
+      //単項目チェックエラー
+      ["受発注番号が未入力", { orderNo: "" }, { field: "orderNo", message: "受発注番号を入力してください" }],
+      [
+        "受発注番号が7桁",
+        { orderNo: "o100000" },
+        { field: "orderNo", message: "受発注番号は8桁で入力してください" },
+      ],
+      [
+        "受発注番号が9桁",
+        { orderNo: "o10000000" },
+        { field: "orderNo", message: "受発注番号は8桁で入力してください" },
+      ],
+      [
+        "受発注番号が半角英数以外",
+        { orderNo: "o1@@@@@1" },
+        { field: "orderNo", message: "受発注番号は半角英数で入力してください" },
+      ],
+      ["受発注区分が未入力", { orderKbn: "" }, { field: "orderKbn", message: "受発注区分を入力してください" }],
+      ["受発注区分が不正", { orderKbn: "3" }, { field: "orderKbn", message: "受発注区分は1か2を入力してください" }],
+      ["取引先コード未入力", { clientCode: "" }, { field: "clientCode", message: "取引先コードを入力してください" }],
+      [
+        "取引先コードが7桁",
+        { clientCode: "cc00000" },
+        { field: "clientCode", message: "取引先コードは8桁で入力してください" },
+      ],
+      [
+        "取引先コードが9桁",
+        { clientCode: "cc0000000" },
+        { field: "clientCode", message: "取引先コードは8桁で入力してください" },
+      ],
+      [
+        "取引先コードが半角英数以外",
+        { clientCode: "cc@@@@@1" },
+        { field: "clientCode", message: "取引先コードは半角英数で入力してください" },
+      ],
+      ["受発注日が未入力", { orderDate: "" }, { field: "orderDate", message: "受発注日を入力してください" }],
+      [
+        "受発注日の形式が不正",
+        { orderDate: "22026-01-01" },
+        { field: "orderDate", message: "日付はyyyy-MM-ddの形式で入力してください" },
+      ],
+      [
+        "受発注日の値が不正",
+        { orderDate: "2026-09-31" },
+        { field: "orderDate", message: "正しい日付を入力してください" },
+      ],
+      [
+        "確定日の形式が不正",
+        { confirmedDate: "22026-01-02" },
+        { field: "confirmedDate", message: "日付はyyyy-MM-ddの形式で入力してください" },
+      ],
+      [
+        "確定日の値が不正",
+        { confirmedDate: "2026-09-31" },
+        { field: "confirmedDate", message: "正しい日付を入力してください" },
+      ],
+      [
+        "発注で出荷日入力",
+        { orderKbn: "2", shipDate: "2026-01-03" },
+        { field: "shipDate", message: "出荷日は入力できません" },
+      ],
+      [
+        "受注で出荷日未入力",
+        { orderKbn: "1", shipDate: "" },
+        { field: "shipDate", message: "出荷日を入力してください" },
+      ],
+      [
+        "出荷日の形式が不正",
+        { shipDate: "22026-01-03" },
+        { field: "shipDate", message: "日付はyyyy-MM-ddの形式で入力してください" },
+      ],
+      ["出荷日の値が不正", { shipDate: "2026-09-31" }, { field: "shipDate", message: "正しい日付を入力してください" }],
+      [
+        "納品予定日の形式が不正",
+        { deliverDate: "22026-01-04" },
+        { field: "deliverDate", message: "日付はyyyy-MM-ddの形式で入力してください" },
+      ],
+      [
+        "納品予定日の値が不正",
+        { deliverDate: "2026-09-31" },
+        { field: "deliverDate", message: "正しい日付を入力してください" },
+      ],
+      ["登録者ID未入力", { createdId: "" }, { field: "createdId", message: "登録者IDを入力してください" }],
+      [
+        "登録者IDが5桁",
+        { createdId: "u0000" },
+        { field: "createdId", message: "登録者IDは6桁で入力してください" },
+      ],
+      [
+        "登録者IDが7桁",
+        { createdId: "u000000" },
+        { field: "createdId", message: "登録者IDは6桁で入力してください" },
+      ],
+      [
+        "登録者IDが半角英数以外",
+        { createdId: "u@@@@1" },
+        { field: "createdId", message: "登録者IDは半角英数で入力してください" },
+      ],
+      //相関チェックエラー
+      [
+        "確定日が受発注日より前",
+        { orderDate: "2026-01-02", confirmedDate: "2026-01-01" },
+        { field: "confirmedDate", message: "確定日は受発注日以降の日付を入力してください" },
+      ],
+      [
+        "出荷日が受発注日より前",
+        { orderDate: "2026-01-02", shipDate: "2026-01-01" },
+        { field: "shipDate", message: "出荷日は受注日以降の日付を入力してください" },
+      ],
+      [
+        "出荷日が確定日より前",
+        { confirmedDate: "2026-01-02", shipDate: "2026-01-01" },
+        { field: "shipDate", message: "出荷日は入金日以降の日付を入力してください" },
+      ],
+      [
+        "納品予定日が受発注日より前",
+        { orderDate: "2026-01-02", deliverDate: "2026-01-01" },
+        { field: "deliverDate", message: "納品予定日は受発注日以降の日付を入力してください" },
+      ],
+      [
+        "納品予定日が確定日より前",
+        { confirmedDate: "2026-01-02", deliverDate: "2026-01-01" },
+        { field: "deliverDate", message: "納品予定日は確定日以降の日付を入力してください" },
+      ],
+      [
+        "納品予定日が出荷日より前",
+        { shipDate: "2026-01-03", deliverDate: "2026-01-02" },
+        { field: "deliverDate", message: "納品予定日は出荷日以降の日付を入力してください" },
+      ],
+    ])("[異常系] %s 場合、400エラーを返却すること", async (_, invalidBody, expectedError) => {
+      const req = {
+        body: {
+          ...orderData.body,
+          ...invalidBody,
+        },
+      };
+      await orderController.create(req, res);
+      expect(res.status).toHaveBeenCalledWith(400);
+      expect(res.json).toHaveBeenCalledWith({
+        errors: [expectedError],
+      });
+    });
+
+    test("[異常系] UniqueConstraintError発生時、409エラーとなること", async () => {
+      const req = orderData;
+      const expectedError = new UniqueConstraintError("orderNo", "この受発注番号は既に使用されています");
+      const spyConsole = jest.spyOn(console, "log").mockImplementation();
+
+      jest.spyOn(orderService, "create").mockRejectedValue(expectedError);
+
+      await orderController.create(req, res);
+      expect(spyConsole).toHaveBeenCalledWith(expectedError);
+      expect(res.status).toHaveBeenCalledWith(UniqueConstraintError.status);
+      expect(res.json).toHaveBeenCalledWith({
+        errors: [{ field: "orderNo", message: "この受発注番号は既に使用されています" }],
+      });
+    });
+    test("[異常系] NotFoundError発生時、404エラーとなること", async () => {
+      const req = orderData;
+      const expectedError = new NotFoundError("clientCode", "この取引先コードは存在しません");
+      const spyConsole = jest.spyOn(console, "log").mockImplementation();
+
+      jest.spyOn(orderService, "create").mockRejectedValue(expectedError);
+
+      await orderController.create(req, res);
+      expect(spyConsole).toHaveBeenCalledWith(expectedError);
+      expect(res.status).toHaveBeenCalledWith(NotFoundError.status);
+      expect(res.json).toHaveBeenCalledWith({
+        errors: [{ field: "clientCode", message: "この取引先コードは存在しません" }],
+      });
+    });
+    test("[異常系] Serviceでエラー発生時、500エラーとなること", async () => {
+      const req = orderData;
+      const expectedError = new Error();
+      const spyConsole = jest.spyOn(console, "log").mockImplementation();
+
+      jest.spyOn(orderService, "create").mockRejectedValue(expectedError);
+
+      await orderController.create(req, res);
+      expect(spyConsole).toHaveBeenCalledWith(expectedError);
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(res.send).toHaveBeenCalled();
+    });
+  });
+
   describe("update 受発注情報更新", () => {
     test("[正常系] 更新情報がServiceに渡され、正常終了すること", async () => {
       // 検索条件
@@ -386,7 +652,7 @@ describe("orderController", () => {
         },
         body: {
           confirmedDate: "",
-          shipDate: "2026-01-02",
+          shipDate: "2026-01-03",
           deliverDate: "",
           productCode: "pc00001",
           quantity: "10",
@@ -404,7 +670,7 @@ describe("orderController", () => {
       expect(spy).toHaveBeenCalledTimes(1);
       expect(spy).toHaveBeenCalledWith("o1000001", {
         confirmedDate: null,
-        shipDate: "2026-01-02",
+        shipDate: "2026-01-03",
         deliverDate: null,
         productCode: "pc00001",
         quantity: "10",
@@ -476,7 +742,7 @@ describe("orderController", () => {
       });
     });
 
-    test("[異常系] 受発注番号が7桁（8桁以外）の場合、400エラーとなること", async () => {
+    test("[異常系] 受発注番号が7桁の場合、400エラーとなること", async () => {
       // 検索条件
       const req = {
         params: {
@@ -497,7 +763,7 @@ describe("orderController", () => {
       expect(res.status).toHaveBeenCalledWith(400);
     });
 
-    test("[異常系] 受発注番号が9桁（8桁以外）の場合、400エラーとなること", async () => {
+    test("[異常系] 受発注番号が9桁の場合、400エラーとなること", async () => {
       // 検索条件
       const req = {
         params: {
@@ -583,7 +849,7 @@ describe("orderController", () => {
       });
     });
 
-    test("[異常系] 更新者IDが5桁（6桁以外）の場合、400エラーとなること", async () => {
+    test("[異常系] 更新者IDが5桁の場合、400エラーとなること", async () => {
       // 検索条件
       const req = {
         params: {
@@ -618,7 +884,7 @@ describe("orderController", () => {
       });
     });
 
-    test("[異常系] 更新者IDが7桁（6桁以外）の場合、400エラーとなること", async () => {
+    test("[異常系] 更新者IDが7桁の場合、400エラーとなること", async () => {
       // 検索条件
       const req = {
         params: {
@@ -1081,12 +1347,17 @@ describe("orderController", () => {
         { field: "productCode", message: "商品コードは7桁で入力してください" },
       ],
       [
+        "商品コードが8桁",
+        { productCode: "pc000000" },
+        { field: "productCode", message: "商品コードは7桁で入力してください" },
+      ],
+      [
         "商品コードが半角英数以外",
         { productCode: "pc@@@@1" },
         { field: "productCode", message: "商品コードは半角英数で入力してください" },
       ],
       ["数量未入力", { quantity: "" }, { field: "quantity", message: "数量を入力してください" }],
-      ["数量が数字以外", { quantity: "abc" }, { field: "quantity", message: "数量は半角数字で入力してください" }],
+      ["数量が半角数字以外", { quantity: "abc" }, { field: "quantity", message: "数量は半角数字で入力してください" }],
       ["数量が0", { quantity: "0" }, { field: "quantity", message: "数量は1以上で入力してください" }],
     ])("[異常系] %s", (_, invalidData, expectedError) => {
       const actual = orderController.validate({

@@ -165,6 +165,37 @@ describe("orderRepository", () => {
     });
   });
 
+  describe("create 受発注情報登録", () => {
+    let spy;
+
+    beforeEach(() => {
+      spy = jest.spyOn(orderModel, "create").mockResolvedValueOnce();
+    });
+
+    test("[正常系] 受発注情報を登録", async () => {
+      //登録情報
+      const orderInfo = {
+        orderNo: "o1000001",
+        orderKbn: "1",
+        clientCode: "cc000001",
+        productCode: "pc00001",
+        orderDate: "2026-01-01",
+        confirmedDate: "",
+        shipDate: "2026-01-03",
+        deliverDate: "",
+        amountTaxIncluded: "20000",
+      };
+
+      //テスト対象関数の呼び出し
+      await orderRepository.create(orderInfo);
+
+      // Mockした関数の呼び出し回数を検証
+      expect(spy).toHaveBeenCalledTimes(1);
+      // Mockした関数呼び出し時の引数を検証
+      expect(spy).toHaveBeenCalledWith(orderInfo);
+    });
+  });
+
   describe("update 受発注情報更新", () => {
     test("[正常系] 受発注情報を更新", async () => {
       // 更新条件
