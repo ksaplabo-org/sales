@@ -79,10 +79,12 @@ describe("orderService", () => {
       const actual = await orderService.findByNo(orderNo);
 
       //検証
-      expect(actual.dataValues.updatedName).toBe("山田 哲入");
       expect(actual).toEqual(
         expect.objectContaining({
           updatedId: "u000001",
+          dataValues: expect.objectContaining({
+            updatedName: "山田 哲入",
+          }),
         }),
       );
       expect(findSpy).toHaveBeenCalledTimes(1);
@@ -114,12 +116,15 @@ describe("orderService", () => {
 
   describe("create 受発注情報登録", () => {
     test("[正常系] 受発注情報を登録できること", async () => {
+      jest.useFakeTimers();
+      jest.setSystemTime(new Date("2026-01-01T10:00:00.000Z"));
+
       // テストデータ
       const orderInfo = {
         orderNo: "o1000001",
         orderKbn: "1",
         clientCode: "cc000001",
-        orderDate: "2026-1-1",
+        orderDate: "2026-01-01",
         confirmedDate: "",
         shipDate: "",
         deliverDate: "",
@@ -155,8 +160,46 @@ describe("orderService", () => {
       expect(createArg.tax).toBe(1000);
       expect(createArg.amountTaxIncluded).toBe(11000);
 
-      expect(createArg.createdAt).toBeDefined();
-      expect(createArg.updatedAt).toBeDefined();
+      expect(createArg.createdAt).toBe("2026-01-01T10:00:00.000Z");
+      expect(createArg.updatedAt).toBe("2026-01-01T10:00:00.000Z");
+      jest.useRealTimers();
+    });
+
+    test("[正常系] 消費税が四捨五入で計算されること", async () => {
+      // テストデータ
+      const orderInfo = {
+        orderNo: "o1000001",
+        orderKbn: "1",
+        clientCode: "cc000001",
+        orderDate: "2026-01-01",
+        confirmedDate: "",
+        shipDate: "",
+        deliverDate: "",
+        productCode: "pc00001",
+        quantity: 1,
+      };
+      const client = {
+        clientCode: "cc000001",
+      };
+      const product = {
+        productCode: "pc00001",
+        productPrice: 15,
+      };
+      // Mock設定
+      jest.spyOn(orderRepository, "findByNo").mockResolvedValueOnce(null);
+      jest.spyOn(clientRepository, "findByCode").mockResolvedValueOnce(client);
+      jest.spyOn(productRepository, "findByCode").mockResolvedValueOnce(product);
+      const spyCreate = jest.spyOn(orderRepository, "create").mockResolvedValueOnce();
+
+      // テスト対象関数呼び出し
+      await orderService.create(orderInfo);
+
+      // 検証
+      const createArg = spyCreate.mock.calls[0][0];
+
+      expect(createArg.amount).toBe(15);
+      expect(createArg.tax).toBe(2);
+      expect(createArg.amountTaxIncluded).toBe(17);
     });
 
     test("[異常系] 受発注番号が既に存在する場合はUniqueConstraintErrorが発生すること", async () => {
@@ -250,6 +293,63 @@ describe("orderService", () => {
       );
     });
 
+    test.each([
+      ["受発注日=確定日=出荷日=納品予定日", "2026-01-01", "2026-01-01", "2026-01-01", "2026-01-01"],
+      ["うるう年の2月29日", "2028-02-29", "2028-02-29", "2028-02-29", "2028-02-29"],
+    ])("[正常系] %s の場合も更新できること", async (_, orderDate, confirmedDate, shipDate, deliverDate) => {
+      //更新条件
+      const orderNo = "o1000001";
+
+      const orderInfo = {
+        confirmedDate,
+        shipDate,
+        deliverDate,
+        productCode: "pc00001",
+        quantity: 10,
+        updatedId: "u00001",
+      };
+      const order = {
+        orderNo: "o1000001",
+        orderKbn: "1",
+        orderDate,
+        confirmedDate: null,
+        shipDate: null,
+      };
+      const product = {
+        productCode: "pc00001",
+        productPrice: 1000,
+        orderKbn: "1",
+      };
+
+      //Mock設定
+      const findSpy = jest.spyOn(orderRepository, "findByNo").mockResolvedValueOnce(order);
+      const productSpy = jest.spyOn(productRepository, "findByCode").mockResolvedValueOnce(product);
+      const updateSpy = jest.spyOn(orderRepository, "update").mockResolvedValueOnce();
+
+      //テスト対象関数呼び出し
+      await orderService.update(orderNo, orderInfo);
+
+      //検証
+      expect(findSpy).toHaveBeenCalledTimes(1);
+      expect(findSpy).toHaveBeenCalledWith(orderNo);
+      expect(productSpy).toHaveBeenCalledTimes(1);
+      expect(productSpy).toHaveBeenCalledWith(orderInfo.productCode);
+      expect(updateSpy).toHaveBeenCalledTimes(1);
+      expect(updateSpy).toHaveBeenCalledWith(
+        orderNo,
+        expect.objectContaining({
+          confirmedDate,
+          shipDate,
+          deliverDate,
+          productCode: "pc00001",
+          quantity: 10,
+          amount: 10000,
+          tax: 1000,
+          amountTaxIncluded: 11000,
+        }),
+      );
+    });
+
     test("[正常系] 発注データが確定日未設定かつ納品予定日設定の場合でも更新できること", async () => {
       //更新条件
       const orderNo = "o2000001";
@@ -280,6 +380,17 @@ describe("orderService", () => {
       //テスト対象関数呼び出し
       await orderService.update(orderNo, orderInfo);
       expect(updateSpy).toHaveBeenCalledTimes(1);
+      expect(updateSpy).toHaveBeenCalledWith(
+        orderNo,
+        expect.objectContaining({
+          deliverDate: "2026-01-14",
+          productCode: "pc00001",
+          quantity: 10,
+          amount: 10000,
+          tax: 1000,
+          amountTaxIncluded: 11000,
+        }),
+      );
     });
 
     test("[異常系] 対象データが存在しない場合はNotFoundErrorが発生すること", async () => {
@@ -408,10 +519,10 @@ describe("orderService", () => {
     });
 
     test.each([
-      ["確定日の日付形式が不正", "confirmedDate", "2026/01/01", "日付はyyyy-MM-ddの形式で入力してください"],
-      ["出荷日の日付形式が不正", "shipDate", "2026/01/01", "日付はyyyy-MM-ddの形式で入力してください"],
-      ["納品予定日の日付形式が不正", "deliverDate", "2026/01/01", "日付はyyyy-MM-ddの形式で入力してください"],
-    ])("[異常系 %sの形式が不正の場合はOrderValidationErrorが発生すること", async (_, field, value, message) => {
+      ["確定日の日付形式が不正", "confirmedDate", "2026/01/02", "日付はyyyy-MM-ddの形式で入力してください"],
+      ["出荷日の日付形式が不正", "shipDate", "2026/01/03", "日付はyyyy-MM-ddの形式で入力してください"],
+      ["納品予定日の日付形式が不正", "deliverDate", "2026/01/04", "日付はyyyy-MM-ddの形式で入力してください"],
+    ])("[異常系] %sの形式が不正の場合はOrderValidationErrorが発生すること", async (_, field, value, message) => {
       //更新条件
       const order = {
         orderNo: "o1000001",
@@ -448,7 +559,7 @@ describe("orderService", () => {
       ["確定日の日付が不正", "confirmedDate", "2026-09-31", "正しい日付を入力してください"],
       ["出荷日の日付が不正", "shipDate", "2026-09-31", "正しい日付を入力してください"],
       ["納品予定日の日付が不正", "deliverDate", "2026-09-31", "正しい日付を入力してください"],
-    ])("[異常系 %sが存在しない日付の場合はOrderValidationErrorが発生すること", async (_, field, value, message) => {
+    ])("[異常系] %sが存在しない日付の場合はOrderValidationErrorが発生すること", async (_, field, value, message) => {
       //更新条件
       const order = {
         orderNo: "o1000001",
@@ -688,6 +799,35 @@ describe("orderService", () => {
           },
         ]);
       }
+    });
+
+    test("[異常系] 複数の相関チェックエラーが発生した場合はすべてのエラー情報が設定されること", async () => {
+      //検索条件
+      const orderInfo = {
+        orderNo: "o1000001",
+        orderKbn: "1",
+        orderDate: "2026-01-04",
+        confirmedDate: "2026-01-03",
+        shipDate: "2026-01-02",
+        deliverDate: "2026-01-01",
+      };
+
+      await expect(orderService.update("o1000001", orderInfo)).rejects.toMatchObject({
+        errors: [
+          {
+            field: "confirmedDate",
+            message: "確定日は受発注日以降の日付を入力してください",
+          },
+          {
+            field: "shipDate",
+            message: "出荷日は受注日以降の日付を入力してください",
+          },
+          {
+            field: "deliverDate",
+            message: "納品予定日は受発注日以降の日付を入力してください",
+          },
+        ],
+      });
     });
 
     test("[異常系] 商品コードが存在しない場合はNotFoundErrorが発生すること", async () => {

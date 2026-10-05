@@ -343,70 +343,8 @@ describe("orderController", () => {
   });
 
   describe("create 受発注情報登録", () => {
-    test("[正常系] 登録情報がServiceに渡され、ステータス[201]でレスポンスされること", async () => {
-      // Mock設定
-      const spy = jest.spyOn(orderService, "create").mockResolvedValue();
-
-      // テスト対象関数の呼び出し
-      await orderController.create(orderData, res);
-
-      //Serviceの呼び出しを検証
-      expect(spy).toHaveBeenCalledTimes(1);
-      expect(spy).toHaveBeenCalledWith(
-        expect.objectContaining({
-          confirmedDate: null,
-          deliverDate: null,
-        }),
-      );
-      //レスポンスステータス設定の検証
-      expect(res.status).toHaveBeenCalledWith(201);
-    });
-
-    test("[正常系] 発注時に空文字の出荷日がnull変換されてServiceに渡され、ステータス[201]でレスポンスされること", async () => {
-      // Mock設定
-      const req = {
-        body: {
-          ...orderData.body,
-          orderKbn: "2",
-          shipDate: "",
-        },
-      };
-      const spy = jest.spyOn(orderService, "create").mockResolvedValue();
-
-      // テスト対象関数の呼び出し
-      await orderController.create(req, res);
-
-      //Serviceの呼び出しを検証
-      expect(spy).toHaveBeenCalledTimes(1);
-      expect(spy).toHaveBeenCalledWith(
-        expect.objectContaining({
-          shipDate: null,
-        }),
-      );
-      //レスポンスステータス設定の検証
-      expect(res.status).toHaveBeenCalledWith(201);
-    });
-
-    test("[正常系]納品予定日が出荷日以降の場合、正常終了すること", async () => {
-      // Mock設定
-      const req = {
-        body: {
-          ...orderData.body,
-          shipDate: "2026-01-02",
-          deliverDate: "2026-01-03",
-        },
-      };
-      const spy = jest.spyOn(orderService, "create").mockResolvedValue();
-
-      // テスト対象関数の呼び出し
-      await orderController.create(req, res);
-
-      //Serviceの呼び出しを検証
-      expect(spy).toHaveBeenCalledTimes(1);
-    });
-
     //登録情報
-    const orderData = {
+    const createReq = {
       body: {
         orderNo: "o1000001",
         orderKbn: "1",
@@ -421,19 +359,78 @@ describe("orderController", () => {
         updatedId: "u00001",
       },
     };
+    test("[正常系] 登録情報がServiceに渡され、ステータス[201]でレスポンスされること", async () => {
+      // Mock設定
+      const spy = jest.spyOn(orderService, "create").mockResolvedValue();
+
+      // テスト対象関数の呼び出し
+      await orderController.create(createReq, res);
+
+      //Serviceの呼び出しを検証
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith({
+        ...createReq.body,
+        confirmedDate: null,
+        deliverDate: null,
+      });
+      //レスポンスステータス設定の検証
+      expect(res.status).toHaveBeenCalledWith(201);
+    });
+
+    test("[正常系] 発注時に空文字の出荷日がnull変換されてServiceに渡され、ステータス[201]でレスポンスされること", async () => {
+      // Mock設定
+      const req = {
+        body: {
+          ...createReq.body,
+          orderKbn: "2",
+          confirmedDate: "2026-01-02",
+          shipDate: "",
+          deliverDate: "2026-01-04",
+        },
+      };
+      const spy = jest.spyOn(orderService, "create").mockResolvedValue();
+
+      // テスト対象関数の呼び出し
+      await orderController.create(req, res);
+
+      //Serviceの呼び出しを検証
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith({
+        ...req.body,
+        shipDate: null,
+      });
+      //レスポンスステータス設定の検証
+      expect(res.status).toHaveBeenCalledWith(201);
+    });
+
+    test.each([
+      ["受発注日＜出荷日＜納品予定日", "2026-01-01", "2026-01-02", "2026-01-03"],
+      ["受発注日=出荷日=納品予定日", "2026-01-01", "2026-01-01", "2026-01-01"],
+      ["うるう年の2月29日", "2028-02-29", "2028-02-29", "2028-02-29"],
+    ])("[正常系] %s の場合、正常終了すること", async (_, orderDate, shipDate, deliverDate) => {
+      // Mock設定
+      const req = {
+        body: {
+          ...createReq.body,
+          orderDate,
+          shipDate,
+          deliverDate,
+        },
+      };
+      const spy = jest.spyOn(orderService, "create").mockResolvedValue();
+
+      // テスト対象関数の呼び出し
+      await orderController.create(req, res);
+
+      //Serviceの呼び出しを検証
+      expect(spy).toHaveBeenCalledTimes(1);
+    });
+
     test.each([
       //単項目チェックエラー
       ["受発注番号が未入力", { orderNo: "" }, { field: "orderNo", message: "受発注番号を入力してください" }],
-      [
-        "受発注番号が7桁",
-        { orderNo: "o100000" },
-        { field: "orderNo", message: "受発注番号は8桁で入力してください" },
-      ],
-      [
-        "受発注番号が9桁",
-        { orderNo: "o10000000" },
-        { field: "orderNo", message: "受発注番号は8桁で入力してください" },
-      ],
+      ["受発注番号が7桁", { orderNo: "o100000" }, { field: "orderNo", message: "受発注番号は8桁で入力してください" }],
+      ["受発注番号が9桁", { orderNo: "o10000000" }, { field: "orderNo", message: "受発注番号は8桁で入力してください" }],
       [
         "受発注番号が半角英数以外",
         { orderNo: "o1@@@@@1" },
@@ -464,6 +461,11 @@ describe("orderController", () => {
         { field: "orderDate", message: "日付はyyyy-MM-ddの形式で入力してください" },
       ],
       [
+        "受発注日がyyyy/MM/dd形式",
+        { orderDate: "2026/01/01" },
+        { field: "orderDate", message: "日付はyyyy-MM-ddの形式で入力してください" },
+      ],
+      [
         "受発注日の値が不正",
         { orderDate: "2026-09-31" },
         { field: "orderDate", message: "正しい日付を入力してください" },
@@ -471,6 +473,11 @@ describe("orderController", () => {
       [
         "確定日の形式が不正",
         { confirmedDate: "22026-01-02" },
+        { field: "confirmedDate", message: "日付はyyyy-MM-ddの形式で入力してください" },
+      ],
+      [
+        "確定日がyyyy/MM/dd形式",
+        { confirmedDate: "2026/01/02" },
         { field: "confirmedDate", message: "日付はyyyy-MM-ddの形式で入力してください" },
       ],
       [
@@ -493,10 +500,20 @@ describe("orderController", () => {
         { shipDate: "22026-01-03" },
         { field: "shipDate", message: "日付はyyyy-MM-ddの形式で入力してください" },
       ],
+      [
+        "出荷日がyyyy/MM/dd形式",
+        { shipDate: "2026/01/03" },
+        { field: "shipDate", message: "日付はyyyy-MM-ddの形式で入力してください" },
+      ],
       ["出荷日の値が不正", { shipDate: "2026-09-31" }, { field: "shipDate", message: "正しい日付を入力してください" }],
       [
         "納品予定日の形式が不正",
         { deliverDate: "22026-01-04" },
+        { field: "deliverDate", message: "日付はyyyy-MM-ddの形式で入力してください" },
+      ],
+      [
+        "納品予定日がyyyy/MM/dd形式",
+        { deliverDate: "2026/01/04" },
         { field: "deliverDate", message: "日付はyyyy-MM-ddの形式で入力してください" },
       ],
       [
@@ -505,16 +522,8 @@ describe("orderController", () => {
         { field: "deliverDate", message: "正しい日付を入力してください" },
       ],
       ["登録者ID未入力", { createdId: "" }, { field: "createdId", message: "登録者IDを入力してください" }],
-      [
-        "登録者IDが5桁",
-        { createdId: "u0000" },
-        { field: "createdId", message: "登録者IDは6桁で入力してください" },
-      ],
-      [
-        "登録者IDが7桁",
-        { createdId: "u000000" },
-        { field: "createdId", message: "登録者IDは6桁で入力してください" },
-      ],
+      ["登録者IDが5桁", { createdId: "u0000" }, { field: "createdId", message: "登録者IDは6桁で入力してください" }],
+      ["登録者IDが7桁", { createdId: "u000000" }, { field: "createdId", message: "登録者IDは6桁で入力してください" }],
       [
         "登録者IDが半角英数以外",
         { createdId: "u@@@@1" },
@@ -551,10 +560,10 @@ describe("orderController", () => {
         { shipDate: "2026-01-03", deliverDate: "2026-01-02" },
         { field: "deliverDate", message: "納品予定日は出荷日以降の日付を入力してください" },
       ],
-    ])("[異常系] %s 場合、400エラーを返却すること", async (_, invalidBody, expectedError) => {
+    ])("[異常系] %s の場合、400エラーを返却すること", async (_, invalidBody, expectedError) => {
       const req = {
         body: {
-          ...orderData.body,
+          ...createReq.body,
           ...invalidBody,
         },
       };
@@ -566,7 +575,7 @@ describe("orderController", () => {
     });
 
     test("[異常系] UniqueConstraintError発生時、409エラーとなること", async () => {
-      const req = orderData;
+      const req = createReq;
       const expectedError = new UniqueConstraintError("orderNo", "この受発注番号は既に使用されています");
       const spyConsole = jest.spyOn(console, "log").mockImplementation();
 
@@ -580,7 +589,7 @@ describe("orderController", () => {
       });
     });
     test("[異常系] NotFoundError発生時、404エラーとなること", async () => {
-      const req = orderData;
+      const req = createReq;
       const expectedError = new NotFoundError("clientCode", "この取引先コードは存在しません");
       const spyConsole = jest.spyOn(console, "log").mockImplementation();
 
@@ -594,7 +603,7 @@ describe("orderController", () => {
       });
     });
     test("[異常系] Serviceでエラー発生時、500エラーとなること", async () => {
-      const req = orderData;
+      const req = createReq;
       const expectedError = new Error();
       const spyConsole = jest.spyOn(console, "log").mockImplementation();
 
@@ -1017,14 +1026,14 @@ describe("orderController", () => {
 
       // Mock設定
       const expectedError = new OrderValidationError([{ field: "confirmedDate", message: "確定日は入力できません" }]);
-      const spyDelete = jest.spyOn(orderService, "update").mockRejectedValue(expectedError);
+      const spyUpdate = jest.spyOn(orderService, "update").mockRejectedValue(expectedError);
 
       // テスト対象関数の呼び出し
       await orderController.update(req, res);
 
       // Serviceの呼び出しを検証
-      expect(spyDelete).toHaveBeenCalledTimes(1);
-      expect(spyDelete).toHaveBeenCalledWith("o1000001", expect.any(Object));
+      expect(spyUpdate).toHaveBeenCalledTimes(1);
+      expect(spyUpdate).toHaveBeenCalledWith("o1000001", expect.any(Object));
       // レスポンスステータス設定の検証
       expect(res.status).toHaveBeenCalledTimes(1);
       expect(res.status).toHaveBeenCalledWith(OrderValidationError.status);
@@ -1035,6 +1044,54 @@ describe("orderController", () => {
           {
             field: "confirmedDate",
             message: "確定日は入力できません",
+          },
+        ],
+      });
+    });
+
+    test("[異常系] OrderValidationErrorで複数エラーが発生した場合、すべてのエラー情報が返却されること", async () => {
+      // 検索条件
+      const req = {
+        params: {
+          orderNo: "o1000001",
+        },
+        body: {
+          confirmedDate: "2026-01-02",
+          shipDate: "2026-01-03",
+          deliverDate: "2026-01-04",
+          productCode: "pc00001",
+          quantity: 10,
+          updatedId: "u00001",
+        },
+      };
+
+      // Mock設定
+      const expectedError = new OrderValidationError([
+        { field: "confirmedDate", message: "確定日は入力できません" },
+        { field: "shipDate", message: "出荷日は入力できません" },
+      ]);
+      const spyUpdate = jest.spyOn(orderService, "update").mockRejectedValue(expectedError);
+
+      // テスト対象関数の呼び出し
+      await orderController.update(req, res);
+
+      // Serviceの呼び出しを検証
+      expect(spyUpdate).toHaveBeenCalledTimes(1);
+      expect(spyUpdate).toHaveBeenCalledWith("o1000001", expect.any(Object));
+      // レスポンスステータス設定の検証
+      expect(res.status).toHaveBeenCalledTimes(1);
+      expect(res.status).toHaveBeenCalledWith(OrderValidationError.status);
+      // レスポンス送信の検証
+      expect(res.json).toHaveBeenCalledTimes(1);
+      expect(res.json).toHaveBeenCalledWith({
+        errors: [
+          {
+            field: "confirmedDate",
+            message: "確定日は入力できません",
+          },
+          {
+            field: "shipDate",
+            message: "出荷日は入力できません",
           },
         ],
       });
@@ -1058,15 +1115,15 @@ describe("orderController", () => {
 
       // Mock設定
       const expectedError = new Error();
-      const spyDelete = jest.spyOn(orderService, "update").mockRejectedValue(expectedError);
+      const spyUpdate = jest.spyOn(orderService, "update").mockRejectedValue(expectedError);
       const spyConsole = jest.spyOn(console, "log").mockImplementation();
 
       // テスト対象関数の呼び出し
       await orderController.update(req, res);
 
       // Serviceの呼び出しを検証
-      expect(spyDelete).toHaveBeenCalledTimes(1);
-      expect(spyDelete).toHaveBeenCalledWith("o1000001", expect.any(Object));
+      expect(spyUpdate).toHaveBeenCalledTimes(1);
+      expect(spyUpdate).toHaveBeenCalledWith("o1000001", expect.any(Object));
       // Serviceの呼び出しを検証
       expect(spyConsole).toHaveBeenCalledTimes(1);
       expect(spyConsole).toHaveBeenCalledWith(expectedError);
@@ -1075,7 +1132,7 @@ describe("orderController", () => {
       expect(res.status).toHaveBeenCalledWith(500);
       // レスポンス送信の検証
       expect(res.send).toHaveBeenCalledTimes(1);
-      expect(res.send).toHaveBeenCalledTimes(1);
+      expect(res.send).toHaveBeenCalledWith();
     });
   });
 
