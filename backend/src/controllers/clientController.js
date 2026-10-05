@@ -1,6 +1,7 @@
 import UniqueConstraintError from "../errors/UniqueConstraintError.js";
 import NotFoundError from "../errors/NotFoundError.js";
 import ReferenceConstraintError from "../errors/ReferenceConstraintError.js";
+import ValidationError from "../errors/ValidationError.js";
 import clientService from "../services/clientService.js";
 
 class ClientController {
@@ -125,6 +126,9 @@ class ClientController {
       if (e instanceof UniqueConstraintError) {
         //一意性制約チェックエラー
         res.status(UniqueConstraintError.status).json({ errors: [{ field: e.field, message: e.message }] });
+      } else if (e instanceof ValidationError) {
+        //整合性チェックエラー
+        res.status(ValidationError.status).json({ errors: [{ field: e.field, message: e.message }] });
       } else {
         res.status(500).send();
       }
@@ -186,6 +190,9 @@ class ClientController {
       if (e instanceof NotFoundError) {
         // 存在チェックエラー
         res.status(NotFoundError.status).json({ errors: [{ field: e.field, message: e.message }] });
+      } else if (e instanceof ValidationError) {
+        //整合性チェックエラー
+        res.status(ValidationError.status).json({ errors: [{ field: e.field, message: e.message }] });
       } else {
         res.status(500).send();
       }
