@@ -6,7 +6,7 @@
       <BBreadcrumb
         :items="[
           { text: 'トップページ', to: '/' },
-          //{ text: 'お知らせマスタ', to: { name: 'noticeMaster' } },
+          { text: 'お知らせマスタ', to: { name: 'noticeMaster' } },
           { text: 'お知らせ登録', active: true },
         ]"
       />
@@ -26,13 +26,14 @@
 
     <BForm @submit.prevent="save">
       <BRow class="mb-3">
-        <BFormGroup label="お知らせID" label-for="productCode" label-cols="3">
+        <BFormGroup label="お知らせID" label-for="noticeId" label-cols="3">
           <div v-if="!isEdit">
             <BFormInput
               id="noticeId"
               v-model="form.noticeId"
               :state="form.noticeId.length === 7"
-              :formatter="formatHalfWidthAlphaNumeric"
+              :formatter="formatAlphaNumericInput"
+              @compositionend="formatAlphaNumericInput"
               maxlength="7"
               required
             />
@@ -65,18 +66,18 @@
 
       <BRow class="mb-3">
         <BFormGroup label="掲載開始日" label-for="startDate" label-cols="3">
-          <BFormInput id="startDate" type="date" v-model="form.startDate" :state="startDateState" required />
-          <div v-if="startDateErrorMessage" class="invalid-feedback d-block">
-            {{ startDateErrorMessage }}
+          <BFormInput id="startDate" type="date" v-model="form.startDate" :state="getStartDatestate" required />
+          <div v-if="getStartDateErrorMessage" class="invalid-feedback d-block">
+            {{ getStartDateErrorMessage }}
           </div>
         </BFormGroup>
       </BRow>
 
       <BRow class="mb-3">
         <BFormGroup label="掲載終了日" label-for="endDate" label-cols="3">
-          <BFormInput id="endDate" type="date" v-model="form.endDate" :state="endDateState" required />
-          <div v-if="endDateErrorMessage" class="invalid-feedback d-block">
-            {{ endDateErrorMessage }}
+          <BFormInput id="endDate" type="date" v-model="form.endDate" :state="getEndDateState" required />
+          <div v-if="getEndDateErrorMessage" class="invalid-feedback d-block">
+            {{ getEndDateErrorMessage }}
           </div>
         </BFormGroup>
       </BRow>
@@ -195,10 +196,10 @@ const save = async () => {
     }
 
     // マスタ画面に遷移
-    /*router.push({
+    router.push({
       name: "noticeMaster",
       state: { message: messages.MSGI003, result: true },
-    });*/
+    });
   } catch (e) {
     console.log(e);
     showFailedToast(messages.MSGE004);
@@ -216,12 +217,17 @@ const showFailedToast = (message) => {
   failedToastText.value = message;
   showFailedToastMs.value = TOAST_MS;
 };
+
 /**
- * 掲載開始日エラーメッセージ取得
+ * 掲載開始日の状態判定
+ *
+ * true  : エラーなし
+ * false : エラーあり
  */
-const startDateErrorMessage = computed(() => {
+const getStartDatestate = computed(() => {
+  // 未入力は別判定
   if (!form.value.startDate) {
-    return "";
+    return false;
   }
 
   const startDate = new Date(form.value.startDate);
@@ -238,79 +244,22 @@ const startDateErrorMessage = computed(() => {
       startDate.getMonth() === registeredDate.getMonth() &&
       startDate.getDate() === registeredDate.getDate();
 
-    if (!isSameDate && startDate < systemDate) {
-      return formatMessage(
-        messages.MSGE017,
-        "掲載開始日",
-        "既に登録されている掲載開始日と同じ日付、またはシステム日時",
-      );
-    }
-
-    return "";
+    return isSameDate && startDate < systemDate;
   }
 
   // 登録
-  if (startDate < systemDate) {
-    return formatMessage(
-      messages.MSGE017,
-      "掲載開始日",
-      "システム日時",
-    );
-  }
-
-  return "";
+  return startDate > systemDate;
 });
 
 /**
- * 掲載終了日エラーメッセージ取得
- */
-const endDateErrorMessage = computed(() => {
-  // 掲載開始日、掲載終了日未入力
-  if (!form.value.startDate || !form.value.endDate) {
-    return "";
-  }
-
-  const startDate = new Date(form.value.startDate);
-  const endDate = new Date(form.value.endDate);
-
-  // 掲載開始日と掲載終了日の比較
-  if (startDate > endDate) {
-    return formatMessage(
-      messages.MSGE017,
-      "掲載終了日",
-      "掲載開始日"
-    );
-  }
-
-  return "";
-});
-
-/**
- * 掲載開始日入力欄状態
- * true  : 緑枠
- * false : 赤枠
- */
-const startDateState = computed(() => {
-  if (!form.value.startDate) {
-    return false;
-  }
-
-  if (startDateErrorMessage.value) {
-    return false;
-  }
-
-  return true;
-});
-
-/**
- * 掲載終了日入力欄状態
+ * 掲載終了日の状態判定
  * true  : 緑枠
  * false : 赤枠
  * null  : 黒枠
  */
-const endDateState = computed(() => {
+const getEndDateState = computed(() => {
   // 両方未入力
-  if (!form.value.startDate && !form.value.endDate) {
+  if (!form.value.endDate || form.value.startDate > form.value.endDate) {
     return false;
   }
 
@@ -319,17 +268,49 @@ const endDateState = computed(() => {
     return null;
   }
 
-  // 相関エラー
-  if (endDateErrorMessage.value) {
-    return false;
-  }
-
-  // 開始日入力済み、終了日未入力
-  if (form.value.startDate && !form.value.endDate) {
-    return false;
-  }
-
   return true;
+});
+
+/**
+ * 掲載開始日エラーメッセージ取得
+ */
+const getStartDateErrorMessage = computed(() => {
+  if (!form.value.startDate) {
+    return "";
+  }
+
+  if (!getStartDatestate.value && isEdit.value) {
+    return formatMessage(
+      messages.MSGE017,
+      "掲載開始日",
+      "登録済みの掲載開始日と同じ日付、または本日",
+    );
+  }
+  if (!getStartDatestate.value && !isEdit.value) {
+    return formatMessage(messages.MSGE017, "掲載開始日", "本日");
+  }
+
+  return "";
+});
+
+/**
+ * 掲載終了日エラーメッセージ取得
+ */
+const getEndDateErrorMessage = computed(() => {
+  // 掲載開始日、掲載終了日未入力
+  if (!form.value.endDate) {
+    return "";
+  }
+  // 掲載開始日と掲載終了日の比較
+  if (form.value.startDate > form.value.endDate) {
+    return formatMessage(
+      messages.MSGE017,
+      "掲載終了日",
+      "掲載開始日"
+    );
+  }
+
+  return "";
 });
 
 /**
