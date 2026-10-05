@@ -46,7 +46,7 @@
             ：{{ countCustomer }} 件
           </div>
           <div>
-            <span class="label-text mb-3 ms-4">仕入れ先</span>
+            <span class="label-text mb-3 ms-4">仕入先</span>
             ：{{ countSupplier }}件
           </div>
         </BCard>
