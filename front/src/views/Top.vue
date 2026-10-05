@@ -148,19 +148,46 @@ import { formatMessage } from "@/utils/messageUtil.js";
 const users = ref([]);
 const countUser = computed(() => users.value.filter((user) => user.role === "1").length);
 const countAdmin = computed(() => users.value.filter((user) => user.role === "2").length);
-let userUpdatedAt = ref("");
+const userUpdatedAt = computed(() => {
+  if (users.value.length === 0) {
+    return "";
+  }
+  return users.value
+    .reduce((max, user) => (max > user.updatedAt ? max : user.updatedAt), users.value[0].updatedAt)
+    .substring(0, 10)
+    .replace(/-/g, "/");
+});
+``;
 
 // 取引先マスタ
 const clients = ref([]);
 const countCustomer = computed(() => clients.value.filter((client) => client.orderKbn === "1").length);
 const countSupplier = computed(() => clients.value.filter((client) => client.orderKbn === "2").length);
-let clientUpdatedAt = ref("");
+const clientUpdatedAt = computed(() => {
+  if (clients.value.length === 0) {
+    return "";
+  }
+  return clients.value
+    .reduce((max, client) => (max > client.updatedAt ? max : client.updatedAt), clients.value[0].updatedAt)
+    .substring(0, 10)
+    .replace(/-/g, "/");
+});
+``;
 
 // 商品マスタ
 const products = ref([]);
 const countJuchuProduct = computed(() => products.value.filter((product) => product.orderKbn === "1").length);
 const countHatchuProduct = computed(() => products.value.filter((product) => product.orderKbn === "2").length);
-let productUpdatedAt = ref("");
+const productUpdatedAt = computed(() => {
+  if (products.value.length === 0) {
+    return "";
+  }
+  return products.value
+    .reduce((max, product) => (max > product.updatedAt ? max : product.updatedAt), products.value[0].updatedAt)
+    .substring(0, 10)
+    .replace(/-/g, "/");
+});
+``;
 
 // 最終更新日の配列
 const lastUpdatedMasters = ref([
@@ -221,32 +248,6 @@ onMounted(async () => {
       clients.value = await clientApi.getClients();
       products.value = await productApi.getProducts();
 
-      if (users.value.length > 0) {
-        // ユーザーの最終更新日取得
-        userUpdatedAt.value = users.value.reduce(
-          (max, user) => (max > user.updatedAt ? max : user.updatedAt),
-          users.value[0].updatedAt,
-        );
-        userUpdatedAt.value = userUpdatedAt.value.substring(0, 10).replace(/-/g, "/");
-      }
-
-      if (clients.value.length > 0) {
-        // 取引先の最終更新日
-        clientUpdatedAt.value = clients.value.reduce(
-          (max, client) => (max > client.updatedAt ? max : client.updatedAt),
-          clients.value[0].updatedAt,
-        );
-        clientUpdatedAt.value = clientUpdatedAt.value.substring(0, 10).replace(/-/g, "/");
-      }
-
-      if (products.value.length > 0) {
-        // 商品の最終更新日
-        productUpdatedAt.value = products.value.reduce(
-          (max, product) => (max > product.updatedAt ? max : product.updatedAt),
-          products.value[0].updatedAt,
-        );
-        productUpdatedAt.value = productUpdatedAt.value.substring(0, 10).replace(/-/g, "/");
-      }
       // 権限が一般の場合
     } else if (loginInfo.role === "1") {
       orders.value = await orderApi.getOrders();
