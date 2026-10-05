@@ -87,7 +87,15 @@
 
       <BRow class="mb-3">
         <BFormGroup label="住所2" label-for="address2" label-cols="3">
-          <BFormInput id="address2" v-model="form.address2" maxlength="20" />
+          <BFormInput
+            id="address2"
+            v-model="form.address2"
+            maxlength="20"
+            :state="form.address1.length == 0 && form.address2.length > 0 ? false : null"
+          />
+          <BFormInvalidFeedback v-if="form.address2">{{
+            formatMessage(messages.MSGE020, "住所1")
+          }}</BFormInvalidFeedback>
         </BFormGroup>
       </BRow>
 

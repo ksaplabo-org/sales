@@ -5,6 +5,7 @@ import clientRepository from "../../src/repositories/clientRepository.js";
 import NotFoundError from "../../src/errors/NotFoundError.js";
 import ReferenceConstraintError from "../../src/errors/ReferenceConstraintError.js";
 import UniqueConstraintError from "../../src/errors/UniqueConstraintError.js";
+import ValidationError from "../../src/errors/ValidationError.js";
 
 describe("clientService", () => {
   // 全テストケース実行後に行う処理
@@ -142,6 +143,30 @@ describe("clientService", () => {
       expect(spyFindByCode).toHaveBeenCalledWith(clientCode); // Mockした関数呼び出し時の引数を検証
       expect(spyCreate).not.toHaveBeenCalled(); // Mockした関数が呼び出されていないことを検証
     });
+
+   test("[異常系] 住所1が未入力で住所2を入力した場合 => ValidationErrorとなること", async () => {
+      const clientCode = "a0000011";
+
+      const clientInfo = { clientCode: clientCode, clientName: "C商社", orderKbn: "2", address2: "あいうえお" };
+
+      // Mock設定
+      const spyFindByCode = jest.spyOn(clientRepository, "findByCode").mockResolvedValueOnce(null);
+      const spyCreate = jest.spyOn(clientRepository, "create");
+
+      try {
+        // テスト対象関数の呼び出し
+        await clientService.create(clientInfo);
+        // エラーが発生しなかった場合はテスト失敗
+        fail();
+      } catch (error) {
+        expect(error).toBeInstanceOf(ValidationError); // スローしたエラーの検証
+        expect(error.field).toBe("address2"); // エラーフィールドを検証
+        expect(error.message).toBe("住所1から設定してください"); // エラーメッセージを検証
+      }
+      expect(spyFindByCode).toHaveBeenCalledTimes(1); // Mockした関数の呼び出し回数を検証
+      expect(spyFindByCode).toHaveBeenCalledWith(clientCode); // Mockした関数呼び出し時の引数を検証
+      expect(spyCreate).not.toHaveBeenCalled(); // Mockした関数が呼び出されていないことを検証
+    });
   });
 
   describe("update 取引先情報更新", () => {
@@ -210,6 +235,30 @@ describe("clientService", () => {
       expect(spyFindByCode).toHaveBeenCalledTimes(1); // Mockした関数の呼び出し回数を検証
       expect(spyFindByCode).toHaveBeenCalledWith(clientCode); // Mockした関数呼び出し時の引数を検証
       expect(spyUpdate).not.toHaveBeenCalled(); // Mockした関数の呼び出し回数を検証
+    });
+
+    test("[異常系] 住所1が未入力で住所2を入力した場合 => ValidationErrorとなること", async () => {
+      const clientCode = "a0000001";
+
+      const clientInfo = { clientCode: "a0000001", clientName: "C商社", orderKbn: "2", address2: "あいうえお" };
+
+      // Mock設定
+      const spyFindByCode = jest.spyOn(clientRepository, "findByCode").mockResolvedValueOnce(clientInfo);
+      const spyUpdate = jest.spyOn(clientRepository, "update");
+
+      try {
+        // テスト対象関数の呼び出し
+        await clientService.update(clientCode, clientInfo);
+        // エラーが発生しなかった場合はテスト失敗
+        fail();
+      } catch (error) {
+        expect(error).toBeInstanceOf(ValidationError); // スローしたエラーの検証
+        expect(error.field).toBe("address2"); // エラーフィールドを検証
+        expect(error.message).toBe("住所1から設定してください"); // エラーメッセージを検証
+      }
+      expect(spyFindByCode).toHaveBeenCalledTimes(1); // Mockした関数の呼び出し回数を検証
+      expect(spyFindByCode).toHaveBeenCalledWith(clientCode); // Mockした関数呼び出し時の引数を検証
+      expect(spyUpdate).not.toHaveBeenCalled(); // Mockした関数が呼び出されていないことを検証
     });
   });
 
