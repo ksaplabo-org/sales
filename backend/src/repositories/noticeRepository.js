@@ -14,6 +14,7 @@ class NoticeRepository {
     if (condition.noticeId) {
       where.noticeId = { [Op.like]: "%" + condition.noticeId + "%" };
     }
+    
     if (condition.startSearchDate) {
       where.endDate = { [Op.gte]: condition.startSearchDate };
     }
