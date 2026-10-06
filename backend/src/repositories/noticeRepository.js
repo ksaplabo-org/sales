@@ -12,7 +12,7 @@ class NoticeRepository {
     // 検索条件を作成
     const where = {};
     if (condition.noticeId) {
-      where.noticeId = { [Op.eq]: "%" + condition.noticeId + "%" };
+      where.noticeId = { [Op.like]: "%" + condition.noticeId + "%" };
     }
     if (condition.startSearchDate) {
       where.endDate = { [Op.gte]: condition.startSearchDate };
