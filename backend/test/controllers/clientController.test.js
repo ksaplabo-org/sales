@@ -5,6 +5,7 @@ import clientService from "../../src/services/clientService.js";
 import NotFoundError from "../../src/errors/NotFoundError.js";
 import ReferenceConstraintError from "../../src/errors/ReferenceConstraintError.js";
 import UniqueConstraintError from "../../src/errors/UniqueConstraintError.js";
+import ValidationError from "../../src/errors/ValidationError.js";
 
 //各テストケースの後に実行される処理
 afterEach(() => {
@@ -526,6 +527,42 @@ describe("clientController", () => {
       });
     });
 
+    test("[異常系] Serviceで整合性チェックエラー発生時、ステータス[400]でレスポンスされること", async () => {
+      const req = {
+        body: {
+          clientCode: "test0001",
+          clientName: "Cテスト有限会社",
+          orderKbn: "1",
+          postCode: "",
+          address1: "",
+          address2: "あいうえお",
+          telNumber: "",
+          createdId: "user01",
+        },
+      };
+
+      const expectedError = new ValidationError("address2", "住所1から設定してください");
+
+      const spyCreate = jest.spyOn(clientService, "create").mockRejectedValue(expectedError);
+
+      await clientController.create(req, res);
+
+      expect(spyCreate).toHaveBeenCalledTimes(1);
+      // レスポンスステータス設定の検証
+      expect(res.status).toHaveBeenCalledTimes(1);
+      expect(res.status).toHaveBeenCalledWith(400);
+      // レスポンス送信の検証
+      expect(res.json).toHaveBeenCalledTimes(1);
+      expect(res.json).toHaveBeenCalledWith({
+        errors: [
+          {
+            field: expectedError.field,
+            message: expectedError.message,
+          },
+        ],
+      });
+    });
+
     test("[異常系] Serviceでエラー発生時、ステータス[500]でレスポンスされること", async () => {
       const req = {
         body: {
@@ -779,6 +816,46 @@ describe("clientController", () => {
       // レスポンスステータス設定の検証
       expect(res.status).toHaveBeenCalledTimes(1);
       expect(res.status).toHaveBeenCalledWith(404);
+      // レスポンス送信の検証
+      expect(res.json).toHaveBeenCalledTimes(1);
+      expect(res.json).toHaveBeenCalledWith({
+        errors: [
+          {
+            field: expectedError.field,
+            message: expectedError.message,
+          },
+        ],
+      });
+    });
+
+    test("[異常系] Serviceで整合性チェックエラー発生時、ステータス[400]でレスポンスされること", async () => {
+      const req = {
+        params: {
+          clientCode: "test0001",
+        },
+        body: {
+          clientName: "テスト",
+          postCode: "",
+          address1: "",
+          address2: "あいうえお",
+          telNumber: "",
+          updatedId: "user01",
+        },
+      };
+
+      // Mock設定
+      const expectedError = new ValidationError("address2", "住所1から設定してください");
+      const spyUpdate = jest.spyOn(clientService, "update").mockRejectedValue(expectedError);
+
+      // テスト対象関数の呼び出し
+      await clientController.update(req, res);
+
+      // Serviceの呼び出しを検証
+      expect(spyUpdate).toHaveBeenCalledTimes(1);
+      expect(spyUpdate).toHaveBeenCalledWith("test0001", req.body);
+      // レスポンスステータス設定の検証
+      expect(res.status).toHaveBeenCalledTimes(1);
+      expect(res.status).toHaveBeenCalledWith(400);
       // レスポンス送信の検証
       expect(res.json).toHaveBeenCalledTimes(1);
       expect(res.json).toHaveBeenCalledWith({

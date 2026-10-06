@@ -67,10 +67,12 @@ const routes = [
       {
         path: "sales/orders/create",
         name: "orderReceiveCreate",
+        component: () => import("@/views/orders/OrderCreate.vue"),
       },
       {
         path: "sales/orders/create",
         name: "orderSaleCreate",
+        component: () => import("@/views/orders/OrderCreate.vue"),
       },
       {
         path: "sales/orders/:orderNo/edit",
@@ -106,6 +108,7 @@ const routes = [
         path: "master/notices/:noticeId/edit",
         name: "noticeEdit",
         component: () => import("@/views/notices/NoticeForm.vue"),
+        
       },
     ],
   },

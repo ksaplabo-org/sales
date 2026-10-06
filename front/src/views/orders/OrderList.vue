@@ -30,7 +30,9 @@
               placeholder="受発注番号を入力"
               v-model="condition.orderNo"
               maxlength="8"
-              :formatter="formatHalfWidthAlphaNumeric"
+              type="text"
+              @input="formatAlphaNumericInput"
+              @compositionend="formatAlphaNumericInput"
             />
           </BFormGroup>
         </BCol>
@@ -54,7 +56,9 @@
               placeholder="取引先コードを入力"
               v-model="condition.clientCode"
               maxlength="8"
-              :formatter="formatHalfWidthAlphaNumeric"
+              type="text"
+              @input="formatAlphaNumericInput"
+              @compositionend="formatAlphaNumericInput"
             />
           </BFormGroup>
         </BCol>
@@ -65,7 +69,9 @@
               placeholder="商品コードを入力"
               v-model="condition.productCode"
               maxlength="7"
-              :formatter="formatHalfWidthAlphaNumeric"
+              type="text"
+              @input="formatAlphaNumericInput"
+              @compositionend="formatAlphaNumericInput"
             />
           </BFormGroup>
         </BCol>
@@ -76,13 +82,17 @@
               <BFormInput
                 placeholder="下限"
                 v-model="condition.amountTaxIncludedLow"
-                :formatter="formatHalfWidthNumeric"
+                type="text"
+                @input="formatNumericInput"
+                @compositionend="formatNumericInput"
               />
               <span class="mx-2">～</span>
               <BFormInput
                 placeholder="上限"
                 v-model="condition.amountTaxIncludedHigh"
-                :formatter="formatHalfWidthNumeric"
+                type="text"
+                @input="formatNumericInput"
+                @compositionend="formatNumericInput"
               />
             </div>
           </BFormGroup>
@@ -298,22 +308,41 @@ const clearCondition = () => {
 };
 
 /**
- * 半角英数のみに置換する
+ * 半角英数字変換処理
  *
- * @param value 検査値
+ * @param event 画面からの情報
  */
-const formatHalfWidthAlphaNumeric = (value) => {
-  return value.replace(/[^A-Za-z0-9]/g, "");
+const formatAlphaNumericInput = (event) => {
+  // IME変換中の値は変換しないように制御
+  if (event.isComposing) return;
+
+  const input = event.target;
+  const formatValue = input.value.replace(/[^A-Za-z0-9]/g, ""); // フォーマット処理
+  if (input.value !== formatValue) {
+    // 入力値にフォーマットした値を反映
+    input.value = formatValue;
+    // 双方向バインディングに反映するためinputイベントを発火
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+  }
 };
 
 /**
- * 半角数字のみに置換する
+ * 数値変換処理
  *
- * @param value 検査値
+ * @param event 画面からの情報
  */
-const formatHalfWidthNumeric = (value) => {
-  const result = value.replace(/[^0-9]/g, "");
-  return result === "" ? "" : Number(result);
+const formatNumericInput = (event) => {
+  // IME変換中の値は変換しないように制御
+  if (event.isComposing) return;
+
+  const input = event.target;
+  const formatValue = input.value.replace(/[^0-9]/g, "").replace(/^0+(?=\d)/, ""); // フォーマット処理
+  if (input.value !== formatValue) {
+    // 入力値にフォーマットした値を反映
+    input.value = formatValue;
+    // 双方向バインディングに反映するためinputイベントを発火
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+  }
 };
 
 /**

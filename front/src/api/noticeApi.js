@@ -44,6 +44,9 @@ export async function updateNotice(noticeInfo) {
  * お知らせ情報削除
  *
  * @param {*} noticeId お知らせコード
+ * お知らせ情報削除
+ *
+ * @param {*} noticeId お知らせID
  */
 export async function deleteNotice(noticeId) {
   await apiClient.delete(`/notices/${noticeId}`);

@@ -3,6 +3,7 @@ import NotFoundError from "../errors/NotFoundError.js";
 import UnprocessableContentError from "../errors/UnprocessableContentError.js";
 import orderRepository from "../repositories/orderRepository.js";
 import userRepository from "../repositories/userRepository.js";
+import clientRepository from "../repositories/clientRepository.js";
 import productRepository from "../repositories/productRepository.js";
 import OrderValidationError from "../errors/OrderValidationError.js";
 
@@ -36,6 +37,41 @@ class OrderService {
     order.dataValues.updatedName = `${user.lastName} ${user.firstName}`;
 
     return order;
+  }
+
+  /**
+   * 受発注情報登録
+   *
+   * @param {*} orderInfo 受発注情報
+   */
+  async create(orderInfo) {
+    // 一意性制約チェック
+    const order = await orderRepository.findByNo(orderInfo.orderNo);
+    if (order) {
+      throw new UniqueConstraintError("orderNo", "この受発注番号は既に使用されています");
+    }
+    // 取引先情報の存在チェック
+    const client = await clientRepository.findByCode(orderInfo.clientCode);
+    if (!client) {
+      throw new NotFoundError("clientCode", "この取引先コードは存在しません");
+    }
+    //商品情報の存在チェック
+    const product = await productRepository.findByCode(orderInfo.productCode);
+    if (!product) {
+      throw new NotFoundError("productCode", "この商品コードは存在しません");
+    }
+
+    //登録日時・更新日時を設定
+    const now = new Date().toISOString();
+    orderInfo.createdAt = now;
+    orderInfo.updatedAt = now;
+
+    //数量と単価から金額・消費税・合計金額を計算
+    orderInfo.amount = orderInfo.quantity * product.productPrice;
+    orderInfo.tax = Math.round(orderInfo.amount * 0.1);
+    orderInfo.amountTaxIncluded = orderInfo.amount + orderInfo.tax;
+
+    await orderRepository.create(orderInfo);
   }
 
   /**
