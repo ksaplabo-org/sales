@@ -45,7 +45,7 @@ class NoticeService {
     }
 
     //現在日時を取得
-    const now = new Date().toISOString();
+    const now = new Date().toISOString().split("T")[0];
 
     //日付バリデーション
     //空のエラー情報配列
@@ -93,7 +93,7 @@ class NoticeService {
     }
 
     //現在日時を取得
-    const now = new Date().toISOString();
+    const now = new Date().toISOString().split("T")[0];
 
     //日付バリデーション
     //空のエラー情報配列
