@@ -2,8 +2,6 @@ import UniqueConstraintError from "../errors/UniqueConstraintError.js";
 import NotFoundError from "../errors/NotFoundError.js";
 import noticeRepository from "../repositories/noticeRepository.js";
 import MultipleValidationError from "../errors/MultipleValidationError.js";
-import NotFoundError from "../errors/NotFoundError.js";
-import noticeRepository from "../repositories/noticeRepository.js";
 
 class NoticeService {
   /**
@@ -54,7 +52,7 @@ class NoticeService {
     const errors = [];
 
     //掲載開始日バリデーションチェック
-    if (noticeInfo.startDate != notice.startDate && noticeInfo.startDate < now) {
+    if (noticeInfo.startDate < now) {
       errors.push({
         field: "startDate",
         message: "掲載開始日をシステム日付以降に設定してください",

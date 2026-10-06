@@ -1,7 +1,6 @@
 import UniqueConstraintError from "../errors/UniqueConstraintError.js";
 import NotFoundError from "../errors/NotFoundError.js";
 import MultipleValidationError from "../errors/MultipleValidationError.js";
-import NotFoundError from "../errors/NotFoundError.js";
 import noticeService from "../services/noticeService.js";
 
 class NoticeController {
