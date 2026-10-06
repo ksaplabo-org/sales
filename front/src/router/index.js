@@ -94,6 +94,11 @@ const routes = [
         name: "productEdit",
         component: () => import("@/views/products/ProductForm.vue"),
       },
+      {
+        path: "errors/authError",
+        name: "authError",
+        component: () => import("@/views/errors/AuthError.vue"),
+      },
     ],
   },
 ];
