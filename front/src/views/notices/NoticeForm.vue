@@ -30,11 +30,12 @@
           <div v-if="!isEdit">
             <BFormInput
               id="noticeId"
-              v-model="form.noticeId"
               :state="form.noticeId.length === 7"
-              :formatter="formatAlphaNumericInput"
-              @compositionend="formatAlphaNumericInput"
               maxlength="7"
+              type="text"
+              v-model="form.noticeId"
+              @input="formatAlphaNumericInput"
+              @compositionend="formatAlphaNumericInput"
               required
             />
             <BFormInvalidFeedback v-if="form.noticeId">{{
@@ -280,11 +281,7 @@ const getStartDateErrorMessage = computed(() => {
   }
 
   if (!getStartDatestate.value && isEdit.value) {
-    return formatMessage(
-      messages.MSGE017,
-      "掲載開始日",
-      "登録済みの掲載開始日と同じ日付、または本日",
-    );
+    return formatMessage(messages.MSGE017, "掲載開始日", "登録済みの掲載開始日と同じ日付、または本日");
   }
   if (!getStartDatestate.value && !isEdit.value) {
     return formatMessage(messages.MSGE017, "掲載開始日", "本日");
@@ -303,11 +300,7 @@ const getEndDateErrorMessage = computed(() => {
   }
   // 掲載開始日と掲載終了日の比較
   if (form.value.startDate > form.value.endDate) {
-    return formatMessage(
-      messages.MSGE017,
-      "掲載終了日",
-      "掲載開始日"
-    );
+    return formatMessage(messages.MSGE017, "掲載終了日", "掲載開始日");
   }
 
   return "";
