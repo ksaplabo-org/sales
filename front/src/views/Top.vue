@@ -43,7 +43,7 @@
 
           <div>
             <span class="label-text3 mt-3 mb-3 ms-4">顧客</span>
-            ：<span class="ms-2">{{ countCustomer }} 件</span>
+            ：<span class="ms-2">{{ countCustomer }}件</span>
           </div>
           <div>
             <span class="label-text3 mb-3 ms-4">仕入先</span>
@@ -77,7 +77,7 @@
         <div class="d-flex justify-content-center">
           <span @click="changeSortState" style="cursor: pointer">
             <i class="far fa-clock me-2"></i>
-            最終更新日
+            <strong> 最終更新日 </strong>
             <span v-if="sortState === 1" style="color: #000000"> ↑ </span>
             <span v-else-if="sortState === 2" style="color: #000000"> ↓ </span>
             <span v-else style="color: #adb5bd"> ↑ </span>
@@ -203,26 +203,26 @@ const lastUpdatedMasters = ref([
 // 受発注状況
 const orders = ref([]);
 const countPendingJuchu = computed(
-  () => orders.value.filter((order) => order.orderKbn === "1" && order.confirmedDate == null).length
+  () => orders.value.filter((order) => order.orderKbn === "1" && order.confirmedDate == null).length,
 );
 const countPendingHatchu = computed(
-  () => orders.value.filter((order) => order.orderKbn === "2" && order.confirmedDate == null).length
+  () => orders.value.filter((order) => order.orderKbn === "2" && order.confirmedDate == null).length,
 );
 const totalJuchuAmount = computed(() =>
   orders.value
     .filter(
       (order) =>
-        order.orderKbn === "1" && order.confirmedDate?.substring(0, 7) === new Date().toISOString().substring(0, 7)
+        order.orderKbn === "1" && order.confirmedDate?.substring(0, 7) === new Date().toISOString().substring(0, 7),
     )
-    .reduce((sum, order) => sum + order.amountTaxIncluded, 0)
+    .reduce((sum, order) => sum + order.amountTaxIncluded, 0),
 );
 const totalHatchuAmount = computed(() =>
   orders.value
     .filter(
       (order) =>
-        order.orderKbn === "2" && order.confirmedDate?.substring(0, 7) === new Date().toISOString().substring(0, 7)
+        order.orderKbn === "2" && order.confirmedDate?.substring(0, 7) === new Date().toISOString().substring(0, 7),
     )
-    .reduce((sum, order) => sum + order.amountTaxIncluded, 0)
+    .reduce((sum, order) => sum + order.amountTaxIncluded, 0),
 );
 // 読み込み中の表示制御
 const loading = ref(false);
