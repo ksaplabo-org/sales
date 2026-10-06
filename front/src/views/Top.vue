@@ -160,8 +160,9 @@ const userUpdatedAt = computed(() => {
   }
   return users.value
     .reduce((max, user) => (max > user.updatedAt ? max : user.updatedAt), users.value[0].updatedAt)
+    .substring(0, 10)
+    .replace(/-/g, "/");
 });
-``;
 
 // 取引先マスタ
 const clients = ref([]);
@@ -173,8 +174,9 @@ const clientUpdatedAt = computed(() => {
   }
   return clients.value
     .reduce((max, client) => (max > client.updatedAt ? max : client.updatedAt), clients.value[0].updatedAt)
+    .substring(0, 10)
+    .replace(/-/g, "/");
 });
-``;
 
 // 商品マスタ
 const products = ref([]);
@@ -186,8 +188,9 @@ const productUpdatedAt = computed(() => {
   }
   return products.value
     .reduce((max, product) => (max > product.updatedAt ? max : product.updatedAt), products.value[0].updatedAt)
+    .substring(0, 10)
+    .replace(/-/g, "/");
 });
-``;
 
 // 最終更新日の配列
 const lastUpdatedMasters = ref([
