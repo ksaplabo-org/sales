@@ -12,7 +12,7 @@ export async function getNotices(condition) {
 }
 
 /**
- * お知らせID情報削除
+ * お知らせ情報削除
  *
  * @param {*} noticeId お知らせID
  */
