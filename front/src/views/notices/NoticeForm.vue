@@ -280,10 +280,10 @@ const getStartDateErrorMessage = computed(() => {
     return "";
   }
 
-  if (!getStartDatestate.value && isEdit.value) {
-    return formatMessage(messages.MSGE017, "掲載開始日", "登録済みの掲載開始日と同じ日付、または本日");
+  if (getStartDatestate.value === false && isEdit.value) {
+    return formatMessage(messages.MSGE017, "掲載開始日", "登録済みの日付、または本日");
   }
-  if (!getStartDatestate.value && !isEdit.value) {
+  if (getStartDatestate.value === false && !isEdit.value) {
     return formatMessage(messages.MSGE017, "掲載開始日", "本日");
   }
 
@@ -299,7 +299,7 @@ const getEndDateErrorMessage = computed(() => {
     return "";
   }
   // 掲載開始日と掲載終了日の比較
-  if (form.value.startDate > form.value.endDate) {
+  if (getEndDateState.value === false) {
     return formatMessage(messages.MSGE017, "掲載終了日", "掲載開始日");
   }
 
