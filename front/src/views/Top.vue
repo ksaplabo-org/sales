@@ -43,7 +43,7 @@
 
           <div>
             <span class="label-text3 mt-3 mb-3 ms-4">顧客</span>
-            ：<span class="ms-2">{{ countCustomer }} 件</span>
+            ：<span class="ms-2">{{ countCustomer }}件</span>
           </div>
           <div>
             <span class="label-text3 mb-3 ms-4">仕入先</span>
