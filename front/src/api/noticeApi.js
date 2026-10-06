@@ -14,7 +14,7 @@ export async function getNotices(condition) {
 /**
  * お知らせ情報詳細取得API呼び出し
  *
- * @param {*} noticeId お知らせコード
+ * @param {*} noticeId お知らせID
  * @returns お知らせ情報
  */
 export async function getNoticeByNoticeId(noticeId) {
@@ -41,9 +41,6 @@ export async function updateNotice(noticeInfo) {
 }
 
 /**
- * お知らせ情報削除
- *
- * @param {*} noticeId お知らせコード
  * お知らせ情報削除
  *
  * @param {*} noticeId お知らせID
