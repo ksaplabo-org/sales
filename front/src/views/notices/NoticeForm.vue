@@ -245,7 +245,7 @@ const getStartDatestate = computed(() => {
       startDate.getMonth() === registeredDate.getMonth() &&
       startDate.getDate() === registeredDate.getDate();
 
-    return isSameDate && startDate < systemDate;
+    return !(!isSameDate && startDate < systemDate);
   }
 
   // 登録
@@ -256,7 +256,7 @@ const getStartDatestate = computed(() => {
  * 掲載終了日の状態判定
  * true  : 緑枠
  * false : 赤枠
- * null  : 黒枠
+ * null  : 通常状態の枠
  */
 const getEndDateState = computed(() => {
   // 両方未入力
