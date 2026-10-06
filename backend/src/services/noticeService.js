@@ -1,12 +1,9 @@
-<<<<<<< HEAD
 import UniqueConstraintError from "../errors/UniqueConstraintError.js";
 import NotFoundError from "../errors/NotFoundError.js";
 import noticeRepository from "../repositories/noticeRepository.js";
 import MultipleValidationError from "../errors/MultipleValidationError.js";
-=======
 import NotFoundError from "../errors/NotFoundError.js";
 import noticeRepository from "../repositories/noticeRepository.js";
->>>>>>> origin/2026
 
 class NoticeService {
   /**
