@@ -36,6 +36,7 @@ class UserRepository {
         [fn("CONCAT", col("last_name"), " ", col("first_name")), "fullName"],
         "role",
         "birthday",
+        ["updated_at", "updatedAt"],
         [literal("TIMESTAMPDIFF(YEAR, birthday, CURDATE())"), "age"],
         "delFlg",
       ],
