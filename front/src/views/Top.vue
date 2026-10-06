@@ -86,7 +86,8 @@
 
         <div>
           <div v-for="label in sortedLastUpdatedMasters" :key="label.id" class="d-flex justify-content-center mt-1">
-            {{ label.name }}<span class="ms-2 me-2">：</span>{{ label.date }}
+            <span class="label-text7">{{ label.name }}</span>
+            ：<span class="ms-2">{{ label.date }}</span>
           </div>
         </div>
       </BCard>
@@ -196,7 +197,7 @@ const productUpdatedAt = computed(() => {
 const lastUpdatedMasters = ref([
   { id: 1, name: "ユーザーマスタ", date: userUpdatedAt },
   { id: 2, name: "取引先マスタ", date: clientUpdatedAt },
-  { id: 3, name: "商品マスタ　", date: productUpdatedAt },
+  { id: 3, name: "商品マスタ", date: productUpdatedAt },
 ]);
 
 // 受発注状況
@@ -338,5 +339,13 @@ const openFailedToast = (message) => {
 .label-text4 {
   display: inline-block;
   width: 70px;
+}
+
+/**
+ * 各項目の中で最大7文字の項目名がある場合
+ */
+.label-text7 {
+  display: inline-block;
+  width: 90px;
 }
 </style>
