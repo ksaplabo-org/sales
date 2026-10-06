@@ -165,16 +165,16 @@ describe("orderService", () => {
       jest.useRealTimers();
     });
 
-    test("[正常系] 消費税が四捨五入で計算されること", async () => {
+    test.each([
+      ["1.5の場合は2に四捨五入されること", 15, 15, 2, 17],
+      ["1.4の場合は切り上げされず1になること", 14, 14, 1, 15],
+    ])("[正常系] 消費税が %s", async (_, productPrice, amount, tax, amountTaxIncluded) => {
       // テストデータ
       const orderInfo = {
         orderNo: "o1000001",
         orderKbn: "1",
         clientCode: "cc000001",
         orderDate: "2026-01-01",
-        confirmedDate: "",
-        shipDate: "",
-        deliverDate: "",
         productCode: "pc00001",
         quantity: 1,
       };
@@ -183,7 +183,7 @@ describe("orderService", () => {
       };
       const product = {
         productCode: "pc00001",
-        productPrice: 15,
+        productPrice,
       };
       // Mock設定
       jest.spyOn(orderRepository, "findByNo").mockResolvedValueOnce(null);
@@ -197,9 +197,9 @@ describe("orderService", () => {
       // 検証
       const createArg = spyCreate.mock.calls[0][0];
 
-      expect(createArg.amount).toBe(15);
-      expect(createArg.tax).toBe(2);
-      expect(createArg.amountTaxIncluded).toBe(17);
+      expect(createArg.amount).toBe(amount);
+      expect(createArg.tax).toBe(tax);
+      expect(createArg.amountTaxIncluded).toBe(amountTaxIncluded);
     });
 
     test("[異常系] 受発注番号が既に存在する場合はUniqueConstraintErrorが発生すること", async () => {
@@ -243,6 +243,9 @@ describe("orderService", () => {
 
   describe("update 受発注情報更新", () => {
     test("[正常系] 存在する受発注番号を指定した場合は正常終了すること", async () => {
+      jest.useFakeTimers();
+      jest.setSystemTime(new Date("2026-01-01T10:00:00.000Z"));
+
       //更新条件
       const orderNo = "o1000001";
 
@@ -284,6 +287,7 @@ describe("orderService", () => {
       expect(updateSpy).toHaveBeenCalledWith(
         orderNo,
         expect.objectContaining({
+          updatedAt: "2026-01-01T10:00:00.000Z",
           productCode: "pc00001",
           quantity: 10,
           amount: 10000,
@@ -291,6 +295,7 @@ describe("orderService", () => {
           amountTaxIncluded: 11000,
         }),
       );
+      jest.useRealTimers();
     });
 
     test.each([
@@ -519,10 +524,10 @@ describe("orderService", () => {
     });
 
     test.each([
-      ["確定日の日付形式が不正", "confirmedDate", "2026/01/02", "日付はyyyy-MM-ddの形式で入力してください"],
-      ["出荷日の日付形式が不正", "shipDate", "2026/01/03", "日付はyyyy-MM-ddの形式で入力してください"],
-      ["納品予定日の日付形式が不正", "deliverDate", "2026/01/04", "日付はyyyy-MM-ddの形式で入力してください"],
-    ])("[異常系] %sの形式が不正の場合はOrderValidationErrorが発生すること", async (_, field, value, message) => {
+      ["確定日", "confirmedDate", "2026/01/02", "日付はyyyy-MM-ddの形式で入力してください"],
+      ["出荷日", "shipDate", "2026/01/03", "日付はyyyy-MM-ddの形式で入力してください"],
+      ["納品予定日", "deliverDate", "2026/01/04", "日付はyyyy-MM-ddの形式で入力してください"],
+    ])("[異常系] %s の日付形式が不正の場合はOrderValidationErrorが発生すること", async (_, field, value, message) => {
       //更新条件
       const order = {
         orderNo: "o1000001",
@@ -556,9 +561,9 @@ describe("orderService", () => {
     });
 
     test.each([
-      ["確定日の日付が不正", "confirmedDate", "2026-09-31", "正しい日付を入力してください"],
-      ["出荷日の日付が不正", "shipDate", "2026-09-31", "正しい日付を入力してください"],
-      ["納品予定日の日付が不正", "deliverDate", "2026-09-31", "正しい日付を入力してください"],
+      ["確定日", "confirmedDate", "2026-09-31", "正しい日付を入力してください"],
+      ["出荷日", "shipDate", "2026-09-31", "正しい日付を入力してください"],
+      ["納品予定日", "deliverDate", "2026-09-31", "正しい日付を入力してください"],
     ])("[異常系] %sが存在しない日付の場合はOrderValidationErrorが発生すること", async (_, field, value, message) => {
       //更新条件
       const order = {

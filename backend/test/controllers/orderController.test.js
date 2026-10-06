@@ -404,7 +404,7 @@ describe("orderController", () => {
     });
 
     test.each([
-      ["受発注日＜出荷日＜納品予定日", "2026-01-01", "2026-01-02", "2026-01-03"],
+      ["受発注日<出荷日<納品予定日", "2026-01-01", "2026-01-02", "2026-01-03"],
       ["受発注日=出荷日=納品予定日", "2026-01-01", "2026-01-01", "2026-01-01"],
       ["うるう年の2月29日", "2028-02-29", "2028-02-29", "2028-02-29"],
     ])("[正常系] %s の場合、正常終了すること", async (_, orderDate, shipDate, deliverDate) => {
@@ -588,6 +588,7 @@ describe("orderController", () => {
         errors: [{ field: "orderNo", message: "この受発注番号は既に使用されています" }],
       });
     });
+
     test("[異常系] NotFoundError発生時、404エラーとなること", async () => {
       const req = createReq;
       const expectedError = new NotFoundError("clientCode", "この取引先コードは存在しません");
@@ -602,6 +603,7 @@ describe("orderController", () => {
         errors: [{ field: "clientCode", message: "この取引先コードは存在しません" }],
       });
     });
+
     test("[異常系] Serviceでエラー発生時、500エラーとなること", async () => {
       const req = createReq;
       const expectedError = new Error();
@@ -1416,7 +1418,7 @@ describe("orderController", () => {
       ["数量未入力", { quantity: "" }, { field: "quantity", message: "数量を入力してください" }],
       ["数量が半角数字以外", { quantity: "abc" }, { field: "quantity", message: "数量は半角数字で入力してください" }],
       ["数量が0", { quantity: "0" }, { field: "quantity", message: "数量は1以上で入力してください" }],
-    ])("[異常系] %s", (_, invalidData, expectedError) => {
+    ])("[異常系] %s の場合、バリデーションエラーが返却されること", (_, invalidData, expectedError) => {
       const actual = orderController.validate({
         ...data,
         ...invalidData,
