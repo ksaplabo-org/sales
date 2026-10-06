@@ -2,7 +2,7 @@
   <!-- タイトル -->
   <BContainer fluid class="px-0 pb-2 mb-2">
     <div class="d-flex justify-content-between align-items-center">
-      <h3 class="mb-0"><i class="fas fa-store-alt"></i> トップページ</h3>
+      <h3 class="mb-0"><i class="fas fa-store-alt"></i><span class="ms-2">トップページ</span></h3>
     </div>
   </BContainer>
 
@@ -23,12 +23,12 @@
           </template>
 
           <div>
-            <span class="label-text mt-3 mb-4 ms-4">一般</span>
-            ：{{ countUser }}件
+            <span class="label-text mt-3 mb-3 ms-4">一般</span>
+            ：<span class="ms-2">{{ countUser }}件</span>
           </div>
           <div>
             <span class="label-text mb-3 ms-4">管理者</span>
-            ：{{ countAdmin }}件
+            ：<span class="ms-2">{{ countAdmin }}件</span>
           </div>
         </BCard>
       </div>
@@ -42,12 +42,12 @@
           </template>
 
           <div>
-            <span class="label-text mt-3 mb-4 ms-4">顧客</span>
-            ：{{ countCustomer }} 件
+            <span class="label-text mt-3 mb-3 ms-4">顧客</span>
+            ：<span class="ms-2">{{ countCustomer }} 件</span>
           </div>
           <div>
             <span class="label-text mb-3 ms-4">仕入先</span>
-            ：{{ countSupplier }}件
+            ：<span class="ms-2">{{ countSupplier }}件</span>
           </div>
         </BCard>
       </div>
@@ -61,22 +61,22 @@
           </template>
 
           <div>
-            <span class="label-text mt-3 mb-4 ms-4">受注商品</span>
-            ：{{ countJuchuProduct }}件
+            <span class="label-text mt-3 mb-3 ms-4">受注商品</span>
+            ：<span class="ms-2">{{ countJuchuProduct }}件</span>
           </div>
           <div>
             <span class="label-text mb-3 ms-4">発注商品</span>
-            ：{{ countHatchuProduct }}件
+            ：<span class="ms-2">{{ countHatchuProduct }}件</span>
           </div>
         </BCard>
       </div>
     </div>
 
     <div class="d-flex justify-content-end">
-      <BCard class="shadow-sm mb-3" style="width: 260px">
+      <BCard class="shadow-sm mb-3" style="width: 300px">
         <div class="d-flex justify-content-center">
           <span @click="changeSortState" style="cursor: pointer">
-            <i class="far fa-clock"></i>
+            <i class="far fa-clock me-2"></i>
             最終更新日
             <span v-if="sortState === 1" style="color: #000000"> ↑ </span>
             <span v-else-if="sortState === 2" style="color: #000000"> ↓ </span>
@@ -85,8 +85,8 @@
         </div>
 
         <div>
-          <div v-for="label in sortedLastUpdatedMasters" :key="label.id" class="d-flex justify-content-center">
-            {{ label.name + "：" + label.date }}
+          <div v-for="label in sortedLastUpdatedMasters" :key="label.id" class="d-flex justify-content-center mt-1">
+            {{ label.name }}<span class="ms-2 me-2">：</span>{{ label.date }}
           </div>
         </div>
       </BCard>
@@ -100,31 +100,37 @@
         <strong> <i class="fas fa-file-invoice-dollar"></i><span class="ms-2">受発注状況</span></strong>
       </template>
       <BCard class="mb-3">
-        <div class="ms-4 mb-3">未処理の受発注件数</div>
+        <strong class="ms-4 mb-3">未処理の受発注件数</strong>
         <div>
-          <span class="label-text mt-3 mb-4 ms-4">受注</span>
+          <span class="label-text mt-3 mb-3 ms-4">受注</span>
           ：
-          <RouterLink v-if="countPendingJuchu > 0" :to="{ name: 'orderList' }"> {{ countPendingJuchu }}件 </RouterLink>
-          <span v-else> {{ countPendingJuchu }}件 </span>
+          <span class="ms-2">
+            <RouterLink v-if="countPendingJuchu > 0" :to="{ name: 'orderList' }">
+              {{ countPendingJuchu }}件
+            </RouterLink>
+            <span v-else> {{ countPendingJuchu }}件 </span>
+          </span>
         </div>
         <div>
           <span class="label-text mb-3 ms-4">発注</span>
           ：
-          <RouterLink v-if="countPendingHatchu > 0" :to="{ name: 'orderList' }">
-            {{ countPendingHatchu }}件
-          </RouterLink>
-          <span v-else> {{ countPendingHatchu }}件 </span>
+          <span class="ms-2">
+            <RouterLink v-if="countPendingHatchu > 0" :to="{ name: 'orderList' }">
+              {{ countPendingHatchu }}件
+            </RouterLink>
+            <span v-else>> {{ countPendingHatchu }}件 </span>
+          </span>
         </div>
       </BCard>
       <BCard class="mb-3">
-        <div class="ms-4 mb-3">今月の受注額・発注額の合計</div>
+        <strong class="ms-4 mb-3">今月の受注額・発注額の合計</strong>
         <div>
-          <span class="label-text mt-3 mb-4 ms-4">受注総額</span>
-          ：¥{{ totalJuchuAmount.toLocaleString("ja-JP") }}
+          <span class="label-text mt-3 mb-3 ms-4">受注総額</span>
+          ：<span class="ms-2">¥{{ totalJuchuAmount.toLocaleString("ja-JP") }}</span>
         </div>
         <div>
           <span class="label-text mb-3 ms-4">発注総額</span>
-          ：¥{{ totalHatchuAmount.toLocaleString("ja-JP") }}
+          ：<span class="ms-2">¥{{ totalHatchuAmount.toLocaleString("ja-JP") }}</span>
         </div>
       </BCard>
     </BCard>
@@ -154,8 +160,6 @@ const userUpdatedAt = computed(() => {
   }
   return users.value
     .reduce((max, user) => (max > user.updatedAt ? max : user.updatedAt), users.value[0].updatedAt)
-    .substring(0, 10)
-    .replace(/-/g, "/");
 });
 ``;
 
@@ -169,8 +173,6 @@ const clientUpdatedAt = computed(() => {
   }
   return clients.value
     .reduce((max, client) => (max > client.updatedAt ? max : client.updatedAt), clients.value[0].updatedAt)
-    .substring(0, 10)
-    .replace(/-/g, "/");
 });
 ``;
 
@@ -184,8 +186,6 @@ const productUpdatedAt = computed(() => {
   }
   return products.value
     .reduce((max, product) => (max > product.updatedAt ? max : product.updatedAt), products.value[0].updatedAt)
-    .substring(0, 10)
-    .replace(/-/g, "/");
 });
 ``;
 
@@ -199,26 +199,26 @@ const lastUpdatedMasters = ref([
 // 受発注状況
 const orders = ref([]);
 const countPendingJuchu = computed(
-  () => orders.value.filter((order) => order.orderKbn === "1" && order.confirmedDate == null).length,
+  () => orders.value.filter((order) => order.orderKbn === "1" && order.confirmedDate == null).length
 );
 const countPendingHatchu = computed(
-  () => orders.value.filter((order) => order.orderKbn === "2" && order.confirmedDate == null).length,
+  () => orders.value.filter((order) => order.orderKbn === "2" && order.confirmedDate == null).length
 );
 const totalJuchuAmount = computed(() =>
   orders.value
     .filter(
       (order) =>
-        order.orderKbn === "1" && order.confirmedDate?.substring(0, 7) === new Date().toISOString().substring(0, 7),
+        order.orderKbn === "1" && order.confirmedDate?.substring(0, 7) === new Date().toISOString().substring(0, 7)
     )
-    .reduce((sum, order) => sum + order.amountTaxIncluded, 0),
+    .reduce((sum, order) => sum + order.amountTaxIncluded, 0)
 );
 const totalHatchuAmount = computed(() =>
   orders.value
     .filter(
       (order) =>
-        order.orderKbn === "2" && order.confirmedDate?.substring(0, 7) === new Date().toISOString().substring(0, 7),
+        order.orderKbn === "2" && order.confirmedDate?.substring(0, 7) === new Date().toISOString().substring(0, 7)
     )
-    .reduce((sum, order) => sum + order.amountTaxIncluded, 0),
+    .reduce((sum, order) => sum + order.amountTaxIncluded, 0)
 );
 // 読み込み中の表示制御
 const loading = ref(false);
@@ -242,13 +242,13 @@ const sortState = ref(0);
 onMounted(async () => {
   loading.value = true;
   try {
-    // 権限が管理者の場合
     if (loginInfo.role === "2") {
+      // 権限が管理者の場合
       users.value = await userApi.getUsers();
       clients.value = await clientApi.getClients();
       products.value = await productApi.getProducts();
-      // 権限が一般の場合
     } else if (loginInfo.role === "1") {
+      // 権限が一般の場合
       orders.value = await orderApi.getOrders();
     }
   } catch (e) {
