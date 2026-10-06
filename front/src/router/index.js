@@ -151,12 +151,10 @@ router.beforeEach((to) => {
   // 権限チェック
   if (to.name === "userEdit") {
     // 遷移先がユーザー情報編集である場合
-    if (Auth.getLoginInfo().userId !== to.params.id) {
-      // ログインしているユーザーIDと編集するユーザーIDが一致しない場合
-      if (!Auth.isAdmin()) {
+    if (Auth.getLoginInfo().userId !== to.params.id && !Auth.isAdmin()) {
+        // ログインしているユーザーIDと編集するユーザーIDが一致しないかつ一般権限の場合
         return "/errors/authError";
       }
-    }
   } else if (Auth.isAdmin() && to.meta.requiresUser) {
     // 管理者権限で一般専用画面にアクセスした場合
     return "/errors/authError";
