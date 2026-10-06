@@ -23,11 +23,11 @@
           </template>
 
           <div>
-            <span class="label-text mt-3 mb-3 ms-4">一般</span>
+            <span class="label-text3 mt-3 mb-3 ms-4">一般</span>
             ：<span class="ms-2">{{ countUser }}件</span>
           </div>
           <div>
-            <span class="label-text mb-3 ms-4">管理者</span>
+            <span class="label-text3 mb-3 ms-4">管理者</span>
             ：<span class="ms-2">{{ countAdmin }}件</span>
           </div>
         </BCard>
@@ -42,11 +42,11 @@
           </template>
 
           <div>
-            <span class="label-text mt-3 mb-3 ms-4">顧客</span>
+            <span class="label-text3 mt-3 mb-3 ms-4">顧客</span>
             ：<span class="ms-2">{{ countCustomer }} 件</span>
           </div>
           <div>
-            <span class="label-text mb-3 ms-4">仕入先</span>
+            <span class="label-text3 mb-3 ms-4">仕入先</span>
             ：<span class="ms-2">{{ countSupplier }}件</span>
           </div>
         </BCard>
@@ -61,11 +61,11 @@
           </template>
 
           <div>
-            <span class="label-text mt-3 mb-3 ms-4">受注商品</span>
+            <span class="label-text4 mt-3 mb-3 ms-4">受注商品</span>
             ：<span class="ms-2">{{ countJuchuProduct }}件</span>
           </div>
           <div>
-            <span class="label-text mb-3 ms-4">発注商品</span>
+            <span class="label-text4 mb-3 ms-4">発注商品</span>
             ：<span class="ms-2">{{ countHatchuProduct }}件</span>
           </div>
         </BCard>
@@ -102,7 +102,7 @@
       <BCard class="mb-3">
         <strong class="ms-4 mb-3">未処理の受発注件数</strong>
         <div>
-          <span class="label-text mt-3 mb-3 ms-4">受注</span>
+          <span class="label-text2 mt-3 mb-3 ms-4">受注</span>
           ：
           <span class="ms-2">
             <RouterLink v-if="countPendingJuchu > 0" :to="{ name: 'orderList' }">
@@ -112,7 +112,7 @@
           </span>
         </div>
         <div>
-          <span class="label-text mb-3 ms-4">発注</span>
+          <span class="label-text2 mb-3 ms-4">発注</span>
           ：
           <span class="ms-2">
             <RouterLink v-if="countPendingHatchu > 0" :to="{ name: 'orderList' }">
@@ -125,11 +125,11 @@
       <BCard class="mb-3">
         <strong class="ms-4 mb-3">今月の受注額・発注額の合計</strong>
         <div>
-          <span class="label-text mt-3 mb-3 ms-4">受注総額</span>
+          <span class="label-text4 mt-3 mb-3 ms-4">受注総額</span>
           ：<span class="ms-2">¥{{ totalJuchuAmount.toLocaleString("ja-JP") }}</span>
         </div>
         <div>
-          <span class="label-text mb-3 ms-4">発注総額</span>
+          <span class="label-text4 mb-3 ms-4">発注総額</span>
           ：<span class="ms-2">¥{{ totalHatchuAmount.toLocaleString("ja-JP") }}</span>
         </div>
       </BCard>
@@ -316,7 +316,26 @@ const openFailedToast = (message) => {
   background-color: #ffd7dc;
 }
 
-.label-text {
+/**
+ * 各項目名が2文字のみの場合
+ */
+.label-text2 {
+  display: inline-block;
+  width: 40px;
+}
+
+/**
+ * 各項目名が3文字のみまたは2文字と3文字が混在する場合
+ */
+.label-text3 {
+  display: inline-block;
+  width: 50px;
+}
+
+/**
+ * 各項目名が4文字のみの場合
+ */
+.label-text4 {
   display: inline-block;
   width: 70px;
 }
