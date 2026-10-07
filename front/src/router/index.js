@@ -84,7 +84,7 @@ const routes = [
         name: "orderReceiveCreate",
         component: () => import("@/views/orders/OrderCreate.vue"),
         meta: {
-          requiresUser: true,
+          requiresGeneral: true,
         },
       },
       {
@@ -92,7 +92,7 @@ const routes = [
         name: "orderSaleCreate",
         component: () => import("@/views/orders/OrderCreate.vue"),
         meta: {
-          requiresUser: true,
+          requiresGeneral: true,
         },
       },
       {
@@ -100,7 +100,7 @@ const routes = [
         name: "orderEdit",
         component: () => import("@/views/orders/OrderEdit.vue"),
         meta: {
-          requiresUser: true,
+          requiresGeneral: true,
         },
       },
       {
@@ -149,18 +149,19 @@ router.beforeEach((to) => {
   }
 
   // 権限チェック
-  if (to.name === "userEdit") {
-    // 遷移先がユーザー情報編集である場合
-    if (Auth.getLoginInfo().userId !== to.params.id && !Auth.isAdmin()) {
-        // ログインしているユーザーIDと編集するユーザーIDが一致しないかつ一般権限の場合
-        return "/errors/authError";
-      }
-  } else if (Auth.isAdmin() && to.meta.requiresUser) {
+  const authError = "/errors/authError";
+  if (Auth.isAdmin() && to.meta.requiresGeneral) {
     // 管理者権限で一般専用画面にアクセスした場合
-    return "/errors/authError";
-  } else if (to.meta.requiresAdmin && !Auth.isAdmin()) {
+    return authError;
+  } else if (!Auth.isAdmin() && to.meta.requiresAdmin) {
     // 一般権限で管理者専用画面にアクセスした場合
-    return "/errors/authError";
+    if (to.name === "userEdit") {
+      if (Auth.getLoginInfo().userId === to.params.id) {
+        // ユーザー編集画面はログインしたユーザー自身のみを編集可能とする
+        return;
+      }
+    }
+    return authError;
   }
 });
 export default router;
