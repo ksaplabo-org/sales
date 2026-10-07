@@ -12,6 +12,35 @@ export async function getNotices(condition) {
 }
 
 /**
+ * お知らせ情報詳細取得API呼び出し
+ *
+ * @param {*} noticeId お知らせID
+ * @returns お知らせ情報
+ */
+export async function getNoticeByNoticeId(noticeId) {
+  const response = await apiClient.get(`/notices/${noticeId}`);
+  return response.data;
+}
+
+/**
+ * お知らせ情報登録
+ *
+ * @param {*} noticeInfo お知らせ情報
+ */
+export async function createNotice(noticeInfo) {
+  await apiClient.post("/notices", noticeInfo);
+}
+
+/**
+ * お知らせ情報更新
+ *
+ * @param {*} noticeInfo お知らせ情報
+ */
+export async function updateNotice(noticeInfo) {
+  await apiClient.put(`/notices/${noticeInfo.noticeId}`, noticeInfo);
+}
+
+/**
  * お知らせ情報削除
  *
  * @param {*} noticeId お知らせID

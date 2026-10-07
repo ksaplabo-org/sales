@@ -102,7 +102,12 @@ const routes = [
       {
         path: "master/notices/create",
         name: "noticeCreate",
-        
+        component: () => import("@/views/notices/NoticeForm.vue"),
+      },
+      {
+        path: "master/notices/:noticeId/edit",
+        name: "noticeEdit",
+        component: () => import("@/views/notices/NoticeForm.vue"),
       },
     ],
   },
