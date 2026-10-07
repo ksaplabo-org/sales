@@ -33,16 +33,25 @@ const routes = [
         path: "master/users",
         name: "userMaster",
         component: () => import("@/views/users/UserMaster.vue"),
+        meta: {
+          requiresAdmin: true,
+        },
       },
       {
         path: "master/users/create",
         name: "userCreate",
         component: () => import("@/views/users/UserForm.vue"),
+        meta: {
+          requiresAdmin: true,
+        },
       },
       {
         path: "master/users/:id/edit",
         name: "userEdit",
         component: () => import("@/views/users/UserForm.vue"),
+        meta: {
+          requiresAdmin: true,
+        },
       },
       {
         path: "master/clients",
@@ -53,11 +62,17 @@ const routes = [
         path: "master/clients/create",
         name: "clientCreate",
         component: () => import("@/views/clients/ClientForm.vue"),
+        meta: {
+          requiresAdmin: true,
+        },
       },
       {
         path: "master/clients/:clientCode/edit",
         name: "clientEdit",
         component: () => import("@/views/clients/ClientForm.vue"),
+        meta: {
+          requiresAdmin: true,
+        },
       },
       {
         path: "sales/orders",
@@ -68,16 +83,25 @@ const routes = [
         path: "sales/orders/create",
         name: "orderReceiveCreate",
         component: () => import("@/views/orders/OrderCreate.vue"),
+        meta: {
+          requiresGeneral: true,
+        },
       },
       {
         path: "sales/orders/create",
         name: "orderSaleCreate",
         component: () => import("@/views/orders/OrderCreate.vue"),
+        meta: {
+          requiresGeneral: true,
+        },
       },
       {
         path: "sales/orders/:orderNo/edit",
         name: "orderEdit",
         component: () => import("@/views/orders/OrderEdit.vue"),
+        meta: {
+          requiresGeneral: true,
+        },
       },
       {
         path: "master/products",
@@ -88,11 +112,22 @@ const routes = [
         path: "master/products/create",
         name: "productCreate",
         component: () => import("@/views/products/ProductForm.vue"),
+        meta: {
+          requiresAdmin: true,
+        },
       },
       {
         path: "master/products/:productCode/edit",
         name: "productEdit",
         component: () => import("@/views/products/ProductForm.vue"),
+        meta: {
+          requiresAdmin: true,
+        },
+      },
+      {
+        path: "errors/authError",
+        name: "authError",
+        component: () => import("@/views/errors/AuthError.vue"),
       },
       {
         path: "master/notices",
@@ -127,6 +162,21 @@ router.beforeEach((to) => {
   if (to.name !== "login" && !Auth.isLogin()) {
     return "/login";
   }
-});
 
+  // 権限チェック
+  const authErrorPath = "/errors/authError";
+  if (Auth.isAdmin() && to.meta.requiresGeneral) {
+    // 管理者権限で一般専用画面にアクセスした場合
+    return authErrorPath;
+  } else if (!Auth.isAdmin() && to.meta.requiresAdmin) {
+    // 一般権限で管理者専用画面にアクセスした場合
+    if (to.name === "userEdit") {
+      if (Auth.getLoginInfo().userId === to.params.id) {
+        // ユーザー編集画面はログインしたユーザー自身のみを編集可能とする
+        return;
+      }
+    }
+    return authErrorPath;
+  }
+});
 export default router;

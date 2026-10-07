@@ -35,7 +35,7 @@ export function logout() {
 /**
  * ログインユーザー情報を取得
  *
- * @returns ログインうユーザー情報
+ * @returns ログインユーザー情報
  */
 export function getLoginInfo() {
   // セッションストレージからログインユーザー情報を取得する
@@ -59,5 +59,5 @@ export function isLogin() {
  */
 export function isAdmin() {
   const userInfo = getLoginInfo();
-  return userInfo !== null && userInfo.auth === UserConst.Auth.admin;
+  return userInfo !== null && userInfo.role === UserConst.ROLES.ADMIN;
 }
