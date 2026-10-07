@@ -406,7 +406,7 @@ class NoticeController {
     } else if (data.targetType != "0" && data.targetType != "1" && data.targetType != "2") {
       errors.push({
         field: "targetType",
-        message: "表示対象に" + "0" + "," + "1" + "," + "2" + "のいずれかを設定してください",
+        message: "表示対象に'0'、'1'、'2'のいずれかを設定してください",
       });
     }
 
