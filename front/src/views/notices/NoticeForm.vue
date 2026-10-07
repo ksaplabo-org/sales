@@ -61,7 +61,7 @@
       </BRow>
       <BRow class="mb-3">
         <BFormGroup label="内容" label-for="content" label-cols="3">
-          <BFormTextarea id="content" v-model="form.content" :state="form.content ? true : false" required />
+          <BFormTextarea id="content" v-model="form.content" :state="!!form.content" required />
         </BFormGroup>
       </BRow>
 
@@ -185,7 +185,6 @@ onMounted(async () => {
  * 登録処理
  */
 const save = async () => {
-  console.log(form.value);
   loading.value = true;
   try {
     if (isEdit.value) {
@@ -226,7 +225,7 @@ const showFailedToast = (message) => {
  * false : エラーあり
  */
 const getStartDatestate = computed(() => {
-  // 未入力は別判定
+  // 未入力はエラーとする
   if (!form.value.startDate) {
     return false;
   }
@@ -236,20 +235,25 @@ const getStartDatestate = computed(() => {
   const systemDate = new Date();
   systemDate.setHours(0, 0, 0, 0);
 
-  // 編集
-  if (isEdit.value) {
-    const registeredDate = new Date(registeredStartDate.value);
+  // 掲載開始日がシステム日付より前の場合
+  if (startDate < systemDate && !isEdit.value) {
+    return false;
+  }
 
+  // 編集時
+  if (startDate < systemDate && isEdit.value) {
+    const registeredDate = new Date(registeredStartDate.value);
     const isSameDate =
       startDate.getFullYear() === registeredDate.getFullYear() &&
       startDate.getMonth() === registeredDate.getMonth() &&
       startDate.getDate() === registeredDate.getDate();
 
-    return !(!isSameDate && startDate < systemDate);
+    if (!isSameDate) {
+      return false;
+    }
   }
 
-  // 登録
-  return startDate > systemDate;
+  return true;
 });
 
 /**
@@ -259,12 +263,12 @@ const getStartDatestate = computed(() => {
  * null  : 通常状態の枠
  */
 const getEndDateState = computed(() => {
-  // 両方未入力
+  // 掲載終了日が未入力もしくは掲載開始日より前の日付の場合はエラー
   if (!form.value.endDate || form.value.startDate > form.value.endDate) {
     return false;
   }
 
-  // 開始日未入力、終了日のみ入力
+  // 掲載終了日のみ入力されている場合は判定保留とする
   if (!form.value.startDate && form.value.endDate) {
     return null;
   }
@@ -294,7 +298,7 @@ const getStartDateErrorMessage = computed(() => {
  * 掲載終了日エラーメッセージ取得
  */
 const getEndDateErrorMessage = computed(() => {
-  // 掲載開始日、掲載終了日未入力
+  // 掲載終了日が未入力の場合はエラーとしない
   if (!form.value.endDate) {
     return "";
   }
