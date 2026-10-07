@@ -19,6 +19,7 @@ describe("productRepository", () => {
       ["order_kbn", "orderKbn"],
       ["order_client_code", "orderClientCode"],
       ["product_price", "productPrice"],
+      ["updated_at", "updatedAt"],
       [literal("EXISTS(SELECT 1 FROM orders o WHERE o.product_code = productModel.product_code)"), "usedFlg"],
     ];
 
