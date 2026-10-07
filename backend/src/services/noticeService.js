@@ -45,17 +45,19 @@ class NoticeService {
     }
 
     //現在日時を取得
-    const now = new Date().toISOString().split("T")[0];
+    const now = new Date().toISOString();
+    //日付部分のみ取得
+    const date = now.split("T")[0];
 
     //日付バリデーション
     //空のエラー情報配列
     const errors = [];
 
     //掲載開始日バリデーションチェック
-    if (noticeInfo.startDate < now) {
+    if (noticeInfo.startDate < date) {
       errors.push({
         field: "startDate",
-        message: "掲載開始日をシステム日付以降に設定してください",
+        message: "掲載開始日を現在日付以降に設定してください",
       });
     }
 
@@ -93,17 +95,19 @@ class NoticeService {
     }
 
     //現在日時を取得
-    const now = new Date().toISOString().split("T")[0];
+    const now = new Date().toISOString();
+    //日付部分のみ取得
+    const date = now.split("T")[0];
 
     //日付バリデーション
     //空のエラー情報配列
     const errors = [];
 
     //掲載開始日バリデーションチェック
-    if (noticeInfo.startDate != notice.startDate && noticeInfo.startDate < now) {
+    if (noticeInfo.startDate != notice.startDate && noticeInfo.startDate < date) {
       errors.push({
         field: "startDate",
-        message: "掲載開始日を登録済みの日付またはシステム日付以降に設定してください",
+        message: "掲載開始日を登録済みの日付または現在日付以降に設定してください",
       });
     }
 
