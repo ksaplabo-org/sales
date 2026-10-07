@@ -22,6 +22,7 @@ describe("clientRepository", () => {
       ["address2", "address2"],
       [fn("CONCAT", col("address1"), col("address2")), "fullAddress"],
       ["tel_number", "telNumber"],
+      ["updated_at", "updatedAt"],
       [literal("EXISTS(SELECT 1 FROM orders o WHERE o.client_code = clientModel.client_code)"), "usedFlg"],
     ];
 
