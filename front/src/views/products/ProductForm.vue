@@ -173,10 +173,6 @@ const orderClientOptions = ref([]);
  * 初期表示時処理
  */
 onMounted(async () => {
-  // 一般の場合
-  if (loginInfo.role !== "2") {
-    router.push({ name: "top" });
-  }
   loading.value = true;
   // 編集画面の場合
   if (isEdit.value) {

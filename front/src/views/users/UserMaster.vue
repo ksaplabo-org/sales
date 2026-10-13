@@ -205,11 +205,6 @@ const loginInfo = getLoginInfo();
  * 初期表示処理
  */
 onMounted(async () => {
-  // 管理者以外のアクセスを拒否
-  if (loginInfo.role != "2") {
-    router.push({ name: "top" });
-  }
-
   // 登録画面からの遷移の場合にメッセージを出力
   const state = history.state;
   if (state.result) {
@@ -285,7 +280,7 @@ const changeRowStyle = (row) => {
 
 /**
  * 削除確認モーダル表示処理
- * 
+ *
  * @param row 一覧行データ
  */
 const openDeleteModal = (row) => {
