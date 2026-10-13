@@ -503,12 +503,6 @@ const formatPostCode = (postCode) => {
  */
 onMounted(async () => {
   try {
-    //権限チェック
-    if (loginInfo.role === "2") {
-      router.push({ name: "top" });
-      return;
-    }
-
     //受発注判定
     if (isReceive) {
       orderKbn.value = "1";

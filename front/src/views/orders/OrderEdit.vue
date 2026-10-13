@@ -342,11 +342,6 @@ const formatDate = (date) => {
 //初期処理
 onMounted(async () => {
   try {
-    if (loginInfo.role === "2") {
-      router.push({ name: "top" });
-      return;
-    }
-
     loading.value = true;
 
     const orderInfo = await orderApi.getOrderByOrderNo(route.params.orderNo);
