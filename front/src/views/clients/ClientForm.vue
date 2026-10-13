@@ -179,12 +179,6 @@ const TOAST_MS = 3000;
  * 初期表示時処理
  */
 onMounted(async () => {
-  // 一般の場合
-  if (loginInfo.role === "1") {
-    // 一般の場合、登録画面はアクセス不可
-    router.push({ name: "top" });
-  }
-
   // 編集画面の場合
   if (isEdit.value) {
     // 取引先詳細取得
