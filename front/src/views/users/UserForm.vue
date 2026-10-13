@@ -177,23 +177,6 @@ const isPasswordFormatError = computed(() => {
  * 初期表示時処理
  */
 onMounted(async () => {
-  // 一般の場合
-  if (loginInfo.role === "1") {
-    // 編集画面の場合
-    if (isEdit.value) {
-    } else {
-      // 一般の場合、登録画面はアクセス不可
-      router.push({ name: "top" });
-    }
-  }
-
-  // 編集画面の場合
-  if (isEdit.value) {
-    // 一般の場合、自ユーザ情報のみ編集可
-    if (loginInfo.role === "1" && route.params.id !== loginInfo.userId) {
-      router.push({ name: "top" });
-    }
-
     // ユーザー詳細取得
     loading.value = true;
     try {
@@ -208,8 +191,7 @@ onMounted(async () => {
     } finally {
       loading.value = false;
     }
-  }
-});
+  });
 
 /**
  * 半角英数のみに置換する
