@@ -177,21 +177,21 @@ const isPasswordFormatError = computed(() => {
  * 初期表示時処理
  */
 onMounted(async () => {
-    // ユーザー詳細取得
-    loading.value = true;
-    try {
-      const userInfo = await userApi.getUserByUserId(route.params.id);
-      Object.keys(form.value).forEach((key) => {
-        if (key in userInfo) {
-          form.value[key] = userInfo[key];
-        }
-      });
-    } catch (e) {
-      console.log(e);
-    } finally {
-      loading.value = false;
-    }
-  });
+  // ユーザー詳細取得
+  loading.value = true;
+  try {
+    const userInfo = await userApi.getUserByUserId(route.params.id);
+    Object.keys(form.value).forEach((key) => {
+      if (key in userInfo) {
+        form.value[key] = userInfo[key];
+      }
+    });
+  } catch (e) {
+    console.log(e);
+  } finally {
+    loading.value = false;
+  }
+});
 
 /**
  * 半角英数のみに置換する

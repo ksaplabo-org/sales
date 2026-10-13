@@ -280,7 +280,7 @@ const changeRowStyle = (row) => {
 
 /**
  * 削除確認モーダル表示処理
- * 
+ *
  * @param row 一覧行データ
  */
 const openDeleteModal = (row) => {
