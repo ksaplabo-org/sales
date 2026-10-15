@@ -186,6 +186,15 @@
             <i class="far fa-trash-alt"></i>
             削除
           </BButton>
+          <BButton
+            size="sm"
+            variant="outline-success"
+            @click="exportDeliveryNote(row.item)"
+            v-if="row.item.orderKbn === '1' && row.item.confirmedDate && row.item.deliverDate"
+          >
+            <i class="fas fa-file-excel"></i>
+            納品書
+          </BButton>
         </BContainer>
       </template>
 
@@ -217,10 +226,14 @@ import { computed, ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 
 import * as orderApi from "@/api/orderApi.js";
+import * as clientApi from "@/api/clientApi.js";
+import * as productApi from "@/api/productApi.js";
+import * as userApi from "@/api/userApi.js";
 import messages from "@/constants/messages.js";
 import Loading from "@/components/Loading.vue";
 import { getLoginInfo } from "@/utils/auth.js";
-import { formatMessage } from "@/utils/messageUtil.js";
+import ExcelJS from "exceljs";
+
 // Router操作
 const router = useRouter();
 
@@ -402,6 +415,181 @@ const deleteOrder = async () => {
   } catch (e) {
     console.log(e);
     openFailedToast(messages.MSGE007);
+  } finally {
+    loading.value = false;
+  }
+};
+
+/**
+ * 日付フォーマット
+ *
+ * yyyy年MM月dd日
+ *
+ * @param date 日付
+ * @returns フォーマット後の日付
+ */
+const formatDate = (date) => {
+  if (!date) {
+    return "";
+  }
+
+  const targetDate = new Date(date);
+
+  const year = targetDate.getFullYear();
+  const month = String(targetDate.getMonth() + 1).padStart(2, "0");
+  const day = String(targetDate.getDate()).padStart(2, "0");
+
+  return `${year}年${month}月${day}日`;
+};
+
+/**
+ * 金額フォーマット
+ *
+ * @param value 金額
+ * @returns フォーマット後金額
+ */
+const formatAmount = (value) => {
+  if (value == null) {
+    return "";
+  }
+  return `¥${Number(value).toLocaleString("ja-JP")}`;
+};
+
+/**
+ * 納品書出力
+ */
+const exportDeliveryNote = async (row) => {
+  loading.value = true;
+  try {
+    // データ取得
+    const orderInfo = await orderApi.getOrderByOrderNo(row.orderNo);
+    const clientInfo = await clientApi.getClientByClientCode(orderInfo.clientCode);
+    const productInfo = await productApi.getProductByProductCode(orderInfo.productCode);
+    const userInfo = await userApi.getUserByUserId(loginInfo.userId);
+
+    // Excel作成
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("納品書");
+
+    // レイアウト
+    worksheet.getColumn("A").width = 40;
+    worksheet.getColumn("B").width = 12;
+    worksheet.getColumn("C").width = 17;
+    worksheet.getColumn("D").width = 23;
+    worksheet.getRow(1).height = 65;
+    
+    //印刷設定（1ページに収まるように調整）
+    worksheet.pageSetup = {
+      fitToPage: true,
+    };
+   
+    // セル結合
+    ["A1:D1", "A20:D20", "C14:D14", "C15:D15", "C16:D16", "C17:D17"].forEach((range) => {
+      worksheet.mergeCells(range);
+    });
+
+    // タイトル
+    worksheet.getCell("A1").value = "納品書";
+    worksheet.getCell("A1").font = {
+      bold: true,
+      size: 28,
+    };
+    worksheet.getCell("A1").alignment = {
+      horizontal: "center",
+      vertical: "middle",
+    };
+
+    // 説明文
+    worksheet.getCell("A20").value = "下記の通り納品いたしました。";
+    worksheet.getCell("A20").alignment = {
+      horizontal: "center",
+    };
+
+    // 表ヘッダ
+    const headers = [
+      { cell: "A23", value: "商品名" },
+      { cell: "B23", value: "数量" },
+      { cell: "C23", value: "単価" },
+      { cell: "D23", value: "金額" },
+      { cell: "C27", value: "消費税" },
+      { cell: "C28", value: "合計金額" },
+    ];
+    headers.forEach(({ cell, value }) => {
+      const targetCell = worksheet.getCell(cell);
+      targetCell.value = value;
+      targetCell.font = {
+        bold: true,
+        color: { argb: "FFFFFFFF" },
+      };
+      targetCell.fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "4472C4" },
+      };
+      targetCell.alignment = {
+        horizontal: "center",
+      };
+    });
+
+    // 枠線
+    const borderStyle = {
+      top: { style: "thin" },
+      bottom: { style: "thin" },
+      left: { style: "thin" },
+      right: { style: "thin" },
+    };
+    ["A23", "B23", "C23", "D23", "A24", "B24", "C24", "D24", "C27", "D27", "C28", "D28"].forEach((cell) => {
+      worksheet.getCell(cell).border = borderStyle;
+    });
+
+    // 表示情報
+    const dataMapping = [
+      { cell: "C4", value: `発行日：${formatDate(new Date())}` },
+      { cell: "C5", value: `発行者：${userInfo.lastName} ${userInfo.firstName}` },
+      { cell: "C7", value: `受注番号：${orderInfo.orderNo}` },
+      { cell: "C8", value: `受注日：${formatDate(orderInfo.orderDate)}` },
+      { cell: "C9", value: `入金日：${formatDate(orderInfo.confirmedDate)}` },
+      { cell: "C10", value: `出荷日：${formatDate(orderInfo.shipDate)}` },
+      { cell: "C11", value: `納品日：${formatDate(orderInfo.deliverDate)}` },
+      { cell: "C14", value: clientInfo.clientName },
+      { cell: "A24", value: productInfo.productName },
+      { cell: "B24", value: orderInfo.quantity },
+      { cell: "C24", value: formatAmount(productInfo.productPrice) },
+      { cell: "D24", value: formatAmount(orderInfo.amount) },
+      { cell: "D27", value: formatAmount(orderInfo.tax) },
+      { cell: "D28", value: formatAmount(orderInfo.amountTaxIncluded) },
+    ];
+    dataMapping.forEach(({ cell, value }) => {
+      worksheet.getCell(cell).value = value;
+    });
+
+    //住所・電話番号
+    const address1 = clientInfo.address1 ?? "";
+    const address2 = clientInfo.address2 ?? "";
+    const telNumber = `TEL：${clientInfo.telNumber}`;
+    if (address1 && address2) {
+      worksheet.getCell("C15").value = address1;
+      worksheet.getCell("C16").value = address2;
+      worksheet.getCell("C17").value = telNumber;
+    } else if (address1) {
+      worksheet.getCell("C15").value = address1;
+      worksheet.getCell("C16").value = telNumber;
+    } else {
+      worksheet.getCell("C15").value = telNumber;
+    }
+
+    // ダウンロード
+    const buffer = await workbook.xlsx.writeBuffer();
+    const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `納品書_${orderInfo.orderNo}.xlsx`;
+    link.click();
+    URL.revokeObjectURL(url);
+  } catch (e) {
+    console.log(e);
+    openFailedToast(messages.MSGE021);
   } finally {
     loading.value = false;
   }
