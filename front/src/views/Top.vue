@@ -117,7 +117,7 @@
           ：
           <span class="ms-2">
             <RouterLink v-if="countPendingHatchu > 0" :to="{ name: 'orderList' }">
-              {{ countPendingHatchu }}件
+              {{ countPendingHatchu.toLocaleString("ja-JP") }}件
             </RouterLink>
             <span v-else> {{ countPendingHatchu.toLocaleString("ja-JP") }}件 </span>
           </span>
