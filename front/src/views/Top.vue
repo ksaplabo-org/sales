@@ -70,7 +70,32 @@
           </div>
         </BCard>
       </div>
+
+      <div class="col-4">
+        <BCard class="shadow-sm mb-3 product-card">
+          <template #header>
+            <div class="d-flex justify-content-between">
+              <strong> <i class="fas fa-solid fa-barcode"></i><span class="ms-2">お知らせマスタ</span></strong>
+            </div>
+          </template>
+
+          <div>
+            <span class="label-text4 mt-3 mb-3 ms-4">全ユーザー</span>
+            ：<span class="ms-2">{{ countAllUserNotice.toLocaleString("ja-JP") }}件</span>
+          </div>
+          <div>
+            <span class="label-text4 mb-3 ms-4">管理者ユーザーのみ</span>
+            ：<span class="ms-2">{{ countAdminNotice.toLocaleString("ja-JP") }}件</span>
+          </div>
+          <div>
+            <span class="label-text4 mb-3 ms-4">一般ユーザーのみ</span>
+            ：<span class="ms-2">{{ countGeneralNotice.toLocaleString("ja-JP") }}件</span>
+          </div>
+        </BCard>
+      </div>
     </div>
+
+          
 
     <div class="d-flex justify-content-end">
       <BCard class="shadow-sm mb-3" style="width: 300px">
@@ -146,6 +171,7 @@ import * as userApi from "@/api/userApi.js";
 import * as clientApi from "@/api/clientApi.js";
 import * as productApi from "@/api/productApi.js";
 import * as orderApi from "@/api/orderApi.js";
+import * as noticeApi from "@/api/noticeApi.js";
 import messages from "@/constants/messages.js";
 import Loading from "@/components/Loading.vue";
 import { getLoginInfo } from "@/utils/auth.js";
@@ -193,11 +219,27 @@ const productUpdatedAt = computed(() => {
     .replace(/-/g, "/");
 });
 
+// お知らせマスタ
+const notices = ref([]);
+const countAllUserNotice = computed(() => notices.value.filter((notice) => notice.targetType === "0").length);
+const countAdminNotice = computed(() => notices.value.filter((notice) => notice.targetType === "1").length);
+const countGeneralNotice = computed(() => notices.value.filter((notice) => notice.targetType === "2").length);
+const noticeUpdatedAt = computed(() => {
+  if (notices.value.length === 0) {
+    return "";
+  }
+  return notices.value
+    .reduce((max, notice) => (max > notice.updatedAt ? max : notice.updatedAt), notices.value[0].updatedAt)
+    .substring(0, 10)
+    .replace(/-/g, "/");
+});
+
 // 最終更新日の配列
 const lastUpdatedMasters = ref([
   { id: 1, name: "ユーザーマスタ", date: userUpdatedAt },
   { id: 2, name: "取引先マスタ", date: clientUpdatedAt },
   { id: 3, name: "商品マスタ", date: productUpdatedAt },
+  { id: 4, name: "お知らせマスタ", date: noticeUpdatedAt },
 ]);
 
 // 受発注状況
@@ -251,6 +293,7 @@ onMounted(async () => {
       users.value = await userApi.getUsers();
       clients.value = await clientApi.getClients();
       products.value = await productApi.getProducts();
+      notices.value = await noticeApi.getNotices();
     } else if (loginInfo.role === "1") {
       // 権限が一般の場合
       orders.value = await orderApi.getOrders();
