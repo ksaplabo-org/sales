@@ -109,7 +109,7 @@
             <RouterLink v-if="countPendingJuchu > 0" :to="{ name: 'orderList' }">
               {{ countPendingJuchu.toLocaleString("ja-JP") }}件
             </RouterLink>
-            <span v-else> {{ countPendingJuchu.toLocaleString("ja-JP") }}件 </span>
+            <span v-else> {{ countPendingJuchu }}件 </span>
           </span>
         </div>
         <div>
@@ -119,7 +119,7 @@
             <RouterLink v-if="countPendingHatchu > 0" :to="{ name: 'orderList' }">
               {{ countPendingHatchu.toLocaleString("ja-JP") }}件
             </RouterLink>
-            <span v-else> {{ countPendingHatchu.toLocaleString("ja-JP") }}件 </span>
+            <span v-else> {{ countPendingHatchu }}件 </span>
           </span>
         </div>
       </BCard>
