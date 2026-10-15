@@ -72,23 +72,23 @@
       </div>
 
       <div class="col-4">
-        <BCard class="shadow-sm mb-3 product-card">
+        <BCard class="shadow-sm mb-3 notice-card">
           <template #header>
             <div class="d-flex justify-content-between">
-              <strong> <i class="fas fa-solid fa-barcode"></i><span class="ms-2">お知らせマスタ</span></strong>
+              <strong> <i class="fas fa-regular fa-envelope"></i><span class="ms-2">お知らせマスタ</span></strong>
             </div>
           </template>
 
           <div>
-            <span class="label-text4 mt-3 mb-3 ms-4">全ユーザー</span>
+            <span class="label-text9 mt-3 mb-3 ms-4">全ユーザー</span>
             ：<span class="ms-2">{{ countAllUserNotice.toLocaleString("ja-JP") }}件</span>
           </div>
           <div>
-            <span class="label-text4 mb-3 ms-4">管理者ユーザーのみ</span>
+            <span class="label-text9 mb-3 ms-4">管理者ユーザーのみ</span>
             ：<span class="ms-2">{{ countAdminNotice.toLocaleString("ja-JP") }}件</span>
           </div>
           <div>
-            <span class="label-text4 mb-3 ms-4">一般ユーザーのみ</span>
+            <span class="label-text9 mb-3 ms-4">一般ユーザーのみ</span>
             ：<span class="ms-2">{{ countGeneralNotice.toLocaleString("ja-JP") }}件</span>
           </div>
         </BCard>
@@ -356,6 +356,10 @@ const openFailedToast = (message) => {
   background-color: #ffffcc;
 }
 
+.notice-card .card-header {
+  background-color: #FFF0D6;
+}
+
 .order-card .card-header {
   background-color: #ffd7dc;
 }
@@ -389,6 +393,14 @@ const openFailedToast = (message) => {
  */
 .label-text7 {
   display: inline-block;
-  width: 90px;
+  width: 100px;
+}
+
+/**
+ * 各項目の中で最大9文字の項目名がある場合
+ */
+.label-text9 {
+  display: inline-block;
+  width: 130px;
 }
 </style>
