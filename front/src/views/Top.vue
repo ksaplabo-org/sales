@@ -15,7 +15,7 @@
   <div v-if="loginInfo.role == 2">
     <div class="row g-3">
       <div class="col-4">
-        <BCard class="shadow-sm mb-3 user-card">
+        <BCard class="shadow-sm mb-3 master-card user-card">
           <template #header>
             <div class="d-flex justify-content-between">
               <strong> <i class="fas fa-user"></i><span class="ms-2">ユーザーマスタ</span></strong>
@@ -34,7 +34,7 @@
       </div>
 
       <div class="col-4">
-        <BCard class="shadow-sm mb-3 client-card">
+        <BCard class="shadow-sm mb-3 master-card client-card">
           <template #header>
             <div class="d-flex justify-content-between">
               <strong> <i class="fas fa-money-bill-wave"></i><span class="ms-2">取引先マスタ</span></strong>
@@ -53,7 +53,7 @@
       </div>
 
       <div class="col-4">
-        <BCard class="shadow-sm mb-3 product-card">
+        <BCard class="shadow-sm mb-3 master-card product-card">
           <template #header>
             <div class="d-flex justify-content-between">
               <strong> <i class="fas fa-solid fa-barcode"></i><span class="ms-2">商品マスタ</span></strong>
@@ -72,7 +72,7 @@
       </div>
 
       <div class="col-4">
-        <BCard class="shadow-sm mb-3 notice-card">
+        <BCard class="shadow-sm mb-3 master-card notice-card">
           <template #header>
             <div class="d-flex justify-content-between">
               <strong> <i class="fas fa-regular fa-envelope"></i><span class="ms-2">お知らせマスタ</span></strong>
@@ -80,7 +80,7 @@
           </template>
 
           <div>
-            <span class="label-text9 mt-3 mb-3 ms-4">全ユーザー</span>
+            <span class="label-text9 mb-3 ms-4">全ユーザー</span>
             ：<span class="ms-2">{{ countAllUserNotice.toLocaleString("ja-JP") }}件</span>
           </div>
           <div>
@@ -88,14 +88,12 @@
             ：<span class="ms-2">{{ countAdminNotice.toLocaleString("ja-JP") }}件</span>
           </div>
           <div>
-            <span class="label-text9 mb-3 ms-4">一般ユーザーのみ</span>
+            <span class="label-text9 mb-1 ms-4">一般ユーザーのみ</span>
             ：<span class="ms-2">{{ countGeneralNotice.toLocaleString("ja-JP") }}件</span>
           </div>
         </BCard>
       </div>
     </div>
-
-          
 
     <div class="d-flex justify-content-end">
       <BCard class="shadow-sm mb-3" style="width: 300px">
@@ -344,6 +342,10 @@ const openFailedToast = (message) => {
 
 <!-- マスタ画面レイアウト -->
 <style>
+.master-card {
+  height: 175px;
+}
+
 .user-card .card-header {
   background-color: #e3f2fd;
 }
@@ -357,7 +359,7 @@ const openFailedToast = (message) => {
 }
 
 .notice-card .card-header {
-  background-color: #FFF0D6;
+  background-color: #fff0d6;
 }
 
 .order-card .card-header {
