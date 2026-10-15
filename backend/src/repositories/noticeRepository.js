@@ -32,6 +32,7 @@ class NoticeRepository {
         ["start_date", "startDate"],
         ["end_date", "endDate"],
         ["target_type", "targetType"],
+        ["updated_at", "updatedAt"],
       ],
       where: where,
     });
