@@ -144,6 +144,15 @@ const routes = [
         name: "noticeEdit",
         component: () => import("@/views/notices/NoticeForm.vue"),
       },
+      {
+        path: "errors/NotFoundError",
+        name: "NotFoundError",
+        component: () => import("@/views/errors/NotFoundError.vue"),
+      },
+      {
+        path: "/:pathMatch(.*)*",
+        redirect: "/errors/NotFoundError",
+      },
     ],
   },
 ];
