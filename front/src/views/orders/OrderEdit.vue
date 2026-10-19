@@ -182,7 +182,7 @@
       <BRow class="mb-3">
         <BFormGroup label="商品名" label-cols="3">
           <div class="form-control-plaintext">
-            {{ product.productName }}
+            {{ product.productName ?? "-" }}
           </div>
         </BFormGroup>
       </BRow>
@@ -191,7 +191,7 @@
       <BRow class="mb-3">
         <BFormGroup label="単価" label-cols="3">
           <div class="form-control-plaintext">
-            {{ product.productPrice == null ? "" : product.productPrice.toLocaleString("ja-JP") }}
+            {{ product.productPrice == null ? "-" : product.productPrice.toLocaleString("ja-JP") }}
           </div>
         </BFormGroup>
       </BRow>
