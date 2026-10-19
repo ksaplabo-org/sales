@@ -84,12 +84,12 @@
             ：<span class="ms-2">{{ countAllUserNotice.toLocaleString("ja-JP") }}件</span>
           </div>
           <div>
-            <span class="label-text9 mb-3 ms-4">管理者ユーザーのみ</span>
-            ：<span class="ms-2">{{ countAdminNotice.toLocaleString("ja-JP") }}件</span>
-          </div>
-          <div>
             <span class="label-text9 mb-1 ms-4">一般ユーザーのみ</span>
             ：<span class="ms-2">{{ countGeneralNotice.toLocaleString("ja-JP") }}件</span>
+          </div>
+          <div>
+            <span class="label-text9 mb-3 ms-4">管理者ユーザーのみ</span>
+            ：<span class="ms-2">{{ countAdminNotice.toLocaleString("ja-JP") }}件</span>
           </div>
         </BCard>
       </div>
@@ -220,8 +220,8 @@ const productUpdatedAt = computed(() => {
 // お知らせマスタ
 const notices = ref([]);
 const countAllUserNotice = computed(() => notices.value.filter((notice) => notice.targetType === "0").length);
-const countAdminNotice = computed(() => notices.value.filter((notice) => notice.targetType === "1").length);
-const countGeneralNotice = computed(() => notices.value.filter((notice) => notice.targetType === "2").length);
+const countGeneralNotice = computed(() => notices.value.filter((notice) => notice.targetType === "1").length);
+const countAdminNotice = computed(() => notices.value.filter((notice) => notice.targetType === "2").length);
 const noticeUpdatedAt = computed(() => {
   if (notices.value.length === 0) {
     return "";
