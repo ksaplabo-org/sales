@@ -443,19 +443,6 @@ const formatDate = (date) => {
 };
 
 /**
- * 金額フォーマット
- *
- * @param value 金額
- * @returns フォーマット後金額
- */
-const formatAmount = (value) => {
-  if (value == null) {
-    return "";
-  }
-  return `¥${Number(value).toLocaleString("ja-JP")}`;
-};
-
-/**
  * 納品書出力
  */
 const exportDeliveryNote = async (row) => {
@@ -477,12 +464,12 @@ const exportDeliveryNote = async (row) => {
     worksheet.getColumn("C").width = 17;
     worksheet.getColumn("D").width = 23;
     worksheet.getRow(1).height = 65;
-    
-    //印刷設定（1ページに収まるように調整）
+
+    // 印刷設定（1ページに収まるように調整）
     worksheet.pageSetup = {
       fitToPage: true,
     };
-   
+
     // セル結合
     ["A1:D1", "A20:D20", "C14:D14", "C15:D15", "C16:D16", "C17:D17"].forEach((range) => {
       worksheet.mergeCells(range);
@@ -554,16 +541,16 @@ const exportDeliveryNote = async (row) => {
       { cell: "C14", value: clientInfo.clientName },
       { cell: "A24", value: productInfo.productName },
       { cell: "B24", value: orderInfo.quantity },
-      { cell: "C24", value: formatAmount(productInfo.productPrice) },
-      { cell: "D24", value: formatAmount(orderInfo.amount) },
-      { cell: "D27", value: formatAmount(orderInfo.tax) },
-      { cell: "D28", value: formatAmount(orderInfo.amountTaxIncluded) },
+      { cell: "C24", value: productInfo.productPrice },
+      { cell: "D24", value: orderInfo.amount },
+      { cell: "D27", value: orderInfo.tax },
+      { cell: "D28", value: orderInfo.amountTaxIncluded },
     ];
     dataMapping.forEach(({ cell, value }) => {
       worksheet.getCell(cell).value = value;
     });
 
-    //住所・電話番号
+    // 住所・電話番号
     const address1 = clientInfo.address1 ?? "";
     const address2 = clientInfo.address2 ?? "";
     const telNumber = `TEL：${clientInfo.telNumber}`;
@@ -577,6 +564,23 @@ const exportDeliveryNote = async (row) => {
     } else {
       worksheet.getCell("C15").value = telNumber;
     }
+
+    // 共通フォント
+    for (let row = 1; row <= 40; row++) {
+      for (let col = 1; col <= 4; col++) {
+        const cell = worksheet.getCell(row, col);
+        cell.font = {
+          ...(cell.font || {}),
+          name: "游ゴシック",
+        };
+      }
+    }
+
+    // 金額書式
+    ["C24", "D24", "D27", "D28"].forEach((cell) => {
+      worksheet.getCell(cell).numFmt = "¥#,##0";
+      worksheet.getCell(cell).alignment = { horizontal: "right" };
+    });
 
     // ダウンロード
     const buffer = await workbook.xlsx.writeBuffer();
