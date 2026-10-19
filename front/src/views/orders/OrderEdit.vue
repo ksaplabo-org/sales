@@ -83,8 +83,9 @@
             v-model="view.confirmedDate"
             :state="getConfirmedDateState()"
             type="date"
+            @blur="checkDate('confirmedDate', $event)"
           />
-          <div v-if="getConfirmedDateState() === false" class="text-danger">
+          <div v-if="view.confirmedDate && getConfirmedDateState() === false" class="text-danger">
             {{
               formatMessage(
                 messages.MSGE017,
@@ -109,8 +110,17 @@
       <!-- 納品予定日 -->
       <BRow class="mb-3">
         <BFormGroup label="納品予定日" label-cols="3">
-          <BFormInput id="deliverDate" v-model="view.deliverDate" :state="getDeliverDateState()" type="date" />
-          <div v-if="getDeliverDateState() === false" class="text-danger">
+          <BFormInput
+            id="deliverDate"
+            v-model="view.deliverDate"
+            :state="getDeliverDateState()"
+            type="date"
+            @blur="checkDate('deliverDate', $event)"
+          />
+          <div
+            v-if="view.deliverDate && !invalidDateFields.deliverDate && getDeliverDateState() === false"
+            class="text-danger"
+          >
             {{ formatMessage(messages.MSGE017, "納品予定日", getInvalidDeliverDateFieldName()) }}
           </div>
         </BFormGroup>
@@ -289,9 +299,40 @@ const productFields = computed(() => [
   { key: "productPrice", label: "単価" },
 ]);
 
+// 日付入力欄ごとの不正日付入力状態
+const invalidDateFields = ref({
+  confirmedDate: false,
+  deliverDate: false,
+});
+
+/**
+ * 不正な日付入力状態かを取得
+ *
+ * @param fieldName 日付項目名
+ * @return true: 不正な日付入力あり、false: 不正な日付入力なし
+ */
+const isDateInvalid = (fieldName) => {
+  return invalidDateFields.value[fieldName];
+};
+
+/**
+ * 有効な日付か判定し、不正日付入力状態を更新
+ *
+ * @param fieldName 日付項目名
+ * @param event 日付入力イベント
+ */
+const checkDate = (fieldName, event) => {
+  invalidDateFields.value[fieldName] = !event.target.validity.valid;
+};
+
 //確定日入力チェック
 const getConfirmedDateState = () => {
-  if (!view.value.confirmedDate) return null;
+  if (isDateInvalid("confirmedDate")) {
+    return false;
+  }
+  if (!view.value.confirmedDate) {
+    return null;
+  }
   return view.value.confirmedDate >= view.value.orderDate;
 };
 
@@ -311,6 +352,9 @@ const getShipDateState = () => {
 
 //納品予定日入力チェック
 const getDeliverDateState = () => {
+  if (isDateInvalid("deliverDate")) {
+    return false;
+  }
   if (!view.value.deliverDate) {
     return null;
   }
