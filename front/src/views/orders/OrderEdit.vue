@@ -83,9 +83,13 @@
             v-model="view.confirmedDate"
             :state="getConfirmedDateState()"
             type="date"
+            @focus="validatedFields.confirmedDate = false"
             @blur="checkDate('confirmedDate', $event)"
           />
-          <div v-if="view.confirmedDate && getConfirmedDateState() === false" class="text-danger">
+          <div
+            v-if="validatedFields.confirmedDate && view.confirmedDate && getConfirmedDateState() === false"
+            class="text-danger"
+          >
             {{
               formatMessage(
                 messages.MSGE017,
@@ -100,8 +104,15 @@
       <!-- 出荷日 -->
       <BRow class="mb-3" v-if="view.orderKbn === '1'">
         <BFormGroup label="出荷日" label-cols="3">
-          <BFormInput id="shipDate" v-model="view.shipDate" :state="getShipDateState()" type="date" />
-          <div v-if="view.shipDate && getShipDateState() === false" class="text-danger">
+          <BFormInput
+            id="shipDate"
+            v-model="view.shipDate"
+            :state="getShipDateState()"
+            type="date"
+            @focus="validatedFields.shipDate = false"
+            @blur="checkDate('shipDate', $event)"
+          />
+          <div v-if="validatedFields.shipDate && view.shipDate && getShipDateState() === false" class="text-danger">
             {{ formatMessage(messages.MSGE017, "出荷日", view.confirmedDate ? "入金日" : "受注日") }}
           </div>
         </BFormGroup>
@@ -115,10 +126,16 @@
             v-model="view.deliverDate"
             :state="getDeliverDateState()"
             type="date"
+            @focus="validatedFields.deliverDate = false"
             @blur="checkDate('deliverDate', $event)"
           />
           <div
-            v-if="view.deliverDate && !invalidDateFields.deliverDate && getDeliverDateState() === false"
+            v-if="
+              validatedFields.deliverDate &&
+              view.deliverDate &&
+              !invalidDateFields.deliverDate &&
+              getDeliverDateState() === false
+            "
             class="text-danger"
           >
             {{ formatMessage(messages.MSGE017, "納品予定日", getInvalidDeliverDateFieldName()) }}
@@ -134,19 +151,21 @@
               <BFormInput
                 id="productCode"
                 v-model="view.productCode"
-                :state="view.productCode.length === 7 && product.productName !== null"
+                :state="
+                  !validatedFields.productCode ? null : view.productCode.length === 7 && product.productName != null
+                "
                 type="text"
                 maxlength="7"
-                @input="
-                  product.productName = null;
-                  product.productPrice = null;
-                  formatAlphaNumericInput;
+                @focus="validatedFields.productCode = false"
+                @blur="
+                  validatedFields.productCode = true;
+                  applyProductInput(view.productCode);
                 "
+                @input="formatAlphaNumericInput"
                 @compositionend="formatAlphaNumericInput"
-                @blur="applyProductInput(view.productCode)"
               />
               <div
-                v-if="view.productCode && view.productCode.length === 7 && product.productName == null"
+                v-if="validatedFields.productCode && view.productCode && getProductCodeState() === false"
                 class="text-danger"
               >
                 {{ formatMessage(messages.MSGE019, "商品コード") }}
@@ -211,12 +230,19 @@
         <BFormGroup label="数量" label-cols="3">
           <BFormInput
             v-model="view.quantity"
-            :state="Number(view.quantity) >= 1"
+            :state="!validatedFields.quantity ? null : Number(view.quantity) >= 1"
             type="text"
+            @focus="validatedFields.quantity = false"
+            @blur="validatedFields.quantity = true"
             @input="formatNumericInput"
             @compositionend="formatNumericInput"
           />
-          <div v-if="view.quantity !== '' && view.quantity !== null && Number(view.quantity) < 1" class="text-danger">
+          <div
+            v-if="
+              validatedFields.quantity && view.quantity !== '' && view.quantity !== null && Number(view.quantity) < 1
+            "
+            class="text-danger"
+          >
             {{ formatMessage(messages.MSGE016, "数量", 1) }}
           </div>
         </BFormGroup>
@@ -302,18 +328,18 @@ const productFields = computed(() => [
 // 日付入力欄ごとの不正日付入力状態
 const invalidDateFields = ref({
   confirmedDate: false,
+  shipDate: false,
   deliverDate: false,
 });
 
-/**
- * 不正な日付入力状態かを取得
- *
- * @param fieldName 日付項目名
- * @return true: 不正な日付入力あり、false: 不正な日付入力なし
- */
-const isDateInvalid = (fieldName) => {
-  return invalidDateFields.value[fieldName];
-};
+// 入力欄ごとのバリデーション実施状態
+const validatedFields = ref({
+  confirmedDate: false,
+  shipDate: false,
+  deliverDate: false,
+  productCode: false,
+  quantity: false,
+});
 
 /**
  * 有効な日付か判定し、不正日付入力状態を更新
@@ -323,11 +349,15 @@ const isDateInvalid = (fieldName) => {
  */
 const checkDate = (fieldName, event) => {
   invalidDateFields.value[fieldName] = !event.target.validity.valid;
+  validatedFields.value[fieldName] = true;
 };
 
 //確定日入力チェック
 const getConfirmedDateState = () => {
-  if (isDateInvalid("confirmedDate")) {
+  if (!validatedFields.value.confirmedDate) {
+    return null;
+  }
+  if (invalidDateFields.value.confirmedDate) {
     return false;
   }
   if (!view.value.confirmedDate) {
@@ -338,6 +368,12 @@ const getConfirmedDateState = () => {
 
 //出荷日入力チェック
 const getShipDateState = () => {
+  if (!validatedFields.value.shipDate) {
+    return null;
+  }
+  if (invalidDateFields.value.shipDate) {
+    return false;
+  }
   if (view.value.orderKbn !== "1") {
     return null;
   }
@@ -352,7 +388,10 @@ const getShipDateState = () => {
 
 //納品予定日入力チェック
 const getDeliverDateState = () => {
-  if (isDateInvalid("deliverDate")) {
+  if (!validatedFields.value.deliverDate) {
+    return null;
+  }
+  if (invalidDateFields.value.deliverDate) {
     return false;
   }
   if (!view.value.deliverDate) {
@@ -383,6 +422,13 @@ const formatDate = (date) => {
   return date ? date.replace(/-/g, "/") : "";
 };
 
+const getProductCodeState = () => {
+  if (!validatedFields.value.productCode) {
+    return null;
+  }
+  return view.value.productCode.length === 7 && product.value.productName != null;
+};
+
 //初期処理
 onMounted(async () => {
   try {
@@ -391,6 +437,11 @@ onMounted(async () => {
     const orderInfo = await orderApi.getOrderByOrderNo(route.params.orderNo);
 
     Object.assign(view.value, orderInfo);
+
+    validatedFields.value.shipDate = !!orderInfo.shipDate;
+    validatedFields.value.deliverDate = !!orderInfo.deliverDate;
+    validatedFields.value.productCode = !!orderInfo.productCode;
+    validatedFields.value.quantity = !!orderInfo.quantity;
 
     // 初期表示時の状態を保持
     hasConfirmedDate.value = !!orderInfo.confirmedDate;
