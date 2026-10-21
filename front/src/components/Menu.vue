@@ -12,7 +12,7 @@
     <div class="py-2">
       <div v-for="(group, index) in displayMenus" :key="group.group" class="mb-1">
         <div
-          class="d-flex align-items-center px-3 py-2 cursor-pointer user-select-none justify-content-between"
+          class="d-flex justify-content-between align-items-center px-3 py-2 cursor-pointer user-select-none"
           @click="toggleMenu(index)"
         >
           <div>
