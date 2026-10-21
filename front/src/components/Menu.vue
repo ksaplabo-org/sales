@@ -1,19 +1,18 @@
 <template>
   <div class="sidebar navbar-nav bg-dark text-white flex-shrink-0" :class="{ collapsed: isCollapsed }">
     <div class="d-flex align-items-center px-3" style="height: 56px">
-      <i class="fas fa-bars me-3 cursor-pointer" @click="toggleSidebar"></i>
       <i class="fas fa-layer-group me-2"></i>
       <span v-if="!isCollapsed">
         <span class="fw-bold">販売管理システム</span>
       </span>
+      <i class="fas fa-bars ms-auto cursor-pointer" @click="toggleSidebar"></i>
     </div>
 
     <!-- メニュー -->
     <div class="py-2">
       <div v-for="(group, index) in displayMenus" :key="group.group" class="mb-1">
         <div
-          class="d-flex align-items-center px-3 py-2 cursor-pointer user-select-none"
-          :class="isCollapsed ? 'justify-content-start gap-2' : 'justify-content-between'"
+          class="d-flex align-items-center px-3 py-2 cursor-pointer user-select-none justify-content-between"
           @click="toggleMenu(index)"
         >
           <div>
@@ -32,10 +31,9 @@
             :key="menu.title"
             :to="menu.to"
             class="d-flex align-items-center text-decoration-none text-light px-4 py-2"
-            :class="isCollapsed ? 'justify-content-start px-0' : 'px-4'"
             active-class="bg-primary"
           >
-            <i class="fas me-2" :class="[menu.icon, !isCollapsed ? 'me-2' : '']"></i>
+            <i class="fas me-2" :class="menu.icon"></i>
             <span v-if="!isCollapsed">
               {{ menu.title }}
             </span>
