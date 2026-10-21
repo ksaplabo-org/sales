@@ -553,7 +553,7 @@ const exportDeliveryNote = async (row) => {
     // 住所・電話番号
     const address1 = clientInfo.address1 ?? "";
     const address2 = clientInfo.address2 ?? "";
-    const telNumber = `TEL：${clientInfo.telNumber}`;
+    const telNumber = clientInfo.telNumber ? `TEL：${clientInfo.telNumber}` : "";
     if (address1 && address2) {
       worksheet.getCell("C15").value = address1;
       worksheet.getCell("C16").value = address2;
