@@ -1,8 +1,11 @@
 <template>
-  <div class="sidebar navbar-nav bg-dark text-white flex-shrink-0">
+  <div class="sidebar navbar-nav bg-dark text-white flex-shrink-0" :class="{ collapsed: isCollapsed }">
     <div class="d-flex align-items-center px-3" style="height: 56px">
       <i class="fas fa-layer-group me-2"></i>
-      <span class="fw-bold">販売管理システム</span>
+      <span v-if="!isCollapsed">
+        <span class="fw-bold">販売管理システム</span>
+      </span>
+      <i class="fas fa-bars ms-auto cursor-pointer" @click="toggleSidebar"></i>
     </div>
 
     <!-- メニュー -->
@@ -14,7 +17,9 @@
         >
           <div>
             <i class="fas me-2" :class="group.icon"></i>
-            {{ group.group }}
+            <span v-if="!isCollapsed">
+              {{ group.group }}
+            </span>
           </div>
           <i class="fas" :class="group.open ? 'fa-chevron-down' : 'fa-chevron-right'"></i>
         </div>
@@ -29,7 +34,9 @@
             active-class="bg-primary"
           >
             <i class="fas me-2" :class="menu.icon"></i>
-            {{ menu.title }}
+            <span v-if="!isCollapsed">
+              {{ menu.title }}
+            </span>
           </RouterLink>
         </BCollapse>
       </div>
@@ -40,6 +47,14 @@
 <script setup>
 import { computed, ref, onMounted } from "vue";
 import * as Auth from "@/utils/auth.js";
+
+// サイドバー開閉フラグ
+const isCollapsed = ref(false);
+
+// サイドバー開閉
+const toggleSidebar = () => {
+  isCollapsed.value = !isCollapsed.value;
+};
 
 // メニューに表示する一覧
 const menus = ref([
@@ -103,3 +118,13 @@ const displayMenus = computed(() => {
     .filter((group) => group.menus.length > 0);
 });
 </script>
+
+<style scoped>
+.sidebar.collapsed {
+  width: 80px !important;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+</style>
