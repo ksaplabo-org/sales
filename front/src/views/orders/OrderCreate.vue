@@ -32,16 +32,11 @@
         <!-- 受発注番号 -->
         <BFormGroup :label="isReceive ? '受注番号' : '発注番号'" label-cols="3">
           <BFormInput
-            id="orderNo"
             v-model="form.orderNo"
-            :state="!validatedFields.orderNo ? null : form.orderNo.length === 8"
-            type="text"
             maxlength="8"
-            @focus="validatedFields.orderNo = false"
-            @input="formatAlphaNumericInput"
-            @compositionend="formatAlphaNumericInput"
-            @blur="validatedFields.orderNo = true"
-            required
+            :state="states.orderNo"
+            @focus="states.orderNo = null"
+            @blur="states.orderNo = form.orderNo.length === 8"
           />
           <BFormInvalidFeedback v-if="form.orderNo">
             {{ formatMessage(messages.MSGE008, "受発注番号", 8) }}
@@ -54,30 +49,21 @@
         <BFormGroup label="取引先コード" label-cols="3">
           <div class="d-flex gap-2">
             <BFormInput
-              id="clientCode"
               v-model="form.clientCode"
-              :state="!validatedFields.clientCode ? null : form.clientCode.length === 8 && client.clientName !== null"
               maxlength="8"
-              @focus="validatedFields.clientCode = false"
-              @input="formatAlphaNumericInput;"
-              @compositionend="formatAlphaNumericInput"
+              :state="states.clientCode === null ? null : form.clientCode.length === 8 && client.clientName !== null"
+              @focus="states.clientCode = null"
               @blur="
-                validatedFields.clientCode = true;
+                states.clientCode = form.clientCode.length === 8;
                 applyClientInput(form.clientCode);
               "
-              required
             />
             <BButton type="button" variant="outline-primary" class="text-dark text-nowrap" @click="openClientModal">
               <i class="fas fa-list me-1"></i>参照
             </BButton>
           </div>
           <div
-            v-if="
-              validatedFields.clientCode &&
-              form.clientCode &&
-              form.clientCode.length === 8 &&
-              client.clientName === null
-            "
+            v-if="states.clientCode && form.clientCode && form.clientCode.length === 8 && client.clientName === null"
             class="text-danger"
           >
             {{ formatMessage(messages.MSGE019, "取引先コード") }}
@@ -145,13 +131,19 @@
       <BRow class="mb-3">
         <BFormGroup :label="isReceive ? '受注日' : '発注日'" label-cols="3">
           <BFormInput
-            id="orderDate"
             v-model="form.orderDate"
-            :state="getOrderDateState()"
+            :state="states.orderDate"
             type="date"
-            @focus="validatedFields.orderDate = false"
-            @blur="checkDate('orderDate', $event)"
-            required
+            @focus="states.orderDate = null"
+            @blur="
+              ($event) => {
+                // 日付の妥当性を保持
+                invalidDates.orderDate = !$event.target.validity.valid;
+
+                // 受発注日の入力状態を更新
+                updateOrderDateState();
+              }
+            "
           />
         </BFormGroup>
       </BRow>
@@ -160,15 +152,21 @@
       <BRow class="mb-3">
         <BFormGroup :label="isReceive ? '入金日' : '発注受付完了日'" label-cols="3">
           <BFormInput
-            id="confirmedDate"
             v-model="form.confirmedDate"
-            :state="getConfirmedDateState()"
             type="date"
-            @focus="validatedFields.confirmedDate = false"
-            @blur="checkDate('confirmedDate', $event)"
+            :state="states.confirmedDate"
+            @focus="states.confirmedDate = null"
+            @blur="
+              ($event) => {
+                // 日付の妥当性を保持
+                invalidDates.confirmedDate = !$event.target.validity.valid;
+                // 納品予定日の入力状態を更新
+                updateConfirmedDateState();
+              }
+            "
           />
           <div
-            v-if="validatedFields.confirmedDate && form.confirmedDate && getConfirmedDateState() === false"
+            v-if="states.confirmedDate === false && form.confirmedDate && !invalidDates.confirmedDate"
             class="text-danger"
           >
             {{
@@ -182,15 +180,21 @@
       <BRow class="mb-3" v-if="isReceive">
         <BFormGroup label="出荷日" label-cols="3">
           <BFormInput
-            id="shipDate"
             v-model="form.shipDate"
-            :state="getShipDateState()"
+            :state="states.shipDate"
             type="date"
-            @focus="validatedFields.shipDate = false"
-            @blur="checkDate('shipDate', $event)"
-            required
+            @focus="states.shipDate = null"
+            @blur="
+              ($event) => {
+                // 日付の妥当性を保持
+                invalidDates.shipDate = !$event.target.validity.valid;
+
+                // 受発注日の入力状態を更新
+                updateShipDateState();
+              }
+            "
           />
-          <div v-if="validatedFields.shipDate && form.shipDate && getShipDateState() === false" class="text-danger">
+          <div v-if="states.shipDate === false && form.shipDate && !invalidDates.shipDate" class="text-danger">
             {{ formatMessage(messages.MSGE017, "出荷日", form.confirmedDate ? "入金日" : "受注日") }}
           </div>
         </BFormGroup>
@@ -200,22 +204,20 @@
       <BRow class="mb-3">
         <BFormGroup label="納品予定日" label-cols="3">
           <BFormInput
-            id="deliverDate"
             v-model="form.deliverDate"
-            :state="getDeliverDateState()"
             type="date"
-            @focus="validatedFields.deliverDate = false"
-            @blur="checkDate('deliverDate', $event)"
-          />
-          <div
-            v-if="
-              validatedFields.deliverDate &&
-              form.deliverDate &&
-              !invalidDateFields.deliverDate &&
-              getDeliverDateState() === false
+            :state="states.deliverDate"
+            @focus="states.deliverDate = null"
+            @blur="
+              ($event) => {
+                // 日付の妥当性を保持
+                invalidDates.deliverDate = !$event.target.validity.valid;
+                // 納品予定日の入力状態を更新
+                updateDeliverDateState();
+              }
             "
-            class="text-danger"
-          >
+          />
+          <div v-if="states.deliverDate === false && form.deliverDate && !invalidDates.deliverDate" class="text-danger">
             {{ formatMessage(messages.MSGE017, "納品予定日", getInvalidDeliverDateFieldName()) }}
           </div>
         </BFormGroup>
@@ -226,20 +228,16 @@
         <BFormGroup label="商品コード" label-cols="3">
           <div class="d-flex gap-2">
             <BFormInput
-              id="productCode"
               v-model="form.productCode"
-              :state="
-                !validatedFields.productCode ? null : form.productCode.length === 7 && product.productName !== null
-              "
               maxlength="7"
-              @focus="validatedFields.productCode = false"
-              @input="formatAlphaNumericInput;"
-              @compositionend="formatAlphaNumericInput"
-              @blur="
-                validatedFields.productCode = true;
-                applyProductInput(form.productCode);
+              :state="
+                states.productCode === null ? null : form.productCode.length === 7 && product.productName !== null
               "
-              required
+              @focus="states.productCode = null"
+              @blur="
+                applyProductInput(form.productCode);
+                states.productCode = true;
+              "
             />
             <BButton type="button" variant="outline-primary" class="text-dark text-nowrap" @click="openProductModal">
               <i class="fas fa-list me-1"></i>参照
@@ -247,10 +245,7 @@
           </div>
           <div
             v-if="
-              validatedFields.productCode &&
-              form.productCode &&
-              form.productCode.length === 7 &&
-              product.productName === null
+              states.productCode && form.productCode && form.productCode.length === 7 && product.productName === null
             "
             class="text-danger"
           >
@@ -310,20 +305,19 @@
       <BRow class="mb-3">
         <BFormGroup label="数量" label-cols="3">
           <BFormInput
-            id="quantity"
             v-model="form.quantity"
-            :state="!validatedFields.quantity ? null : Number(form.quantity) >= 1"
+            :state="states.quantity === null ? null : Number(form.quantity) >= 1"
             type="text"
-            @focus="validatedFields.quantity = false"
-            @input="formatNumericInput"
-            @compositionend="formatNumericInput"
+            @focus="states.quantity = null"
             @blur="
-              validatedFields.quantity = true;
+              states.quantity = true;
               calculateAmount();
             "
-            required
           />
-          <div v-if="form.quantity !== '' && form.quantity !== null && Number(form.quantity) < 1" class="text-danger">
+          <div
+            v-if="states.quantity && form.quantity !== '' && form.quantity !== null && Number(form.quantity) < 1"
+            class="text-danger"
+          >
             {{ formatMessage(messages.MSGE016, "数量", 1) }}
           </div>
         </BFormGroup>
@@ -469,103 +463,128 @@ const productFields = [
   { key: "productPrice", label: "単価" },
 ];
 
-// 日付入力欄ごとの不正日付入力状態
-const invalidDateFields = ref({
+// 各項目の入力状態を管理
+const states = ref({
+  orderNo: false,
+  clientCode: false,
+  orderDate: false,
+  confirmedDate: null,
+  shipDate: false,
+  deliverDate: null,
+  productCode: false,
+  quantity: false,
+});
+
+// 各日付項目の日付妥当性を管理
+const invalidDates = ref({
   orderDate: false,
   confirmedDate: false,
   shipDate: false,
   deliverDate: false,
 });
 
-// 入力欄ごとのバリデーション実施状態
-const validatedFields = ref({
-  orderNo: true,
-  clientCode: true,
-  orderDate: true,
-  confirmedDate: false,
-  shipDate: true,
-  deliverDate: false,
-  productCode: true,
-  quantity: true,
-});
+/**
+ * 受発注日の検証状態を更新
+ */
+const updateOrderDateState = () => {
+  // 日付妥当性エラー
+  if (invalidDates.value.orderDate) {
+    states.value.orderDate = false;
+    return;
+  }
+
+  // 未入力エラー
+  if (!form.value.orderDate) {
+    states.value.orderDate = false;
+    return;
+  }
+  states.value.orderDate = true;
+};
 
 /**
- * 有効な日付か判定し、不正日付入力状態を更新
- *
- * @param fieldName 日付項目名
- * @param event 日付入力イベント
+ * 確定日の検証状態を更新
  */
-const checkDate = (fieldName, event) => {
-  invalidDateFields.value[fieldName] = !event.target.validity.valid;
-  validatedFields.value[fieldName] = true;
-};
+const updateConfirmedDateState = () => {
+  // 日付妥当性エラー
+  if (invalidDates.value.confirmedDate) {
+    states.value.confirmedDate = false;
+    return;
+  }
 
-//受発注日入力チェック
-const getOrderDateState = () => {
-  if (!validatedFields.value.orderDate) {
-    return null;
-  }
-  if (invalidDateFields.value.orderDate) {
-    return false;
-  }
-  return !!form.value.orderDate;
-};
-
-//確定日入力チェック
-const getConfirmedDateState = () => {
-  if (!validatedFields.value.confirmedDate) {
-    return null;
-  }
-  if (invalidDateFields.value.confirmedDate) {
-    return false;
-  }
+  // 未入力は許容のためstateなし
   if (!form.value.confirmedDate) {
-    return null;
+    states.value.confirmedDate = null;
+    return;
   }
-  return form.value.confirmedDate >= form.value.orderDate;
+
+  // 相関チェック
+  // 比較元の日付を取得
+  // 比較元の日付は受注日で入力されている日付とする
+  const sourceDate = form.value.orderDate;
+  if (sourceDate && form.value.confirmedDate) {
+    states.value.confirmedDate = sourceDate <= form.value.confirmedDate;
+    return;
+  }
+
+  states.value.confirmedDate = true;
 };
 
-//出荷日入力チェック
-const getShipDateState = () => {
-  if (!validatedFields.value.shipDate) {
-    return null;
+/**
+ * 出荷日の検証状態を更新
+ */
+const updateShipDateState = () => {
+  // 日付妥当性エラー
+  if (invalidDates.value.shipDate) {
+    states.value.shipDate = false;
+    return;
   }
-  if (invalidDateFields.value.shipDate) {
-    return false;
-  }
-  if (!isReceive) {
-    return null;
-  }
+
+  // 未入力エラー
   if (!form.value.shipDate) {
-    return false;
+    states.value.shipDate = false;
+    return;
   }
-  if (form.value.confirmedDate) {
-    return form.value.shipDate >= form.value.confirmedDate;
+
+  // 相関チェック
+  // 比較元の日付を取得
+  // 比較元の日付は確定日、受注日の順で入力されている日付とする
+  const sourceDate = form.value.confirmedDate || form.value.orderDate;
+  if (sourceDate && form.value.shipDate) {
+    states.value.shipDate = sourceDate <= form.value.shipDate;
+    return;
   }
-  return form.value.shipDate >= form.value.orderDate;
+
+  states.value.shipDate = true;
 };
 
-//納品予定日入力チェック
-const getDeliverDateState = () => {
-  if (!validatedFields.value.deliverDate) {
-    return null;
+/**
+ * 納品予定日の検証状態を更新
+ */
+const updateDeliverDateState = () => {
+  // 日付妥当性エラー
+  if (invalidDates.value.deliverDate) {
+    states.value.deliverDate = false;
+    return;
   }
-  if (invalidDateFields.value.deliverDate) {
-    return false;
-  }
+
+  // 未入力は許容のためstateなし
   if (!form.value.deliverDate) {
-    return null;
+    states.value.deliverDate = null;
+    return;
   }
-  //受注時のみ
-  if (isReceive && form.value.shipDate) {
-    return form.value.deliverDate >= form.value.shipDate;
+
+  // 相関チェック
+  // 比較元の日付を取得
+  // 比較元の日付は出荷日、確定日、受注日の順で入力されている日付とする
+  const sourceDate = form.value.shipDate || form.value.confirmedDate || form.value.orderDate;
+  if (sourceDate && form.value.deliverDate) {
+    states.value.deliverDate = sourceDate <= form.value.deliverDate;
+    return;
   }
-  //共通処理
-  if (form.value.confirmedDate) {
-    return form.value.deliverDate >= form.value.confirmedDate;
-  }
-  return form.value.deliverDate >= form.value.orderDate;
+
+  states.value.deliverDate = true;
 };
+
 //納品予定日のエラーメッセージ
 const getInvalidDeliverDateFieldName = () => {
   if (isReceive) {
