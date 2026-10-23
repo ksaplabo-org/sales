@@ -21,6 +21,7 @@ describe("orderRepository", () => {
       ["order_date", "orderDate"],
       ["confirmed_date", "confirmedDate"],
       ["amount_tax_included", "amountTaxIncluded"],
+      ["deliver_date", "deliverDate"],
     ];
 
     // 共通で使用する検索結果
@@ -33,6 +34,7 @@ describe("orderRepository", () => {
         orderDate: "2026-01-01",
         confirmedDate: "",
         amountTaxIncluded: "20000",
+        deliverDate: "",
       },
       {
         orderNo: "o2000001",
@@ -42,6 +44,7 @@ describe("orderRepository", () => {
         orderDate: "2026-01-02",
         confirmedDate: "2026-01-03",
         amountTaxIncluded: "70000",
+        deliverDate: "2026-01-04",
       },
     ];
 
