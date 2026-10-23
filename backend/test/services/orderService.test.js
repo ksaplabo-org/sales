@@ -816,7 +816,16 @@ describe("orderService", () => {
         shipDate: "2026-01-02",
         deliverDate: "2026-01-01",
       };
+      const order = {
+        orderNo: "o1000001",
+        orderKbn: "1",
+        orderDate: "2026-01-04",
+        confirmedDate: null,
+        shipDate: null,
+      };
 
+      //Mock設定
+      jest.spyOn(orderRepository, "findByNo").mockResolvedValueOnce(order);
       await expect(orderService.update("o1000001", orderInfo)).rejects.toMatchObject({
         errors: [
           {
