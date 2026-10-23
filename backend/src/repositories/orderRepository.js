@@ -40,6 +40,7 @@ class OrderRepository {
         ["order_date", "orderDate"],
         ["confirmed_date", "confirmedDate"],
         ["amount_tax_included", "amountTaxIncluded"],
+        ["deliver_date", "deliverDate"],
       ],
       where: where,
     });

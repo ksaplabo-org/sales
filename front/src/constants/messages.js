@@ -20,7 +20,8 @@ const messages = Object.freeze({
   MSGE017: "{0}は{1}以降の日付を入力してください",
   MSGE018: "{0}が存在しません",
   MSGE019: "入力された{0}は存在しません",
-  MSGE020: "{0}から入力してください"
+  MSGE020: "{0}から入力してください",
+  MSGE021: "{0}の出力に失敗しました"
 });
 
 export default messages;

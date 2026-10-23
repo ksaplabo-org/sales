@@ -186,6 +186,15 @@
             <i class="far fa-trash-alt"></i>
             削除
           </BButton>
+          <BButton
+            size="sm"
+            variant="outline-success"
+            @click="exportDeliveryNote(row.item)"
+            v-if="row.item.orderKbn === '1' && row.item.confirmedDate && row.item.deliverDate"
+          >
+            <i class="fas fa-file-excel"></i>
+            納品書
+          </BButton>
         </BContainer>
       </template>
 
@@ -217,10 +226,14 @@ import { computed, ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 
 import * as orderApi from "@/api/orderApi.js";
+import * as clientApi from "@/api/clientApi.js";
+import * as productApi from "@/api/productApi.js";
+import * as userApi from "@/api/userApi.js";
 import messages from "@/constants/messages.js";
 import Loading from "@/components/Loading.vue";
 import { getLoginInfo } from "@/utils/auth.js";
-import { formatMessage } from "@/utils/messageUtil.js";
+import ExcelJS from "exceljs";
+
 // Router操作
 const router = useRouter();
 
@@ -402,6 +415,209 @@ const deleteOrder = async () => {
   } catch (e) {
     console.log(e);
     openFailedToast(messages.MSGE007);
+  } finally {
+    loading.value = false;
+  }
+};
+
+/**
+ * 日付フォーマット
+ *
+ * yyyy年MM月dd日
+ *
+ * @param date 日付
+ * @returns フォーマット後の日付
+ */
+const formatDate = (date) => {
+  if (!date) {
+    return "";
+  }
+
+  const targetDate = new Date(date);
+
+  const year = targetDate.getFullYear();
+  const month = String(targetDate.getMonth() + 1).padStart(2, "0");
+  const day = String(targetDate.getDate()).padStart(2, "0");
+
+  return `${year}年${month}月${day}日`;
+};
+
+/**
+ * 納品書出力
+ */
+const exportDeliveryNote = async (row) => {
+  loading.value = true;
+  try {
+    // データ取得
+    const orderInfo = await orderApi.getOrderByOrderNo(row.orderNo);
+    const clientInfo = await clientApi.getClientByClientCode(orderInfo.clientCode);
+    const productInfo = await productApi.getProductByProductCode(orderInfo.productCode);
+    const userInfo = await userApi.getUserByUserId(loginInfo.userId);
+
+    // Excel作成
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("納品書");
+
+    // 取引先情報
+    const clientLines = [clientInfo.clientName];
+    if (clientInfo.address1) {
+      clientLines.push(clientInfo.address1);
+    }
+    if (clientInfo.address2) {
+      clientLines.push(clientInfo.address2);
+    }
+    if (clientInfo.telNumber) {
+      clientLines.push(`TEL：${clientInfo.telNumber}`);
+    }
+
+    // レイアウト
+    worksheet.getColumn("A").width = 40;
+    worksheet.getColumn("B").width = 12;
+    worksheet.getColumn("C").width = 17;
+    worksheet.getColumn("D").width = 23;
+    worksheet.getRow(1).height = 65;
+
+    // 印刷設定（1ページに収まるように調整）
+    worksheet.pageSetup = {
+      fitToPage: true,
+    };
+
+    // レイアウト行設定
+    const clientStartRow = 14;
+    const deliveryMessageRow = clientStartRow + clientLines.length + 2;
+    const headerRow = deliveryMessageRow + 3;
+    const productDataRow = headerRow + 1;
+    const taxRow = headerRow + 4;
+    const totalRow = headerRow + 5;
+
+    // セル結合
+    worksheet.mergeCells("A1:D1");
+    clientLines.forEach((_, index) => {
+      worksheet.mergeCells(`C${clientStartRow + index}:D${clientStartRow + index}`);
+    });
+    worksheet.mergeCells(`A${deliveryMessageRow}:D${deliveryMessageRow}`);
+
+    // 取引先情報出力
+    clientLines.forEach((line, index) => {
+      worksheet.getCell(`C${clientStartRow + index}`).value = line;
+    });
+
+    // タイトル
+    worksheet.getCell("A1").value = "納品書";
+    worksheet.getCell("A1").font = {
+      bold: true,
+      size: 28,
+    };
+    worksheet.getCell("A1").alignment = {
+      horizontal: "center",
+      vertical: "middle",
+    };
+
+    // 説明文
+    worksheet.getCell(`A${deliveryMessageRow}`).value = "下記の通り納品いたしました。";
+    worksheet.getCell(`A${deliveryMessageRow}`).alignment = {
+      horizontal: "center",
+    };
+
+    // 表ヘッダ
+    const headers = [
+      { cell: `A${headerRow}`, value: "商品名" },
+      { cell: `B${headerRow}`, value: "数量" },
+      { cell: `C${headerRow}`, value: "単価" },
+      { cell: `D${headerRow}`, value: "金額" },
+      { cell: `C${taxRow}`, value: "消費税" },
+      { cell: `C${totalRow}`, value: "合計金額" },
+    ];
+    headers.forEach(({ cell, value }) => {
+      const targetCell = worksheet.getCell(cell);
+      targetCell.value = value;
+      targetCell.font = {
+        bold: true,
+        color: { argb: "FFFFFFFF" },
+      };
+      targetCell.fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "4472C4" },
+      };
+      targetCell.alignment = {
+        horizontal: "center",
+      };
+    });
+
+    // 枠線
+    const borderStyle = {
+      top: { style: "thin" },
+      bottom: { style: "thin" },
+      left: { style: "thin" },
+      right: { style: "thin" },
+    };
+    [
+      `A${headerRow}`,
+      `B${headerRow}`,
+      `C${headerRow}`,
+      `D${headerRow}`,
+      `A${productDataRow}`,
+      `B${productDataRow}`,
+      `C${productDataRow}`,
+      `D${productDataRow}`,
+      `C${taxRow}`,
+      `D${taxRow}`,
+      `C${totalRow}`,
+      `D${totalRow}`,
+    ].forEach((cell) => {
+      worksheet.getCell(cell).border = borderStyle;
+    });
+
+    // 表示情報
+    const dataMapping = [
+      { cell: "C4", value: `発行日：${formatDate(new Date())}` },
+      { cell: "C5", value: `発行者：${userInfo.lastName} ${userInfo.firstName}` },
+      { cell: "C7", value: `受注番号：${orderInfo.orderNo}` },
+      { cell: "C8", value: `受注日：${formatDate(orderInfo.orderDate)}` },
+      { cell: "C9", value: `入金日：${formatDate(orderInfo.confirmedDate)}` },
+      { cell: "C10", value: `出荷日：${formatDate(orderInfo.shipDate)}` },
+      { cell: "C11", value: `納品日：${formatDate(orderInfo.deliverDate)}` },
+      { cell: `A${productDataRow}`, value: productInfo.productName },
+      { cell: `B${productDataRow}`, value: orderInfo.quantity },
+      { cell: `C${productDataRow}`, value: productInfo.productPrice },
+      { cell: `D${productDataRow}`, value: orderInfo.amount },
+      { cell: `D${taxRow}`, value: orderInfo.tax },
+      { cell: `D${totalRow}`, value: orderInfo.amountTaxIncluded },
+    ];
+    dataMapping.forEach(({ cell, value }) => {
+      worksheet.getCell(cell).value = value;
+    });
+
+    // 共通フォント
+    for (let row = 1; row <= 40; row++) {
+      for (let col = 1; col <= 4; col++) {
+        const cell = worksheet.getCell(row, col);
+        cell.font = {
+          ...(cell.font || {}),
+          name: "游ゴシック",
+        };
+      }
+    }
+
+    // 金額書式
+    [`C${productDataRow}`, `D${productDataRow}`, `D${taxRow}`, `D${totalRow}`].forEach((cell) => {
+      worksheet.getCell(cell).numFmt = "¥#,##0";
+      worksheet.getCell(cell).alignment = { horizontal: "right" };
+    });
+
+    // ダウンロード
+    const buffer = await workbook.xlsx.writeBuffer();
+    const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `納品書_${orderInfo.orderNo}.xlsx`;
+    link.click();
+    URL.revokeObjectURL(url);
+  } catch (e) {
+    console.log(e);
+    openFailedToast(messages.MSGE021);
   } finally {
     loading.value = false;
   }
