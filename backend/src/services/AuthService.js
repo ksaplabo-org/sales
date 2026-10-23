@@ -1,8 +1,8 @@
 import userRepository from "../repositories/userRepository.js";
 import jwt from "jsonwebtoken";
-import detenv from "dotenv";
+import dotenv from "dotenv";
 
-detenv.config();
+dotenv.config();
 
 class AuthService {
   async login(userId, password) {
