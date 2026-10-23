@@ -1,10 +1,14 @@
 import userRepository from "../repositories/userRepository.js";
+import jwt from "jsonwebtoken";
+import detenv from "dotenv";
+
+detenv.config();
 
 class AuthService {
   async login(userId, password) {
     const user = await userRepository.findById(userId);
     if (user && user.password === password && !user.delFlg) {
-      const accessToken = jwt.sign(
+      return jwt.sign(
         {
           userId: user.userId,
           role: user.role,
@@ -14,11 +18,8 @@ class AuthService {
           expiresIn: "1h",
         },
       );
-      return accessToken;
     }
-    else {
     return null;
-    }
   }
 }
 

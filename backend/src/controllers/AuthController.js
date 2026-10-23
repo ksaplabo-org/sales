@@ -12,7 +12,7 @@ class AuthController {
       const user = await this.service.login(reqBody.userId, reqBody.password);
       if (user) {
         res.status(status).json(user);
-      }else if(user == null){
+      } else if (user == null) {
         status = 401;
         res.status(status).send();
       }
