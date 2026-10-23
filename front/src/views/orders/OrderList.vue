@@ -458,6 +458,18 @@ const exportDeliveryNote = async (row) => {
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet("納品書");
 
+    // 取引先情報
+    const clientLines = [clientInfo.clientName];
+    if (clientInfo.address1) {
+      clientLines.push(clientInfo.address1);
+    }
+    if (clientInfo.address2) {
+      clientLines.push(clientInfo.address2);
+    }
+    if (clientInfo.telNumber) {
+      clientLines.push(`TEL：${clientInfo.telNumber}`);
+    }
+
     // レイアウト
     worksheet.getColumn("A").width = 40;
     worksheet.getColumn("B").width = 12;
@@ -470,9 +482,24 @@ const exportDeliveryNote = async (row) => {
       fitToPage: true,
     };
 
+    // レイアウト行設定
+    const clientStartRow = 14;
+    const deliveryMessageRow = clientStartRow + clientLines.length + 2;
+    const headerRow = deliveryMessageRow + 3;
+    const productDataRow = headerRow + 1;
+    const taxRow = headerRow + 4;
+    const totalRow = headerRow + 5;
+
     // セル結合
-    ["A1:D1", "A20:D20", "C14:D14", "C15:D15", "C16:D16", "C17:D17"].forEach((range) => {
-      worksheet.mergeCells(range);
+    worksheet.mergeCells("A1:D1");
+    clientLines.forEach((_, index) => {
+      worksheet.mergeCells(`C${clientStartRow + index}:D${clientStartRow + index}`);
+    });
+    worksheet.mergeCells(`A${deliveryMessageRow}:D${deliveryMessageRow}`);
+
+    // 取引先情報出力
+    clientLines.forEach((line, index) => {
+      worksheet.getCell(`C${clientStartRow + index}`).value = line;
     });
 
     // タイトル
@@ -487,19 +514,19 @@ const exportDeliveryNote = async (row) => {
     };
 
     // 説明文
-    worksheet.getCell("A20").value = "下記の通り納品いたしました。";
-    worksheet.getCell("A20").alignment = {
+    worksheet.getCell(`A${deliveryMessageRow}`).value = "下記の通り納品いたしました。";
+    worksheet.getCell(`A${deliveryMessageRow}`).alignment = {
       horizontal: "center",
     };
 
     // 表ヘッダ
     const headers = [
-      { cell: "A23", value: "商品名" },
-      { cell: "B23", value: "数量" },
-      { cell: "C23", value: "単価" },
-      { cell: "D23", value: "金額" },
-      { cell: "C27", value: "消費税" },
-      { cell: "C28", value: "合計金額" },
+      { cell: `A${headerRow}`, value: "商品名" },
+      { cell: `B${headerRow}`, value: "数量" },
+      { cell: `C${headerRow}`, value: "単価" },
+      { cell: `D${headerRow}`, value: "金額" },
+      { cell: `C${taxRow}`, value: "消費税" },
+      { cell: `C${totalRow}`, value: "合計金額" },
     ];
     headers.forEach(({ cell, value }) => {
       const targetCell = worksheet.getCell(cell);
@@ -525,7 +552,20 @@ const exportDeliveryNote = async (row) => {
       left: { style: "thin" },
       right: { style: "thin" },
     };
-    ["A23", "B23", "C23", "D23", "A24", "B24", "C24", "D24", "C27", "D27", "C28", "D28"].forEach((cell) => {
+    [
+      `A${headerRow}`,
+      `B${headerRow}`,
+      `C${headerRow}`,
+      `D${headerRow}`,
+      `A${productDataRow}`,
+      `B${productDataRow}`,
+      `C${productDataRow}`,
+      `D${productDataRow}`,
+      `C${taxRow}`,
+      `D${taxRow}`,
+      `C${totalRow}`,
+      `D${totalRow}`,
+    ].forEach((cell) => {
       worksheet.getCell(cell).border = borderStyle;
     });
 
@@ -538,32 +578,16 @@ const exportDeliveryNote = async (row) => {
       { cell: "C9", value: `入金日：${formatDate(orderInfo.confirmedDate)}` },
       { cell: "C10", value: `出荷日：${formatDate(orderInfo.shipDate)}` },
       { cell: "C11", value: `納品日：${formatDate(orderInfo.deliverDate)}` },
-      { cell: "C14", value: clientInfo.clientName },
-      { cell: "A24", value: productInfo.productName },
-      { cell: "B24", value: orderInfo.quantity },
-      { cell: "C24", value: productInfo.productPrice },
-      { cell: "D24", value: orderInfo.amount },
-      { cell: "D27", value: orderInfo.tax },
-      { cell: "D28", value: orderInfo.amountTaxIncluded },
+      { cell: `A${productDataRow}`, value: productInfo.productName },
+      { cell: `B${productDataRow}`, value: orderInfo.quantity },
+      { cell: `C${productDataRow}`, value: productInfo.productPrice },
+      { cell: `D${productDataRow}`, value: orderInfo.amount },
+      { cell: `D${taxRow}`, value: orderInfo.tax },
+      { cell: `D${totalRow}`, value: orderInfo.amountTaxIncluded },
     ];
     dataMapping.forEach(({ cell, value }) => {
       worksheet.getCell(cell).value = value;
     });
-
-    // 住所・電話番号
-    const address1 = clientInfo.address1 ?? "";
-    const address2 = clientInfo.address2 ?? "";
-    const telNumber = clientInfo.telNumber ? `TEL：${clientInfo.telNumber}` : "";
-    if (address1 && address2) {
-      worksheet.getCell("C15").value = address1;
-      worksheet.getCell("C16").value = address2;
-      worksheet.getCell("C17").value = telNumber;
-    } else if (address1) {
-      worksheet.getCell("C15").value = address1;
-      worksheet.getCell("C16").value = telNumber;
-    } else {
-      worksheet.getCell("C15").value = telNumber;
-    }
 
     // 共通フォント
     for (let row = 1; row <= 40; row++) {
@@ -577,7 +601,7 @@ const exportDeliveryNote = async (row) => {
     }
 
     // 金額書式
-    ["C24", "D24", "D27", "D28"].forEach((cell) => {
+    [`C${productDataRow}`, `D${productDataRow}`, `D${taxRow}`, `D${totalRow}`].forEach((cell) => {
       worksheet.getCell(cell).numFmt = "¥#,##0";
       worksheet.getCell(cell).alignment = { horizontal: "right" };
     });
