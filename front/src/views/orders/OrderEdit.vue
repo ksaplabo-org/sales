@@ -86,8 +86,12 @@
               ($event) => {
                 // 日付の妥当性を保持
                 invalidDates.confirmedDate = !$event.target.validity.valid;
-                // 納品予定日の入力状態を更新
+                // 確定日の入力状態を更新
                 updateConfirmedDateState();
+
+                // 後続の日付項目の入力状態を更新
+                updateShipDateState();
+                updateDeliverDateState();
               }
             "
           />
@@ -119,8 +123,11 @@
                 // 日付の妥当性を保持
                 invalidDates.shipDate = !$event.target.validity.valid;
 
-                // 受発注日の入力状態を更新
+                // 出荷日の入力状態を更新
                 updateShipDateState();
+
+                // 後続の日付項目の入力状態を更新
+                updateDeliverDateState();
               }
             "
           />
@@ -159,15 +166,13 @@
           <div class="d-flex gap-2 align-items-start">
             <div class="flex-grow-1">
               <BFormInput
-                id="productCode"
                 v-model="view.productCode"
-                :state="!states.productCode ? null : view.productCode.length === 7 && product.productName != null"
-                type="text"
+                :state="states.productCode"
                 maxlength="7"
-                @focus="states.productCode = false"
+                @focus="states.productCode = null"
                 @blur="
-                  states.productCode = true;
                   applyProductInput(view.productCode);
+                  states.productCode = view.productCode.length === 7 && product.productName !== null;
                 "
                 @input="formatAlphaNumericInput"
                 @compositionend="formatAlphaNumericInput"
@@ -235,17 +240,17 @@
         <BFormGroup label="数量" label-cols="3">
           <BFormInput
             v-model="view.quantity"
-            :state="!states.quantity ? null : Number(view.quantity) >= 1"
+            :state="states.quantity"
             type="text"
-            @focus="states.quantity = false"
-            @blur="states.quantity = true"
+            @focus="states.quantity = null"
+            @blur="
+              states.quantity = Number(view.quantity) >= 1;
+              calculateAmount();
+            "
             @input="formatNumericInput"
             @compositionend="formatNumericInput"
           />
-          <div
-            v-if="states.quantity && view.quantity !== '' && view.quantity !== null && Number(view.quantity) < 1"
-            class="text-danger"
-          >
+          <div v-if="states.quantity === false && view.quantity" class="text-danger">
             {{ formatMessage(messages.MSGE016, "数量", 1) }}
           </div>
         </BFormGroup>

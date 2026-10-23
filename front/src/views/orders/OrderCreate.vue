@@ -37,6 +37,8 @@
             :state="states.orderNo"
             @focus="states.orderNo = null"
             @blur="states.orderNo = form.orderNo.length === 8"
+            @input="formatAlphaNumericInput"
+            @compositionend="formatAlphaNumericInput"
           />
           <BFormInvalidFeedback v-if="form.orderNo">
             {{ formatMessage(messages.MSGE008, "受発注番号", 8) }}
@@ -51,12 +53,14 @@
             <BFormInput
               v-model="form.clientCode"
               maxlength="8"
-              :state="states.clientCode === null ? null : form.clientCode.length === 8 && client.clientName !== null"
+              :state="states.clientCode"
               @focus="states.clientCode = null"
               @blur="
-                states.clientCode = form.clientCode.length === 8;
                 applyClientInput(form.clientCode);
+                states.clientCode = form.clientCode.length === 8 && client.clientName !== null;
               "
+              @input="formatAlphaNumericInput"
+              @compositionend="formatAlphaNumericInput"
             />
             <BButton type="button" variant="outline-primary" class="text-dark text-nowrap" @click="openClientModal">
               <i class="fas fa-list me-1"></i>参照
@@ -142,6 +146,11 @@
 
                 // 受発注日の入力状態を更新
                 updateOrderDateState();
+
+                // 後続の日付項目の入力状態を更新
+                updateConfirmedDateState();
+                updateShipDateState();
+                updateDeliverDateState();
               }
             "
           />
@@ -160,8 +169,12 @@
               ($event) => {
                 // 日付の妥当性を保持
                 invalidDates.confirmedDate = !$event.target.validity.valid;
-                // 納品予定日の入力状態を更新
+                // 確定日の入力状態を更新
                 updateConfirmedDateState();
+
+                // 後続の日付項目の入力状態を更新
+                updateShipDateState();
+                updateDeliverDateState();
               }
             "
           />
@@ -189,8 +202,11 @@
                 // 日付の妥当性を保持
                 invalidDates.shipDate = !$event.target.validity.valid;
 
-                // 受発注日の入力状態を更新
+                // 出荷日の入力状態を更新
                 updateShipDateState();
+
+                // 後続の日付項目の入力状態を更新
+                updateDeliverDateState();
               }
             "
           />
@@ -230,14 +246,14 @@
             <BFormInput
               v-model="form.productCode"
               maxlength="7"
-              :state="
-                states.productCode === null ? null : form.productCode.length === 7 && product.productName !== null
-              "
+              :state="states.productCode"
               @focus="states.productCode = null"
               @blur="
                 applyProductInput(form.productCode);
-                states.productCode = true;
+                states.productCode = form.productCode.length === 7 && product.productName !== null;
               "
+              @input="formatAlphaNumericInput"
+              @compositionend="formatAlphaNumericInput"
             />
             <BButton type="button" variant="outline-primary" class="text-dark text-nowrap" @click="openProductModal">
               <i class="fas fa-list me-1"></i>参照
@@ -306,18 +322,17 @@
         <BFormGroup label="数量" label-cols="3">
           <BFormInput
             v-model="form.quantity"
-            :state="states.quantity === null ? null : Number(form.quantity) >= 1"
+            :state="states.quantity"
             type="text"
             @focus="states.quantity = null"
             @blur="
-              states.quantity = true;
+              states.quantity = Number(form.quantity) >= 1;
               calculateAmount();
             "
+            @input="formatNumericInput"
+            @compositionend="formatNumericInput"
           />
-          <div
-            v-if="states.quantity && form.quantity !== '' && form.quantity !== null && Number(form.quantity) < 1"
-            class="text-danger"
-          >
+          <div v-if="states.quantity === false && form.quantity" class="text-danger">
             {{ formatMessage(messages.MSGE016, "数量", 1) }}
           </div>
         </BFormGroup>
