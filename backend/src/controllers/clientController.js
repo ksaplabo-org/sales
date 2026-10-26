@@ -82,8 +82,8 @@ class ClientController {
         address1: req.body.address1,
         address2: req.body.address2,
         telNumber: req.body.telNumber,
-        createdId: req.body.createdId,
-        updatedId: req.body.createdId,
+        createdId: req.user.userId,
+        updatedId: req.user.userId,
       };
 
       // 共通バリデーション
@@ -164,7 +164,7 @@ class ClientController {
         address1: req.body.address1,
         address2: req.body.address2,
         telNumber: req.body.telNumber,
-        updatedId: req.body.updatedId,
+        updatedId: req.user.userId,
       };
 
       // 共通バリデーション

@@ -1,10 +1,11 @@
 import * as UserConst from "@/constants/users";
 import * as authApi from "@/api/authApi.js";
+import { jwtDecode } from "jwt-decode";
 
 /**
  * セッションストレージに保持するキー
  */
-const AUTH_KEY = "loginKey";
+const AUTH_KEY = "accessToken";
 
 /**
  * ログイン処理
@@ -18,7 +19,8 @@ export async function login(userId, password) {
     const response = await authApi.login(userId, password);
 
     // 認証したユーザー情報をセッションストレージに保持することでログイン状態として扱う
-    sessionStorage.setItem(AUTH_KEY, JSON.stringify(response));
+    sessionStorage.setItem(AUTH_KEY, response);
+    
   } catch (e) {
     throw e;
   }
@@ -40,7 +42,12 @@ export function logout() {
 export function getLoginInfo() {
   // セッションストレージからログインユーザー情報を取得する
   const storageAuth = sessionStorage.getItem(AUTH_KEY);
-  return storageAuth === null ? null : JSON.parse(storageAuth);
+
+  if (storageAuth === null) {
+    return null;
+  }
+
+  return jwtDecode(storageAuth);
 }
 
 /**

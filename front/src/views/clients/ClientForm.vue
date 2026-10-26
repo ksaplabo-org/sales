@@ -170,7 +170,7 @@ const failedToastText = ref("");
 const showFailedToastMs = ref(0);
 
 // ログイン情報
-const loginInfo = Auth.getLoginInfo();
+const loginInfo = computed(() => Auth.getLoginInfo());
 
 // トースト表示ミリ秒
 const TOAST_MS = 3000;
@@ -242,6 +242,7 @@ const openFailedToast = (message) => {
 const saveClientInfo = async () => {
   loading.value = true;
   try {
+    console.log(loginInfo);
     // 登録データを作成
     const saveData = form.value;
     if (isEdit.value) {
