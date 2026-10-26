@@ -242,7 +242,6 @@ const openFailedToast = (message) => {
 const saveClientInfo = async () => {
   loading.value = true;
   try {
-    console.log(loginInfo);
     // 登録データを作成
     const saveData = form.value;
     if (isEdit.value) {
