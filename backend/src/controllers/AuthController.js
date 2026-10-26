@@ -1,7 +1,6 @@
 import AuthService from "../services/AuthService.js";
 
 class AuthController {
-  service = new AuthService();
 
   async login(req, res) {
     // リクエストボディ取得
@@ -9,7 +8,7 @@ class AuthController {
 
     let status = 200;
     try {
-      const user = await this.service.login(reqBody.userId, reqBody.password);
+      const user = await AuthService.login(reqBody.userId, reqBody.password);
       if (user) {
         // 認証成功時アクセストークンを送信
         res.status(status).json(user);
