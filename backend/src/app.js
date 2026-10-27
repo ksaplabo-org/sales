@@ -6,7 +6,7 @@ import clientRoutes from "./routes/clientRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
 import noticeRoutes from "./routes/noticeRoutes.js";
-import authMiddleware from "./authMiddleware.js";
+import authMiddleware from "./middleware/auth.js";
 
 const app = express();
 app.use(express.json());
