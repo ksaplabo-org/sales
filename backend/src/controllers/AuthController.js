@@ -8,18 +8,18 @@ class AuthController {
 
     let status = 200;
     try {
-      const user = await AuthService.login(reqBody.userId, reqBody.password);
-      if (user) {
+      const accessToken = await AuthService.login(reqBody.userId, reqBody.password);
+      if (accessToken) {
         // 認証成功時アクセストークンを送信
-        res.status(status).json(user);
-      } else if (user == null) {
+        res.status(status).json(accessToken);
+      } else if (accessToken == null) {
         // 認証失敗時ステータスに401を設定し送信
         status = 401;
         res.status(status).send();
       }
     } catch (e) {
       // 異常レスポンス
-      console.log("failed to verify user.", e);
+      console.log("failed to verify accessToken.", e);
       status = 500;
       res.status(status).send();
     }

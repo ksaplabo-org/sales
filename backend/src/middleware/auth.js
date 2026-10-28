@@ -1,16 +1,22 @@
 import jwt from "jsonwebtoken";
 
 const authenticateToken = (req, res, next) => {
+  const Bearer = "Bearer ";
   const authHeader = req.headers.authorization;
 
-  if (!authHeader?.startsWith("Bearer ")) {
+  if (!authHeader?.startsWith(Bearer)) {
     return res.status(401).send();
   }
 
-  const token = authHeader.substring(7);
+  const token = authHeader.replace(Bearer, "");
 
   try {
-    req.user = jwt.verify(token, process.env.JWT_SECRET);
+    const loginInfo = jwt.verify(token, process.env.JWT_SECRET);
+
+    req.user = {
+      userId: loginInfo.userId,
+      role: loginInfo.role,
+    };
 
     next();
   } catch {

@@ -34,17 +34,21 @@ class ClientService {
    * 取引先情報登録
    *
    * @param {*} clientInfo 取引先情報
+   * @param {*} loginId 登録者ID
    */
-  async create(clientInfo) {
+  async create(clientInfo, loginId) {
     // 一意性制約チェック
     const client = await clientRepository.findByCode(clientInfo.clientCode);
     if (client) {
       throw new UniqueConstraintError("clientCode", "この取引先コードは既に使用されています");
     }
 
-    if (!clientInfo.address1 && clientInfo.address2){
+    if (!clientInfo.address1 && clientInfo.address2) {
       throw new ValidationError("address2", "住所1から設定してください");
     }
+
+    clientInfo.createdId = loginId;
+    clientInfo.updatedId = loginId;
 
     const now = new Date().toISOString();
     clientInfo.createdAt = now;
@@ -58,18 +62,21 @@ class ClientService {
    *
    * @param {*} clientCode 取引先コード
    * @param {*} clientInfo 取引先情報
+   * @param {*} loginId 更新者ID
    */
-  async update(clientCode, clientInfo) {
+  async update(clientCode, clientInfo, loginId) {
     // 更新データの存在チェック
     const client = await clientRepository.findByCode(clientCode);
     if (!client) {
       throw new NotFoundError("clientCode", "この取引先情報は存在しません");
     }
 
-    if (!clientInfo.address1 && clientInfo.address2){
+    if (!clientInfo.address1 && clientInfo.address2) {
       throw new ValidationError("address2", "住所1から設定してください");
     }
-    
+
+    clientInfo.updatedId = loginId;
+
     const now = new Date().toISOString();
     clientInfo.updatedAt = now;
 
