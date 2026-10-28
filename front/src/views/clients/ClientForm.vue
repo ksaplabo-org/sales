@@ -170,7 +170,7 @@ const failedToastText = ref("");
 const showFailedToastMs = ref(0);
 
 // ログイン情報
-const loginInfo = computed(() => Auth.getLoginInfo());
+const loginInfo = Auth.getLoginInfo();
 
 // トースト表示ミリ秒
 const TOAST_MS = 3000;

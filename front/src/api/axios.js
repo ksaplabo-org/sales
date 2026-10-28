@@ -6,8 +6,18 @@ const apiClient = axios.create({
   timeout: 10000,
   headers: {
     "Content-Type": "application/json",
-    Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
   },
+});
+
+// リクエスト時に最新のアクセストークンを設定
+apiClient.interceptors.request.use((config) => {
+  const accessToken = sessionStorage.getItem("accessToken");
+
+  if (accessToken) {
+    config.headers.Authorization = `Bearer ${accessToken}`;
+  }
+
+  return config;
 });
 
 // TODO: 認証の共通アクセストークンが必要などあればこちらで。

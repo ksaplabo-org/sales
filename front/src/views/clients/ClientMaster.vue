@@ -152,7 +152,6 @@ import { useRouter } from "vue-router";
 import * as clientApi from "@/api/clientApi.js";
 import messages from "@/constants/messages.js";
 import Loading from "@/components/Loading.vue";
-import { getLoginInfo } from "@/utils/auth.js";
 import { formatMessage } from "@/utils/messageUtil.js";
 import * as Auth from "@/utils/auth.js";
 
@@ -204,7 +203,7 @@ const showSuccessToastMs = ref(0);
 const showFailedToastMs = ref(0);
 
 // ログイン情報
-const loginInfo = computed(() => Auth.getLoginInfo());
+const loginInfo = Auth.getLoginInfo();
 
 /**
  * 初期表示処理
