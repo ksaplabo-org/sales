@@ -383,8 +383,8 @@ const states = ref({
   confirmedDate: null,
   shipDate: false,
   deliverDate: null,
-  productCode: false,
-  quantity: false,
+  productCode: true,
+  quantity: true,
 });
 
 /**
@@ -504,10 +504,8 @@ onMounted(async () => {
 
     Object.assign(view.value, orderInfo);
 
-    states.value.shipDate = !!orderInfo.shipDate;
-    states.value.productCode = !!orderInfo.productCode;
-    states.value.deliverDate = orderInfo.deliverDate ? true : null;
-    states.value.quantity = !!orderInfo.quantity;
+    updateShipDateState();
+    updateDeliverDateState();
 
     // 初期表示時の状態を保持
     hasConfirmedDate.value = !!orderInfo.confirmedDate;
