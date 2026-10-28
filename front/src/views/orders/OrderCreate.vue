@@ -41,7 +41,7 @@
             @compositionend="formatAlphaNumericInput"
           />
           <BFormInvalidFeedback v-if="form.orderNo">
-            {{ formatMessage(messages.MSGE008, "受発注番号", 8) }}
+            {{ formatMessage(messages.MSGE008, isReceive ? "受注番号" : "発注番号", 8) }}
           </BFormInvalidFeedback>
         </BFormGroup>
       </BRow>
@@ -67,7 +67,7 @@
             </BButton>
           </div>
           <div
-            v-if="states.clientCode && form.clientCode && form.clientCode.length === 8 && client.clientName === null"
+            v-if="form.clientCode && form.clientCode.length === 8 && client.clientName === null"
             class="text-danger"
           >
             {{ formatMessage(messages.MSGE019, "取引先コード") }}
@@ -261,7 +261,7 @@
           </div>
           <div
             v-if="
-              states.productCode && form.productCode && form.productCode.length === 7 && product.productName === null
+              form.productCode && form.productCode.length === 7 && product.productName === null
             "
             class="text-danger"
           >
@@ -708,6 +708,9 @@ const applySelectedClient = () => {
   client.value.telNumber = selectedClient.value.telNumber;
   client.value.address1 = selectedClient.value.address1;
 
+
+  states.value.clientCode = true;
+
   showClientModal.value = false;
 };
 
@@ -751,6 +754,8 @@ const applySelectedProduct = () => {
   product.value.productPrice = selectedProduct.value.productPrice;
 
   calculateAmount();
+
+  states.value.productCode = true;
 
   showProductModal.value = false;
 };
