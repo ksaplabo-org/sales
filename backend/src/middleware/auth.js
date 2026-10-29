@@ -1,14 +1,14 @@
 import jwt from "jsonwebtoken";
 
 const authenticateToken = (req, res, next) => {
-  const Bearer = "Bearer ";
+  const AUTH_SCHEME_BEARER = "Bearer ";
   const authHeader = req.headers.authorization;
 
-  if (!authHeader?.startsWith(Bearer)) {
+  if (!authHeader?.startsWith(AUTH_SCHEME_BEARER)) {
     return res.status(401).send();
   }
 
-  const token = authHeader.replace(Bearer, "");
+  const token = authHeader.replace(AUTH_SCHEME_BEARER, "");
 
   try {
     const loginInfo = jwt.verify(token, process.env.JWT_SECRET);
