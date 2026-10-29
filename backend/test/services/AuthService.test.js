@@ -2,6 +2,7 @@ import { expect, jest } from "@jest/globals";
 
 import authService from "../../src/services/AuthService.js";
 import userRepository from "../../src/repositories/userRepository.js";
+import jwt from "jsonwebtoken";
 
 describe("AuthService", () => {
   afterEach(() => {
@@ -10,7 +11,7 @@ describe("AuthService", () => {
 
   describe("login ログイン認証", () => {
     test("[正常系] ユーザーID、パスワードが正しい場合 => JWTが返却されること", async () => {
-      // 検索条件
+      // 引数設定
       const userId = "user01";
       const password = "password";
 
@@ -24,11 +25,14 @@ describe("AuthService", () => {
 
       // テスト対象関数の呼び出し
       const actual = await authService.login(userId, password);
+      const decoded = jwt.verify(actual, process.env.JWT_SECRET);
 
-      // 検証
+      // Mockした関数の呼び出し検証
       expect(spyFindById).toHaveBeenCalledTimes(1);
       expect(spyFindById).toHaveBeenCalledWith(userId);
-      expect(actual).not.toBeNull();
+      // JWTの検証
+      expect(decoded.userId).toBe("user01");
+      expect(decoded.role).toBe("2");
     });
 
     test("[異常系] ユーザーが存在しない場合 => nullが返却されること", async () => {
