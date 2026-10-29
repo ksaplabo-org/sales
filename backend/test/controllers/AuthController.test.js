@@ -2,7 +2,6 @@ import { jest } from "@jest/globals";
 
 import AuthController from "../../src/controllers/AuthController.js";
 import AuthService from "../../src/services/AuthService.js";
-import NotFoundError from "../../src/errors/NotFoundError.js";
 
 //各テストケースの後に実行される処理
 afterEach(() => {
@@ -23,8 +22,8 @@ describe("AuthController", () => {
   });
 
   describe("login ログイン認証処理", () => {
-    test("[正常系] 検索条件がServiceに渡され、ステータス[200]とServiceの結果がレスポンスされること", async () => {
-      // リクエスト引数設定
+    test("[正常系] 引数がServiceに渡され、ステータス[200]とServiceの結果がレスポンスされること", async () => {
+      // 引数設定
       const req = {
         body: {
           userId: "test1",
@@ -54,8 +53,8 @@ describe("AuthController", () => {
       expect(res.json).toHaveBeenCalledWith(expectedResult);
     });
 
-    test("[異常系] Serviceでエラー発生時、ステータス[401]でレスポンスされること", async () => {
-      // リクエスト引数設定
+    test("[異常系] Serviceで認証エラー発生時、ステータス[401]でレスポンスされること", async () => {
+      // 引数設定
       const req = {
         body: {
           userId: "test1",
@@ -85,7 +84,7 @@ describe("AuthController", () => {
     });
 
     test("[異常系] Serviceでエラー発生時、ステータス[500]でレスポンスされること", async () => {
-      // リクエスト引数設定
+      // 引数設定
       const req = {
         body: {
           userId: "test1",
