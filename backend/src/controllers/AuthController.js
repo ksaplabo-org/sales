@@ -1,33 +1,29 @@
 import AuthService from "../services/AuthService.js";
 
 class AuthController {
-  service = new AuthService();
 
   async login(req, res) {
     // リクエストボディ取得
     const reqBody = req.body;
 
-    let resBody = null;
     let status = 200;
     try {
-      const user = await this.service.login(reqBody.userId, reqBody.password);
-      if (user == null) {
-        // 認証失敗として401エラーを設定
+      const accessToken = await AuthService.login(reqBody.userId, reqBody.password);
+      if (accessToken) {
+        // 認証成功時アクセストークンを送信
+        res.status(status).json(accessToken);
+      } else if (accessToken == null) {
+        // 認証失敗時ステータスに401を設定し送信
         status = 401;
-      } else {
-        // 認証成功としてレスポンスボディを設定
-        resBody = {
-          userId: user.userId,
-          role: user.role,
-        };
+        res.status(status).send();
       }
     } catch (e) {
       // 異常レスポンス
-      console.log("failed to verify user.", e);
+      console.log("failed to verify accessToken.", e);
       status = 500;
+      res.status(status).send();
     }
-    res.status(status).json(resBody);
   }
 }
 
-export default AuthController;
+export default new AuthController;
