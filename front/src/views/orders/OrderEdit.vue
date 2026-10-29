@@ -178,7 +178,7 @@
                 @input="formatAlphaNumericInput"
                 @compositionend="formatAlphaNumericInput"
               />
-              <div v-if="states.productCode && view.productCode && getProductCodeState() === false" class="text-danger">
+              <div v-if="view.productCode && view.productCode.length === 7 && product.productName === null" class="text-danger">
                 {{ formatMessage(messages.MSGE019, "商品コード") }}
               </div>
             </div>
@@ -488,13 +488,6 @@ const formatDate = (date) => {
   return date ? date.replace(/-/g, "/") : "";
 };
 
-const getProductCodeState = () => {
-  if (!states.value.productCode) {
-    return null;
-  }
-  return view.value.productCode.length === 7 && product.value.productName != null;
-};
-
 //初期処理
 onMounted(async () => {
   try {
@@ -595,6 +588,7 @@ const applySelectedProduct = () => {
   product.value.productName = selectedProduct.value.productName;
   product.value.productPrice = selectedProduct.value.productPrice;
 
+  states.value.productCode = true;
   calculateAmount();
 
   showProductModal.value = false;
