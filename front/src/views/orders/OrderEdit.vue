@@ -81,6 +81,7 @@
             v-else
             v-model="view.confirmedDate"
             :state="states.confirmedDate"
+            class="code-input"
             type="date"
             @focus="states.confirmedDate = null"
             @blur="
@@ -117,6 +118,7 @@
           <BFormInput
             v-model="view.shipDate"
             :state="states.shipDate"
+            class="code-input"
             type="date"
             @focus="states.shipDate = null"
             @blur="
@@ -143,8 +145,9 @@
         <BFormGroup label="納品予定日" label-cols="3">
           <BFormInput
             v-model="view.deliverDate"
-            type="date"
             :state="states.deliverDate"
+            class="code-input"
+            type="date"
             @focus="states.deliverDate = null"
             @blur="
               ($event) => {
@@ -164,27 +167,26 @@
       <!-- 商品コード -->
       <BRow class="mb-3">
         <BFormGroup label="商品コード" label-cols="3">
-          <div class="d-flex gap-2 align-items-start">
-            <div class="flex-grow-1">
-              <BFormInput
-                v-model="view.productCode"
-                :state="states.productCode"
-                maxlength="7"
-                @focus="states.productCode = null"
-                @blur="
-                  applyProductInput(view.productCode);
-                  states.productCode = view.productCode.length === 7 && product.productName !== null;
-                "
-                @input="formatAlphaNumericInput"
-                @compositionend="formatAlphaNumericInput"
-              />
-              <div v-if="states.productCode && view.productCode && getProductCodeState() === false" class="text-danger">
-                {{ formatMessage(messages.MSGE019, "商品コード") }}
-              </div>
-            </div>
+          <div class="d-flex gap-2">
+            <BFormInput
+              v-model="view.productCode"
+              :state="states.productCode"
+              class="code-input"
+              maxlength="7"
+              @focus="states.productCode = null"
+              @blur="
+                applyProductInput(view.productCode);
+                states.productCode = view.productCode.length === 7 && product.productName !== null;
+              "
+              @input="formatAlphaNumericInput"
+              @compositionend="formatAlphaNumericInput"
+            />
             <BButton type="button" variant="outline-primary" class="text-dark" @click="openProductModal">
               <i class="fas fa-list me-1"></i>参照
             </BButton>
+          </div>
+          <div v-if="states.productCode && view.productCode && getProductCodeState() === false" class="text-danger">
+            {{ formatMessage(messages.MSGE019, "商品コード") }}
           </div>
         </BFormGroup>
       </BRow>
@@ -242,6 +244,7 @@
           <BFormInput
             v-model="view.quantity"
             :state="states.quantity"
+            class="code-input"
             type="text"
             @focus="states.quantity = null"
             @blur="
@@ -669,3 +672,9 @@ const updateOrder = async () => {
   }
 };
 </script>
+
+<style scoped>
+.code-input {
+  width: 85%;
+}
+</style>

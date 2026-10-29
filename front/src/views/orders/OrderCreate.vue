@@ -35,6 +35,7 @@
             v-model="form.orderNo"
             maxlength="8"
             :state="states.orderNo"
+            class="code-input"
             @focus="states.orderNo = null"
             @blur="states.orderNo = form.orderNo.length === 8"
             @input="formatAlphaNumericInput"
@@ -52,8 +53,9 @@
           <div class="d-flex gap-2">
             <BFormInput
               v-model="form.clientCode"
-              maxlength="8"
               :state="states.clientCode"
+              class="code-input"
+              maxlength="8"
               @focus="states.clientCode = null"
               @blur="
                 applyClientInput(form.clientCode);
@@ -137,6 +139,7 @@
           <BFormInput
             v-model="form.orderDate"
             :state="states.orderDate"
+            class="code-input"
             type="date"
             @focus="states.orderDate = null"
             @blur="
@@ -162,8 +165,9 @@
         <BFormGroup :label="isReceive ? '入金日' : '発注受付完了日'" label-cols="3">
           <BFormInput
             v-model="form.confirmedDate"
-            type="date"
             :state="states.confirmedDate"
+            class="code-input"
+            type="date"
             @focus="states.confirmedDate = null"
             @blur="
               ($event) => {
@@ -195,6 +199,7 @@
           <BFormInput
             v-model="form.shipDate"
             :state="states.shipDate"
+            class="code-input"
             type="date"
             @focus="states.shipDate = null"
             @blur="
@@ -221,8 +226,9 @@
         <BFormGroup label="納品予定日" label-cols="3">
           <BFormInput
             v-model="form.deliverDate"
-            type="date"
             :state="states.deliverDate"
+            class="code-input"
+            type="date"
             @focus="states.deliverDate = null"
             @blur="
               ($event) => {
@@ -245,8 +251,9 @@
           <div class="d-flex gap-2">
             <BFormInput
               v-model="form.productCode"
-              maxlength="7"
               :state="states.productCode"
+              class="code-input"
+              maxlength="7"
               @focus="states.productCode = null"
               @blur="
                 applyProductInput(form.productCode);
@@ -293,8 +300,8 @@
               selectedProduct = null;
               showProductModal = false;
             "
-            >キャンセル</BButton
-          >
+            >キャンセル
+          </BButton>
           <BButton variant="primary" @click="applySelectedProduct" :disabled="!selectedProduct">確定</BButton>
         </template>
       </BModal>
@@ -323,6 +330,7 @@
           <BFormInput
             v-model="form.quantity"
             :state="states.quantity"
+            class="code-input"
             type="text"
             @focus="states.quantity = null"
             @blur="
@@ -835,3 +843,9 @@ const createOrder = async () => {
   }
 };
 </script>
+
+<style scoped>
+.code-input {
+  width: 85%;
+}
+</style>
