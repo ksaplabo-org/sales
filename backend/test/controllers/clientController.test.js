@@ -334,7 +334,9 @@ describe("clientController", () => {
           address1: "",
           address2: "",
           telNumber: "",
-          createdId: "user01",
+        },
+        user: {
+          userId: "test01",
         },
       };
 
@@ -343,17 +345,18 @@ describe("clientController", () => {
       await clientController.create(req, res);
 
       expect(spy).toHaveBeenCalledTimes(1);
-      expect(spy).toHaveBeenCalledWith({
-        clientCode: "test0001",
-        clientName: "Cテスト有限会社",
-        orderKbn: "1",
-        postCode: "",
-        address1: "",
-        address2: "",
-        telNumber: "",
-        createdId: "user01",
-        updatedId: "user01",
-      });
+      expect(spy).toHaveBeenCalledWith(
+        {
+          clientCode: "test0001",
+          clientName: "Cテスト有限会社",
+          orderKbn: "1",
+          postCode: "",
+          address1: "",
+          address2: "",
+          telNumber: "",
+        },
+        "test01",
+      );
       expect(res.status).toHaveBeenCalledWith(201);
       expect(res.send).toHaveBeenCalledTimes(1);
     });
@@ -366,8 +369,6 @@ describe("clientController", () => {
       address1: "",
       address2: "",
       telNumber: "",
-      createdId: "user01",
-      updatedId: "user01",
     };
 
     test.each([
@@ -431,46 +432,6 @@ describe("clientController", () => {
           message: "受発注区分は'1'か'2'を設定してください",
         },
       ],
-      [
-        "登録者ID未設定である",
-        {
-          createdId: "",
-        },
-        {
-          field: "createdId",
-          message: "登録者IDが設定されていません",
-        },
-      ],
-      [
-        "登録者IDが5桁である",
-        {
-          createdId: "user0",
-        },
-        {
-          field: "createdId",
-          message: "登録者IDは6桁で設定してください",
-        },
-      ],
-      [
-        "登録者IDが7桁である",
-        {
-          createdId: "user001",
-        },
-        {
-          field: "createdId",
-          message: "登録者IDは6桁で設定してください",
-        },
-      ],
-      [
-        "登録者IDが半角英数ではない",
-        {
-          createdId: "あいうえおか",
-        },
-        {
-          field: "createdId",
-          message: "登録者IDは半角英数で設定してください",
-        },
-      ],
     ])("[異常系] %s 場合、400エラーを返却すること", async (_, invalidBody, expectedError) => {
       const req = {
         body: {
@@ -487,6 +448,30 @@ describe("clientController", () => {
       });
     });
 
+    test("[異常系] リクエストボディチェックエラーの場合、400エラーを返却すること", async () => {
+      const req = {
+        params: {
+          clientCode: "test0001",
+        },
+        body: {
+          clientName: "",
+          orderKbn: "1",
+          postCode: "1",
+          address1: "",
+          address2: "",
+          telNumber: "",
+        },
+        user: {
+          userId: "user01",
+        },
+      };
+
+      await clientController.update(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(400);
+      expect(res.json).toHaveBeenCalledTimes(1);
+    });
+
     test("[異常系] Serviceで一意制約エラー発生時、ステータス[409]でレスポンスされること", async () => {
       const req = {
         body: {
@@ -497,7 +482,9 @@ describe("clientController", () => {
           address1: "",
           address2: "",
           telNumber: "",
-          createdId: "user01",
+        },
+        user: {
+          userId: "test01",
         },
       };
 
@@ -537,7 +524,9 @@ describe("clientController", () => {
           address1: "",
           address2: "あいうえお",
           telNumber: "",
-          createdId: "user01",
+        },
+        user: {
+          userId: "test01",
         },
       };
 
@@ -573,7 +562,9 @@ describe("clientController", () => {
           address1: "",
           address2: "",
           telNumber: "",
-          createdId: "user01",
+        },
+        user: {
+          userId: "test01",
         },
       };
 
@@ -604,7 +595,9 @@ describe("clientController", () => {
           address1: "",
           address2: "",
           telNumber: "",
-          updatedId: "user01",
+        },
+        user: {
+          userId: "test01",
         },
       };
 
@@ -613,14 +606,17 @@ describe("clientController", () => {
       await clientController.update(req, res);
 
       expect(spy).toHaveBeenCalledTimes(1);
-      expect(spy).toHaveBeenCalledWith("test0001", {
-        clientName: "Cテスト株式会社",
-        postCode: "",
-        address1: "",
-        address2: "",
-        telNumber: "",
-        updatedId: "user01",
-      });
+      expect(spy).toHaveBeenCalledWith(
+        "test0001",
+        {
+          clientName: "Cテスト株式会社",
+          postCode: "",
+          address1: "",
+          address2: "",
+          telNumber: "",
+        },
+        "test01",
+      );
       expect(res.send).toHaveBeenCalledTimes(1);
     });
 
@@ -708,82 +704,29 @@ describe("clientController", () => {
       });
     });
 
-    test.each([
-      [
-        "更新者ID未設定である",
-        {
-          clientName: "Cテスト株式会社",
-          postCode: "",
-          address1: "",
-          address2: "",
-          telNumber: "",
-          updatedId: "",
-        },
-        {
-          field: "updatedId",
-          message: "更新者IDが設定されていません",
-        },
-      ],
-      [
-        "更新者IDが5桁である",
-        {
-          clientName: "Cテスト株式会社",
-          postCode: "",
-          address1: "",
-          address2: "",
-          telNumber: "",
-          updatedId: "user0",
-        },
-        {
-          field: "updatedId",
-          message: "更新者IDは6桁で設定してください",
-        },
-      ],
-      [
-        "更新者IDが7桁である",
-        {
-          clientName: "Cテスト株式会社",
-          postCode: "",
-          address1: "",
-          address2: "",
-          telNumber: "",
-          updatedId: "user001",
-        },
-        {
-          field: "updatedId",
-          message: "更新者IDは6桁で設定してください",
-        },
-      ],
-      [
-        "更新者IDが半角英数ではない",
-        {
-          clientName: "Cテスト株式会社",
-          postCode: "",
-          address1: "",
-          address2: "",
-          telNumber: "",
-          updatedId: "あいうえおか",
-        },
-        {
-          field: "updatedId",
-          message: "更新者IDは半角英数で設定してください",
-        },
-      ],
-    ])("[異常系] %s 場合、400エラーを返却すること", async (_, body, expectedError) => {
+    test("[異常系] リクエストボディチェックエラーの場合、400エラーを返却すること", async () => {
       const req = {
         params: {
           clientCode: "test0001",
         },
-        body,
+        body: {
+          clientName: "",
+          postCode: "1",
+          address1: "",
+          address2: "",
+          telNumber: "",
+        },
+        user: {
+          userId: "user01",
+        },
       };
 
       await clientController.update(req, res);
 
       expect(res.status).toHaveBeenCalledWith(400);
-      expect(res.json).toHaveBeenCalledWith({
-        errors: [expectedError],
-      });
+      expect(res.json).toHaveBeenCalledTimes(1);
     });
+
     test("[異常系] 取引先情報が存在しない場合、ステータス[404]でレスポンスされること", async () => {
       const req = {
         params: {
@@ -795,7 +738,9 @@ describe("clientController", () => {
           address1: "",
           address2: "",
           telNumber: "",
-          updatedId: "user01",
+        },
+        user: {
+          userId: "test01",
         },
       };
 
@@ -809,7 +754,7 @@ describe("clientController", () => {
 
       // Serviceの呼び出しを検証
       expect(spyUpdate).toHaveBeenCalledTimes(1);
-      expect(spyUpdate).toHaveBeenCalledWith("test0001", req.body);
+      expect(spyUpdate).toHaveBeenCalledWith("test0001", req.body, "test01");
       // エラー発生時のログ出力を検証
       expect(spyConsole).toHaveBeenCalledTimes(1);
       expect(spyConsole).toHaveBeenCalledWith(expectedError);
@@ -839,7 +784,9 @@ describe("clientController", () => {
           address1: "",
           address2: "あいうえお",
           telNumber: "",
-          updatedId: "user01",
+        },
+        user: {
+          userId: "test01",
         },
       };
 
@@ -852,7 +799,7 @@ describe("clientController", () => {
 
       // Serviceの呼び出しを検証
       expect(spyUpdate).toHaveBeenCalledTimes(1);
-      expect(spyUpdate).toHaveBeenCalledWith("test0001", req.body);
+      expect(spyUpdate).toHaveBeenCalledWith("test0001", req.body, "test01");
       // レスポンスステータス設定の検証
       expect(res.status).toHaveBeenCalledTimes(1);
       expect(res.status).toHaveBeenCalledWith(400);
@@ -879,7 +826,9 @@ describe("clientController", () => {
           address1: "",
           address2: "",
           telNumber: "",
-          updatedId: "user01",
+        },
+        user: {
+          userId: "test01",
         },
       };
 
@@ -893,7 +842,7 @@ describe("clientController", () => {
 
       // Serviceの呼び出しを検証
       expect(spyUpdate).toHaveBeenCalledTimes(1);
-      expect(spyUpdate).toHaveBeenCalledWith("test0001", req.body);
+      expect(spyUpdate).toHaveBeenCalledWith("test0001", req.body, "test01");
       // エラー発生時のログ出力を検証
       expect(spyConsole).toHaveBeenCalledTimes(1);
       expect(spyConsole).toHaveBeenCalledWith(expectedError);
