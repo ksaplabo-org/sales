@@ -177,7 +177,7 @@
                 @input="formatAlphaNumericInput"
                 @compositionend="formatAlphaNumericInput"
               />
-              <div v-if="view.productCode && view.productCode.length === 7 && getProductCodeState() === false" class="text-danger">
+              <div v-if="view.productCode && view.productCode.length === 7 && product.productName === null" class="text-danger">
                 {{ formatMessage(messages.MSGE019, "商品コード") }}
               </div>
             </div>
@@ -448,13 +448,6 @@ const getInvalidDeliverDateFieldName = () => {
 
 const formatDate = (date) => {
   return date ? date.replace(/-/g, "/") : "";
-};
-
-const getProductCodeState = () => {
-  if (!view.value.productCode || view.value.productCode.length !== 7) {
-    return null;
-  }
-  return product.value.productName != null;
 };
 
 //初期処理
