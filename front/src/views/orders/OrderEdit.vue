@@ -78,6 +78,7 @@
 
           <!-- 確定日未登録 -->
           <BFormInput
+            v-else
             v-model="view.confirmedDate"
             :state="states.confirmedDate"
             type="date"
@@ -256,6 +257,36 @@
         </BFormGroup>
       </BRow>
 
+      <!-- 金額 -->
+      <BRow class="mb-3">
+        <BFormGroup label="金額" label-cols="3">
+          <div class="form-control-plaintext">
+            {{ calculate.amount ? calculate.amount.toLocaleString() : "-" }}
+          </div>
+        </BFormGroup>
+      </BRow>
+
+      <!-- 消費税 -->
+      <BRow class="mb-3">
+        <BFormGroup label="消費税" label-cols="3">
+          <div class="form-control-plaintext">
+            {{ calculate.tax ? calculate.tax.toLocaleString() : "-" }}
+          </div>
+        </BFormGroup>
+      </BRow>
+
+      <!-- 合計金額 -->
+      <BRow class="mb-3">
+        <BFormGroup
+          :label="view.orderKbn === '1' ? '請求金額' : view.orderKbn === '2' ? '支払金額' : ''"
+          label-cols="3"
+        >
+          <div class="form-control-plaintext">
+            {{ calculate.amountTaxIncluded ? calculate.amountTaxIncluded.toLocaleString() : "-" }}
+          </div>
+        </BFormGroup>
+      </BRow>
+
       <!-- 編集ボタン -->
       <div class="d-flex justify-content-center">
         <BButton type="submit" variant="primary">
@@ -314,6 +345,13 @@ const product = ref({
   productPrice: null,
 });
 
+//数量詳細
+const calculate = ref({
+  amount: null,
+  tax: null,
+  amountTaxIncluded: null,
+});
+
 // 確定日登録判定入力制御処理
 const hasConfirmedDate = ref(false);
 
@@ -345,8 +383,8 @@ const states = ref({
   confirmedDate: null,
   shipDate: false,
   deliverDate: null,
-  productCode: false,
-  quantity: false,
+  productCode: true,
+  quantity: true,
 });
 
 /**
@@ -466,9 +504,8 @@ onMounted(async () => {
 
     Object.assign(view.value, orderInfo);
 
-    states.value.shipDate = !!orderInfo.shipDate;
-    states.value.productCode = !!orderInfo.productCode;
-    states.value.quantity = !!orderInfo.quantity;
+    updateShipDateState();
+    updateDeliverDateState();
 
     // 初期表示時の状態を保持
     hasConfirmedDate.value = !!orderInfo.confirmedDate;
@@ -487,6 +524,8 @@ onMounted(async () => {
       const productInfo = await productApi.getProductByProductCode(view.value.productCode);
       product.value.productName = productInfo.productName;
       product.value.productPrice = productInfo.productPrice;
+
+      calculateAmount();
     }
   } catch (e) {
     console.log(e);
@@ -555,6 +594,9 @@ const applySelectedProduct = () => {
   view.value.productCode = selectedProduct.value.productCode;
   product.value.productName = selectedProduct.value.productName;
   product.value.productPrice = selectedProduct.value.productPrice;
+
+  calculateAmount();
+
   showProductModal.value = false;
 };
 
@@ -568,6 +610,25 @@ const applyProductInput = (productCode) => {
     product.value.productName = null;
     product.value.productPrice = null;
   }
+
+  calculateAmount();
+};
+
+/**
+ * 金額計算処理
+ */
+const calculateAmount = () => {
+  if (!product.value.productPrice || Number(view.value.quantity) < 1) {
+    calculate.value.amount = null;
+    calculate.value.tax = null;
+    calculate.value.amountTaxIncluded = null;
+
+    return;
+  }
+
+  calculate.value.amount = Number(product.value.productPrice) * Number(view.value.quantity);
+  calculate.value.tax = Math.round(calculate.value.amount * 0.1);
+  calculate.value.amountTaxIncluded = calculate.value.amount + calculate.value.tax;
 };
 
 //受発注情報更新処理
