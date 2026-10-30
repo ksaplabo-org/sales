@@ -9,7 +9,7 @@ afterEach(() => {
   jest.resetAllMocks();
 });
 
-//AuthControlerテスト
+//AuthControllerテスト
 describe("AuthController", () => {
   // 各テストで使用するレスポンス引数のMock
   let res;

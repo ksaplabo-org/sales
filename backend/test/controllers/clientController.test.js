@@ -13,7 +13,7 @@ afterEach(() => {
   jest.resetAllMocks();
 });
 
-//ClientControlerテスト
+//ClientControllerテスト
 describe("clientController", () => {
   // 各テストで使用するレスポンス引数のMock
   let res;
@@ -466,7 +466,7 @@ describe("clientController", () => {
         },
       };
 
-      await clientController.update(req, res);
+      await clientController.create(req, res);
 
       expect(res.status).toHaveBeenCalledWith(400);
       expect(res.json).toHaveBeenCalledTimes(1);

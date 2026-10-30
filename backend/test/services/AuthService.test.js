@@ -13,6 +13,8 @@ describe("AuthService", () => {
     // 各テスト共通で使用する引数設定
     const userId = "user01";
     const password = "password";
+    // 秘密鍵のMock設定
+    process.env.JWT_SECRET = "test-secret";
 
     test("[正常系] ユーザーID、パスワードが正しい場合 => JWTが返却されること", async () => {
       // Mock設定
@@ -25,9 +27,6 @@ describe("AuthService", () => {
 
       jest.useFakeTimers(); // システム時刻の固定
       jest.setSystemTime(new Date("2026-10-29T00:00:00Z")); // JWTに送信する時刻を固定
-
-      // 秘密鍵のMock設定
-      process.env.JWT_SECRET = "test-secret";
 
       // テスト対象関数の呼び出し
       const actual = await authService.login(userId, password);
@@ -44,10 +43,6 @@ describe("AuthService", () => {
     });
 
     test("[異常系] ユーザーが存在しない場合 => nullが返却されること", async () => {
-      // 検索条件
-      const userId = "user01";
-      const password = "password";
-
       // Mock設定
       const spyFindById = jest.spyOn(userRepository, "findById").mockResolvedValueOnce(null);
 
