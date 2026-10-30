@@ -44,8 +44,8 @@ describe("authMiddleware", () => {
         },
       };
 
-      // Mock関数の作成
-      const next = jest.fn();
+      // テスト対象関数の呼び出し
+      authenticateToken(req, res, next);
 
       // Mock関数の呼び出しを検証
       expect(next).toHaveBeenCalledTimes(1);
