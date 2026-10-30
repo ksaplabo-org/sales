@@ -9,7 +9,7 @@ afterEach(() => {
   jest.resetAllMocks();
 });
 
-//ClientControlerテスト
+//AuthControlerテスト
 describe("AuthController", () => {
   // 各テストで使用するレスポンス引数のMock
   let res;
@@ -22,16 +22,17 @@ describe("AuthController", () => {
   });
 
   describe("login ログイン認証処理", () => {
+    // 各テスト共通で使用する引数設定
+    const req = {
+      body: {
+        userId: "test1",
+        password: "test1",
+      },
+    };
+
     test("[正常系] 引数がServiceに渡され、ステータス[200]とServiceの結果がレスポンスされること", async () => {
-      // 引数設定
-      const req = {
-        body: {
-          userId: "test1",
-          password: "test1",
-        },
-      };
+      // リクエストボディ取得
       const reqBody = req.body;
-      let status = 200;
 
       // Mock設定
       const expectedResult = "dummy-accessToken";
@@ -54,16 +55,8 @@ describe("AuthController", () => {
     });
 
     test("[異常系] Serviceで認証エラー発生時、ステータス[401]でレスポンスされること", async () => {
-      // 引数設定
-      const req = {
-        body: {
-          userId: "test1",
-          password: "test1",
-        },
-      };
       //リクエストボディ取得
       const reqBody = req.body;
-      let status = 200;
 
       // Mock設定
       const expectedResult = null;
@@ -83,22 +76,33 @@ describe("AuthController", () => {
       expect(res.send).toHaveBeenCalledWith();
     });
 
-    test("[異常系] Serviceでエラー発生時、ステータス[500]でレスポンスされること", async () => {
-      // 引数設定
-      const req = {
-        body: {
-          userId: "test1",
-          password: "test1",
-        },
-      };
+    test("[異常系] Serviceが空文字列を返却時、レスポンスがされないこと", async () => {
       //リクエストボディ取得
       const reqBody = req.body;
-      let status = 200;
+
+      // Mock設定
+      const expectedResult = "";
+      const spyLogin = jest.spyOn(AuthService, "login").mockResolvedValueOnce(expectedResult);
+
+      // テスト対象関数の呼び出し
+      await AuthController.login(req, res);
+
+      // Serviceの呼び出しを検証
+      expect(spyLogin).toHaveBeenCalledTimes(1);
+      expect(spyLogin).toHaveBeenCalledWith(reqBody.userId, reqBody.password);
+      expect(res.status).not.toHaveBeenCalledWith();
+      expect(res.send).not.toHaveBeenCalledWith();
+    });
+
+    test("[異常系] Serviceでエラー発生時、ステータス[500]でレスポンスされること", async () => {
+      //リクエストボディ取得
+      const reqBody = req.body;
 
       // Mock設定
       const expectedError = new Error();
       const spyLogin = jest.spyOn(AuthService, "login").mockRejectedValue(expectedError);
-      const spyConsole = jest.spyOn(console, "log");
+      const spyConsole = jest.spyOn(console, "log").mockResolvedValueOnce();
+
       // テスト対象関数の呼び出し
       await AuthController.login(req, res);
 
