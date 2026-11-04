@@ -82,8 +82,6 @@ class ClientController {
         address1: req.body.address1,
         address2: req.body.address2,
         telNumber: req.body.telNumber,
-        createdId: req.body.createdId,
-        updatedId: req.body.createdId,
       };
 
       // 共通バリデーション
@@ -104,22 +102,13 @@ class ClientController {
         errors.push({ field: "orderKbn", message: "受発注区分は'1'か'2'を設定してください" });
       }
 
-      // 登録者ID
-      if (!client.createdId) {
-        errors.push({ field: "createdId", message: "登録者IDが設定されていません" });
-      } else if (client.createdId.length !== 6) {
-        errors.push({ field: "createdId", message: "登録者IDは6桁で設定してください" });
-      } else if (!/^[A-Za-z0-9]+$/.test(client.createdId)) {
-        errors.push({ field: "createdId", message: "登録者IDは半角英数で設定してください" });
-      }
-
       if (errors.length > 0) {
         // リクエストボディチェックエラー
         res.status(400).json({ errors: errors });
         return;
       }
       // 登録処理実行
-      await clientService.create(client);
+      await clientService.create(client, req.user.userId);
       res.status(201).send();
     } catch (e) {
       console.log(e);
@@ -164,26 +153,17 @@ class ClientController {
         address1: req.body.address1,
         address2: req.body.address2,
         telNumber: req.body.telNumber,
-        updatedId: req.body.updatedId,
       };
 
       // 共通バリデーション
       const errors = this.validate(client);
-      // 更新者ID
-      if (!client.updatedId) {
-        errors.push({ field: "updatedId", message: "更新者IDが設定されていません" });
-      } else if (client.updatedId.length !== 6) {
-        errors.push({ field: "updatedId", message: "更新者IDは6桁で設定してください" });
-      } else if (!/^[A-Za-z0-9]+$/.test(client.updatedId)) {
-        errors.push({ field: "updatedId", message: "更新者IDは半角英数で設定してください" });
-      }
 
       if (errors.length > 0) {
         // リクエストボディチェックエラー
         res.status(400).json({ errors: errors });
         return;
       }
-      await clientService.update(req.params.clientCode, client);
+      await clientService.update(req.params.clientCode, client, req.user.userId);
       res.send();
     } catch (e) {
       console.log(e);
