@@ -38,23 +38,17 @@ describe("Logger", () => {
     mockError.mockClear();
   });
 
-  test("[正常系] ログファイル出力先設定", () => {
+  test("[正常系] ロガー生成時にログ出力設定が正しく行われること", () => {
     expect(mockFile).toHaveBeenCalledWith({
       filename: "logs/application.log",
     });
-  });
 
-  test("[正常系] タイムスタンプ設定", () => {
     expect(mockTimestamp).toHaveBeenCalledWith({
       format: "YYYY/MM/DD HH:mm:ss.SSS",
     });
-  });
 
-  test("[正常系] ログフォーマット設定", () => {
     expect(mockPrintf).toHaveBeenCalledTimes(1);
-  });
 
-  test("[正常系] ログフォーマット生成", () => {
     // printf に渡されたフォーマット関数を取得
     const formatter = mockPrintf.mock.calls[0][0];
 
