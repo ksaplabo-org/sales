@@ -6,6 +6,7 @@ import NotFoundError from "../../src/errors/NotFoundError.js";
 import UniqueConstraintError from "../../src/errors/UniqueConstraintError.js";
 import ValidationError from "../../src/errors/ValidationError.js";
 import ReferenceConstraintError from "../../src/errors/ReferenceConstraintError.js";
+import logger from "../../src/utils/Logger.js";
 
 //全テストケース実行後に行う処理
 afterEach(() => {
@@ -76,8 +77,8 @@ describe("productController", () => {
       //serviceエラーモック
       const expectedError = new Error();
       const spyFindAll = jest.spyOn(productService, "findAll").mockRejectedValue(expectedError);
-      //console.logモック
-      const spyConsole = jest.spyOn(console, "log").mockResolvedValue();
+      //logger.errorモック
+      const spyLogger = jest.spyOn(logger, "error").mockImplementation(() => {});
 
       //テスト対象関数の呼び出し
       await productController.findAll(req, res);
@@ -92,8 +93,8 @@ describe("productController", () => {
         productPriceHigh: undefined,
       });
       //エラー発生時のログ出力を検証
-      expect(spyConsole).toHaveBeenCalledTimes(1);
-      expect(spyConsole).toHaveBeenCalledWith(expectedError);
+      expect(spyLogger).toHaveBeenCalledTimes(1);
+      expect(spyLogger).toHaveBeenCalledWith("商品情報一覧取得処理に失敗しました。", expectedError);
       //レスポンスステータス設定の検証
       expect(res.status).toHaveBeenCalledTimes(1);
       expect(res.status).toHaveBeenCalledWith(500);
@@ -147,8 +148,8 @@ describe("productController", () => {
       //serviceエラーモック
       const expectedError = new Error();
       const spyFindByCode = jest.spyOn(productService, "findByCode").mockRejectedValue(expectedError);
-      //console.logモック
-      const spyConsole = jest.spyOn(console, "log").mockResolvedValue();
+      //logger.errorモック
+      const spyLogger = jest.spyOn(logger, "error").mockImplementation(() => {});
 
       //テスト対象関数の呼び出し
       await productController.findByCode(req, res);
@@ -157,8 +158,8 @@ describe("productController", () => {
       expect(spyFindByCode).toHaveBeenCalledTimes(1);
       expect(spyFindByCode).toHaveBeenCalledWith("aa00001");
       //エラー発生時のログ出力を検証
-      expect(spyConsole).toHaveBeenCalledTimes(1);
-      expect(spyConsole).toHaveBeenCalledWith(expectedError);
+      expect(spyLogger).toHaveBeenCalledTimes(1);
+      expect(spyLogger).toHaveBeenCalledWith("商品情報詳細取得処理に失敗しました。", expectedError);
       //レスポンスステータス設定の検証
       expect(res.status).toHaveBeenCalledTimes(1);
       expect(res.status).toHaveBeenCalledWith(500);
@@ -241,8 +242,8 @@ describe("productController", () => {
       //serviceエラーモック
       const exceptedError = new NotFoundError("productCode", "この商品コードは存在していません");
       const spyFindByCode = jest.spyOn(productService, "findByCode").mockRejectedValue(exceptedError);
-      //console.logモック
-      const spyConsole = jest.spyOn(console, "log").mockResolvedValue();
+      //logger.errorモック
+      const spyLogger = jest.spyOn(logger, "error").mockImplementation(() => {});
 
       //テスト対象関数の呼び出し
       await productController.findByCode(req, res);
@@ -251,8 +252,8 @@ describe("productController", () => {
       expect(spyFindByCode).toHaveBeenCalledTimes(1);
       expect(spyFindByCode).toHaveBeenCalledWith("aaa0001");
       //エラー発生時のログ出力を検証
-      expect(spyConsole).toHaveBeenCalledTimes(1);
-      expect(spyConsole).toHaveBeenCalledWith(exceptedError);
+      expect(spyLogger).toHaveBeenCalledTimes(1);
+      expect(spyLogger).toHaveBeenCalledWith("商品情報詳細取得処理に失敗しました。", exceptedError);
       //レスポンスステータス設定の検証
       expect(res.status).toHaveBeenCalledTimes(1);
       expect(res.status).toHaveBeenCalledWith(NotFoundError.status);
@@ -304,8 +305,8 @@ describe("productController", () => {
       //serviceエラーモック
       const expectedError = new Error();
       const spyDelete = jest.spyOn(productService, "delete").mockRejectedValue(expectedError);
-      //console.logモック
-      const spyConsole = jest.spyOn(console, "log").mockResolvedValue();
+      //logger.errorモック
+      const spyLogger = jest.spyOn(logger, "error").mockImplementation(() => {});
 
       //テスト対象関数の呼び出し
       await productController.delete(req, res);
@@ -314,8 +315,8 @@ describe("productController", () => {
       expect(spyDelete).toHaveBeenCalledTimes(1);
       expect(spyDelete).toHaveBeenCalledWith("aa00001");
       //エラー発生時のログ出力を検証
-      expect(spyConsole).toHaveBeenCalledTimes(1);
-      expect(spyConsole).toHaveBeenCalledWith(expectedError);
+      expect(spyLogger).toHaveBeenCalledTimes(1);
+      expect(spyLogger).toHaveBeenCalledWith("商品情報削除処理に失敗しました。", expectedError);
       //レスポンスステータス設定の検証
       expect(res.status).toHaveBeenCalledTimes(1);
       expect(res.status).toHaveBeenCalledWith(500);
@@ -398,8 +399,8 @@ describe("productController", () => {
       //serviceエラーモック
       const exceptedError = new NotFoundError("productCode", "この商品コードは存在していません");
       const spyDelete = jest.spyOn(productService, "delete").mockRejectedValue(exceptedError);
-      //console.logモック
-      const spyConsole = jest.spyOn(console, "log").mockResolvedValue();
+      //logger.errorモック
+      const spyLogger = jest.spyOn(logger, "error").mockImplementation(() => {});
 
       //テスト対象関数の呼び出し
       await productController.delete(req, res);
@@ -408,8 +409,8 @@ describe("productController", () => {
       expect(spyDelete).toHaveBeenCalledTimes(1);
       expect(spyDelete).toHaveBeenCalledWith("aaa0001");
       //エラー発生時のログ出力を検証
-      expect(spyConsole).toHaveBeenCalledTimes(1);
-      expect(spyConsole).toHaveBeenCalledWith(exceptedError);
+      expect(spyLogger).toHaveBeenCalledTimes(1);
+      expect(spyLogger).toHaveBeenCalledWith("商品情報削除処理に失敗しました。", exceptedError);
       //レスポンスステータス設定の検証
       expect(res.status).toHaveBeenCalledTimes(1);
       expect(res.status).toHaveBeenCalledWith(NotFoundError.status);
@@ -438,8 +439,8 @@ describe("productController", () => {
         "この商品コードは受発注情報で使用されているため削除できません",
       );
       const spyDelete = jest.spyOn(productService, "delete").mockRejectedValue(exceptedError);
-      //console.logモック
-      const spyConsole = jest.spyOn(console, "log").mockResolvedValue();
+      //logger.errorモック
+      const spyLogger = jest.spyOn(logger, "error").mockImplementation(() => {});
 
       //テスト対象関数の呼び出し
       await productController.delete(req, res);
@@ -448,8 +449,8 @@ describe("productController", () => {
       expect(spyDelete).toHaveBeenCalledTimes(1);
       expect(spyDelete).toHaveBeenCalledWith("aaa0001");
       //エラー発生時のログ出力を検証
-      expect(spyConsole).toHaveBeenCalledTimes(1);
-      expect(spyConsole).toHaveBeenCalledWith(exceptedError);
+      expect(spyLogger).toHaveBeenCalledTimes(1);
+      expect(spyLogger).toHaveBeenCalledWith("商品情報削除処理に失敗しました。", exceptedError);
       //レスポンスステータス設定の検証
       expect(res.status).toHaveBeenCalledTimes(1);
       expect(res.status).toHaveBeenCalledWith(ReferenceConstraintError.status);
@@ -809,8 +810,8 @@ describe("productController", () => {
       //serviceエラーモック
       const exceptedError = new NotFoundError("orderClientCode", "この発注先コードは存在していません");
       const spyCreate = jest.spyOn(productService, "create").mockRejectedValue(exceptedError);
-      //console.logモック
-      const spyConsole = jest.spyOn(console, "log").mockResolvedValue();
+      //logger.errorモック
+      const spyLogger = jest.spyOn(logger, "error").mockImplementation(() => {});
 
       //テスト対象関数の呼び出し
       await productController.create(req, res);
@@ -827,8 +828,8 @@ describe("productController", () => {
         updatedId: "test01",
       });
       //エラー発生時のログ出力を検証
-      expect(spyConsole).toHaveBeenCalledTimes(1);
-      expect(spyConsole).toHaveBeenCalledWith(exceptedError);
+      expect(spyLogger).toHaveBeenCalledTimes(1);
+      expect(spyLogger).toHaveBeenCalledWith("商品情報登録処理に失敗しました。", exceptedError);
       //レスポンスステータス設定の検証
       expect(res.status).toHaveBeenCalledTimes(1);
       expect(res.status).toHaveBeenCalledWith(NotFoundError.status);
@@ -864,8 +865,8 @@ describe("productController", () => {
       );
       //serviceエラーモック
       const spyCreate = jest.spyOn(productService, "create").mockRejectedValue(exceptedError);
-      //console.logモック
-      const spyConsole = jest.spyOn(console, "log").mockResolvedValue();
+      //logger.errorモック
+      const spyLogger = jest.spyOn(logger, "error").mockImplementation(() => {});
 
       //テスト対象関数の呼び出し
       await productController.create(req, res);
@@ -882,8 +883,8 @@ describe("productController", () => {
         updatedId: "test01",
       });
       //エラー発生時のログ出力を検証
-      expect(spyConsole).toHaveBeenCalledTimes(1);
-      expect(spyConsole).toHaveBeenCalledWith(exceptedError);
+      expect(spyLogger).toHaveBeenCalledTimes(1);
+      expect(spyLogger).toHaveBeenCalledWith("商品情報登録処理に失敗しました。", exceptedError);
       //レスポンスステータス設定の検証
       expect(res.status).toHaveBeenCalledTimes(1);
       expect(res.status).toHaveBeenCalledWith(UniqueConstraintError.status);
@@ -914,8 +915,8 @@ describe("productController", () => {
       //serviceエラーモック
       const expectedError = new Error();
       const spyCreate = jest.spyOn(productService, "create").mockRejectedValue(expectedError);
-      //console.logモック
-      const spyConsole = jest.spyOn(console, "log").mockResolvedValue();
+      //logger.errorモック
+      const spyLogger = jest.spyOn(logger, "error").mockImplementation(() => {});
 
       //テスト対象関数の呼び出し
       await productController.create(req, res);
@@ -932,8 +933,8 @@ describe("productController", () => {
         updatedId: "test01",
       });
       //エラー発生時のログ出力を検証
-      expect(spyConsole).toHaveBeenCalledTimes(1);
-      expect(spyConsole).toHaveBeenCalledWith(expectedError);
+      expect(spyLogger).toHaveBeenCalledTimes(1);
+      expect(spyLogger).toHaveBeenCalledWith("商品情報登録処理に失敗しました。", expectedError);
       //レスポンスステータス設定の検証
       expect(res.status).toHaveBeenCalledTimes(1);
       expect(res.status).toHaveBeenCalledWith(500);
@@ -1132,8 +1133,8 @@ describe("productController", () => {
       //serviceエラーモック
       const expectedError = new NotFoundError("productCode", "この商品コードは存在していません");
       const spyUpdate = jest.spyOn(productService, "update").mockRejectedValue(expectedError);
-      //console.logモック
-      const spyConsole = jest.spyOn(console, "log").mockResolvedValue();
+      //logger.errorモック
+      const spyLogger = jest.spyOn(logger, "error").mockImplementation(() => {});
 
       //テスト対象関数の呼び出し
       await productController.update(req, res);
@@ -1147,8 +1148,8 @@ describe("productController", () => {
         updatedId: "test01",
       });
       //エラー発生時のログ出力を検証
-      expect(spyConsole).toHaveBeenCalledTimes(1);
-      expect(spyConsole).toHaveBeenCalledWith(expectedError);
+      expect(spyLogger).toHaveBeenCalledTimes(1);
+      expect(spyLogger).toHaveBeenCalledWith("商品情報更新処理に失敗しました。", expectedError);
       //レスポンスステータス設定の検証
       expect(res.status).toHaveBeenCalledTimes(1);
       expect(res.status).toHaveBeenCalledWith(NotFoundError.status);
@@ -1181,8 +1182,8 @@ describe("productController", () => {
       //serviceエラーモック
       const expectedError = new ValidationError("orderClientCode", "発注先コードは設定できません");
       const spyUpdate = jest.spyOn(productService, "update").mockRejectedValue(expectedError);
-      //console.logモック
-      const spyConsole = jest.spyOn(console, "log").mockResolvedValue();
+      //logger.errorモック
+      const spyLogger = jest.spyOn(logger, "error").mockImplementation(() => {});
 
       //テスト対象関数の呼び出し
       await productController.update(req, res);
@@ -1190,8 +1191,8 @@ describe("productController", () => {
       //Service呼び出し確認
       expect(spyUpdate).toHaveBeenCalledTimes(1);
       //エラー発生時のログ出力を検証
-      expect(spyConsole).toHaveBeenCalledTimes(1);
-      expect(spyConsole).toHaveBeenCalledWith(expectedError);
+      expect(spyLogger).toHaveBeenCalledTimes(1);
+      expect(spyLogger).toHaveBeenCalledWith("商品情報更新処理に失敗しました。", expectedError);
       //レスポンスステータス設定の検証
       expect(res.status).toHaveBeenCalledTimes(1);
       expect(res.status).toHaveBeenCalledWith(400);
@@ -1223,8 +1224,8 @@ describe("productController", () => {
       //serviceエラーモック
       const expectedError = new Error();
       const spyUpdate = jest.spyOn(productService, "update").mockRejectedValue(expectedError);
-      //console.logモック
-      const spyConsole = jest.spyOn(console, "log").mockResolvedValue();
+      //logger.errorモック
+      const spyLogger = jest.spyOn(logger, "error").mockImplementation(() => {});
 
       //テスト対象関数の呼び出し
       await productController.update(req, res);
@@ -1238,8 +1239,8 @@ describe("productController", () => {
         updatedId: "test01",
       });
       //エラー発生時のログ出力を検証
-      expect(spyConsole).toHaveBeenCalledTimes(1);
-      expect(spyConsole).toHaveBeenCalledWith(expectedError);
+      expect(spyLogger).toHaveBeenCalledTimes(1);
+      expect(spyLogger).toHaveBeenCalledWith("商品情報更新処理に失敗しました。", expectedError);
       //レスポンスステータス設定の検証
       expect(res.status).toHaveBeenCalledTimes(1);
       expect(res.status).toHaveBeenCalledWith(500);
