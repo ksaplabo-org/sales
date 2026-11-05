@@ -27,7 +27,7 @@ class ProductController {
       const products = await productService.findAll(condition);
       res.json(products);
     } catch (e) {
-      logger.error("商品情報一覧取得処理でエラーが発生しました。", e);
+      logger.error("商品情報一覧取得処理に失敗しました。", e);
       res.status(500).send();
     }
   }
@@ -69,7 +69,7 @@ class ProductController {
       const product = await productService.findByCode(req.params.productCode);
       res.json(product);
     } catch (e) {
-      logger.error("商品情報詳細取得処理でエラーが発生しました。", e);
+      logger.error("商品情報詳細取得処理に失敗しました。", e);
       if (e instanceof NotFoundError) {
         // 存在チェックエラー
         res.status(NotFoundError.status).json({
