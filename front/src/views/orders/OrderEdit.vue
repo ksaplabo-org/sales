@@ -67,126 +67,138 @@
 
       <!-- 確定日 -->
       <BRow class="mb-3">
-        <BFormGroup
-          :label="view.orderKbn === '1' ? '入金日' : view.orderKbn === '2' ? '発注受付完了日' : ''"
-          label-cols="3"
-        >
-          <!-- 編集画面 かつ 確定日が登録済み -->
-          <div v-if="hasConfirmedDate" class="form-control-plaintext">
-            {{ formatDate(view.confirmedDate) }}
-          </div>
-
-          <!-- 確定日未登録 -->
-          <BFormInput
-            v-else
-            v-model="view.confirmedDate"
-            :state="states.confirmedDate"
-            type="date"
-            @focus="states.confirmedDate = null"
-            @blur="
-              ($event) => {
-                // 日付の妥当性を保持
-                invalidDates.confirmedDate = !$event.target.validity.valid;
-                // 確定日の入力状態を更新
-                updateConfirmedDateState();
-
-                // 後続の日付項目の入力状態を更新
-                updateShipDateState();
-                updateDeliverDateState();
-              }
-            "
-          />
-          <div
-            v-if="states.confirmedDate === false && view.confirmedDate && !invalidDates.confirmedDate"
-            class="text-danger"
+        <BCol cols="10">
+          <BFormGroup
+            :label="view.orderKbn === '1' ? '入金日' : view.orderKbn === '2' ? '発注受付完了日' : ''"
+            label-cols="3"
           >
-            {{
-              formatMessage(
-                messages.MSGE017,
-                view.orderKbn === "1" ? "入金日" : view.orderKbn === "2" ? "発注受付完了日" : "",
-                view.orderKbn === "1" ? "受注日" : view.orderKbn === "2" ? "発注日" : "",
-              )
-            }}
-          </div>
-        </BFormGroup>
+            <!-- 編集画面 かつ 確定日が登録済み -->
+            <div v-if="hasConfirmedDate" class="form-control-plaintext">
+              {{ formatDate(view.confirmedDate) }}
+            </div>
+
+            <!-- 確定日未登録 -->
+            <BFormInput
+              v-else
+              v-model="view.confirmedDate"
+              :state="states.confirmedDate"
+              type="date"
+              @focus="states.confirmedDate = null"
+              @blur="
+                ($event) => {
+                  // 日付の妥当性を保持
+                  invalidDates.confirmedDate = !$event.target.validity.valid;
+                  // 確定日の入力状態を更新
+                  updateConfirmedDateState();
+
+                  // 後続の日付項目の入力状態を更新
+                  updateShipDateState();
+                  updateDeliverDateState();
+                }
+              "
+            />
+            <div
+              v-if="states.confirmedDate === false && view.confirmedDate && !invalidDates.confirmedDate"
+              class="text-danger"
+            >
+              {{
+                formatMessage(
+                  messages.MSGE017,
+                  view.orderKbn === "1" ? "入金日" : view.orderKbn === "2" ? "発注受付完了日" : "",
+                  view.orderKbn === "1" ? "受注日" : view.orderKbn === "2" ? "発注日" : "",
+                )
+              }}
+            </div>
+          </BFormGroup>
+        </BCol>
       </BRow>
 
       <!-- 出荷日 -->
       <BRow class="mb-3" v-if="view.orderKbn === '1'">
-        <BFormGroup label="出荷日" label-cols="3">
-          <BFormInput
-            v-model="view.shipDate"
-            :state="states.shipDate"
-            type="date"
-            @focus="states.shipDate = null"
-            @blur="
-              ($event) => {
-                // 日付の妥当性を保持
-                invalidDates.shipDate = !$event.target.validity.valid;
+        <BCol cols="10">
+          <BFormGroup label="出荷日" label-cols="3">
+            <BFormInput
+              v-model="view.shipDate"
+              :state="states.shipDate"
+              type="date"
+              @focus="states.shipDate = null"
+              @blur="
+                ($event) => {
+                  // 日付の妥当性を保持
+                  invalidDates.shipDate = !$event.target.validity.valid;
 
-                // 出荷日の入力状態を更新
-                updateShipDateState();
+                  // 出荷日の入力状態を更新
+                  updateShipDateState();
 
-                // 後続の日付項目の入力状態を更新
-                updateDeliverDateState();
-              }
-            "
-          />
-          <div v-if="states.shipDate === false && view.shipDate && !invalidDates.shipDate" class="text-danger">
-            {{ formatMessage(messages.MSGE017, "出荷日", view.confirmedDate ? "入金日" : "受注日") }}
-          </div>
-        </BFormGroup>
+                  // 後続の日付項目の入力状態を更新
+                  updateDeliverDateState();
+                }
+              "
+            />
+            <div v-if="states.shipDate === false && view.shipDate && !invalidDates.shipDate" class="text-danger">
+              {{ formatMessage(messages.MSGE017, "出荷日", view.confirmedDate ? "入金日" : "受注日") }}
+            </div>
+          </BFormGroup>
+        </BCol>
       </BRow>
 
       <!-- 納品予定日 -->
       <BRow class="mb-3">
-        <BFormGroup label="納品予定日" label-cols="3">
-          <BFormInput
-            v-model="view.deliverDate"
-            type="date"
-            :state="states.deliverDate"
-            @focus="states.deliverDate = null"
-            @blur="
-              ($event) => {
-                // 日付の妥当性を保持
-                invalidDates.deliverDate = !$event.target.validity.valid;
-                // 納品予定日の入力状態を更新
-                updateDeliverDateState();
-              }
-            "
-          />
-          <div v-if="states.deliverDate === false && view.deliverDate && !invalidDates.deliverDate" class="text-danger">
-            {{ formatMessage(messages.MSGE017, "納品予定日", getInvalidDeliverDateFieldName()) }}
-          </div>
-        </BFormGroup>
+        <BCol cols="10">
+          <BFormGroup label="納品予定日" label-cols="3">
+            <BFormInput
+              v-model="view.deliverDate"
+              :state="states.deliverDate"
+              type="date"
+              @focus="states.deliverDate = null"
+              @blur="
+                ($event) => {
+                  // 日付の妥当性を保持
+                  invalidDates.deliverDate = !$event.target.validity.valid;
+                  // 納品予定日の入力状態を更新
+                  updateDeliverDateState();
+                }
+              "
+            />
+            <div
+              v-if="states.deliverDate === false && view.deliverDate && !invalidDates.deliverDate"
+              class="text-danger"
+            >
+              {{ formatMessage(messages.MSGE017, "納品予定日", getInvalidDeliverDateFieldName()) }}
+            </div>
+          </BFormGroup>
+        </BCol>
       </BRow>
 
       <!-- 商品コード -->
       <BRow class="mb-3">
-        <BFormGroup label="商品コード" label-cols="3">
-          <div class="d-flex gap-2 align-items-start">
-            <div class="flex-grow-1">
-              <BFormInput
-                v-model="view.productCode"
-                :state="states.productCode"
-                maxlength="7"
-                @focus="states.productCode = null"
-                @blur="
-                  applyProductInput(view.productCode);
-                  states.productCode = view.productCode.length === 7 && product.productName !== null;
-                "
-                @input="formatAlphaNumericInput"
-                @compositionend="formatAlphaNumericInput"
-              />
-              <div v-if="view.productCode && view.productCode.length === 7 && product.productName === null" class="text-danger">
-                {{ formatMessage(messages.MSGE019, "商品コード") }}
-              </div>
+        <BCol cols="10">
+          <BFormGroup label="商品コード" label-cols="3">
+            <BFormInput
+              v-model="view.productCode"
+              :state="states.productCode"
+              maxlength="7"
+              @focus="states.productCode = null"
+              @blur="
+                applyProductInput(view.productCode);
+                states.productCode = view.productCode.length === 7 && product.productName !== null;
+              "
+              @input="formatAlphaNumericInput"
+              @compositionend="formatAlphaNumericInput"
+            />
+            <div
+              v-if="view.productCode && view.productCode.length === 7 && product.productName === null"
+              class="text-danger"
+            >
+              {{ formatMessage(messages.MSGE019, "商品コード") }}
             </div>
-            <BButton type="button" variant="outline-primary" class="text-dark" @click="openProductModal">
-              <i class="fas fa-list me-1"></i>参照
-            </BButton>
-          </div>
-        </BFormGroup>
+          </BFormGroup>
+        </BCol>
+        <BCol cols="2" class="d-flex align-items-end">
+          <BButton type="button" variant="outline-primary" class="text-dark" @click="openProductModal">
+            <i class="fas fa-list me-1"></i>参照
+          </BButton>
+        </BCol>
       </BRow>
 
       <!-- 商品情報モーダル -->
@@ -238,23 +250,25 @@
 
       <!-- 数量 -->
       <BRow class="mb-3">
-        <BFormGroup label="数量" label-cols="3">
-          <BFormInput
-            v-model="view.quantity"
-            :state="states.quantity"
-            type="text"
-            @focus="states.quantity = null"
-            @blur="
-              states.quantity = Number(view.quantity) >= 1;
-              calculateAmount();
-            "
-            @input="formatNumericInput"
-            @compositionend="formatNumericInput"
-          />
-          <div v-if="states.quantity === false && view.quantity" class="text-danger">
-            {{ formatMessage(messages.MSGE016, "数量", 1) }}
-          </div>
-        </BFormGroup>
+        <BCol cols="10">
+          <BFormGroup label="数量" label-cols="3">
+            <BFormInput
+              v-model="view.quantity"
+              :state="states.quantity"
+              type="text"
+              @focus="states.quantity = null"
+              @blur="
+                states.quantity = Number(view.quantity) >= 1;
+                calculateAmount();
+              "
+              @input="formatNumericInput"
+              @compositionend="formatNumericInput"
+            />
+            <div v-if="states.quantity === false && view.quantity" class="text-danger">
+              {{ formatMessage(messages.MSGE016, "数量", 1) }}
+            </div>
+          </BFormGroup>
+        </BCol>
       </BRow>
 
       <!-- 金額 -->
