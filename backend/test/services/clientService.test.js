@@ -94,7 +94,7 @@ describe("clientService", () => {
       const mockDate = new Date(); // 現在日時をMock
 
       jest.useFakeTimers();
-      
+
       jest.setSystemTime(mockDate);
 
       const clientInfo = {
@@ -102,19 +102,22 @@ describe("clientService", () => {
         clientName: "C商社",
         orderKbn: "2",
       };
+      const loginId = "test01";
 
       // Mock設定
       const spyFindByCode = jest.spyOn(clientRepository, "findByCode").mockResolvedValueOnce(null);
       const spyCreate = jest.spyOn(clientRepository, "create").mockResolvedValueOnce();
 
       // テスト対象関数の呼び出し
-      await clientService.create(clientInfo);
+      await clientService.create(clientInfo, loginId);
 
       // 検証
       expect(spyFindByCode).toHaveBeenCalledTimes(1); // Mockした関数の呼び出し回数を検証
       expect(spyFindByCode).toHaveBeenCalledWith(clientCode); // Mockした関数呼び出し時の引数を検証
       expect(spyCreate).toHaveBeenCalledTimes(1); // Mockした関数の呼び出し回数を検証
       expect(spyCreate).toHaveBeenCalledWith(clientInfo); // Mockした関数呼び出し時の引数を検証
+      expect(clientInfo.createdId).toBe("test01"); // 登録者IDにログインユーザーのIDが設定されること
+      expect(clientInfo.updatedId).toBe("test01"); // 更新者IDにログインユーザーのIDが設定されること
       expect(clientInfo.createdAt).toBe(mockDate.toISOString());
       expect(clientInfo.updatedAt).toBe(mockDate.toISOString());
       jest.useRealTimers();
@@ -124,6 +127,7 @@ describe("clientService", () => {
       const clientCode = "a0000001";
 
       const clientInfo = { clientCode: "a0000001", clientName: "C商社", orderKbn: "2" };
+      const loginId = "test01";
 
       // Mock設定
       const spyFindByCode = jest.spyOn(clientRepository, "findByCode").mockResolvedValueOnce(clientInfo);
@@ -131,7 +135,7 @@ describe("clientService", () => {
 
       try {
         // テスト対象関数の呼び出し
-        await clientService.create(clientInfo);
+        await clientService.create(clientInfo, loginId);
         // エラーが発生しなかった場合はテスト失敗
         fail();
       } catch (error) {
@@ -144,10 +148,11 @@ describe("clientService", () => {
       expect(spyCreate).not.toHaveBeenCalled(); // Mockした関数が呼び出されていないことを検証
     });
 
-   test("[異常系] 住所1が未入力で住所2を入力した場合 => ValidationErrorとなること", async () => {
+    test("[異常系] 住所1が未入力で住所2を入力した場合 => ValidationErrorとなること", async () => {
       const clientCode = "a0000011";
 
       const clientInfo = { clientCode: clientCode, clientName: "C商社", orderKbn: "2", address2: "あいうえお" };
+      const loginId = "test01";
 
       // Mock設定
       const spyFindByCode = jest.spyOn(clientRepository, "findByCode").mockResolvedValueOnce(null);
@@ -155,7 +160,7 @@ describe("clientService", () => {
 
       try {
         // テスト対象関数の呼び出し
-        await clientService.create(clientInfo);
+        await clientService.create(clientInfo, loginId);
         // エラーが発生しなかった場合はテスト失敗
         fail();
       } catch (error) {
@@ -181,6 +186,7 @@ describe("clientService", () => {
 
       // 更新に送る情報
       const clientInfo = { clientName: "A株式会社更新", orderKbn: "2" };
+      const loginId = "test01";
 
       // DBに存在するデータ
       const client = {
@@ -195,7 +201,7 @@ describe("clientService", () => {
       const spyUpdate = jest.spyOn(clientRepository, "update").mockResolvedValueOnce();
 
       // テスト対象関数の呼び出し
-      await clientService.update(clientCode, clientInfo);
+      await clientService.update(clientCode, clientInfo, loginId);
 
       // 検証
       expect(spyFindByCode).toHaveBeenCalledTimes(1);
@@ -208,6 +214,7 @@ describe("clientService", () => {
           orderKbn: "2",
         }),
       );
+      expect(clientInfo.updatedId).toBe(loginId); // 更新者IDにログインユーザーのIDが設定されること
       expect(clientInfo.updatedAt).toBe(mockDate.toISOString());
       jest.useRealTimers();
     });
@@ -217,6 +224,7 @@ describe("clientService", () => {
       const clientCode = "a0009999";
 
       const clientInfo = { clientName: "A株式会社更新", orderKbn: "2" };
+      const loginId = "test01";
 
       // Mock設定
       const spyFindByCode = jest.spyOn(clientRepository, "findByCode").mockResolvedValueOnce(null);
@@ -224,7 +232,7 @@ describe("clientService", () => {
 
       try {
         // テスト対象関数の呼び出し
-        await clientService.update(clientCode);
+        await clientService.update(clientCode, clientInfo, loginId);
         // エラーが発生しなかった場合はテスト失敗
         fail();
       } catch (error) {
@@ -241,6 +249,7 @@ describe("clientService", () => {
       const clientCode = "a0000001";
 
       const clientInfo = { clientCode: "a0000001", clientName: "C商社", orderKbn: "2", address2: "あいうえお" };
+      const loginId = "test01";
 
       // Mock設定
       const spyFindByCode = jest.spyOn(clientRepository, "findByCode").mockResolvedValueOnce(clientInfo);
@@ -248,7 +257,7 @@ describe("clientService", () => {
 
       try {
         // テスト対象関数の呼び出し
-        await clientService.update(clientCode, clientInfo);
+        await clientService.update(clientCode, clientInfo, loginId);
         // エラーが発生しなかった場合はテスト失敗
         fail();
       } catch (error) {
