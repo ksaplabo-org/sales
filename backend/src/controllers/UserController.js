@@ -132,9 +132,9 @@ class UserController {
       console.error(e);
 
       if (e instanceof NotFoundError) {
-        return res.status(NotFoundError.status).send();
+        res.status(NotFoundError.status).send();
       } else if (e instanceof ForbiddenError) {
-        return res.status(ForbiddenError.status).send();
+        res.status(ForbiddenError.status).send();
       } else {
         res.status(500).send();
       }
