@@ -1,5 +1,6 @@
 import UniqueConstraintError from "../errors/UniqueConstraintError.js";
 import NotFoundError from "../errors/NotFoundError.js";
+import ForbiddenError from "../errors/ForbiddenError.js";
 import userService from "../services/UserService.js";
 
 class UserController {
@@ -36,14 +37,17 @@ class UserController {
    */
   async findById(req, res) {
     try {
-      const user = await userService.findById(req.params.userId);
+      const user = await userService.findById(req.params.userId, req.user.userId, req.user.role);
       res.json(user);
-    } catch (err) {
-      console.error(err);
+    } catch (e) {
+      console.error(e);
 
       if (e instanceof NotFoundError) {
         // 存在チェックエラー
-        res.status(NotFoundError.status).send();
+        res.status(NotFoundError.status).json();
+      } else if (e instanceof ForbiddenError) {
+        // 認可チェックエラー
+        res.status(ForbiddenError.status).json();
       } else {
         res.status(500).send();
       }
@@ -58,8 +62,6 @@ class UserController {
    */
   async create(req, res) {
     try {
-      const now = new Date().toISOString();
-
       const user = {
         userId: req.body.userId,
         firstName: req.body.firstName,
@@ -67,10 +69,6 @@ class UserController {
         password: req.body.password,
         birthday: req.body.birthday,
         role: req.body.role,
-        createdId: req.body.createdId,
-        createdAt: now,
-        updatedId: req.body.createdId,
-        updatedAt: now,
         delFlg: false,
       };
 
@@ -84,21 +82,12 @@ class UserController {
         errors.push({ field: "role", message: "権限は'1'か'2'を設定してください" });
       }
 
-      // 登録者ID
-      if (!user.createdId) {
-        errors.push({ field: "createdId", message: "登録者IDが設定されていません" });
-      } else if (user.createdId.length > 6) {
-        errors.push({ field: "createdId", message: "登録者IDは6桁で設定してください" });
-      } else if (!/^[A-Za-z0-9]+$/.test(user.createdId)) {
-        errors.push({ field: "createdId", message: "登録者IDは半角英数で設定してください" });
-      }
-
       if (errors.length > 0) {
         // パラメータエラー
         res.status(400).json({ errors: errors });
       } else {
         // 登録処理実行
-        await userService.create(user);
+        await userService.create(user, req.user.userId);
         res.status(201).send();
       }
     } catch (e) {
@@ -120,8 +109,6 @@ class UserController {
    */
   async update(req, res) {
     try {
-      const now = new Date().toISOString();
-
       const userId = req.params.userId;
       const user = {
         userId: userId,
@@ -129,34 +116,25 @@ class UserController {
         lastName: req.body.lastName,
         password: req.body.password,
         birthday: req.body.birthday,
-        updatedId: req.body.updatedId,
-        updatedAt: now,
       };
 
       // 共通バリデーション
       const errors = this.validate(user);
 
-      // 更新者ID
-      if (!user.updatedId) {
-        errors.push({ field: "updatedId", message: "更新者IDが設定されていません" });
-      } else if (user.updatedId.length > 6) {
-        errors.push({ field: "updatedId", message: "更新者IDは6桁で設定してください" });
-      } else if (!/^[A-Za-z0-9]+$/.test(user.updatedId)) {
-        errors.push({ field: "updatedId", message: "更新者IDは半角英数で設定してください" });
-      }
-
       if (errors.length > 0) {
         // パラメータエラー
         res.status(400).json({ errors: errors });
       } else {
-        await userService.update(req.params.userId, req.body);
+        await userService.update(req.params.userId, req.body, req.user.userId, req.user.role);
         res.send();
       }
     } catch (e) {
       console.error(e);
 
       if (e instanceof NotFoundError) {
-        res.status(NotFoundError.status).send();
+        return res.status(NotFoundError.status).json();
+      } else if (e instanceof ForbiddenError) {
+        return res.status(ForbiddenError.status).json();
       } else {
         res.status(500).send();
       }
