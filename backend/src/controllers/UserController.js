@@ -44,10 +44,10 @@ class UserController {
 
       if (e instanceof NotFoundError) {
         // 存在チェックエラー
-        res.status(NotFoundError.status).json();
+        res.status(NotFoundError.status).send();
       } else if (e instanceof ForbiddenError) {
         // 認可チェックエラー
-        res.status(ForbiddenError.status).json();
+        res.status(ForbiddenError.status).send();
       } else {
         res.status(500).send();
       }
@@ -132,9 +132,9 @@ class UserController {
       console.error(e);
 
       if (e instanceof NotFoundError) {
-        return res.status(NotFoundError.status).json();
+        return res.status(NotFoundError.status).send();
       } else if (e instanceof ForbiddenError) {
-        return res.status(ForbiddenError.status).json();
+        return res.status(ForbiddenError.status).send();
       } else {
         res.status(500).send();
       }

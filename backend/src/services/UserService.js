@@ -28,7 +28,7 @@ class UserService {
       throw new NotFoundError();
     }
     // 権限が一般であるユーザーの本人チェック
-    if (loginRole == 1 && userId !== loginId) {
+    if (loginRole == "1" && userId !== loginId) {
       throw new ForbiddenError();
     }
     return user;
@@ -74,7 +74,7 @@ class UserService {
       throw new NotFoundError();
     }
     // 権限が一般であるユーザーの本人チェック
-    if (loginRole == 1 && userId !== loginId) {
+    if (loginRole == "1" && userId !== loginId) {
       throw new ForbiddenError();
     }
 
