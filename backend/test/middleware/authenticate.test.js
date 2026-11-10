@@ -1,7 +1,7 @@
 import { jest } from "@jest/globals";
 
 import jwt from "jsonwebtoken";
-import authenticateToken from "../../src/middlewares/authenticate.js";
+import authenticateToken from "../../src/middleware/authenticate.js";
 
 //各テストケースの後に実行される処理
 afterEach(() => {
@@ -109,6 +109,4 @@ describe("authenticate", () => {
       expect(res.send).toHaveBeenCalledWith();
     });
   });
-
-
 });

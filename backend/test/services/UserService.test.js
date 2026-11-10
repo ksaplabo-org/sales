@@ -64,7 +64,7 @@ describe("UserService", () => {
 
       // 検証
       expect(spy).toHaveBeenCalledTimes(1); // Mockした関数の呼び出し回数を検証
-      expect(spy).toHaveBeenCalledWith("a0b001"); // Mockした関数呼び出し時の引数を検証
+      expect(spy).toHaveBeenCalledWith(userId); // Mockした関数呼び出し時の引数を検証
       expect(actual).toEqual(expected); // 実行結果と期待結果が一致することを検証
     });
 
@@ -80,7 +80,7 @@ describe("UserService", () => {
       // テスト対象関数の呼び出しと検証
       await expect(userService.findById(userId, loginId, loginRole)).rejects.toThrow(NotFoundError); // スローしたエラーの検証
       expect(spy).toHaveBeenCalledTimes(1); // Mockした関数の呼び出し回数を検証
-      expect(spy).toHaveBeenCalledWith("a0b001"); // Mockした関数呼び出し時の引数を検証
+      expect(spy).toHaveBeenCalledWith(userId); // Mockした関数呼び出し時の引数を検証
     });
 
     test("[異常系] 取得したユーザー情報が論理削除されている場合 => NotFoundErrorとなること", async () => {
@@ -97,7 +97,7 @@ describe("UserService", () => {
       // テスト対象関数の呼び出しと検証
       await expect(userService.findById(userId, loginId, loginRole)).rejects.toThrow(NotFoundError); // スローしたエラーの検証
       expect(spy).toHaveBeenCalledTimes(1); // Mockした関数の呼び出し回数を検証
-      expect(spy).toHaveBeenCalledWith("a0b001"); // Mockした関数呼び出し時の引数を検証
+      expect(spy).toHaveBeenCalledWith(userId); // Mockした関数呼び出し時の引数を検証
     });
 
     test("[正常系] ログインユーザー権限が管理者かつログインユーザーIDと取得対象のユーザーIDが一致していない場合 => ユーザー情報が返却されること", async () => {
@@ -116,10 +116,9 @@ describe("UserService", () => {
       const actual = await userService.findById(userId, loginId, loginRole);
 
       expect(spyFindById).toHaveBeenCalledTimes(1); // Mockした関数の呼び出し回数を検証
-      expect(spyFindById).toHaveBeenCalledWith("test02"); // Mockした関数呼び出し時の引数を検証
+      expect(spyFindById).toHaveBeenCalledWith(userId); // Mockした関数呼び出し時の引数を検証
       expect(actual).toEqual(expectedResult); // 実行結果と期待結果が一致することを検証
     });
-
 
     test("[正常系] ログインユーザー権限が一般かつログインユーザーIDと取得対象のユーザーIDが一致した場合 => ユーザー情報が返却されること", async () => {
       // 検索条件
@@ -137,7 +136,7 @@ describe("UserService", () => {
       const actual = await userService.findById(userId, loginId, loginRole);
 
       expect(spyFindById).toHaveBeenCalledTimes(1); // Mockした関数の呼び出し回数を検証
-      expect(spyFindById).toHaveBeenCalledWith("test03"); // Mockした関数呼び出し時の引数を検証
+      expect(spyFindById).toHaveBeenCalledWith(userId); // Mockした関数呼び出し時の引数を検証
       expect(actual).toEqual(expectedResult); // 実行結果と期待結果が一致することを検証
     });
 
@@ -156,7 +155,7 @@ describe("UserService", () => {
       // テスト対象関数の呼び出しと検証
       await expect(userService.findById(userId, loginId, loginRole)).rejects.toThrow(ForbiddenError); // スローしたエラーの検証
       expect(spyFindById).toHaveBeenCalledTimes(1); // Mockした関数の呼び出し回数を検証
-      expect(spyFindById).toHaveBeenCalledWith("test04"); // Mockした関数呼び出し時の引数を検証
+      expect(spyFindById).toHaveBeenCalledWith(userId); // Mockした関数呼び出し時の引数を検証
     });
   });
 
@@ -212,7 +211,7 @@ describe("UserService", () => {
   });
 
   describe("update ユーザー情報更新", () => {
-        test("[正常系] ログインユーザー権限が管理者かつログインユーザーIDと更新対象のユーザーIDが一致した場合 => 正常終了すること", async () => {
+    test("[正常系] ログインユーザー権限が管理者かつログインユーザーIDと更新対象のユーザーIDが一致した場合 => 正常終了すること", async () => {
       // 検索条件
       const userId = "test01";
       const userInfo = { firstName: "テスト", lastName: "一郎" };
@@ -229,7 +228,6 @@ describe("UserService", () => {
         userId: "test01",
         firstName: "テスト",
         lastName: "二郎",
-        orderKbn: "2",
       };
 
       // Mock設定
@@ -240,10 +238,10 @@ describe("UserService", () => {
 
       // update内のユーザー詳細取得呼び出しの検証
       expect(spyFindById).toHaveBeenCalledTimes(1);
-      expect(spyFindById).toHaveBeenCalledWith("test01");
+      expect(spyFindById).toHaveBeenCalledWith(userId);
       // テスト対象の関数呼び出し検証
       expect(spyUpdate).toHaveBeenCalledTimes(1); // Mockした関数の呼び出し回数を検証
-      expect(spyUpdate).toHaveBeenCalledWith("test01", {
+      expect(spyUpdate).toHaveBeenCalledWith(userId, {
         // Mockした関数呼び出し時の引数を検証
         firstName: "テスト",
         lastName: "一郎",
@@ -252,8 +250,8 @@ describe("UserService", () => {
       });
       jest.useRealTimers();
     });
-    
-            test("[正常系] ログインユーザー権限が管理者かつログインユーザーIDと更新対象のユーザーIDが一致しない場合 => 正常終了すること", async () => {
+
+    test("[正常系] ログインユーザー権限が管理者かつログインユーザーIDと更新対象のユーザーIDが一致しない場合 => 正常終了すること", async () => {
       // 検索条件
       const userId = "test02";
       const userInfo = { firstName: "テスト", lastName: "二郎" };
@@ -270,7 +268,6 @@ describe("UserService", () => {
         userId: "test02",
         firstName: "テスト",
         lastName: "一郎",
-        orderKbn: "2",
       };
 
       // Mock設定
@@ -281,10 +278,10 @@ describe("UserService", () => {
 
       // update内のユーザー詳細取得呼び出しの検証
       expect(spyFindById).toHaveBeenCalledTimes(1);
-      expect(spyFindById).toHaveBeenCalledWith("test02");
+      expect(spyFindById).toHaveBeenCalledWith(userId);
       // テスト対象の関数呼び出し検証
       expect(spyUpdate).toHaveBeenCalledTimes(1); // Mockした関数の呼び出し回数を検証
-      expect(spyUpdate).toHaveBeenCalledWith("test02", {
+      expect(spyUpdate).toHaveBeenCalledWith(userId, {
         // Mockした関数呼び出し時の引数を検証
         firstName: "テスト",
         lastName: "二郎",
@@ -311,7 +308,6 @@ describe("UserService", () => {
         userId: "test03",
         firstName: "テスト",
         lastName: "三子",
-        orderKbn: "1",
       };
 
       // Mock設定
@@ -322,10 +318,10 @@ describe("UserService", () => {
 
       // update内のユーザー詳細取得呼び出しの検証
       expect(spyFindById).toHaveBeenCalledTimes(1);
-      expect(spyFindById).toHaveBeenCalledWith("test03");
+      expect(spyFindById).toHaveBeenCalledWith(userId);
       // テスト対象の関数呼び出し検証
       expect(spyUpdate).toHaveBeenCalledTimes(1); // Mockした関数の呼び出し回数を検証
-      expect(spyUpdate).toHaveBeenCalledWith("test03", {
+      expect(spyUpdate).toHaveBeenCalledWith(userId, {
         // Mockした関数呼び出し時の引数を検証
         firstName: "テスト",
         lastName: "良子",
@@ -347,7 +343,6 @@ describe("UserService", () => {
         userId: "test04",
         firstName: "テスト",
         lastName: "四子",
-        orderKbn: "1",
       };
 
       // Mock設定
@@ -357,7 +352,7 @@ describe("UserService", () => {
       // テスト対象関数の呼び出しと検証
       await expect(userService.update(userId, userInfo, loginId, loginRole)).rejects.toThrow(ForbiddenError); // スローしたエラーの検証
       expect(spyFindById).toHaveBeenCalledTimes(1); // Mockした関数の呼び出し回数を検証
-      expect(spyFindById).toHaveBeenCalledWith("test04"); // Mockした関数が呼び出されていないことを検証
+      expect(spyFindById).toHaveBeenCalledWith(userId); // Mockした関数が呼び出されていないことを検証
       expect(spyUpdate).not.toHaveBeenCalled(); // Mockした関数が呼び出されていないことを検証
     });
   });

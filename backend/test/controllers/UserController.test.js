@@ -112,7 +112,7 @@ describe("UserController", () => {
 
       // Serviceの呼び出しを検証
       expect(spyFindById).toHaveBeenCalledTimes(1);
-      expect(spyFindById).toHaveBeenCalledWith("test01", "test01", "2");
+      expect(spyFindById).toHaveBeenCalledWith(req.params.userId, req.user.userId, req.user.role);
       // レスポンスステータス設定の検証
       expect(res.status).toHaveBeenCalledTimes(0); // 呼び出しされないことでデフォルト値である200が設定されていることを検証
       // レスポンス送信の検証
@@ -143,7 +143,7 @@ describe("UserController", () => {
 
       // Serviceの呼び出しを検証
       expect(spyFindById).toHaveBeenCalledTimes(1);
-      expect(spyFindById).toHaveBeenCalledWith("test03", "test04", "1");
+      expect(spyFindById).toHaveBeenCalledWith(req.params.userId, req.user.userId, req.user.role);
       // レスポンスステータス設定の検証
       expect(res.status).toHaveBeenCalledTimes(1);
       expect(res.status).toHaveBeenCalledWith(403); // 403が設定されていることを検証
@@ -183,18 +183,7 @@ describe("UserController", () => {
 
       // Serviceの呼び出しを検証
       expect(spyUpdate).toHaveBeenCalledTimes(1);
-      expect(spyUpdate).toHaveBeenCalledWith(
-        "test01",
-        {
-          userId: "test01",
-          firstName: "テスト",
-          lastName: "太郎",
-          password: "test01",
-          birthday: "2002-09-07",
-        },
-        "test01",
-        "2",
-      );
+      expect(spyUpdate).toHaveBeenCalledWith(req.params.userId, req.body, req.user.userId, req.user.role);
       // レスポンスステータス設定の検証
       expect(res.status).toHaveBeenCalledTimes(0); // 呼び出しされないことでデフォルト値である200が設定されていることを検証
       // レスポンス送信の検証
@@ -233,18 +222,7 @@ describe("UserController", () => {
 
       // Serviceの呼び出しを検証
       expect(spyUpdate).toHaveBeenCalledTimes(1);
-      expect(spyUpdate).toHaveBeenCalledWith(
-        "test03",
-        {
-          userId: "test03",
-          firstName: "テスト",
-          lastName: "次郎",
-          password: "test03",
-          birthday: "2005-02-24",
-        },
-        "test04",
-        "1",
-      );
+      expect(spyUpdate).toHaveBeenCalledWith(req.params.userId, req.body, req.user.userId, req.user.role);
       // レスポンスステータス設定の検証
       expect(res.status).toHaveBeenCalledTimes(1);
       expect(res.status).toHaveBeenCalledWith(403); // 403が設定されていることを検証
