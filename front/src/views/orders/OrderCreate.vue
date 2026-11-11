@@ -275,7 +275,7 @@
       <!-- 商品情報参照モーダル -->
       <BModal v-model="showProductModal" title="商品コードの参照" size="lg">
         <BTable
-          :items="isReceive ? productItems : productItems.filter((item) => item.orderClientCode === form.clientCode)"
+          :items="productItems"
           :fields="productFields"
           head-variant="secondary"
           hover
@@ -704,13 +704,14 @@ const onClientSelected = (row) => {
 /**
  * 取引先選択行情報反映処理
  */
-const applySelectedClient = () => {
+const applySelectedClient = async () => {
   form.value.clientCode = selectedClient.value.clientCode;
   client.value.clientName = selectedClient.value.clientName;
   client.value.telNumber = selectedClient.value.telNumber;
   client.value.address1 = selectedClient.value.address1;
 
-  
+  await applyClientInput(form.value.clientCode);
+
   states.value.clientCode = true;
 
   showClientModal.value = false;
@@ -742,7 +743,7 @@ const applyClientInput = async (clientCode) => {
 
   // 商品情報一覧設定
   if (!isReceive) {
-    productItems.value = result ? products.filter((item) => item.orderClientCode === clientCode) : [];
+    productItems.value = result ? productItems.value.filter((item) => item.orderClientCode === clientCode) : [];
   }
 };
 
