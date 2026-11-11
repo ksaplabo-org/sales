@@ -66,10 +66,7 @@
               <i class="fas fa-list me-1"></i>参照
             </BButton>
           </div>
-          <div
-            v-if="form.clientCode && form.clientCode.length === 8 && client.clientName === null"
-            class="text-danger"
-          >
+          <div v-if="form.clientCode && form.clientCode.length === 8 && client.clientName === null" class="text-danger">
             {{ formatMessage(messages.MSGE019, "取引先コード") }}
           </div>
         </BFormGroup>
@@ -254,15 +251,20 @@
               "
               @input="formatAlphaNumericInput"
               @compositionend="formatAlphaNumericInput"
+              :disabled="!isReceive && states.clientCode !== true"
             />
-            <BButton type="button" variant="outline-primary" class="text-dark text-nowrap" @click="openProductModal">
+            <BButton
+              type="button"
+              variant="outline-primary"
+              class="text-dark text-nowrap"
+              @click="openProductModal"
+              :disabled="!isReceive && states.clientCode !== true"
+            >
               <i class="fas fa-list me-1"></i>参照
             </BButton>
           </div>
           <div
-            v-if="
-              form.productCode && form.productCode.length === 7 && product.productName === null
-            "
+            v-if="form.productCode && form.productCode.length === 7 && product.productName === null"
             class="text-danger"
           >
             {{ formatMessage(messages.MSGE019, "商品コード") }}
@@ -273,7 +275,7 @@
       <!-- 商品情報参照モーダル -->
       <BModal v-model="showProductModal" title="商品コードの参照" size="lg">
         <BTable
-          :items="productItems"
+          :items="isReceive ? productItems : productItems.filter((item) => item.orderClientCode === form.clientCode)"
           :fields="productFields"
           head-variant="secondary"
           hover
@@ -717,7 +719,7 @@ const applySelectedClient = () => {
 /**
  * 取引先情報入力反映処理
  */
-const applyClientInput = (clientCode) => {
+const applyClientInput = async (clientCode) => {
   const result = clientItems.value.find((item) => item.clientCode === clientCode);
 
   if (result) {
@@ -728,6 +730,23 @@ const applyClientInput = (clientCode) => {
     client.value.clientName = null;
     client.value.telNumber = null;
     client.value.address1 = null;
+  }
+
+  // 商品情報初期化
+  form.value.productCode = "";
+  product.value.productName = null;
+  product.value.productPrice = null;
+  states.value.productCode = false;
+
+  calculateAmount();
+
+  // 商品情報一覧設定
+  if (!isReceive) {
+    const products = await productApi.getProducts({
+      orderKbn: orderKbn.value,
+    });
+
+    productItems.value = result ? products.filter((item) => item.orderClientCode === clientCode) : [];
   }
 };
 
