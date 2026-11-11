@@ -704,13 +704,10 @@ const onClientSelected = (row) => {
 /**
  * 取引先選択行情報反映処理
  */
-const applySelectedClient = async () => {
+const applySelectedClient = () => {
   form.value.clientCode = selectedClient.value.clientCode;
-  client.value.clientName = selectedClient.value.clientName;
-  client.value.telNumber = selectedClient.value.telNumber;
-  client.value.address1 = selectedClient.value.address1;
 
-  await applyClientInput(form.value.clientCode);
+  applyClientInput(form.value.clientCode);
 
   states.value.clientCode = true;
 
@@ -720,7 +717,7 @@ const applySelectedClient = async () => {
 /**
  * 取引先情報入力反映処理
  */
-const applyClientInput = async (clientCode) => {
+const applyClientInput = (clientCode) => {
   const result = clientItems.value.find((item) => item.clientCode === clientCode);
 
   if (result) {
