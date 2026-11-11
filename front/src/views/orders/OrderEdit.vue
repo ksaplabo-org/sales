@@ -178,7 +178,10 @@
                 @input="formatAlphaNumericInput"
                 @compositionend="formatAlphaNumericInput"
               />
-              <div v-if="view.productCode && view.productCode.length === 7 && product.productName === null" class="text-danger">
+              <div
+                v-if="view.productCode && view.productCode.length === 7 && product.productName === null"
+                class="text-danger"
+              >
                 {{ formatMessage(messages.MSGE019, "商品コード") }}
               </div>
             </div>
@@ -511,7 +514,8 @@ onMounted(async () => {
       orderKbn: orderInfo.orderKbn,
     });
 
-    productItems.value = products;
+    productItems.value =
+      orderInfo.orderKbn === "1" ? products : products.filter((item) => item.orderClientCode === orderInfo.clientCode);
 
     if (view.value.productCode) {
       const productInfo = await productApi.getProductByProductCode(view.value.productCode);

@@ -66,10 +66,7 @@
               <i class="fas fa-list me-1"></i>参照
             </BButton>
           </div>
-          <div
-            v-if="form.clientCode && form.clientCode.length === 8 && client.clientName === null"
-            class="text-danger"
-          >
+          <div v-if="form.clientCode && form.clientCode.length === 8 && client.clientName === null" class="text-danger">
             {{ formatMessage(messages.MSGE019, "取引先コード") }}
           </div>
         </BFormGroup>
@@ -254,15 +251,20 @@
               "
               @input="formatAlphaNumericInput"
               @compositionend="formatAlphaNumericInput"
+              :disabled="!isReceive && states.clientCode !== true"
             />
-            <BButton type="button" variant="outline-primary" class="text-dark text-nowrap" @click="openProductModal">
+            <BButton
+              type="button"
+              variant="outline-primary"
+              class="text-dark text-nowrap"
+              @click="openProductModal"
+              :disabled="!isReceive && states.clientCode !== true"
+            >
               <i class="fas fa-list me-1"></i>参照
             </BButton>
           </div>
           <div
-            v-if="
-              form.productCode && form.productCode.length === 7 && product.productName === null
-            "
+            v-if="form.productCode && form.productCode.length === 7 && product.productName === null"
             class="text-danger"
           >
             {{ formatMessage(messages.MSGE019, "商品コード") }}
@@ -704,10 +706,8 @@ const onClientSelected = (row) => {
  */
 const applySelectedClient = () => {
   form.value.clientCode = selectedClient.value.clientCode;
-  client.value.clientName = selectedClient.value.clientName;
-  client.value.telNumber = selectedClient.value.telNumber;
-  client.value.address1 = selectedClient.value.address1;
 
+  applyClientInput(form.value.clientCode);
 
   states.value.clientCode = true;
 
@@ -728,6 +728,19 @@ const applyClientInput = (clientCode) => {
     client.value.clientName = null;
     client.value.telNumber = null;
     client.value.address1 = null;
+  }
+
+  // 商品情報初期化
+  form.value.productCode = "";
+  product.value.productName = null;
+  product.value.productPrice = null;
+  states.value.productCode = false;
+
+  calculateAmount();
+
+  // 商品情報一覧設定
+  if (!isReceive) {
+    productItems.value = result ? productItems.value.filter((item) => item.orderClientCode === clientCode) : [];
   }
 };
 
