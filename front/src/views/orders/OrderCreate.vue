@@ -710,7 +710,7 @@ const applySelectedClient = () => {
   client.value.telNumber = selectedClient.value.telNumber;
   client.value.address1 = selectedClient.value.address1;
 
-
+  
   states.value.clientCode = true;
 
   showClientModal.value = false;
@@ -742,10 +742,6 @@ const applyClientInput = async (clientCode) => {
 
   // 商品情報一覧設定
   if (!isReceive) {
-    const products = await productApi.getProducts({
-      orderKbn: orderKbn.value,
-    });
-
     productItems.value = result ? products.filter((item) => item.orderClientCode === clientCode) : [];
   }
 };

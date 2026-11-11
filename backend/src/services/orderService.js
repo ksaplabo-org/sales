@@ -178,8 +178,11 @@ class OrderService {
 
     //商品コードの存在チェック
     const product = await productRepository.findByCode(orderInfo.productCode);
-
-    if (!product || product.orderKbn !== order.orderKbn) {
+    if (
+      !product ||
+      product.orderKbn !== order.orderKbn ||
+      (order.orderKbn === "2" && product.orderClientCode !== order.clientCode)
+    ) {
       throw new NotFoundError("productCode", "この商品コードは存在しません");
     }
 
