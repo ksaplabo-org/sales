@@ -29,47 +29,56 @@
 
     <BForm @submit.prevent="createOrder">
       <BRow class="mb-3">
-        <!-- 受発注番号 -->
-        <BFormGroup :label="isReceive ? '受注番号' : '発注番号'" label-cols="3">
-          <BFormInput
-            v-model="form.orderNo"
-            maxlength="8"
-            :state="states.orderNo"
-            @focus="states.orderNo = null"
-            @blur="states.orderNo = form.orderNo.length === 8"
-            @input="formatAlphaNumericInput"
-            @compositionend="formatAlphaNumericInput"
-          />
-          <BFormInvalidFeedback v-if="form.orderNo">
-            {{ formatMessage(messages.MSGE008, isReceive ? "受注番号" : "発注番号", 8) }}
-          </BFormInvalidFeedback>
-        </BFormGroup>
+        <BCol cols="10">
+          <!-- 受発注番号 -->
+          <BFormGroup :label="isReceive ? '受注番号' : '発注番号'" label-cols="3">
+            <BFormInput
+              v-model="form.orderNo"
+              maxlength="8"
+              :state="states.orderNo"
+              @focus="states.orderNo = null"
+              @blur="states.orderNo = form.orderNo.length === 8"
+              @input="formatAlphaNumericInput"
+              @compositionend="formatAlphaNumericInput"
+            />
+            <BFormInvalidFeedback v-if="form.orderNo">
+              {{ formatMessage(messages.MSGE008, isReceive ? "受注番号" : "発注番号", 8) }}
+            </BFormInvalidFeedback>
+          </BFormGroup>
+        </BCol>
       </BRow>
 
       <!-- 取引先コード -->
       <BRow class="mb-3">
-        <BFormGroup label="取引先コード" label-cols="3">
-          <div class="d-flex gap-2">
-            <BFormInput
-              v-model="form.clientCode"
-              maxlength="8"
-              :state="states.clientCode"
-              @focus="states.clientCode = null"
-              @blur="
-                applyClientInput(form.clientCode);
-                states.clientCode = form.clientCode.length === 8 && client.clientName !== null;
-              "
-              @input="formatAlphaNumericInput"
-              @compositionend="formatAlphaNumericInput"
-            />
-            <BButton type="button" variant="outline-primary" class="text-dark text-nowrap" @click="openClientModal">
-              <i class="fas fa-list me-1"></i>参照
-            </BButton>
-          </div>
-          <div v-if="form.clientCode && form.clientCode.length === 8 && client.clientName === null" class="text-danger">
-            {{ formatMessage(messages.MSGE019, "取引先コード") }}
-          </div>
-        </BFormGroup>
+        <BCol cols="10">
+          <BFormGroup label="取引先コード" label-cols="3">
+            <div class="d-flex gap-2">
+              <BFormInput
+                v-model="form.clientCode"
+                maxlength="8"
+                :state="states.clientCode"
+                @focus="states.clientCode = null"
+                @blur="
+                  applyClientInput(form.clientCode);
+                  states.clientCode = form.clientCode.length === 8 && client.clientName !== null;
+                "
+                @input="formatAlphaNumericInput"
+                @compositionend="formatAlphaNumericInput"
+              />
+            </div>
+            <div
+              v-if="form.clientCode && form.clientCode.length === 8 && client.clientName === null"
+              class="text-danger"
+            >
+              {{ formatMessage(messages.MSGE019, "取引先コード") }}
+            </div>
+          </BFormGroup>
+        </BCol>
+        <BCol cols="2" class="d-flex align-items-end">
+          <BButton type="button" variant="outline-primary" class="text-dark text-nowrap" @click="openClientModal">
+            <i class="fas fa-list me-1"></i>参照
+          </BButton>
+        </BCol>
       </BRow>
 
       <!-- 取引先情報参照モーダル -->
@@ -103,173 +112,198 @@
 
       <!-- 取引先名 -->
       <BRow class="mb-3">
-        <BFormGroup label="取引先名" label-cols="3">
-          <div class="form-control-plaintext">
-            {{ client.clientName || "-" }}
-          </div>
-        </BFormGroup>
+        <BCol cols="10">
+          <BFormGroup label="取引先名" label-cols="3">
+            <div class="form-control-plaintext">
+              {{ client.clientName || "-" }}
+            </div>
+          </BFormGroup>
+        </BCol>
       </BRow>
 
       <!-- 電話番号 -->
       <BRow class="mb-3">
-        <BFormGroup label="電話番号" label-cols="3">
-          <div class="form-control-plaintext">
-            {{ client.telNumber || "-" }}
-          </div>
-        </BFormGroup>
+        <BCol cols="10">
+          <BFormGroup label="電話番号" label-cols="3">
+            <div class="form-control-plaintext">
+              {{ client.telNumber || "-" }}
+            </div>
+          </BFormGroup>
+        </BCol>
       </BRow>
 
       <!-- 住所１ -->
       <BRow class="mb-3">
-        <BFormGroup label="住所1" label-cols="3">
-          <div class="form-control-plaintext">
-            {{ client.address1 || "-" }}
-          </div>
-        </BFormGroup>
+        <BCol cols="10">
+          <BFormGroup label="住所1" label-cols="3">
+            <div class="form-control-plaintext">
+              {{ client.address1 || "-" }}
+            </div>
+          </BFormGroup>
+        </BCol>
       </BRow>
 
       <!-- 受発注日 -->
       <BRow class="mb-3">
-        <BFormGroup :label="isReceive ? '受注日' : '発注日'" label-cols="3">
-          <BFormInput
-            v-model="form.orderDate"
-            :state="states.orderDate"
-            type="date"
-            @focus="states.orderDate = null"
-            @blur="
-              ($event) => {
-                // 日付の妥当性を保持
-                invalidDates.orderDate = !$event.target.validity.valid;
+        <BCol cols="10">
+          <BFormGroup :label="isReceive ? '受注日' : '発注日'" label-cols="3">
+            <BFormInput
+              v-model="form.orderDate"
+              :state="states.orderDate"
+              type="date"
+              @focus="states.orderDate = null"
+              @blur="
+                ($event) => {
+                  // 日付の妥当性を保持
+                  invalidDates.orderDate = !$event.target.validity.valid;
 
-                // 受発注日の入力状態を更新
-                updateOrderDateState();
+                  // 受発注日の入力状態を更新
+                  updateOrderDateState();
 
-                // 後続の日付項目の入力状態を更新
-                updateConfirmedDateState();
-                updateShipDateState();
-                updateDeliverDateState();
-              }
-            "
-          />
-        </BFormGroup>
+                  // 後続の日付項目の入力状態を更新
+                  updateConfirmedDateState();
+                  updateShipDateState();
+                  updateDeliverDateState();
+                }
+              "
+            />
+          </BFormGroup>
+        </BCol>
       </BRow>
 
       <!-- 確定日 -->
       <BRow class="mb-3">
-        <BFormGroup :label="isReceive ? '入金日' : '発注受付完了日'" label-cols="3">
-          <BFormInput
-            v-model="form.confirmedDate"
-            type="date"
-            :state="states.confirmedDate"
-            @focus="states.confirmedDate = null"
-            @blur="
-              ($event) => {
-                // 日付の妥当性を保持
-                invalidDates.confirmedDate = !$event.target.validity.valid;
-                // 確定日の入力状態を更新
-                updateConfirmedDateState();
+        <BCol cols="10">
+          <BFormGroup :label="isReceive ? '入金日' : '発注受付完了日'" label-cols="3">
+            <BFormInput
+              v-model="form.confirmedDate"
+              type="date"
+              :state="states.confirmedDate"
+              @focus="states.confirmedDate = null"
+              @blur="
+                ($event) => {
+                  // 日付の妥当性を保持
+                  invalidDates.confirmedDate = !$event.target.validity.valid;
+                  // 確定日の入力状態を更新
+                  updateConfirmedDateState();
 
-                // 後続の日付項目の入力状態を更新
-                updateShipDateState();
-                updateDeliverDateState();
-              }
-            "
-          />
-          <div
-            v-if="states.confirmedDate === false && form.confirmedDate && !invalidDates.confirmedDate"
-            class="text-danger"
-          >
-            {{
-              formatMessage(messages.MSGE017, isReceive ? "入金日" : "発注受付完了日", isReceive ? "受注日" : "発注日")
-            }}
-          </div>
-        </BFormGroup>
+                  // 後続の日付項目の入力状態を更新
+                  updateShipDateState();
+                  updateDeliverDateState();
+                }
+              "
+            />
+            <div
+              v-if="states.confirmedDate === false && form.confirmedDate && !invalidDates.confirmedDate"
+              class="text-danger"
+            >
+              {{
+                formatMessage(
+                  messages.MSGE017,
+                  isReceive ? "入金日" : "発注受付完了日",
+                  isReceive ? "受注日" : "発注日",
+                )
+              }}
+            </div>
+          </BFormGroup>
+        </BCol>
       </BRow>
 
       <!-- 出荷日 -->
       <BRow class="mb-3" v-if="isReceive">
-        <BFormGroup label="出荷日" label-cols="3">
-          <BFormInput
-            v-model="form.shipDate"
-            :state="states.shipDate"
-            type="date"
-            @focus="states.shipDate = null"
-            @blur="
-              ($event) => {
-                // 日付の妥当性を保持
-                invalidDates.shipDate = !$event.target.validity.valid;
+        <BCol cols="10">
+          <BFormGroup label="出荷日" label-cols="3">
+            <BFormInput
+              v-model="form.shipDate"
+              :state="states.shipDate"
+              type="date"
+              @focus="states.shipDate = null"
+              @blur="
+                ($event) => {
+                  // 日付の妥当性を保持
+                  invalidDates.shipDate = !$event.target.validity.valid;
 
-                // 出荷日の入力状態を更新
-                updateShipDateState();
+                  // 出荷日の入力状態を更新
+                  updateShipDateState();
 
-                // 後続の日付項目の入力状態を更新
-                updateDeliverDateState();
-              }
-            "
-          />
-          <div v-if="states.shipDate === false && form.shipDate && !invalidDates.shipDate" class="text-danger">
-            {{ formatMessage(messages.MSGE017, "出荷日", form.confirmedDate ? "入金日" : "受注日") }}
-          </div>
-        </BFormGroup>
+                  // 後続の日付項目の入力状態を更新
+                  updateDeliverDateState();
+                }
+              "
+            />
+            <div v-if="states.shipDate === false && form.shipDate && !invalidDates.shipDate" class="text-danger">
+              {{ formatMessage(messages.MSGE017, "出荷日", form.confirmedDate ? "入金日" : "受注日") }}
+            </div>
+          </BFormGroup>
+        </BCol>
       </BRow>
 
       <!-- 納品予定日 -->
       <BRow class="mb-3">
-        <BFormGroup label="納品予定日" label-cols="3">
-          <BFormInput
-            v-model="form.deliverDate"
-            type="date"
-            :state="states.deliverDate"
-            @focus="states.deliverDate = null"
-            @blur="
-              ($event) => {
-                // 日付の妥当性を保持
-                invalidDates.deliverDate = !$event.target.validity.valid;
-                // 納品予定日の入力状態を更新
-                updateDeliverDateState();
-              }
-            "
-          />
-          <div v-if="states.deliverDate === false && form.deliverDate && !invalidDates.deliverDate" class="text-danger">
-            {{ formatMessage(messages.MSGE017, "納品予定日", getInvalidDeliverDateFieldName()) }}
-          </div>
-        </BFormGroup>
+        <BCol cols="10">
+          <BFormGroup label="納品予定日" label-cols="3">
+            <BFormInput
+              v-model="form.deliverDate"
+              type="date"
+              :state="states.deliverDate"
+              @focus="states.deliverDate = null"
+              @blur="
+                ($event) => {
+                  // 日付の妥当性を保持
+                  invalidDates.deliverDate = !$event.target.validity.valid;
+                  // 納品予定日の入力状態を更新
+                  updateDeliverDateState();
+                }
+              "
+            />
+            <div
+              v-if="states.deliverDate === false && form.deliverDate && !invalidDates.deliverDate"
+              class="text-danger"
+            >
+              {{ formatMessage(messages.MSGE017, "納品予定日", getInvalidDeliverDateFieldName()) }}
+            </div>
+          </BFormGroup>
+        </BCol>
       </BRow>
 
       <!-- 商品コード -->
       <BRow class="mb-3">
-        <BFormGroup label="商品コード" label-cols="3">
-          <div class="d-flex gap-2">
-            <BFormInput
-              v-model="form.productCode"
-              maxlength="7"
-              :state="states.productCode"
-              @focus="states.productCode = null"
-              @blur="
-                applyProductInput(form.productCode);
-                states.productCode = form.productCode.length === 7 && product.productName !== null;
-              "
-              @input="formatAlphaNumericInput"
-              @compositionend="formatAlphaNumericInput"
-              :disabled="!isReceive && states.clientCode !== true"
-            />
-            <BButton
-              type="button"
-              variant="outline-primary"
-              class="text-dark text-nowrap"
-              @click="openProductModal"
-              :disabled="!isReceive && states.clientCode !== true"
+        <BCol cols="10">
+          <BFormGroup label="商品コード" label-cols="3">
+            <div class="d-flex gap-2">
+              <BFormInput
+                v-model="form.productCode"
+                maxlength="7"
+                :state="states.productCode"
+                @focus="states.productCode = null"
+                @blur="
+                  applyProductInput(form.productCode);
+                  states.productCode = form.productCode.length === 7 && product.productName !== null;
+                "
+                @input="formatAlphaNumericInput"
+                @compositionend="formatAlphaNumericInput"
+                :disabled="!isReceive && states.clientCode !== true"
+              />
+            </div>
+            <div
+              v-if="form.productCode && form.productCode.length === 7 && product.productName === null"
+              class="text-danger"
             >
-              <i class="fas fa-list me-1"></i>参照
-            </BButton>
-          </div>
-          <div
-            v-if="form.productCode && form.productCode.length === 7 && product.productName === null"
-            class="text-danger"
+              {{ formatMessage(messages.MSGE019, "商品コード") }}
+            </div>
+          </BFormGroup>
+        </BCol>
+        <BCol cols="2" class="d-flex align-items-end">
+          <BButton
+            type="button"
+            variant="outline-primary"
+            class="text-dark text-nowrap"
+            @click="openProductModal"
+            :disabled="!isReceive && states.clientCode !== true"
           >
-            {{ formatMessage(messages.MSGE019, "商品コード") }}
-          </div>
-        </BFormGroup>
+            <i class="fas fa-list me-1"></i>参照
+          </BButton>
+        </BCol>
       </BRow>
 
       <!-- 商品情報参照モーダル -->
@@ -303,68 +337,80 @@
 
       <!-- 商品名 -->
       <BRow class="mb-3">
-        <BFormGroup label="商品名" label-cols="3">
-          <div class="form-control-plaintext">
-            {{ product.productName || "-" }}
-          </div>
-        </BFormGroup>
+        <BCol cols="10">
+          <BFormGroup label="商品名" label-cols="3">
+            <div class="form-control-plaintext">
+              {{ product.productName || "-" }}
+            </div>
+          </BFormGroup>
+        </BCol>
       </BRow>
 
       <!-- 単価 -->
       <BRow class="mb-3">
-        <BFormGroup label="単価" label-cols="3">
-          <div class="form-control-plaintext">
-            {{ product.productPrice == null ? "-" : product.productPrice.toLocaleString("ja-JP") }}
-          </div>
-        </BFormGroup>
+        <BCol cols="10">
+          <BFormGroup label="単価" label-cols="3">
+            <div class="form-control-plaintext">
+              {{ product.productPrice == null ? "-" : product.productPrice.toLocaleString("ja-JP") }}
+            </div>
+          </BFormGroup>
+        </BCol>
       </BRow>
 
       <!-- 数量 -->
       <BRow class="mb-3">
-        <BFormGroup label="数量" label-cols="3">
-          <BFormInput
-            v-model="form.quantity"
-            :state="states.quantity"
-            type="text"
-            @focus="states.quantity = null"
-            @blur="
-              states.quantity = Number(form.quantity) >= 1;
-              calculateAmount();
-            "
-            @input="formatNumericInput"
-            @compositionend="formatNumericInput"
-          />
-          <div v-if="states.quantity === false && form.quantity" class="text-danger">
-            {{ formatMessage(messages.MSGE016, "数量", 1) }}
-          </div>
-        </BFormGroup>
+        <BCol cols="10">
+          <BFormGroup label="数量" label-cols="3">
+            <BFormInput
+              v-model="form.quantity"
+              :state="states.quantity"
+              type="text"
+              @focus="states.quantity = null"
+              @blur="
+                states.quantity = Number(form.quantity) >= 1;
+                calculateAmount();
+              "
+              @input="formatNumericInput"
+              @compositionend="formatNumericInput"
+            />
+            <div v-if="states.quantity === false && form.quantity" class="text-danger">
+              {{ formatMessage(messages.MSGE016, "数量", 1) }}
+            </div>
+          </BFormGroup>
+        </BCol>
       </BRow>
 
       <!-- 金額 -->
       <BRow class="mb-3">
-        <BFormGroup label="金額" label-cols="3">
-          <div class="form-control-plaintext">
-            {{ calculate.amount ? calculate.amount.toLocaleString() : "-" }}
-          </div>
-        </BFormGroup>
+        <BCol cols="10">
+          <BFormGroup label="金額" label-cols="3">
+            <div class="form-control-plaintext">
+              {{ calculate.amount ? calculate.amount.toLocaleString() : "-" }}
+            </div>
+          </BFormGroup>
+        </BCol>
       </BRow>
 
       <!-- 消費税 -->
       <BRow class="mb-3">
-        <BFormGroup label="消費税" label-cols="3">
-          <div class="form-control-plaintext">
-            {{ calculate.tax ? calculate.tax.toLocaleString() : "-" }}
-          </div>
-        </BFormGroup>
+        <BCol cols="10">
+          <BFormGroup label="消費税" label-cols="3">
+            <div class="form-control-plaintext">
+              {{ calculate.tax ? calculate.tax.toLocaleString() : "-" }}
+            </div>
+          </BFormGroup>
+        </BCol>
       </BRow>
 
       <!-- 合計金額 -->
       <BRow class="mb-3">
-        <BFormGroup :label="isReceive ? '請求金額' : '支払金額'" label-cols="3">
-          <div class="form-control-plaintext">
-            {{ calculate.amountTaxIncluded ? calculate.amountTaxIncluded.toLocaleString() : "-" }}
-          </div>
-        </BFormGroup>
+        <BCol cols="10">
+          <BFormGroup :label="isReceive ? '請求金額' : '支払金額'" label-cols="3">
+            <div class="form-control-plaintext">
+              {{ calculate.amountTaxIncluded ? calculate.amountTaxIncluded.toLocaleString() : "-" }}
+            </div>
+          </BFormGroup>
+        </BCol>
       </BRow>
 
       <div class="d-flex justify-content-center">
