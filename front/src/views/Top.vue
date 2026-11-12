@@ -305,6 +305,7 @@ const totalHatchuAmount = computed(() =>
     .reduce((sum, order) => sum + order.amountTaxIncluded, 0),
 );
 
+// 日付から曜日を取得
 const getDayOfWeek = (date) => {
   const days = ["日", "月", "火", "水", "木", "金", "土"];
   return days[new Date(date).getDay()];
