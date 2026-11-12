@@ -29,8 +29,8 @@
 
     <BForm @submit.prevent="createOrder">
       <BRow class="mb-3">
-        <!-- 受発注番号 -->
         <BCol cols="10">
+          <!-- 受発注番号 -->
           <BFormGroup :label="isReceive ? '受注番号' : '発注番号'" label-cols="3">
             <BFormInput
               v-model="form.orderNo"
@@ -50,28 +50,35 @@
 
       <!-- 取引先コード -->
       <BRow class="mb-3">
-        <BFormGroup label="取引先コード" label-cols="3">
-          <div class="d-flex gap-2">
-            <BFormInput
-              v-model="form.clientCode"
-              maxlength="8"
-              :state="states.clientCode"
-              @focus="states.clientCode = null"
-              @blur="
-                applyClientInput(form.clientCode);
-                states.clientCode = form.clientCode.length === 8 && client.clientName !== null;
-              "
-              @input="formatAlphaNumericInput"
-              @compositionend="formatAlphaNumericInput"
-            />
-            <BButton type="button" variant="outline-primary" class="text-dark text-nowrap" @click="openClientModal">
-              <i class="fas fa-list me-1"></i>参照
-            </BButton>
-          </div>
-          <div v-if="form.clientCode && form.clientCode.length === 8 && client.clientName === null" class="text-danger">
-            {{ formatMessage(messages.MSGE019, "取引先コード") }}
-          </div>
-        </BFormGroup>
+        <BCol cols="10">
+          <BFormGroup label="取引先コード" label-cols="3">
+            <div class="d-flex gap-2">
+              <BFormInput
+                v-model="form.clientCode"
+                maxlength="8"
+                :state="states.clientCode"
+                @focus="states.clientCode = null"
+                @blur="
+                  applyClientInput(form.clientCode);
+                  states.clientCode = form.clientCode.length === 8 && client.clientName !== null;
+                "
+                @input="formatAlphaNumericInput"
+                @compositionend="formatAlphaNumericInput"
+              />
+            </div>
+            <div
+              v-if="form.clientCode && form.clientCode.length === 8 && client.clientName === null"
+              class="text-danger"
+            >
+              {{ formatMessage(messages.MSGE019, "取引先コード") }}
+            </div>
+          </BFormGroup>
+        </BCol>
+        <BCol cols="2" class="d-flex align-items-end">
+          <BButton type="button" variant="outline-primary" class="text-dark text-nowrap" @click="openClientModal">
+            <i class="fas fa-list me-1"></i>参照
+          </BButton>
+        </BCol>
       </BRow>
 
       <!-- 取引先情報参照モーダル -->
@@ -105,29 +112,35 @@
 
       <!-- 取引先名 -->
       <BRow class="mb-3">
-        <BFormGroup label="取引先名" label-cols="3">
-          <div class="form-control-plaintext">
-            {{ client.clientName || "-" }}
-          </div>
-        </BFormGroup>
+        <BCol cols="10">
+          <BFormGroup label="取引先名" label-cols="3">
+            <div class="form-control-plaintext">
+              {{ client.clientName || "-" }}
+            </div>
+          </BFormGroup>
+        </BCol>
       </BRow>
 
       <!-- 電話番号 -->
       <BRow class="mb-3">
-        <BFormGroup label="電話番号" label-cols="3">
-          <div class="form-control-plaintext">
-            {{ client.telNumber || "-" }}
-          </div>
-        </BFormGroup>
+        <BCol cols="10">
+          <BFormGroup label="電話番号" label-cols="3">
+            <div class="form-control-plaintext">
+              {{ client.telNumber || "-" }}
+            </div>
+          </BFormGroup>
+        </BCol>
       </BRow>
 
       <!-- 住所１ -->
       <BRow class="mb-3">
-        <BFormGroup label="住所1" label-cols="3">
-          <div class="form-control-plaintext">
-            {{ client.address1 || "-" }}
-          </div>
-        </BFormGroup>
+        <BCol cols="10">
+          <BFormGroup label="住所1" label-cols="3">
+            <div class="form-control-plaintext">
+              {{ client.address1 || "-" }}
+            </div>
+          </BFormGroup>
+        </BCol>
       </BRow>
 
       <!-- 受発注日 -->
@@ -164,8 +177,8 @@
           <BFormGroup :label="isReceive ? '入金日' : '発注受付完了日'" label-cols="3">
             <BFormInput
               v-model="form.confirmedDate"
-              :state="states.confirmedDate"
               type="date"
+              :state="states.confirmedDate"
               @focus="states.confirmedDate = null"
               @blur="
                 ($event) => {
@@ -231,8 +244,8 @@
           <BFormGroup label="納品予定日" label-cols="3">
             <BFormInput
               v-model="form.deliverDate"
-              :state="states.deliverDate"
               type="date"
+              :state="states.deliverDate"
               @focus="states.deliverDate = null"
               @blur="
                 ($event) => {
@@ -253,41 +266,46 @@
         </BCol>
       </BRow>
 
-       <!-- 商品コード -->
+      <!-- 商品コード -->
       <BRow class="mb-3">
-        <BFormGroup label="商品コード" label-cols="3">
-          <div class="d-flex gap-2">
-            <BFormInput
-              v-model="form.productCode"
-              maxlength="7"
-              :state="states.productCode"
-              @focus="states.productCode = null"
-              @blur="
-                applyProductInput(form.productCode);
-                states.productCode = form.productCode.length === 7 && product.productName !== null;
-              "
-              @input="formatAlphaNumericInput"
-              @compositionend="formatAlphaNumericInput"
-              :disabled="!isReceive && states.clientCode !== true"
-            />
-            <BButton
-              type="button"
-              variant="outline-primary"
-              class="text-dark text-nowrap"
-              @click="openProductModal"
-              :disabled="!isReceive && states.clientCode !== true"
+        <BCol cols="10">
+          <BFormGroup label="商品コード" label-cols="3">
+            <div class="d-flex gap-2">
+              <BFormInput
+                v-model="form.productCode"
+                maxlength="7"
+                :state="states.productCode"
+                @focus="states.productCode = null"
+                @blur="
+                  applyProductInput(form.productCode);
+                  states.productCode = form.productCode.length === 7 && product.productName !== null;
+                "
+                @input="formatAlphaNumericInput"
+                @compositionend="formatAlphaNumericInput"
+                :disabled="!isReceive && states.clientCode !== true"
+              />
+            </div>
+            <div
+              v-if="form.productCode && form.productCode.length === 7 && product.productName === null"
+              class="text-danger"
             >
-              <i class="fas fa-list me-1"></i>参照
-            </BButton>
-          </div>
-          <div
-            v-if="form.productCode && form.productCode.length === 7 && product.productName === null"
-            class="text-danger"
+              {{ formatMessage(messages.MSGE019, "商品コード") }}
+            </div>
+          </BFormGroup>
+        </BCol>
+        <BCol cols="2" class="d-flex align-items-end">
+          <BButton
+            type="button"
+            variant="outline-primary"
+            class="text-dark text-nowrap"
+            @click="openProductModal"
+            :disabled="!isReceive && states.clientCode !== true"
           >
-            {{ formatMessage(messages.MSGE019, "商品コード") }}
-          </div>
-        </BFormGroup>
+            <i class="fas fa-list me-1"></i>参照
+          </BButton>
+        </BCol>
       </BRow>
+
       <!-- 商品情報参照モーダル -->
       <BModal v-model="showProductModal" title="商品コードの参照" size="lg">
         <BTable
@@ -311,28 +329,32 @@
               selectedProduct = null;
               showProductModal = false;
             "
-            >キャンセル
-          </BButton>
+            >キャンセル</BButton
+          >
           <BButton variant="primary" @click="applySelectedProduct" :disabled="!selectedProduct">確定</BButton>
         </template>
       </BModal>
 
       <!-- 商品名 -->
       <BRow class="mb-3">
-        <BFormGroup label="商品名" label-cols="3">
-          <div class="form-control-plaintext">
-            {{ product.productName || "-" }}
-          </div>
-        </BFormGroup>
+        <BCol cols="10">
+          <BFormGroup label="商品名" label-cols="3">
+            <div class="form-control-plaintext">
+              {{ product.productName || "-" }}
+            </div>
+          </BFormGroup>
+        </BCol>
       </BRow>
 
       <!-- 単価 -->
       <BRow class="mb-3">
-        <BFormGroup label="単価" label-cols="3">
-          <div class="form-control-plaintext">
-            {{ product.productPrice == null ? "-" : product.productPrice.toLocaleString("ja-JP") }}
-          </div>
-        </BFormGroup>
+        <BCol cols="10">
+          <BFormGroup label="単価" label-cols="3">
+            <div class="form-control-plaintext">
+              {{ product.productPrice == null ? "-" : product.productPrice.toLocaleString("ja-JP") }}
+            </div>
+          </BFormGroup>
+        </BCol>
       </BRow>
 
       <!-- 数量 -->
@@ -360,29 +382,35 @@
 
       <!-- 金額 -->
       <BRow class="mb-3">
-        <BFormGroup label="金額" label-cols="3">
-          <div class="form-control-plaintext">
-            {{ calculate.amount ? calculate.amount.toLocaleString() : "-" }}
-          </div>
-        </BFormGroup>
+        <BCol cols="10">
+          <BFormGroup label="金額" label-cols="3">
+            <div class="form-control-plaintext">
+              {{ calculate.amount ? calculate.amount.toLocaleString() : "-" }}
+            </div>
+          </BFormGroup>
+        </BCol>
       </BRow>
 
       <!-- 消費税 -->
       <BRow class="mb-3">
-        <BFormGroup label="消費税" label-cols="3">
-          <div class="form-control-plaintext">
-            {{ calculate.tax ? calculate.tax.toLocaleString() : "-" }}
-          </div>
-        </BFormGroup>
+        <BCol cols="10">
+          <BFormGroup label="消費税" label-cols="3">
+            <div class="form-control-plaintext">
+              {{ calculate.tax ? calculate.tax.toLocaleString() : "-" }}
+            </div>
+          </BFormGroup>
+        </BCol>
       </BRow>
 
       <!-- 合計金額 -->
       <BRow class="mb-3">
-        <BFormGroup :label="isReceive ? '請求金額' : '支払金額'" label-cols="3">
-          <div class="form-control-plaintext">
-            {{ calculate.amountTaxIncluded ? calculate.amountTaxIncluded.toLocaleString() : "-" }}
-          </div>
-        </BFormGroup>
+        <BCol cols="10">
+          <BFormGroup :label="isReceive ? '請求金額' : '支払金額'" label-cols="3">
+            <div class="form-control-plaintext">
+              {{ calculate.amountTaxIncluded ? calculate.amountTaxIncluded.toLocaleString() : "-" }}
+            </div>
+          </BFormGroup>
+        </BCol>
       </BRow>
 
       <div class="d-flex justify-content-center">
