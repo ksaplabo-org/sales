@@ -3,13 +3,13 @@ import jwt from "jsonwebtoken";
 // Authorizationヘッダーで使用するBearer認証スキーム
 const AUTH_SCHEME_BEARER = "Bearer ";
 
-  /**
-   * アクセストークン検証
-   *
-   * @param {*} req リクエスト情報
-   * @param {*} res レスポンス情報
-   * @param {*} next 後続処理
-   */
+/**
+ * アクセストークン検証
+ *
+ * @param {*} req リクエスト情報
+ * @param {*} res レスポンス情報
+ * @param {*} next 後続処理
+ */
 const authenticateToken = (req, res, next) => {
   const authHeader = req.headers.authorization;
 

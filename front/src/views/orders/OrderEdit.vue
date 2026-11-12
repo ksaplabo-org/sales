@@ -172,33 +172,33 @@
 
       <!-- 商品コード -->
       <BRow class="mb-3">
-        <BCol cols="10">
-          <BFormGroup label="商品コード" label-cols="3">
-            <BFormInput
-              v-model="view.productCode"
-              :state="states.productCode"
-              maxlength="7"
-              @focus="states.productCode = null"
-              @blur="
-                applyProductInput(view.productCode);
-                states.productCode = view.productCode.length === 7 && product.productName !== null;
-              "
-              @input="formatAlphaNumericInput"
-              @compositionend="formatAlphaNumericInput"
-            />
-            <div
-              v-if="view.productCode && view.productCode.length === 7 && product.productName === null"
-              class="text-danger"
-            >
-              {{ formatMessage(messages.MSGE019, "商品コード") }}
+        <BFormGroup label="商品コード" label-cols="3">
+          <div class="d-flex gap-2 align-items-start">
+            <div class="flex-grow-1">
+              <BFormInput
+                v-model="view.productCode"
+                :state="states.productCode"
+                maxlength="7"
+                @focus="states.productCode = null"
+                @blur="
+                  applyProductInput(view.productCode);
+                  states.productCode = view.productCode.length === 7 && product.productName !== null;
+                "
+                @input="formatAlphaNumericInput"
+                @compositionend="formatAlphaNumericInput"
+              />
+              <div
+                v-if="view.productCode && view.productCode.length === 7 && product.productName === null"
+                class="text-danger"
+              >
+                {{ formatMessage(messages.MSGE019, "商品コード") }}
+              </div>
             </div>
-          </BFormGroup>
-        </BCol>
-        <BCol cols="2" class="d-flex align-items-end">
-          <BButton type="button" variant="outline-primary" class="text-dark" @click="openProductModal">
-            <i class="fas fa-list me-1"></i>参照
-          </BButton>
-        </BCol>
+            <BButton type="button" variant="outline-primary" class="text-dark" @click="openProductModal">
+              <i class="fas fa-list me-1"></i>参照
+            </BButton>
+          </div>
+        </BFormGroup>
       </BRow>
 
       <!-- 商品情報モーダル -->
@@ -525,7 +525,8 @@ onMounted(async () => {
       orderKbn: orderInfo.orderKbn,
     });
 
-    productItems.value = products;
+    productItems.value =
+      orderInfo.orderKbn === "1" ? products : products.filter((item) => item.orderClientCode === orderInfo.clientCode);
 
     if (view.value.productCode) {
       const productInfo = await productApi.getProductByProductCode(view.value.productCode);

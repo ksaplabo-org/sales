@@ -239,6 +239,29 @@ describe("orderService", () => {
       jest.spyOn(productRepository, "findByCode").mockResolvedValueOnce(null);
       await expect(orderService.create(orderInfo)).rejects.toThrow(NotFoundError);
     });
+
+    test("[異常系] 発注データで発注先コードと取引先コードが一致しない場合はNotFoundErrorが発生すること", async () => {
+      // テストデータ
+      const orderInfo = {
+        orderNo: "o2000001",
+        orderKbn: "2",
+        clientCode: "cc000001",
+        productCode: "pc00001",
+      };
+
+      // Mock設定
+      jest.spyOn(orderRepository, "findByNo").mockResolvedValueOnce(null);
+      jest.spyOn(clientRepository, "findByCode").mockResolvedValueOnce({
+        clientCode: "cc000001",
+      });
+      jest.spyOn(productRepository, "findByCode").mockResolvedValueOnce({
+        productCode: "pc00001",
+        orderClientCode: "cc000002",
+      });
+
+      // テスト対象関数呼び出し
+      await expect(orderService.create(orderInfo)).rejects.toThrow(NotFoundError);
+    });
   });
 
   describe("update 受発注情報更新", () => {
@@ -902,6 +925,33 @@ describe("orderService", () => {
         productCode: "pc00001",
         productPrice: 1000,
         orderKbn: "2",
+      };
+
+      //Mock設定
+      jest.spyOn(orderRepository, "findByNo").mockResolvedValueOnce(order);
+      jest.spyOn(productRepository, "findByCode").mockResolvedValueOnce(product);
+
+      //テスト対象関数呼び出し・検証
+      await expect(orderService.update(orderNo, orderInfo)).rejects.toBeInstanceOf(NotFoundError);
+    });
+
+    test("[異常系] 発注データで発注先コードと取引先コードが一致しない場合はNotFoundErrorが発生すること", async () => {
+      //更新条件
+      const orderNo = "o2000001";
+      const orderInfo = {
+        productCode: "pc00001",
+      };
+      const order = {
+        orderNo: "o2000001",
+        orderKbn: "2",
+        clientCode: "cc000001",
+        orderDate: "2026-01-01",
+        confirmedDate: null,
+      };
+      const product = {
+        productCode: "pc00001",
+        orderKbn: "2",
+        orderClientCode: "cc000002",
       };
 
       //Mock設定

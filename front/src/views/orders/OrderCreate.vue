@@ -50,12 +50,12 @@
 
       <!-- 取引先コード -->
       <BRow class="mb-3">
-        <BCol cols="10">
-          <BFormGroup label="取引先コード" label-cols="3">
+        <BFormGroup label="取引先コード" label-cols="3">
+          <div class="d-flex gap-2">
             <BFormInput
               v-model="form.clientCode"
-              :state="states.clientCode"
               maxlength="8"
+              :state="states.clientCode"
               @focus="states.clientCode = null"
               @blur="
                 applyClientInput(form.clientCode);
@@ -64,19 +64,14 @@
               @input="formatAlphaNumericInput"
               @compositionend="formatAlphaNumericInput"
             />
-            <div
-              v-if="form.clientCode && form.clientCode.length === 8 && client.clientName === null"
-              class="text-danger"
-            >
-              {{ formatMessage(messages.MSGE019, "取引先コード") }}
-            </div>
-          </BFormGroup>
-        </BCol>
-        <BCol cols="2" class="d-flex align-items-end">
-          <BButton type="button" variant="outline-primary" class="text-dark text-nowrap" @click="openClientModal">
-            <i class="fas fa-list me-1"></i>参照
-          </BButton>
-        </BCol>
+            <BButton type="button" variant="outline-primary" class="text-dark text-nowrap" @click="openClientModal">
+              <i class="fas fa-list me-1"></i>参照
+            </BButton>
+          </div>
+          <div v-if="form.clientCode && form.clientCode.length === 8 && client.clientName === null" class="text-danger">
+            {{ formatMessage(messages.MSGE019, "取引先コード") }}
+          </div>
+        </BFormGroup>
       </BRow>
 
       <!-- 取引先情報参照モーダル -->
@@ -258,14 +253,14 @@
         </BCol>
       </BRow>
 
-      <!-- 商品コード -->
+       <!-- 商品コード -->
       <BRow class="mb-3">
-        <BCol cols="10">
-          <BFormGroup label="商品コード" label-cols="3">
+        <BFormGroup label="商品コード" label-cols="3">
+          <div class="d-flex gap-2">
             <BFormInput
               v-model="form.productCode"
-              :state="states.productCode"
               maxlength="7"
+              :state="states.productCode"
               @focus="states.productCode = null"
               @blur="
                 applyProductInput(form.productCode);
@@ -273,22 +268,26 @@
               "
               @input="formatAlphaNumericInput"
               @compositionend="formatAlphaNumericInput"
+              :disabled="!isReceive && states.clientCode !== true"
             />
-            <div
-              v-if="form.productCode && form.productCode.length === 7 && product.productName === null"
-              class="text-danger"
+            <BButton
+              type="button"
+              variant="outline-primary"
+              class="text-dark text-nowrap"
+              @click="openProductModal"
+              :disabled="!isReceive && states.clientCode !== true"
             >
-              {{ formatMessage(messages.MSGE019, "商品コード") }}
-            </div>
-          </BFormGroup>
-        </BCol>
-        <BCol cols="2" class="d-flex align-items-end">
-          <BButton type="button" variant="outline-primary" class="text-dark text-nowrap" @click="openProductModal">
-            <i class="fas fa-list me-1"></i>参照
-          </BButton>
-        </BCol>
+              <i class="fas fa-list me-1"></i>参照
+            </BButton>
+          </div>
+          <div
+            v-if="form.productCode && form.productCode.length === 7 && product.productName === null"
+            class="text-danger"
+          >
+            {{ formatMessage(messages.MSGE019, "商品コード") }}
+          </div>
+        </BFormGroup>
       </BRow>
-
       <!-- 商品情報参照モーダル -->
       <BModal v-model="showProductModal" title="商品コードの参照" size="lg">
         <BTable
@@ -725,9 +724,8 @@ const onClientSelected = (row) => {
  */
 const applySelectedClient = () => {
   form.value.clientCode = selectedClient.value.clientCode;
-  client.value.clientName = selectedClient.value.clientName;
-  client.value.telNumber = selectedClient.value.telNumber;
-  client.value.address1 = selectedClient.value.address1;
+
+  applyClientInput(form.value.clientCode);
 
   states.value.clientCode = true;
 
@@ -748,6 +746,19 @@ const applyClientInput = (clientCode) => {
     client.value.clientName = null;
     client.value.telNumber = null;
     client.value.address1 = null;
+  }
+
+  // 商品情報初期化
+  form.value.productCode = "";
+  product.value.productName = null;
+  product.value.productPrice = null;
+  states.value.productCode = false;
+
+  calculateAmount();
+
+  // 商品情報一覧設定
+  if (!isReceive) {
+    productItems.value = result ? productItems.value.filter((item) => item.orderClientCode === clientCode) : [];
   }
 };
 

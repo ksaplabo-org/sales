@@ -233,6 +233,7 @@ import messages from "@/constants/messages.js";
 import Loading from "@/components/Loading.vue";
 import { getLoginInfo } from "@/utils/auth.js";
 import ExcelJS from "exceljs";
+import { formatMessage } from "@/utils/messageUtil.js";
 
 // Router操作
 const router = useRouter();
@@ -617,7 +618,7 @@ const exportDeliveryNote = async (row) => {
     URL.revokeObjectURL(url);
   } catch (e) {
     console.log(e);
-    openFailedToast(messages.MSGE021);
+    openFailedToast(formatMessage(messages.MSGE021, "納品書"));
   } finally {
     loading.value = false;
   }

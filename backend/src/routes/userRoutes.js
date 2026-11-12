@@ -1,4 +1,5 @@
 import express from "express";
+import authorizeRole from "../middleware/authorize.js";
 import userController from "../controllers/UserController.js";
 
 const userRoutes = express.Router();
@@ -12,11 +13,11 @@ const userRoutes = express.Router();
  * ② expressに渡すときにbindする
  *   bindに渡したインスタンスをthisに固定するため、渡した関数のthisを強制できる。
  */
-userRoutes.get("/", userController.findAll.bind(userController));
+userRoutes.get("/", authorizeRole(["2"]), userController.findAll.bind(userController));
 userRoutes.get("/:userId", userController.findById.bind(userController));
 
-userRoutes.post("/", userController.create.bind(userController));
+userRoutes.post("/", authorizeRole(["2"]), userController.create.bind(userController));
 userRoutes.put("/:userId", userController.update.bind(userController));
-userRoutes.delete("/:userId", userController.delete.bind(userController));
+userRoutes.delete("/:userId", authorizeRole(["2"]), userController.delete.bind(userController));
 
 export default userRoutes;
