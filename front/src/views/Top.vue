@@ -176,7 +176,7 @@
       {{ noticeErrorMessage }}
     </div>
     <div v-if="notices.length === 0" class="text-center">
-      {{ messages.MSGE022 }}
+      {{ messages.MSGI022 }}
     </div>
     <div v-for="notice in notices" :key="notice.noticeId" class="border px-3 py-1">
       <span
@@ -189,7 +189,13 @@
   </BModal>
 
   <!-- お知らせ詳細モーダル-->
-  <BModal v-model="showNoticeDetailModal" :title="selectedNotice?.title" size="lg" no-footer content-class="notice-modal">
+  <BModal
+    v-model="showNoticeDetailModal"
+    :title="selectedNotice?.title"
+    size="lg"
+    no-footer
+    content-class="notice-modal"
+  >
     <div>
       掲載期間：{{ selectedNotice?.startDate?.substring(0, 10).replace(/-/g, "/") }} ({{
         getDayOfWeek(selectedNotice?.startDate)
@@ -197,7 +203,7 @@
       {{ selectedNotice?.endDate?.substring(0, 10).replace(/-/g, "/") }}
       ({{ getDayOfWeek(selectedNotice?.endDate) }})
     </div>
-    <div class="mt-3" style="white-space:pre-line">{{ selectedNotice?.content }}</div>
+    <div class="mt-3" style="white-space: pre-line">{{ selectedNotice?.content }}</div>
   </BModal>
 </template>
 
@@ -354,8 +360,13 @@ onMounted(async () => {
       orders.value = await orderApi.getOrders();
       // 一般ユーザー向けかつ掲載期間内のお知らせを掲載開始日の降順で表示
       const today = new Date().toISOString().substring(0, 10);
-      notices.value = (await noticeApi.getNotices())
-        .filter((notice) => notice.targetType !== "2" && notice.startDate <= today && notice.endDate >= today)
+      notices.value = (
+        await noticeApi.getNotices({
+          startSearchDate: today,
+          endSearchDate: today,
+        })
+      )
+        .filter((notice) => notice.targetType !== "2")
         .sort((a, b) => b.startDate.localeCompare(a.startDate));
     }
   } catch (e) {
@@ -493,5 +504,4 @@ const openFailedToast = (message) => {
 .notice-modal .modal-header {
   background-color: #ececec;
 }
-
 </style>
