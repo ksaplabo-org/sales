@@ -763,7 +763,7 @@ const applySelectedClient = () => {
 /**
  * 取引先情報入力反映処理
  */
-const applyClientInput = (clientCode) => {
+const applyClientInput = async (clientCode) => {
   const result = clientItems.value.find((item) => item.clientCode === clientCode);
 
   if (result) {
