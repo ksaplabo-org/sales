@@ -786,7 +786,11 @@ const applyClientInput = (clientCode) => {
 
   // 商品情報一覧設定
   if (!isReceive) {
-    productItems.value = result ? productItems.value.filter((item) => item.orderClientCode === clientCode) : [];
+    const products = await productApi.getProducts({
+      orderKbn: orderKbn.value,
+    });
+
+    productItems.value = result ? products.filter((item) => item.orderClientCode === clientCode) : [];
   }
 };
 
