@@ -763,7 +763,7 @@ const applySelectedClient = () => {
 /**
  * 取引先情報入力反映処理
  */
-const applyClientInput = (clientCode) => {
+const applyClientInput = async (clientCode) => {
   const result = clientItems.value.find((item) => item.clientCode === clientCode);
 
   if (result) {
@@ -786,7 +786,11 @@ const applyClientInput = (clientCode) => {
 
   // 商品情報一覧設定
   if (!isReceive) {
-    productItems.value = result ? productItems.value.filter((item) => item.orderClientCode === clientCode) : [];
+    const products = await productApi.getProducts({
+      orderKbn: orderKbn.value,
+    });
+
+    productItems.value = result ? products.filter((item) => item.orderClientCode === clientCode) : [];
   }
 };
 
