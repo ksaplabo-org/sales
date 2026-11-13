@@ -3,6 +3,12 @@
   <BContainer fluid class="px-0 pb-2 mb-2">
     <div class="d-flex justify-content-between align-items-center">
       <h3 class="mb-0"><i class="fas fa-store-alt"></i><span class="ms-2">トップページ</span></h3>
+      <i
+        v-if="loginInfo.role == 1"
+        class="fas fa-bell fs-3 me-4 mt-1"
+        style="cursor: pointer"
+        @click="openNoticeModal"
+      ></i>
     </div>
   </BContainer>
 
@@ -159,6 +165,46 @@
       </BCard>
     </BCard>
   </div>
+
+  <!-- お知らせ一覧モーダル-->
+  <BModal v-model="showNoticeModal" size="lg" no-footer content-class="notice-modal">
+    <template #title>
+      <i class="fas fa-bell me-2"></i>
+      <span class="fs-5">お知らせ</span>
+    </template>
+    <div v-if="noticeErrorMessage" class="text-danger text-center mb-2">
+      {{ noticeErrorMessage }}
+    </div>
+    <div v-if="notices.length === 0" class="text-center">
+      {{ messages.MSGI022 }}
+    </div>
+    <div v-for="notice in notices" :key="notice.noticeId" class="border px-3 py-1">
+      <span
+        style="color: #0d6efd; text-decoration: underline; cursor: pointer"
+        @click="openNoticeDetailModal(notice.noticeId)"
+      >
+        {{ notice.title }}
+      </span>
+    </div>
+  </BModal>
+
+  <!-- お知らせ詳細モーダル-->
+  <BModal
+    v-model="showNoticeDetailModal"
+    :title="selectedNotice?.title"
+    size="lg"
+    no-footer
+    content-class="notice-modal"
+  >
+    <div>
+      掲載期間：{{ selectedNotice?.startDate?.substring(0, 10).replace(/-/g, "/") }} ({{
+        getDayOfWeek(selectedNotice?.startDate)
+      }}) ～
+      {{ selectedNotice?.endDate?.substring(0, 10).replace(/-/g, "/") }}
+      ({{ getDayOfWeek(selectedNotice?.endDate) }})
+    </div>
+    <div class="mt-3" style="white-space: pre-line">{{ selectedNotice?.content }}</div>
+  </BModal>
 </template>
 
 <script setup>
@@ -264,6 +310,13 @@ const totalHatchuAmount = computed(() =>
     )
     .reduce((sum, order) => sum + order.amountTaxIncluded, 0),
 );
+
+// 日付から曜日を取得
+const getDayOfWeek = (date) => {
+  const days = ["日", "月", "火", "水", "木", "金", "土"];
+  return days[new Date(date).getDay()];
+};
+
 // 読み込み中の表示制御
 const loading = ref(false);
 
@@ -273,6 +326,16 @@ const TOAST_MS = 3000;
 // 処理成功・失敗トーストの表示制御
 const failedToastText = ref("");
 const showFailedToastMs = ref(0);
+
+//お知らせモーダル表示制御
+const showNoticeModal = ref(false);
+const showNoticeDetailModal = ref(false);
+
+//お知らせ詳細情報
+const selectedNotice = ref(null);
+
+//お知らせ詳細取得失敗メッセージ
+const noticeErrorMessage = ref("");
 
 // ログイン情報
 const loginInfo = getLoginInfo();
@@ -295,6 +358,16 @@ onMounted(async () => {
     } else if (loginInfo.role === "1") {
       // 権限が一般の場合
       orders.value = await orderApi.getOrders();
+      // 一般ユーザー向けかつ掲載期間内のお知らせを掲載開始日の降順で表示
+      const today = new Date().toISOString().substring(0, 10);
+      notices.value = (
+        await noticeApi.getNotices({
+          startSearchDate: today,
+          endSearchDate: today,
+        })
+      )
+        .filter((notice) => notice.targetType !== "2")
+        .sort((a, b) => b.startDate.localeCompare(a.startDate));
     }
   } catch (e) {
     console.log(e);
@@ -328,6 +401,28 @@ const sortedLastUpdatedMasters = computed(() => {
     return copiedLabels;
   }
 });
+
+/**
+ * お知らせ一覧モーダル表示処理
+ */
+const openNoticeModal = () => {
+  noticeErrorMessage.value = "";
+  showNoticeModal.value = true;
+};
+
+/**
+ * お知らせ詳細モーダル表示処理
+ */
+const openNoticeDetailModal = async (noticeId) => {
+  try {
+    noticeErrorMessage.value = "";
+    selectedNotice.value = await noticeApi.getNoticeByNoticeId(noticeId);
+    showNoticeDetailModal.value = true;
+  } catch (e) {
+    console.log(e);
+    noticeErrorMessage.value = messages.MSGE023;
+  }
+};
 
 /**
  * 処理失敗トースト表示処理
@@ -404,5 +499,9 @@ const openFailedToast = (message) => {
 .label-text9 {
   display: inline-block;
   width: 130px;
+}
+
+.notice-modal .modal-header {
+  background-color: #ececec;
 }
 </style>
