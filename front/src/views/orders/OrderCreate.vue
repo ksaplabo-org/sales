@@ -772,10 +772,15 @@ const applyClientInput = (clientCode) => {
     client.value.clientName = result.clientName;
     client.value.telNumber = result.telNumber;
     client.value.address1 = result.address1;
+    // 商品絞り込み
+    if (!isReceive) {
+      filteredProductItems.value = productItems.value.filter((item) => item.orderClientCode === clientCode);
+    }
   } else {
     client.value.clientName = null;
     client.value.telNumber = null;
     client.value.address1 = null;
+    filteredProductItems.value = productItems.value;
   }
 
   // 商品情報初期化
@@ -785,12 +790,6 @@ const applyClientInput = (clientCode) => {
   states.value.productCode = false;
 
   calculateAmount();
-
-  // 商品絞り込み
-  filteredProductItems.value =
-    !isReceive && result
-      ? productItems.value.filter((item) => item.orderClientCode === clientCode)
-      : productItems.value;
 };
 
 /**
