@@ -309,7 +309,7 @@
       <!-- 商品情報参照モーダル -->
       <BModal v-model="showProductModal" title="商品コードの参照" size="lg">
         <BTable
-          :items="productItems"
+          :items="isReceive ? productItems : productItems.filter((item) => item.orderClientCode === form.clientCode)"
           :fields="productFields"
           head-variant="secondary"
           hover
@@ -783,15 +783,6 @@ const applyClientInput = async (clientCode) => {
   states.value.productCode = false;
 
   calculateAmount();
-
-  // 商品情報一覧設定
-  if (!isReceive) {
-    const products = await productApi.getProducts({
-      orderKbn: orderKbn.value,
-    });
-
-    productItems.value = result ? products.filter((item) => item.orderClientCode === clientCode) : [];
-  }
 };
 
 /**
