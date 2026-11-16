@@ -309,7 +309,7 @@
       <!-- 商品情報参照モーダル -->
       <BModal v-model="showProductModal" title="商品コードの参照" size="lg">
         <BTable
-          :items="isReceive ? productItems : productItems.filter((item) => item.orderClientCode === form.clientCode)"
+          :items="filteredProductItems"
           :fields="productFields"
           head-variant="secondary"
           hover
@@ -488,6 +488,7 @@ const calculate = ref({
 //一覧検索結果
 const clientItems = ref([]);
 const productItems = ref([]);
+const filteredProductItems = ref([]);
 
 //参照行選択
 const selectedClient = ref(null);
@@ -724,6 +725,7 @@ onMounted(async () => {
 
     //商品情報一覧取得
     productItems.value = await productApi.getProducts({ orderKbn: orderKbn.value });
+    filteredProductItems.value = productItems.value;
   } catch (e) {
     console.log(e);
 
@@ -770,10 +772,15 @@ const applyClientInput = (clientCode) => {
     client.value.clientName = result.clientName;
     client.value.telNumber = result.telNumber;
     client.value.address1 = result.address1;
+    // 商品絞り込み
+    if (!isReceive) {
+      filteredProductItems.value = productItems.value.filter((item) => item.orderClientCode === clientCode);
+    }
   } else {
     client.value.clientName = null;
     client.value.telNumber = null;
     client.value.address1 = null;
+    filteredProductItems.value = productItems.value;
   }
 
   // 商品情報初期化
@@ -818,7 +825,7 @@ const applySelectedProduct = () => {
  * 商品情報モーダル入力反映処理
  */
 const applyProductInput = (productCode) => {
-  const result = productItems.value.find((item) => item.productCode === productCode);
+  const result = filteredProductItems.value.find((item) => item.productCode === productCode);
 
   if (result) {
     product.value.productName = result.productName;
