@@ -204,7 +204,7 @@
             </div>
           </BFormGroup>
         </BCol>
-        <BCol cols="2" class="d-flex align-items-end">
+        <BCol cols="2" class="d-flex align-items-start">
           <BButton type="button" variant="outline-primary" class="text-dark" @click="openProductModal">
             <i class="fas fa-list me-1"></i>参照
           </BButton>
