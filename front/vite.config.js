@@ -33,6 +33,10 @@ export default defineConfig({
         target: "http://localhost:3000",
         changeOrigin: true,
       },
+      "/spring-api": {
+        target: "http://localhost:8081",
+        changeOrigin: true,
+      },
     },
   },
   resolve: {

@@ -1,8 +1,17 @@
 import axios from "axios";
 
-//
+// API共通クライアント
 const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
+  baseURL: "/api",
+  timeout: 10000,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
+// SpringAPI共通クライアント
+const springApiClient = axios.create({
+  baseURL: "/spring-api",
   timeout: 10000,
   headers: {
     "Content-Type": "application/json",
@@ -24,4 +33,5 @@ apiClient.interceptors.request.use((config) => {
 
 // TODO:インターセプターでエラーハンドリングを共通化する？
 
+export { springApiClient };
 export default apiClient;
