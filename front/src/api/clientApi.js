@@ -1,4 +1,5 @@
 import apiClient from "./axios";
+import { springApiClient } from "./axios";
 
 /**
  * 取引先情報一覧取得API呼び出し
@@ -7,7 +8,7 @@ import apiClient from "./axios";
  * @returns 取引先情報一覧
  */
 export async function getClients(condition) {
-  const response = await apiClient.get("/clients", { params: condition });
+  const response = await springApiClient.get("/clients", { params: condition });
   return response.data;
 }
 
@@ -28,7 +29,7 @@ export async function getClientByClientCode(clientCode) {
  * @param {*} clientInfo 取引先情報
  */
 export async function createClient(clientInfo) {
-  await apiClient.post("/clients", clientInfo);
+  await springApiClient.post("/clients", clientInfo);
 }
 
 /**
