@@ -1,6 +1,4 @@
-#------------------------------------------
-# 取引先TBL 作成
-#------------------------------------------
+-- 取引先TBL 作成
 CREATE TABLE IF NOT EXISTS clients (
     client_code VARCHAR(8) NOT NULL PRIMARY KEY,
     order_kbn VARCHAR(1) NOT NULL,
@@ -15,9 +13,7 @@ CREATE TABLE IF NOT EXISTS clients (
     updated_at DATE NOT NULL
 );
 
-#------------------------------------------
-# 取引先TBL 初期データ登録
-#------------------------------------------
+-- 取引先TBL 初期データ登録
 INSERT INTO clients values ('a0000001', '1', '商事', '0600001','A県B市C区1条1丁目1-1', '', '090-0000-0000', 'user01', now(), 'user01', now());
 INSERT INTO clients values ('a0000002', '2', 'B株式会社', '0600002','D府E市F区2条2丁目2-2Aビル 7階', '', '080-0000-0000', 'user01', now(), 'user01', now());
 INSERT INTO clients values ('a0000003', '2', 'C有限会社', '0600003','G県H市I区3条3丁目3-3Bビル 6階', '', '070-0000-0000', 'user01', now(), 'user01', now());
