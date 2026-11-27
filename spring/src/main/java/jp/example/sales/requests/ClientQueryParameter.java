@@ -3,7 +3,7 @@ package jp.example.sales.requests;
 /**
  * リクエストボディ用のDTOクラス
  */
-public class ClientRequest {
+public class ClientQueryParameter {
     private String clientCode;
     private String clientName;
     private String orderKbn;
@@ -15,14 +15,14 @@ public class ClientRequest {
      * @param clientName 取引先名
      * @param orderKbn 受発注区分
      */
-    public ClientRequest(String clientCode, String clientName, String orderKbn) {
+    public ClientQueryParameter(String clientCode, String clientName, String orderKbn) {
         this.clientCode = clientCode;
         this.clientName = clientName;
         this.orderKbn = orderKbn;
     }
 
     // 引数なしのコンストラクタ
-    public ClientRequest() {
+    public ClientQueryParameter() {
     }
 
     /**

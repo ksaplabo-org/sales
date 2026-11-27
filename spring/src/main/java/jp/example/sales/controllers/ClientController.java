@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import jp.example.sales.requests.ClientRequest;
+import jp.example.sales.requests.ClientQueryParameter;
 import jp.example.sales.responses.ClientResponse;
 import jp.example.sales.services.ClientService;
 
@@ -16,20 +16,17 @@ import jp.example.sales.services.ClientService;
 public class ClientController {
 
     @Autowired
-    private ClientService Service;
+    private ClientService service;
 
     /**
      * 取引先情報一覧取得
      * 
-     * @param clientCode 取引先コード
-     * @param clientName 取引先名
-     * @param orderKbn 受発注区分
+     * @param ClientQueryParameter condition 検索条件
      * @return 取引先情報一覧
      */
-    @GetMapping("/")
-    public List<ClientResponse> findAll(ClientRequest condition) {
-        List<ClientResponse> clientsList;
-        clientsList = Service.findAll(condition);
+    @GetMapping("")
+    public List<ClientResponse> findAll(ClientQueryParameter condition) {
+        List<ClientResponse> clientsList = service.findAll(condition);
 
         return clientsList;
 

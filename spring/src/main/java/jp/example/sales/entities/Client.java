@@ -1,17 +1,17 @@
 package jp.example.sales.entities;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
-@Entity
-@Table(name = "clients")
 /**
  * 取引先情報を表すクラス
  */
+@Entity
+@Table(name = "clients")
 public class Client {
     @Id
     private String clientCode;
@@ -38,13 +38,13 @@ public class Client {
     private String createdId;
 
     @Column
-    private Date createdAt;
+    private LocalDateTime createdAt;
 
     @Column
     private String updatedId;
 
     @Column
-    private Date updatedAt;
+    private LocalDateTime updatedAt;
 
     /**
      * 取引先コードを取得するメソッド
@@ -156,5 +156,69 @@ public class Client {
      */
     public void setTelNumber(String telNumber) {
         this.telNumber = telNumber;
+    }
+
+    /**
+     * 登録者IDを取得するメソッド
+     * @return　登録者ID
+     */
+    public String getCreatedId() {
+        return createdId;
+    }
+
+    /**
+     * 登録者IDを設定するメソッド
+     * @param createdId
+     */
+    public void setCreatedId(String createdId) {
+        this.createdId = createdId;
+    }
+
+    /**
+     * 登録日時を取得するメソッド
+     * @return　登録日時
+     */
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    /**
+     * 登録日時を設定するメソッド
+     * @param createdAt
+     */
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    /**
+     * 更新者IDを取得するメソッド
+     * @return　更新者ID
+     */
+    public String getUpdatedId() {
+        return updatedId;
+    }
+
+    /**
+     * 更新者IDを設定するメソッド
+     * @param updatedId
+     */
+    public void setUpdatedId(String updatedId) {
+        this.updatedId = updatedId;
+    }
+
+    /**
+     * 更新日時を取得するメソッド
+     * @return　更新日時
+     */
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    /**
+     * 更新日時を設定するメソッド
+     * @param createdAt
+     */
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }
